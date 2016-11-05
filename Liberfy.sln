@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Liberfy", "Liberfy\Liberfy.csproj", "{2BBC1D87-8B7F-46D3-9648-AC2F2C5A3C88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreTweet.net45", "CoreTweet.UnOfficialApi\CoreTweet.net45\CoreTweet.net45.csproj", "{5AE5A341-5E2B-42AF-946A-7043BAD12817}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8F2444A7-2293-4CEE-807B-42F649926B42}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		CoreTweet.UnOfficialApi\CoreTweet.Shared\CoreTweet.Shared.projitems*{5ae5a341-5e2b-42af-946a-7043bad12817}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2BBC1D87-8B7F-46D3-9648-AC2F2C5A3C88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BBC1D87-8B7F-46D3-9648-AC2F2C5A3C88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BBC1D87-8B7F-46D3-9648-AC2F2C5A3C88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BBC1D87-8B7F-46D3-9648-AC2F2C5A3C88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AE5A341-5E2B-42AF-946A-7043BAD12817}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AE5A341-5E2B-42AF-946A-7043BAD12817}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AE5A341-5E2B-42AF-946A-7043BAD12817}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AE5A341-5E2B-42AF-946A-7043BAD12817}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

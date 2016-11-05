@@ -1,0 +1,1750 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NowPlayingLib</name>
+    </assembly>
+    <members>
+        <member name="T:NowPlayingLib.Foobar2000">
+            <summary>
+            foobar2000 の機能を提供します。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Foobar2000.ProcessName">
+            <summary>
+            foobar2000 が使用するプロセス名。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.Foobar2000.Player">
+            <summary>
+            foobar2000 の Foobar2000.Application07 への COM ラッパーを取得します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.Foobar2000.Helper">
+            <summary>
+            foobar2000 の Foobar2000Helper.ApplicationHelper07 への COM ラッパーを取得します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.Foobar2000.Playback">
+            <summary>
+            foobar2000 の Foobar2000.Playback07 への COM ラッパーを取得します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Foobar2000.#ctor">
+            <summary>
+            <see cref="T:NowPlayingLib.Foobar2000"/> の新しいインスタンスを作成し、foobar2000 を初期化します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Foobar2000.OnCurrentMediaChanged(System.Boolean)">
+            <summary>
+            <see cref="E:NowPlayingLib.Foobar2000.CurrentMediaChanged"/> イベントを発生させます。
+            </summary>
+            <param name="bLocationChanged">再生位置が変更されたかを示す値。</param>
+        </member>
+        <member name="M:NowPlayingLib.Foobar2000.OnClosed">
+            <summary>
+            <see cref="E:NowPlayingLib.Foobar2000.Closed"/> イベントを発生させます。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Foobar2000.GetCurrentMedia">
+            <summary>
+            非同期操作として現在 foobar2000 で再生している曲を取得します。
+            </summary>
+            <returns>
+            <para>非同期操作を表すタスク オブジェクト。</para>
+            <para>タスク オブジェクトの <c>Result</c> プロパティは、<see cref="T:NowPlayingLib.MediaItem"/> を返します。</para>
+            </returns>
+        </member>
+        <member name="M:NowPlayingLib.Foobar2000.Dispose(System.Boolean)">
+            <summary>
+            foobar2000 に関連付けられたアンマネージ リソースを解放します。
+            </summary>
+            <param name="disposing">明示的な破棄要求元から呼び出された場合は true に設定します。それ以外の場合は false。</param>
+        </member>
+        <member name="P:NowPlayingLib.Foobar2000.PlayerState">
+            <summary>
+            foobar2000 の現在の再生状態を取得します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.Foobar2000.CurrentPosition">
+            <summary>
+            foobar2000 の現在の再生位置を取得または設定します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Foobar2000.Play">
+            <summary>
+            foobar2000 で再生を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Foobar2000.FastForward">
+            <summary>
+            foobar2000 で早送りを実行します。この実装は常に <see cref="T:System.NotSupportedException"/> をスローします。
+            </summary>
+            <exception cref="T:System.NotSupportedException"/>
+        </member>
+        <member name="M:NowPlayingLib.Foobar2000.Rewind">
+            <summary>
+            foobar2000 で巻戻しを実行します。この実装は常に <see cref="T:System.NotSupportedException"/> をスローします。
+            </summary>
+            <exception cref="T:System.NotSupportedException"/>
+        </member>
+        <member name="M:NowPlayingLib.Foobar2000.Stop">
+            <summary>
+            foobar2000 で停止を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Foobar2000.Pause">
+            <summary>
+            foobar2000 で一時停止を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Foobar2000.NextTrack">
+            <summary>
+            foobar2000 で次の曲の再生を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Foobar2000.PreviousTrack">
+            <summary>
+            foobar2000 で前の曲の再生を実行します。
+            </summary>
+        </member>
+        <member name="E:NowPlayingLib.Foobar2000.CurrentMediaChanged">
+            <summary>
+            foobar2000 で再生中の曲が変更されたときに発生します。
+            </summary>
+        </member>
+        <member name="E:NowPlayingLib.Foobar2000.Closed">
+            <summary>
+            foobar2000 が終了された時に発生します。
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.IMediaPlayer">
+            <summary>
+            メディア プレーヤーの基本的なインターフェイスを提供します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.IMediaPlayer.GetCurrentMedia">
+            <summary>
+            非同期操作として現在音楽プレーヤーで再生している曲を取得します。
+            </summary>
+            <returns>
+            <para>非同期操作を表すタスク オブジェクト。</para>
+            <para>タスク オブジェクトの <c>Result</c> プロパティは、<see cref="T:NowPlayingLib.MediaItem"/> を返します。</para>
+            </returns>
+        </member>
+        <member name="P:NowPlayingLib.IMediaPlayer.PlayerState">
+            <summary>
+            音楽プレーヤーの現在の再生状態を取得します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.IMediaPlayer.CurrentPosition">
+            <summary>
+            音楽プレーヤーの現在の再生位置を取得または設定します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.IMediaPlayer.Play">
+            <summary>
+            音楽プレーヤーで再生を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.IMediaPlayer.FastForward">
+            <summary>
+            音楽プレーヤーで早送りを実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.IMediaPlayer.Rewind">
+            <summary>
+            音楽プレーヤーで巻戻しを実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.IMediaPlayer.Stop">
+            <summary>
+            音楽プレーヤーで停止を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.IMediaPlayer.Pause">
+            <summary>
+            音楽プレーヤーで一時停止を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.IMediaPlayer.NextTrack">
+            <summary>
+            音楽プレーヤーで次の曲の再生を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.IMediaPlayer.PreviousTrack">
+            <summary>
+            音楽プレーヤーで前の曲の再生を実行します。
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.INotifyPlayerStateChanged">
+            <summary>
+            音楽プレーヤーの状態が変更されたことをクライアントに通知します。
+            </summary>
+        </member>
+        <member name="E:NowPlayingLib.INotifyPlayerStateChanged.CurrentMediaChanged">
+            <summary>
+            音楽プレーヤーで再生中の曲が変更されたときに発生します。
+            </summary>
+        </member>
+        <member name="E:NowPlayingLib.INotifyPlayerStateChanged.Closed">
+            <summary>
+            音楽プレーヤーが終了された時に発生します。
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.Interop.AudioAttributes">
+            <summary>
+            The Windows Media Player Attribute Reference documents metadata attributes that are of interest to Windows Media Player SDK developers.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.AcquisitionTime">
+            <summary>
+            The AcquisitionTime attribute is the date and time the item was added to the library.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.AcquisitionTimeDay">
+            <summary>
+            The AcquisitionTimeDay attribute is the day part of the date and time the item was added to the library.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.AcquisitionTimeMonth">
+            <summary>
+            The AcquisitionTimeMonth attribute is the month part of the date and time the item was added to the library.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.AcquisitionTimeYear">
+            <summary>
+            The AcquisitionTimeYear attribute is the year part of the date and time the item was added to the library.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.AcquisitionTimeYearMonth">
+            <summary>
+            The AcquisitionTimeYearMonth attribute is the year and month part of the date and time the item was added to the library.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.AcquisitionTimeYearMonthDay">
+            <summary>
+            The AcquisitionTimeYearMonthDay attribute is the year, month, and day part of the date and time the item was added to the library.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.AlbumId">
+            <summary>
+            The AlbumID attribute is a unique identifier for the album.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.AlbumIdAlbumArtist">
+            <summary>
+            The AlbumIDAlbumArtist attribute is a unique identifier for the album.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.AudioFormat">
+            <summary>
+            The AudioFormat attribute is a FourCC code that identifies the audio format of the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Author">
+            <summary>
+            The Author attribute is the name of a media artist or actor associated with the content.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.AverageLevel">
+            <summary>
+            The AverageLevel attribute is a 16-bit amplitude value indicating the average volume level.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Bitrate">
+            <summary>
+            The Bitrate attribute is the bit rate of the item, in bits per second.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.BuyNow">
+            <summary>
+            The BuyNow attribute is a PARAM value for use in commercial interactions.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.BuyTickets">
+            <summary>
+            The BuyTickets attribute is a PARAM value for use in commercial interactions.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.CanonicalFileType">
+            <summary>
+            This attribute is undocumented.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ContentDistributorDuration">
+            <summary>
+            The ContentDistributorDuration attribute is the playing duration of the item, in seconds.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Copyright">
+            <summary>
+            The Copyright attribute is the copyright message for the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.DefaultDate">
+            <summary>
+            This attribute is undocumented.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.DisplayArtist">
+            <summary>
+            The DisplayArtist attribute is the name of the artist that is displayed for an item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.DrmIndividualizedVersion">
+            <summary>
+            The DRMIndividualizedVersion indicates the digital rights management (DRM) version that the digital media file requires.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.DrmKeyID">
+            <summary>
+            The DRMKeyID attribute identifies the media usage rights for content that is protected using digital rights management (DRM).
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Duration">
+            <summary>
+            The Duration attribute is the playing duration of the item, in seconds.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.FileSize">
+            <summary>
+            The FileSize attribute is the size of the file in bytes.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.FileType">
+            <summary>
+            The FileType attribute is the three-letter file name extension, such as "wma" or "mp3".
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.HmeAlbumTitle">
+            <summary>
+            This attribute is undocumented.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.IsProtected">
+            <summary>
+            The Is_Protected attribute indicates whether the content is protected using digital rights management (DRM).
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.IsTrusted">
+            <summary>
+            This attribute is undocumented.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.LinkedFileUrl">
+            <summary>
+            This attribute is undocumented.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.MediaType">
+            <summary>
+            The MediaType attribute is the type of content in the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.MoreInfo">
+            <summary>
+            The MoreInfo attribute is a PARAM value for use in commercial interactions.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.PeakValue">
+            <summary>
+            The PeakValue attribute is a 16-bit amplitude value indicating the peak volume level.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ProviderLogoUrl">
+            <summary>
+            The ProviderLogoURL attribute is the address of the logo of the provider of the attribute values.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ProviderUrl">
+            <summary>
+            The ProviderURL attribute is the address of the home page of the provider of the attribute values.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.RecordingTime">
+            <summary>
+            The RecordingTime attribute is the date and time of the original recording, for items where this date is different from the release date.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.RecordingTimeDay">
+            <summary>
+            The RecordingTimeDay attribute is the day part of the date of the original recording, for items where this date is different from the release date.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.RecordingTimeMonth">
+            <summary>
+            The RecordingTimeMonth attribute is the month part of the date of the original recording, for items where this date is different from the release date.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.RecordingTimeYear">
+            <summary>
+            The RecordingTimeYear attribute is the year part of the date of the original recording, for items where this date is different from the release date.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.RecordingTimeYearMonth">
+            <summary>
+            The RecordingTimeYearMonth attribute is the year and month part of the date of the original recording, for items where this date is different from the release date.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.RecordingTimeYearMonthDay">
+            <summary>
+            The RecordingTimeYearMonthDay attribute is the date of the original recording (without the time of day), for items where this date is different from the release date.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ReleaseDate">
+            <summary>
+            The ReleaseDate attribute is the date of the original release of the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ReleaseDateDay">
+            <summary>
+            The ReleaseDateDay attribute is the day part of the date of the original release of the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ReleaseDateMonth">
+            <summary>
+            The ReleaseDateMonth attribute is the month part of the date of the original release of the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ReleaseDateYear">
+            <summary>
+            The ReleaseDateYear attribute is the year part of the date of the original release of the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ReleaseDateYearMonth">
+            <summary>
+            The ReleaseDateYearMonth attribute is the year and month part of the date of the original release of the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ReleaseDateYearMonthDay">
+            <summary>
+            The ReleaseDateYearMonthDay attribute is the year, month, and day part of the date of the original release of the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.RequestState">
+            <summary>
+            The RequestState attribute is the media information request state.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.SourceUrl">
+            <summary>
+            The SourceURL attribute is the address of the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Streams">
+            <summary>
+            This attribute is undocumented.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.SyncState">
+            <summary>
+            The SyncState attribute is a string representation of a 32-bit value that Windows Media Player uses when it synchronizes playlists with portable devices.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.SyncState2">
+            <summary>
+            This attribute is undocumented.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Title">
+            <summary>
+            The Title attribute is the title of the content.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.TrackingId">
+            <summary>
+            The TrackingID attribute is 128-bit Globally Unique Identifier (GUID) that Windows Media Player uses to identify a media item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Type">
+            <summary>
+            This attribute is undocumented.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UserCustom1">
+            <summary>
+            The UserCustom1 attribute is arbitrary text.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UserCustom2">
+            <summary>
+            The UserCustom2 attribute is user defined text.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UserEffectiveRating">
+            <summary>
+            The UserEffectiveRating attribute is the rating computed by Windows Media Player based on how often the item has been played.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UserLastPlayedTime">
+            <summary>
+            The UserLastPlayedTime attribute is the date and time the item was most recently played.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UserPlayCount">
+            <summary>
+            The UserPlayCount attribute is the number of times the item has been played.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UserPlaycountAfternoon">
+            <summary>
+            The UserPlaycountAfternoon attribute is the number of times the item has been played between 12:00 and 17:00 local time.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UserPlaycountEvening">
+            <summary>
+            The UserPlaycountEvening attribute is the number of times the item has been played between 17:00 and 22:00 local time.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UserPlaycountMorning">
+            <summary>
+            The UserPlaycountMorning attribute is the number of times the item has been played between 06:00 and 12:00 local time.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UserPlaycountNight">
+            <summary>
+            The UserPlaycountNight attribute is the number of times the item has been played between 22:00 and 06:00 local time.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UserPlaycountWeekday">
+            <summary>
+            The UserPlaycountWeekday attribute is the number of times the item has been played on a Monday, Tuesday, Wednesday, Thursday, or Friday.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UserPlaycountWeekend">
+            <summary>
+            The UserPlaycountWeekend attribute is the number of times the item has been played on a Saturday or Sunday.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UserRating">
+            <summary>
+            The UserRating attribute is the rating specified by the user in the library.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UserServiceRating">
+            <summary>
+            The UserServiceRating attribute is reserved for future use.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.AlbumArtist">
+            <summary>
+            The WM/AlbumArtist attribute is the name of the primary artist for the album.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.AlbumTitle">
+            <summary>
+            The WM/AlbumTitle attribute is the title of the album on which the content was originally released.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Category">
+            <summary>
+            The WM/Category attribute is the category of the content.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Composer">
+            <summary>
+            The WM/Composer attribute is the name of the composer of the music.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Conductor">
+            <summary>
+            The WM/Conductor attribute is the name of the conductor of the music.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ContentDistributor">
+            <summary>
+            The WM/ContentDistributor attribute is the name of the distributor of the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ContentGroupDescription">
+            <summary>
+            The WM/ContentGroupDescription attribute is the description of the content group, which is a collection of media items such as a CD boxed set.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.EncodingTime">
+            <summary>
+            The WM/EncodingTime attribute is the date and time at which the content was encoded.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Genre">
+            <summary>
+            The WM/Genre attribute is the genre of the content.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.InitialKey">
+            <summary>
+            The WM/InitialKey attribute is the initial key of the music.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Language">
+            <summary>
+            The WM/Language attribute is the language of the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Lyrics">
+            <summary>
+            The WM/Lyrics attribute is the lyrics of the content.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Mcdi">
+            <summary>
+            The WM/MCDI attribute is the music CD identifier of the CD from which the file or track was copied.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.MediaClassPrimaryId">
+            <summary>
+            The WM/MediaClassPrimaryID attribute is a GUID specifying one of the primary media classes: music, non-music audio, video, or other.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.MediaClassSecondaryId">
+            <summary>
+            The WM/MediaClassSecondaryID attribute is a GUID specifying the secondary media class, which is a subclass of the primary media class.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Mood">
+            <summary>
+            The WM/Mood attribute is a category name for the mood of the content.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ParentalRating">
+            <summary>
+            The WM/ParentalRating attribute is the parental rating of the content.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.PartOfSet">
+            <summary>
+            The WM/PartOfSet attribute is the part number and the total number of parts of the set to which the item belongs.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Period">
+            <summary>
+            The WM/Period attribute is the period of the content.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Picture">
+            <summary>
+            The WM/Picture attribute contains a picture related to the content.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ProtectionType">
+            <summary>
+            The WM/ProtectionType attribute is the type of protection used on the content.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Provider">
+            <summary>
+            The WM/Provider attribute is the name of the provider of the attribute values.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ProviderRating">
+            <summary>
+            The WM/ProviderRating attribute is the rating of the item assigned by the provider of the attribute values.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.ProviderStyle">
+            <summary>
+            The WM/ProviderStyle attribute is the style of the item assigned by the provider of the attribute values.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Publisher">
+            <summary>
+            The WM/Publisher attribute is the name of the company that published the content.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.SubscriptionContentId">
+            <summary>
+            The WM/SubscriptionContentID attribute is the subscription content identifier.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.SubTitle">
+            <summary>
+            The WM/SubTitle attribute is the subtitle of the content.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Track">
+            <summary>
+            This attribute is undocumented.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.TrackNumber">
+            <summary>
+            The WM/TrackNumber attribute is the track number of the item on the album on which it was originally released.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.UniqueFileIdentifier">
+            <summary>
+            The WM/UniqueFileIdentifier attribute is a string that uniquely identifies the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.WMCollectionGroupId">
+            <summary>
+            The WM/WMCollectionGroupID attribute is a GUID identifying the group containing the collection to which the item belongs.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.WMCollectionId">
+            <summary>
+            The WM/WMCollectionID attribute is a GUID identifying the collection to which the item belongs.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.WMContentId">
+            <summary>
+            The WM/WMContentID attribute is a GUID identifying the content of the item.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Writer">
+            <summary>
+            The WM/Writer attribute is the name of the writer who wrote the words of the content.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.Year">
+            <summary>
+            The WM/Year attribute is the year the content was published.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.AudioAttributes.WMServerVersion">
+            <summary>
+            This attribute is undocumented.
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.Interop.ComWrapper`1">
+            <summary>
+            <see cref="T:System.IDisposable"/> を実装し COM オブジェクトを自動的に解放するラッパーを提供します。
+            </summary>
+            <typeparam name="T">COM オブジェクトの型。</typeparam>
+        </member>
+        <member name="P:NowPlayingLib.Interop.ComWrapper`1.Object">
+            <summary>
+            COM オブジェクトを取得します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.ComWrapper`1.Finalize">
+            <summary>
+            ガベージ コレクターがオブジェクトを破棄する前に、最後のクリーンアップを実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.ComWrapper`1.Dispose">
+            <summary>
+            COM オブジェクトを解放します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.ComWrapper`1.Dispose(System.Boolean)">
+            <summary>
+            COM オブジェクトを解放します。
+            </summary>
+            <param name="disposing">明示的な破棄要求元から呼び出された場合は true に設定します。それ以外の場合は false。</param>
+        </member>
+        <member name="T:NowPlayingLib.Interop.ComWrapper">
+            <summary>
+            COM オブジェクトを自動的に解放するラッパーを表します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.ComWrapper.Create``1(``0)">
+            <summary>
+            指定した COM オブジェクトのラッパーとして機能する <see cref="T:NowPlayingLib.Interop.ComWrapper"/> を作成します。
+            </summary>
+            <typeparam name="T">COM オブジェクトの型。</typeparam>
+            <param name="o">COM オブジェクト。</param>
+            <returns>COM オブジェクトのラッパー。</returns>
+        </member>
+        <member name="T:NowPlayingLib.Interop.HRESULT">
+            <summary>
+            HRESULT を定義します。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.HRESULT.S_OK">
+            <summary>
+            S_OK
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.HRESULT.E_NOINTERFACE">
+            <summary>
+            E_NOINTERFACE
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.HRESULT.E_NOTIMPL">
+            <summary>
+            E_NOTIMPL
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.Interop.IOleClientSite">
+            <summary>
+            Gives an embedded object information about resources provided by its container such as the location and extent of its display site, its moniker, and its user interface.
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleClientSite.SaveObject">
+            <summary>
+            Saves the embedded object associated with the client site.
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleClientSite.GetMoniker(System.UInt32,System.UInt32)">
+            <summary>
+            <para>Retrieves a moniker for the object's client site.</para>
+            <para>An object can force the assignment of its own or its container's moniker by specifying a value for dwAssign.</para>
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleClientSite.GetContainer">
+            <summary>
+            Retrieves a pointer to the object's container.
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleClientSite.ShowObject">
+            <summary>
+            Asks a container to display its object to the user.
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleClientSite.OnShowWindow(System.Boolean)">
+            <summary>
+            Notifies a container when an embedded object's window is about to become visible or invisible.
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleClientSite.RequestNewObjectLayout">
+            <summary>
+            Asks a container to resize the display site for embedded objects.
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.Interop.IOleObject">
+            <summary>
+            The IOleObject interface is the principal means by which an embedded object provides basic functionality to, and communicates with, its container.
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.SetClientSite(NowPlayingLib.Interop.IOleClientSite)">
+            <summary>
+            コンテナー中のクライアント サイトをコントロールに設定します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.GetClientSite">
+            <summary>
+            コントロールのクライアント サイトを取得します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.SetHostNames(System.String,System.String)">
+            <summary>
+            コンテナー アプリケーションとコンテナー ドキュメントの名前をコントロールに設定します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.Close(NowPlayingLib.Interop.OLECLOSE)">
+            <summary>
+            コントロールの状態を実行中から読み込み済みに変更します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.SetMoniker(System.UInt32,System.Object)">
+            <summary>
+            コントロールに名称 (モニカー) を設定します。 ATL の実装は、E_NOTIMPL を返します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.GetMoniker(System.UInt32,System.UInt32)">
+            <summary>
+            コントロールの名称 (モニカー) を取得します。 ATL の実装は、E_NOTIMPL を返します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.InitFromData(System.Object,System.Boolean,System.UInt32)">
+            <summary>
+            選択されたデータを使用してコントロールを初期化します。 ATL の実装は、E_NOTIMPL を返します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.GetClipboardData(System.UInt32)">
+            <summary>
+            クリップボードからデータを取得します。 ATL の実装は、E_NOTIMPL を返します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.DoVerb(System.UInt32,System.UInt32,System.Object,System.UInt32,System.UInt32,System.UInt32)">
+            <summary>
+            列挙されるアクションのいずれか 1 つを実行するようにコントロールに命令します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.EnumVerbs">
+            <summary>
+            コントロールのアクションを列挙します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.Update">
+            <summary>
+            コントロールを更新します。 ATL の実装は、S_OK を返します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.IsUpToDate">
+            <summary>
+            コントロールが最新かどうかをチェックします。 ATL の実装は、S_OK を返します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.GetUserClassID">
+            <summary>
+            コントロールのクラス識別子を取得します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.GetUserType(System.UInt32)">
+            <summary>
+            コントロールのユーザー タイプ名を取得します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.SetExtent(System.UInt32,System.Object)">
+            <summary>
+            コントロールの表示領域のサイズを設定します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.GetExtent(System.UInt32)">
+            <summary>
+            コントロールの表示領域のサイズを取得します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.Advise(System.Object)">
+            <summary>
+            コントロールとの間にアドバイザリ コネクションを構築します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.Unadvise(System.UInt32)">
+            <summary>
+            コントロールとの間のアドバイザリ コネクションを削除します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.EnumAdvise">
+            <summary>
+            コントロールのアドバイザリ コネクションを列挙します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.GetMiscStatus(System.Int32)">
+            <summary>
+            コントロールのステータスを取得します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IOleObject.SetColorScheme(System.Object)">
+            <summary>
+            推奨する配色をコントロール アプリケーションに設定します。 ATL の実装は、E_NOTIMPL を返します。
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.Interop.IServiceProvider">
+            <summary>
+            サービス オブジェクト、つまり、他のオブジェクトにカスタム サポートを提供するオブジェクトを取得するための機構を定義します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IServiceProvider.QueryService(System.Guid@,System.Guid@)">
+            <summary>
+            <see cref="T:NowPlayingLib.Interop.IServiceProvider"/> の実装によって公開されるサービスのファクトリとして実行します。
+            </summary>
+            <param name="guidService">要求されたサービスの一意の識別子。</param>
+            <param name="riid">呼び出し元がサービスに受信するインターフェイスの一意の識別子。</param>
+            <returns>要求されたサービスのインターフェイスのアドレスを指定する整数を返します。</returns>
+        </member>
+        <member name="T:NowPlayingLib.Interop.MetadataPictureCollection">
+            <summary>
+            <see cref="T:Microsoft.MediaPlayer.Interop.IWMPMetadataPicture"/> に対してインデックスによってアクセスできる要素の読み取り専用コレクションを表します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.Interop.MetadataPictureCollection.Count">
+            <summary>
+            コレクション内の要素の数を取得します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.Interop.MetadataPictureCollection.Media">
+            <summary>
+            対象の曲情報を取得します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.MetadataPictureCollection.#ctor(Microsoft.MediaPlayer.Interop.IWMPMedia)">
+            <summary>
+            <see cref="T:NowPlayingLib.Interop.MetadataPictureCollection"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="media">曲情報。</param>
+        </member>
+        <member name="M:NowPlayingLib.Interop.MetadataPictureCollection.#ctor(Microsoft.MediaPlayer.Interop.IWMPMedia3)">
+            <summary>
+            <see cref="T:NowPlayingLib.Interop.MetadataPictureCollection"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="media">曲情報。</param>
+        </member>
+        <member name="M:NowPlayingLib.Interop.MetadataPictureCollection.GetEnumerator">
+            <summary>
+            コレクションを反復処理する列挙子を返します。
+            </summary>
+            <returns>コレクションを反復処理するために使用できる <see cref="T:System.Collections.Generic.IEnumerator`1"/>。</returns>
+        </member>
+        <member name="P:NowPlayingLib.Interop.MetadataPictureCollection.Item(System.Int32)">
+            <summary>
+            読み取り専用のリスト内の指定したインデックスにある要素を取得します。
+            </summary>
+            <param name="index">取得する要素の 0 から始まるインデックス。</param>
+            <returns>読み取り専用のリスト内の指定したインデックスにある要素。</returns>
+        </member>
+        <member name="T:NowPlayingLib.Interop.IWMPRemoteMediaServices">
+            <summary>
+            The IWMPRemoteMediaServices interface includes methods that provide services to Windows Media Player from a program that hosts the Player control.
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IWMPRemoteMediaServices.GetServiceType">
+            <summary>
+            Called by Windows Media Player to determine whether a host program wants to run its embedded control remotely.
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IWMPRemoteMediaServices.GetApplicationName">
+            <summary>
+            Called by Windows Media Player to retrieve the name of the program that is hosting the remoted control.
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IWMPRemoteMediaServices.GetScriptableObject(System.String@)">
+            <summary>
+            Called by Windows Media Player to retrieve a name and interface pointer for an object that can be called from the script code within a skin.
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Interop.IWMPRemoteMediaServices.GetCustomUIMode">
+            <summary>
+            Called by Windows Media Player to retrieve the location of a skin file to apply to the Player control.
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.Interop.MediaServiceProvider">
+            <summary>
+            Windows Media Player の <see cref="T:NowPlayingLib.Interop.IWMPRemoteMediaServices"/> インターフェイスを実装します。
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.Interop.OLECLOSE">
+            <summary>
+            Indicates whether an object should be saved before closing.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.OLECLOSE.SAVEIFDIRTY">
+            <summary>
+            The object should be saved if it is dirty.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.OLECLOSE.NOSAVE">
+            <summary>
+            The object should not be saved, even if it is dirty. This flag is typically used when an object is being deleted.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Interop.OLECLOSE.PROMPTSAVE">
+            <summary>
+            <para>If the object is dirty, the IOleObject::Close implementation should display a dialog box to let the end user determine whether to save the object.</para> 
+            <para>However, if the object is in the running state but its user interface is invisible, the end user should not be prompted, and the close should be handled as if OLECLOSE_SAVEIFDIRTY had been specified.</para>
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.Interop.RemoteHost">
+            <summary>
+            Windows Media Player をホストします。
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.iTunes">
+            <summary>
+            iTunes の機能を提供します。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.iTunes.ProcessName">
+            <summary>
+            iTunes が使用するプロセス名。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.iTunes.Player">
+            <summary>
+            iTunes の <see cref="T:iTunesLib.iTunesApp"/> への COM ラッパーを取得します。
+            </summary>
+            <exception cref="T:System.TypeInitializationException"/>
+        </member>
+        <member name="M:NowPlayingLib.iTunes.#ctor">
+            <summary>
+            <see cref="T:NowPlayingLib.iTunes"/> の新しいインスタンスを作成し、iTunes を初期化します。
+            </summary>
+            <exception cref="T:System.TypeInitializationException"/>
+        </member>
+        <member name="M:NowPlayingLib.iTunes.OnCurrentMediaChanged(System.Object)">
+            <summary>
+            <see cref="E:NowPlayingLib.iTunes.CurrentMediaChanged"/> イベントを発生させます。
+            </summary>
+            <param name="iTrack">再生中の曲。</param>
+        </member>
+        <member name="M:NowPlayingLib.iTunes.OnClosed">
+            <summary>
+            <see cref="E:NowPlayingLib.iTunes.Closed"/> イベントを発生させます。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.iTunes.GetCurrentMedia">
+            <summary>
+            非同期操作として現在 iTunes で再生している曲を取得します。
+            </summary>
+            <returns>
+            <para>非同期操作を表すタスク オブジェクト。</para>
+            <para>タスク オブジェクトの <c>Result</c> プロパティは、<see cref="T:NowPlayingLib.MediaItem"/> を返します。</para>
+            </returns>
+        </member>
+        <member name="M:NowPlayingLib.iTunes.Dispose(System.Boolean)">
+            <summary>
+            iTunes に関連付けられたアンマネージ リソースを解放します。
+            </summary>
+            <param name="disposing">明示的な破棄要求元から呼び出された場合は true に設定します。それ以外の場合は false。</param>
+        </member>
+        <member name="P:NowPlayingLib.iTunes.PlayerState">
+            <summary>
+            iTunes の現在の再生状態を取得します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.iTunes.CurrentPosition">
+            <summary>
+            iTunes の現在の再生位置を取得または設定します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.iTunes.Play">
+            <summary>
+            iTunes で再生を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.iTunes.FastForward">
+            <summary>
+            iTunes で早送りを実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.iTunes.Rewind">
+            <summary>
+            iTunes で巻戻しを実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.iTunes.Stop">
+            <summary>
+            iTunes で停止を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.iTunes.Pause">
+            <summary>
+            iTunes で一時停止を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.iTunes.NextTrack">
+            <summary>
+            iTunes で次の曲の再生を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.iTunes.PreviousTrack">
+            <summary>
+            iTunes で前の曲の再生を実行します。
+            </summary>
+        </member>
+        <member name="E:NowPlayingLib.iTunes.CurrentMediaChanged">
+            <summary>
+            iTunes で再生中の曲が変更されたときに発生します。
+            </summary>
+        </member>
+        <member name="E:NowPlayingLib.iTunes.Closed">
+            <summary>
+            iTunes が終了された時に発生します。
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.LismoPort">
+            <summary>
+            LISMO Port (x-アプリ for LISMO) の機能を提供します。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.LismoPort.ProcessName">
+            <summary>
+            LISMO Port (x-アプリ for LISMO) が使用するプロセス名。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.LismoPort.#ctor">
+            <summary>
+            <see cref="T:NowPlayingLib.LismoPort"/> の新しいインスタンスを初期化します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.LismoPort.Player">
+            <summary>
+            LISMO Port (x-アプリ for LISMO) の <see cref="T:SonyMediaPlayerXLib.ISmpxPlayControls"/> のインスタンスを取得します。
+            </summary>
+            <exception cref="T:System.TypeInitializationException"/>
+        </member>
+        <member name="T:NowPlayingLib.CurrentMediaChangedEventHandler">
+            <summary>
+            音楽プレーヤーで再生中の曲が変更されたときに発生する <see cref="E:NowPlayingLib.INotifyPlayerStateChanged.CurrentMediaChanged"/> イベントを処理するメソッドを表します。
+            </summary>
+            <param name="sender">イベントのソース。</param>
+            <param name="e">イベント データを格納している <see cref="T:NowPlayingLib.CurrentMediaChangedEventArgs"/>。</param>
+        </member>
+        <member name="T:NowPlayingLib.CurrentMediaChangedEventArgs">
+            <summary>
+            <see cref="E:NowPlayingLib.INotifyPlayerStateChanged.CurrentMediaChanged"/> イベントにデータを提供します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.CurrentMediaChangedEventArgs.CurrentMedia">
+            <summary>
+            曲情報を取得します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.CurrentMediaChangedEventArgs.#ctor(NowPlayingLib.MediaItem)">
+            <summary>
+            <see cref="T:NowPlayingLib.CurrentMediaChangedEventArgs"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="currentMedia">曲情報。</param>
+        </member>
+        <member name="T:NowPlayingLib.MediaItem">
+            <summary>
+            音楽プレーヤーが再生しているトラックの情報を格納します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.Album">
+            <summary>
+            トラックのアルバム名を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.AlbumArtist">
+            <summary>
+            トラックのアルバムのアーティスト名を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.Artist">
+            <summary>
+            トラックのアーティスト名を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.Artworks">
+            <summary>
+            トラックのアルバムアートワークのコレクションを取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.BitRate">
+            <summary>
+            トラックのビットレートを取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.Category">
+            <summary>
+            トラックのカテゴリーを取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.Composer">
+            <summary>
+            トラックの作曲者を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.DateAdded">
+            <summary>
+            トラックがライブラリに追加された日時を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.Duration">
+            <summary>
+            トラックの総再生時間を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.Genre">
+            <summary>
+            トラックのジャンルを取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.Kind">
+            <summary>
+            トラックの種類を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.FileInfo">
+            <summary>
+            トラックのファイル情報を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.Lyrics">
+            <summary>
+            トラックの歌詞を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.Name">
+            <summary>
+            トラックの曲名を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.PlayedCount">
+            <summary>
+            トラックの再生回数を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.PlayedDate">
+            <summary>
+            トラックの最終再生日時を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.ReleaseDate">
+            <summary>
+            トラックのリリース日時を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.TrackNumber">
+            <summary>
+            トラックの番号を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaItem.Year">
+            <summary>
+            トラックの発表年を取得または設定します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.MediaItem.ToString">
+            <summary>
+            トラックの情報を表す文字列を返します。
+            </summary>
+            <returns>トラックの基本情報。</returns>
+        </member>
+        <member name="T:NowPlayingLib.MediaPlayerBase">
+            <summary>
+            音楽プレーヤーの基本実装を提供します。これは <c>abstract</c> クラスです。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.#ctor">
+            <summary>
+            <see cref="T:NowPlayingLib.MediaPlayerBase"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.ReadFile(System.String)">
+            <summary>
+            指定したパスからすべてのバイトを非同期に読み取り、新しいストリームに書き込みます。
+            </summary>
+            <param name="path">ファイルの相対パスまたは絶対パス。</param>
+            <returns>
+            <para>非同期操作を表すタスク オブジェクト。</para>
+            <para>タスク オブジェクトの <c>Result</c> プロパティは、<see cref="T:System.IO.Stream"/> を返します。</para>
+            </returns>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.GetFileInfo(System.String)">
+            <summary>
+            指定したパスが null 参照 (Visual Basic では Nothing) または空でない場合、<see cref="T:System.IO.FileInfo"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="path">パス。</param>
+            <returns>作成された <see cref="T:System.IO.FileInfo"/> クラス、または null 参照 (Visual Basic では Nothing)。</returns>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.Finalize">
+            <summary>
+            ガベージ コレクターがオブジェクトを破棄する前に、最後のクリーンアップを実行します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaPlayerBase.IsDisposed">
+            <summary>
+            音楽プレーヤーのリソースが解放されているかどうかを示す値を取得します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.Dispose">
+            <summary>
+            音楽プレーヤーに関連付けられたアンマネージ リソースを解放します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.Dispose(System.Boolean)">
+            <summary>
+            音楽プレーヤーに関連付けられたアンマネージ リソースを解放します。
+            </summary>
+            <param name="disposing">明示的な破棄要求元から呼び出された場合は true に設定します。それ以外の場合は false。</param>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.GetCurrentMedia">
+            <summary>
+            非同期操作として現在音楽プレーヤーで再生している曲を取得します。
+            </summary>
+            <returns>
+            <para>非同期操作を表すタスク オブジェクト。</para>
+            <para>タスク オブジェクトの <c>Result</c> プロパティは、<see cref="T:NowPlayingLib.MediaItem"/> を返します。</para>
+            </returns>
+        </member>
+        <member name="P:NowPlayingLib.MediaPlayerBase.PlayerState">
+            <summary>
+            音楽プレーヤーの現在の再生状態を取得します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.MediaPlayerBase.CurrentPosition">
+            <summary>
+            音楽プレーヤーの現在の再生位置を取得または設定します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.Play">
+            <summary>
+            音楽プレーヤーで再生を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.FastForward">
+            <summary>
+            音楽プレーヤーで早送りを実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.Rewind">
+            <summary>
+            音楽プレーヤーで巻戻しを実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.Stop">
+            <summary>
+            音楽プレーヤーで停止を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.Pause">
+            <summary>
+            音楽プレーヤーで一時停止を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.NextTrack">
+            <summary>
+            音楽プレーヤーで次の曲の再生を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.MediaPlayerBase.PreviousTrack">
+            <summary>
+            音楽プレーヤーで前の曲の再生を実行します。
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.PlayerState">
+            <summary>
+            音楽プレーヤーの再生状態を定義します。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.PlayerState.Unknown">
+            <summary>
+            音楽プレーヤーの再生状態は不明です。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.PlayerState.Stopped">
+            <summary>
+            音楽プレーヤーは停止中です。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.PlayerState.Playing">
+            <summary>
+            音楽プレーヤーは再生中です。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.PlayerState.Paused">
+            <summary>
+            音楽プレーヤーは一時停止中です。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.PlayerState.FastForward">
+            <summary>
+            音楽プレーヤーは早送り中です。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.PlayerState.Rewind">
+            <summary>
+            音楽プレーヤーは巻き戻し中です。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.PlayerState.PlayingReverse">
+            <summary>
+            音楽プレーヤーは逆再生中です。
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.SonyDatabase.MediaManager">
+            <summary>
+            x-アプリのデータベースから曲情報を取得します。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.SonyDatabase.MediaManager.DatabasePath">
+            <summary>
+            データベースのパス。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.SonyDatabase.MediaManager.GetMediaEntry(SonyMediaPlayerXLib.ISmpxMediaDescriptor2)">
+            <summary>
+            メディア オブジェクトを指定して曲情報を取得します。
+            </summary>
+            <param name="media">メディア オブジェクト。</param>
+            <returns>データベースから得られた曲情報。</returns>
+        </member>
+        <member name="T:NowPlayingLib.SonyMediaPlayerX">
+            <summary>
+            SonyMediaPlayerX の基本実装を提供します。これは <c>abstract</c> クラスです。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.SonyMediaPlayerX._player">
+            <summary>
+            SonyMediaPlayerX の <see cref="T:SonyMediaPlayerXLib.ISonyMediaPlayerX2"/> への COM ラッパーの静的フィールド。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.SonyMediaPlayerX.Player">
+            <summary>
+            SonyMediaPlayerX の <see cref="T:SonyMediaPlayerXLib.ISonyMediaPlayerX2"/> への COM ラッパーを取得します。
+            </summary>
+            <exception cref="T:System.TypeInitializationException"/>
+        </member>
+        <member name="P:NowPlayingLib.SonyMediaPlayerX.Controls">
+            <summary>
+            SonyMediaPlayerX の <see cref="T:SonyMediaPlayerXLib.ISmpxPlayControls"/> への COM ラッパーを取得します。
+            </summary>
+            <exception cref="T:System.TypeInitializationException"/>
+        </member>
+        <member name="M:NowPlayingLib.SonyMediaPlayerX.GetCurrentMedia">
+            <summary>
+            非同期操作として現在 SonyMediaPlayerX で再生している曲を取得します。
+            </summary>
+            <returns>
+            <para>非同期操作を表すタスク オブジェクト。</para>
+            <para>タスク オブジェクトの <c>Result</c> プロパティは、<see cref="T:NowPlayingLib.MediaItem"/> を返します。</para>
+            </returns>
+        </member>
+        <member name="M:NowPlayingLib.SonyMediaPlayerX.Dispose(System.Boolean)">
+            <summary>
+            SonyMediaPlayerX に関連付けられたアンマネージ リソースを解放します。
+            </summary>
+            <param name="disposing">明示的な破棄要求元から呼び出された場合は true に設定します。それ以外の場合は false。</param>
+        </member>
+        <member name="P:NowPlayingLib.SonyMediaPlayerX.PlayerState">
+            <summary>
+            SonyMediaPlayerX の現在の再生状態を取得します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.SonyMediaPlayerX.CurrentPosition">
+            <summary>
+            SonyMediaPlayerX の現在の再生位置を取得または設定します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.SonyMediaPlayerX.Play">
+            <summary>
+            SonyMediaPlayerX で再生を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.SonyMediaPlayerX.FastForward">
+            <summary>
+            SonyMediaPlayerX で早送りを実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.SonyMediaPlayerX.Rewind">
+            <summary>
+            SonyMediaPlayerX で巻戻しを実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.SonyMediaPlayerX.Stop">
+            <summary>
+            SonyMediaPlayerX で停止を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.SonyMediaPlayerX.Pause">
+            <summary>
+            SonyMediaPlayerX で一時停止を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.SonyMediaPlayerX.NextTrack">
+            <summary>
+            SonyMediaPlayerX で次の曲の再生を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.SonyMediaPlayerX.PreviousTrack">
+            <summary>
+            SonyMediaPlayerX で前の曲の再生を実行します。
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO">
+            <summary>
+            Contains information about an entry in the Internet cache.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.StructSize">
+            <summary>
+            <para>Size of this structure, in bytes.</para>
+            <para>This value can be used to help determine the version of the cache system.</para>
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.SourceUrlName">
+            <summary>
+            String that contains the URL name.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.LocalFileName">
+            <summary>
+            String that contains the local file name. 
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.CacheEntryType">
+            <summary>
+            A bitmask indicating the type of cache entry and its properties.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.UseCount">
+            <summary>
+            Current number of WinINEet callers using the cache entry.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.HitRate">
+            <summary>
+            Number of times the cache entry was retrieved.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.SizeLow">
+            <summary>
+            Low-order portion of the file size, in bytes.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.SizeHigh">
+            <summary>
+            High-order portion of the file size, in bytes.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.LastModifiedTime">
+            <summary>
+            FILETIME structure that contains the last modified time of this URL.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.ExpireTime">
+            <summary>
+            FILETIME structure that contains the expiration time of this file.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.LastAccessTime">
+            <summary>
+            FILETIME structure that contains the last accessed time.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.LastSyncTime">
+            <summary>
+            FILETIME structure that contains the last time the cache was synchronized.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.HeaderInfo">
+            <summary>
+            Pointer to a buffer that contains the header information.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.HeaderInfoSize">
+            <summary>
+            Size of the lpHeaderInfo buffer.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.FileExtension">
+            <summary>
+            String that contains the file name extension used to retrieve the data as a file.
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO.ExemptDelta">
+            <summary>
+            Exemption time from the last accessed time.
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.Win32.NativeMethods.GetUrlCacheEntryInfo(System.String)">
+            <summary>
+            Retrieves information about a cache entry.
+            </summary>
+            <param name="url">String that contains the name of the cache entry.</param>
+            <exception cref="T:System.IO.FileNotFoundException"/>
+            <exception cref="T:System.ComponentModel.Win32Exception"/>
+            <returns>INTERNET_CACHE_ENTRY_INFO structure that receives information about the cache entry.</returns>
+        </member>
+        <member name="M:NowPlayingLib.Win32.NativeMethods.DeleteUrlCacheEntry(System.String)">
+            <summary>
+            Removes the file associated with the source name from the cache, if the file exists.
+            </summary>
+            <exception cref="T:System.ComponentModel.Win32Exception"/>
+            <param name="url">String that contains the name of the source that corresponds to the cache entry.</param>
+        </member>
+        <member name="T:NowPlayingLib.WindowsMediaPlayer">
+            <summary>
+            Windows Media Player の機能を提供します。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.WindowsMediaPlayer.ProcessName">
+            <summary>
+            Windows Media Player が使用するプロセス名。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.WindowsMediaPlayer.Player">
+            <summary>
+            Windows Media Player の <see cref="T:Microsoft.MediaPlayer.Interop.WindowsMediaPlayer"/> への COM ラッパーを取得します。
+            </summary>
+            <exception cref="T:System.TypeInitializationException"/>
+        </member>
+        <member name="P:NowPlayingLib.WindowsMediaPlayer.Controls">
+            <summary>
+            Windows Media Player の <see cref="T:Microsoft.MediaPlayer.Interop.IWMPControls"/> への COM ラッパーを取得します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.WindowsMediaPlayer.#ctor">
+            <summary>
+            <see cref="T:NowPlayingLib.WindowsMediaPlayer"/> の新しいインスタンスを作成し、Windows Media Player を初期化します。
+            </summary>
+            <exception cref="T:System.TypeInitializationException"/>
+        </member>
+        <member name="M:NowPlayingLib.WindowsMediaPlayer.OnCurrentMediaChanged(System.Int32)">
+            <summary>
+            <see cref="E:NowPlayingLib.WindowsMediaPlayer.CurrentMediaChanged"/> イベントを発生させます。
+            </summary>
+            <param name="NewState">メディアの新しい状態。</param>
+        </member>
+        <member name="M:NowPlayingLib.WindowsMediaPlayer.OnClosed">
+            <summary>
+            <see cref="E:NowPlayingLib.WindowsMediaPlayer.Closed"/> イベントを発生させます。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.WindowsMediaPlayer.GetCurrentMedia">
+            <summary>
+            非同期操作として現在 Windows Media Player で再生している曲を取得します。
+            </summary>
+            <returns>
+            <para>非同期操作を表すタスク オブジェクト。</para>
+            <para>タスク オブジェクトの <c>Result</c> プロパティは、<see cref="T:NowPlayingLib.MediaItem"/> を返します。</para>
+            </returns>
+        </member>
+        <member name="M:NowPlayingLib.WindowsMediaPlayer.Dispose(System.Boolean)">
+            <summary>
+            Windows Media Player に関連付けられたアンマネージ リソースを解放します。
+            </summary>
+            <param name="disposing">明示的な破棄要求元から呼び出された場合は true に設定します。それ以外の場合は false。</param>
+        </member>
+        <member name="P:NowPlayingLib.WindowsMediaPlayer.PlayerState">
+            <summary>
+            Windows Media Player の現在の再生状態を取得します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.WindowsMediaPlayer.CurrentPosition">
+            <summary>
+            Windows Media Player の現在の再生位置を取得または設定します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.WindowsMediaPlayer.Play">
+            <summary>
+            Windows Media Player で再生を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.WindowsMediaPlayer.FastForward">
+            <summary>
+            Windows Media Player で早送りを実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.WindowsMediaPlayer.Rewind">
+            <summary>
+            Windows Media Player で巻戻しを実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.WindowsMediaPlayer.Stop">
+            <summary>
+            Windows Media Player で停止を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.WindowsMediaPlayer.Pause">
+            <summary>
+            Windows Media Player で一時停止を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.WindowsMediaPlayer.NextTrack">
+            <summary>
+            Windows Media Player で次の曲の再生を実行します。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.WindowsMediaPlayer.PreviousTrack">
+            <summary>
+            Windows Media Player で前の曲の再生を実行します。
+            </summary>
+        </member>
+        <member name="E:NowPlayingLib.WindowsMediaPlayer.CurrentMediaChanged">
+            <summary>
+            Windows Media Player で再生中の曲が変更されたときに発生します。
+            </summary>
+        </member>
+        <member name="E:NowPlayingLib.WindowsMediaPlayer.Closed">
+            <summary>
+            Windows Media Player が終了されたときに発生します。
+            </summary>
+        </member>
+        <member name="T:NowPlayingLib.XApplication">
+            <summary>
+            x-アプリ の機能を提供します。
+            </summary>
+        </member>
+        <member name="F:NowPlayingLib.XApplication.ProcessName">
+            <summary>
+            x-アプリ が使用するプロセス名。
+            </summary>
+        </member>
+        <member name="M:NowPlayingLib.XApplication.#ctor">
+            <summary>
+            <see cref="T:NowPlayingLib.XApplication"/> の新しいインスタンスを初期化します。
+            </summary>
+        </member>
+        <member name="P:NowPlayingLib.XApplication.Player">
+            <summary>
+            x-アプリ の <see cref="T:SonyMediaPlayerXLib.ISonyMediaPlayerX2"/> のインスタンスを取得します。
+            </summary>
+            <exception cref="T:System.TypeInitializationException"/>
+        </member>
+    </members>
+</doc>
