@@ -7,7 +7,11 @@ using CoreTweet;
 
 namespace Liberfy
 {
-	class UserInfo : NotificationObject, IObjectInfo<User>, IEquatable<UserInfo>, IEquatable<User>
+	class UserInfo :
+		NotificationObject,
+		IObjectInfo<User>,
+		IEquatable<UserInfo>,
+		IEquatable<User>
 	{
 		public bool IsContributorsEnabled { get; private set; }
 
@@ -105,6 +109,7 @@ namespace Liberfy
 
 		public string WithheldScope { get; private set; }
 
+		public DateTime UpdatedAt { get; private set; }
 
 		public UserInfo(User user) : base()
 		{
@@ -112,6 +117,17 @@ namespace Liberfy
 			CreatedAt = user.CreatedAt;
 
 			Update(user);
+		}
+
+		public UserInfo(Account ac) : base()
+		{
+			Id = ac.Id;
+			Name = ac.Name;
+			ScreenName = ac.ScreenName;
+			IsProtected = ac.IsProtected;
+			ProfileImageUrl = ac.ProfileImageUrl;
+
+			UpdatedAt = DateTime.Now;
 		}
 
 		public void Update(User item)
@@ -162,6 +178,8 @@ namespace Liberfy
 			IsVerified = item.IsVerified;
 			WithheldInCountries = item.WithheldInCountries;
 			WithheldScope = item.WithheldScope;
+
+			UpdatedAt = DateTime.Now;
 
 			RaisePropertyChanged("");
 		}

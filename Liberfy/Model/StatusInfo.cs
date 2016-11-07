@@ -4,106 +4,128 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Liberfy.DataStore;
 
 namespace Liberfy
 {
-	class StatusInfo : NotificationObject, IObjectInfo<Status>, IEquatable<StatusInfo>, IEquatable<Status>
+	class StatusInfo :
+		NotificationObject,
+		IObjectInfo<Status>,
+		IEquatable<StatusInfo>,
+		IEquatable<Status>
 	{
-		public long Id { get; private set; }
+		public long Id { get; }
 
-		public Contributors[] Contributors { get; private set; }
+		public Contributors[] Contributors { get; }
 
-		public Coordinates Coordinates { get; private set; }
+		public Coordinates Coordinates { get; }
 
-		public DateTimeOffset CreatedAt { get; private set; }
+		public DateTimeOffset CreatedAt { get; }
 
-		public int[] DisplayTextRange { get; private set; }
+		public int[] DisplayTextRange { get; }
 
-		public Entities Entities { get; private set; }
+		public Entities Entities { get; }
 
-		public Entities ExtendedEntities { get; private set; }
+		public Entities ExtendedEntities { get; }
 
-		public CompatExtendedTweet ExtendedTweet { get; private set; }
+		public CompatExtendedTweet ExtendedTweet { get; }
 
-		public int FavoriteCount { get; private set; }
+		public FilterLevel FilterLevel { get; }
 
-		public FilterLevel FilterLevel { get; private set; }
+		public string FullText { get; }
 
-		public string FullText { get; private set; }
+		public string InReplyToScreenName { get; }
 
-		public string InReplyToScreenName { get; private set; }
+		public long InReplyToStatusId { get; }
 
-		public long InReplyToStatusId { get; private set; }
+		public long InReplyToUserId { get; }
 
-		public long InReplyToUserId { get; private set; }
+		public bool IsQuotedStatus { get; }
 
-		public bool IsQuotedStatus { get; private set; }
+		public string Language { get; }
 
-		public string Language { get; private set; }
+		public Place Place { get; }
 
-		public Place Place { get; private set; }
+		public bool PossiblySensitive { get; }
 
-		public bool PossiblySensitive { get; private set; }
+		public bool PossiblySensitiveAppealable { get; }
 
-		public bool PossiblySensitiveAppealable { get; private set; }
+		public long QuotedStatusId { get; }
 
-		public long QuotedStatusId { get; private set; }
+		public StatusInfo QuotedStatus { get; }
 
-		public Status QuotedStatus { get; private set; }
+		public Dictionary<string, object> Scopes { get; }
 
-		public Dictionary<string, object> Scopes { get; private set; }
+		public string Source { get; }
 
-		public int RetweetCount { get; private set; }
+		public string Text { get; }
 
-		public Status RetweetedStatus { get; private set; }
+		public UserInfo User { get; }
 
-		public string Source { get; private set; }
+		public bool WithheldCopyright { get; }
 
-		public string Text { get; private set; }
+		public string WithheldInCountries { get; }
 
-		public User User { get; private set; }
+		public string WithheldScope { get; }
 
-		public bool WithheldCopyright { get; private set; }
-
-		public string WithheldInCountries { get; private set; }
-
-		public string WithheldScope { get; private set; }
-
-
-		public StatusInfo(Status item)
+		private int _favoriteCount;
+		public int FavoriteCount
 		{
-			Id = item.Id;
-			Contributors = item.Contributors;
-			Coordinates = item.Coordinates;
-			CreatedAt = item.CreatedAt;
-			DisplayTextRange = item.DisplayTextRange;
-			Entities = item.Entities;
-			ExtendedEntities = item.ExtendedEntities;
-			ExtendedTweet = item.ExtendedTweet;
-			FilterLevel = item.FilterLevel ?? FilterLevel.None;
-			FullText = item.FullText;
-			InReplyToScreenName = item.InReplyToScreenName;
-			InReplyToStatusId = item.InReplyToStatusId ?? -1;
-			InReplyToUserId = item.InReplyToUserId ?? -1;
-			IsQuotedStatus = item.IsQuotedStatus ?? false;
-			Language = item.Language;
-			Place = item.Place;
-			PossiblySensitive = item.PossiblySensitive ?? PossiblySensitive;
-			PossiblySensitiveAppealable = item.PossiblySensitiveAppealable ?? PossiblySensitiveAppealable;
-			QuotedStatusId = item.QuotedStatusId ?? -1;
-			QuotedStatus = item.QuotedStatus;
-			Scopes = item.Scopes;
-			Source = item.Source;
-			Text = item.Text;
-			User = item.User;
-			WithheldCopyright = item.WithheldCopyright ?? WithheldCopyright;
-			WithheldInCountries = item.WithheldInCountries;
-			WithheldScope = item.WithheldScope;
-			RetweetedStatus = item.RetweetedStatus;
+			get { return _favoriteCount; }
+			set { SetProperty(ref _favoriteCount, value); }
+		}
+
+		private int _retweetCount;
+		public int RetweetCount
+		{
+			get { return _retweetCount; }
+			set { SetProperty(ref _retweetCount, value); }
+		}
+
+
+		public StatusInfo(Status status)
+		{
+			if(status.RetweetedStatus != null)
+			{
+				throw new ArgumentException("StatusInfo はリツート情報を保持しません");
+			}
+
+			Id = status.Id;
+			Contributors = status.Contributors;
+			Coordinates = status.Coordinates;
+			CreatedAt = status.CreatedAt;
+			DisplayTextRange = status.DisplayTextRange;
+			Entities = status.Entities;
+			ExtendedEntities = status.ExtendedEntities;
+			ExtendedTweet = status.ExtendedTweet;
+			FilterLevel = status.FilterLevel ?? FilterLevel.None;
+			FullText = status.FullText;
+			InReplyToScreenName = status.InReplyToScreenName;
+			InReplyToStatusId = status.InReplyToStatusId ?? -1;
+			InReplyToUserId = status.InReplyToUserId ?? -1;
+			IsQuotedStatus = status.IsQuotedStatus ?? false;
+			Language = status.Language;
+			Place = status.Place;
+			PossiblySensitive = status.PossiblySensitive ?? PossiblySensitive;
+			PossiblySensitiveAppealable = status.PossiblySensitiveAppealable ?? PossiblySensitiveAppealable;
+			QuotedStatusId = status.QuotedStatusId ?? -1;
+			QuotedStatus = StatusAddOrUpdate(status.QuotedStatus);
+			Scopes = status.Scopes;
+			Source = status.Source;
+			Text = status.Text;
+			User = UserAddOrUpdate(status.User);
+			WithheldCopyright = status.WithheldCopyright ?? WithheldCopyright;
+			WithheldInCountries = status.WithheldInCountries;
+			WithheldScope = status.WithheldScope;
 		}
 
 		public void Update(Status item)
 		{
+			if((item.RetweetedStatus??item).Id != Id)
+			{
+				throw new ArgumentException();
+			}
+
 			FavoriteCount = item.FavoriteCount ?? FavoriteCount;
 			RetweetCount = item.RetweetCount ?? RetweetCount;
 		}

@@ -60,6 +60,10 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Twitter.Text, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Twitter.Text.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -70,9 +74,15 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Component\FluidCollection.cs" />
+    <Compile Include="Component\IdBaseCollection.cs" />
     <Compile Include="Component\NotifyIcon.cs" />
     <Compile Include="DataStore.cs" />
+    <Compile Include="Component\DictionaryEx.cs" />
     <Compile Include="Model\IObjectInfo.cs" />
+    <Compile Include="Model\Item\IItem.cs" />
+    <Compile Include="Model\Item\StatusItem.cs" />
+    <Compile Include="Model\MediaEntityInfo.cs" />
+    <Compile Include="Model\Reaction.cs" />
     <Compile Include="Model\Setting\Account.cs" />
     <Compile Include="Model\Setting\UserCollection.cs" />
     <Compile Include="NativeMethods\Functions.cs" />
@@ -80,6 +90,7 @@
     <Compile Include="NativeMethods\Values.cs" />
     <Compile Include="Model\StatusInfo.cs" />
     <Compile Include="Model\UserInfo.cs" />
+    <Compile Include="Timeline.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\SettingWindowViewModel.cs" />
     <Compile Include="View\SettingWindow.xaml.cs">
@@ -139,6 +150,8 @@
   <ItemGroup>
     <Content Include="lib\Newtonsoft.Json.dll" />
     <Content Include="lib\Newtonsoft.Json.pdb" />
+    <Content Include="lib\Twitter.Text.dll" />
+    <Content Include="lib\Twitter.Text.pdb" />
     <Resource Include="lib\Newtonsoft.Json.xml" />
     <Content Include="lib\NowPlayingLib.dll" />
     <Content Include="lib\NowPlayingLib.pdb" />
