@@ -84,6 +84,7 @@
     <Compile Include="Model\MediaEntityInfo.cs" />
     <Compile Include="Model\Reaction.cs" />
     <Compile Include="Model\Setting\Account.cs" />
+    <Compile Include="Model\Setting\Setting.cs" />
     <Compile Include="Model\Setting\UserCollection.cs" />
     <Compile Include="NativeMethods\Functions.cs" />
     <Compile Include="NativeMethods\NativeMethods.cs" />

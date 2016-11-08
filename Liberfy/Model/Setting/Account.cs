@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
+	[Newtonsoft.Json.JsonObject]
 	class Account : NotificationObject
 	{
 		[JsonProperty("Id")]
@@ -17,7 +18,7 @@ namespace Liberfy
 		[JsonProperty("ScreenName")]
 		public string ScreenName
 		{
-			get { return Info?.ScreenName ?? _screenName; }
+			get { return _validUserInfo ? Info.ScreenName : _screenName; }
 			set { _screenName = value; }
 		}
 
@@ -25,7 +26,7 @@ namespace Liberfy
 		[JsonProperty("Name")]
 		public string Name
 		{
-			get { return Info?.Name ?? _name; }
+			get { return _validUserInfo ? Info.Name : _name; }
 			set { _name = value; }
 		}
 
@@ -33,7 +34,7 @@ namespace Liberfy
 		[JsonProperty("ProfileImageUrl")]
 		public string ProfileImageUrl
 		{
-			get { return Info?.ProfileImageUrl ?? _profileImageUrl; }
+			get { return _validUserInfo ? Info.ProfileImageUrl : _profileImageUrl; }
 			set { _profileImageUrl = value; }
 		}
 
@@ -41,7 +42,7 @@ namespace Liberfy
 		[JsonProperty("IsProtected")]
 		public bool IsProtected
 		{
-			get { return Info?.IsProtected ?? _isProtected; }
+			get { return _validUserInfo ? Info.IsProtected : _isProtected; }
 			set { _isProtected = value; }
 		}
 
@@ -54,29 +55,30 @@ namespace Liberfy
 
 		private bool _validUserInfo;
 		private UserInfo _info;
-		public UserInfo Info
-		{
-			get { return _validUserInfo ? _info : (_info ?? (_info = new UserInfo(this))); }
-		}
+		public UserInfo Info => _validUserInfo ? _info : (_info ?? (_info = new UserInfo(this)));
 
-		private HashSet<long>
-			_following,_follower, 
-			_blocking, _muting,
-			_incoming, _outgoing;
 
+		private HashSet<long> _following;
 		public HashSet<long> Following => _following ?? (_following = new HashSet<long>());
 
+		private HashSet<long> _follower;
 		public HashSet<long> Follower => _follower ?? (_follower = new HashSet<long>());
 
+		private HashSet<long> _blocking;
 		public HashSet<long> Blocking => _blocking ?? (_blocking = new HashSet<long>());
 
+		private HashSet<long> _muting;
 		public HashSet<long> Muting => _muting ?? (_muting = new HashSet<long>());
 
+		private HashSet<long> _incoming;
 		public HashSet<long> Incoming => _incoming ?? (_incoming = new HashSet<long>());
 
+		private HashSet<long> _outgoing;
 		public HashSet<long> Outgoing => _outgoing ?? (_outgoing = new HashSet<long>());
 
+
 		public IdBaseCollection<Reaction> Reactions { get; } = new IdBaseCollection<Reaction>();
+
 
 		public Account(Tokens tokens, User user)
 		{
@@ -88,7 +90,10 @@ namespace Liberfy
 		public void SetUser(User user)
 		{
 			Id = user.Id ?? Id;
-			SetProperty(ref _info, DataStore.UserAddOrUpdate(user), nameof(Info));
+
+			_info = DataStore.UserAddOrUpdate(user);
+			RaisePropertyChanged("Info");
+
 			_validUserInfo = true;
 		}
 	}

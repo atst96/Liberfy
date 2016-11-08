@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Liberfy
+﻿namespace Liberfy
 {
-	[Flags]
+	[System.Flags]
 	enum ItemType : int
 	{
 		Status					= 0x001,

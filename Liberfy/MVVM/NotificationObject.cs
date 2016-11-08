@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace Liberfy
 {
-	[Newtonsoft.Json.JsonObject]
 	class NotificationObject : INotifyPropertyChanged
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		protected bool SetProperty<T>(ref T refVal, T value, [CallerMemberName] string propertyName = "")
+		protected bool SetProperty<T>(ref T refVal, T value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
 		{
 			bool eq = Equals(refVal, value);
 

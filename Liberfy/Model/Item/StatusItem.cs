@@ -45,7 +45,7 @@ namespace Liberfy
 
 			Reaction = account.Reactions.GetOrAdd(
 				(status.RetweetedStatus ?? status).Id,
-				Id => new Reaction());
+				id => new Reaction());
 
 			Reaction.IsRetweeted = status.IsRetweeted ?? false;
 			Reaction.IsFavorited = status.IsFavorited ?? false;

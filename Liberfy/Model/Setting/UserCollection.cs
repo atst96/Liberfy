@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
+	[Newtonsoft.Json.JsonObject]
 	class UserCollection : FluidCollection<Account>
 	{
 	}
