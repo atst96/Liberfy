@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using Newtonsoft.Json.Converters;
 using System.Windows;
+using System.IO;
 
 namespace Liberfy
 {
 	[JsonObject]
-	class Setting : NotificationObject
+	internal partial class Setting : NotificationObject
 	{
 		#region
 
@@ -29,7 +30,7 @@ namespace Liberfy
 
 		#endregion
 
-		#region Generic settings
+		#region Generic
 
 		[JsonProperty("CheckUpdate")]
 		public bool _checkUpdate = true;
@@ -271,6 +272,68 @@ namespace Liberfy
 		}
 
 		#endregion
+
+		#region Notification settings
+
+		private const string _defSoundPath = @"%windir%\Media\Windows Notify.wav";
+		private static string @DefaultSoundFile => Environment.ExpandEnvironmentVariables(_defSoundPath);
+
+		[JsonProperty("EnableNotification")]
+		private bool _enableNotification = true;
+		public bool EnableNotification
+		{
+			get { return _enableNotification; }
+			set { SetProperty(ref _enableNotification, value); }
+		}
+
+		[JsonProperty("NotificationSoundFile")]
+		private string _notificationSoundFile;
+		public string NotificationSoundFile
+		{
+			get { return _notificationSoundFile ?? (_notificationSoundFile = DefaultNowPlayingFormat); }
+			set { SetProperty(ref _notificationSoundFile, value); }
+		}
+
+		[JsonProperty("EnableSoundNotification")]
+		private bool _enableSoundNotification;
+		public bool EnableSoundNotification
+		{
+			get { return _enableSoundNotification; }
+			set { SetProperty(ref _enableSoundNotification, value); }
+		}
+
+		[JsonProperty("EnableBalloonNotification")]
+		private bool _enableBalloonNotification;
+		public bool EnableBalloonNotification
+		{
+			get { return _enableBalloonNotification; }
+			set { SetProperty(ref _enableBalloonNotification, value); }
+		}
+
+		#endregion
+
+		#region Mute settings
+
+		[JsonProperty("Mute")]
+		private FluidCollection<Mute> _mute;
+		public FluidCollection<Mute> Mute => _mute
+			?? (_mute = new FluidCollection<Mute>());
+
+		#endregion
+
+		#region Post settings
+
+		[JsonProperty("CloseWindowAfterPostComplated")]
+		public bool CloseWindowAfterPostComplated { get; set; }
+
+		#endregion
+
+		#region Network settings
+
+		[JsonProperty("UseSystemProxy")]
+		public bool UseSystemProxy { get; set; }
+
+		#endregion
 	}
 
 	enum BackgroundType
@@ -283,5 +346,77 @@ namespace Liberfy
 
 		[JsonProperty("picture")]
 		Picture,
+	}
+
+	enum NotifyCode
+	{
+		[JsonProperty("reply")]
+		Reply,
+
+		[JsonProperty("retweet")]
+		Retweet,
+
+		[JsonProperty("direct_message_created")]
+		DirectMessageCreated,
+
+		[JsonProperty("direct_message_deleted")]
+		DirectMessageDeleted,
+
+		[JsonProperty("block")]
+		Block,
+
+		[JsonProperty("unblock")]
+		Unblock,
+
+		[JsonProperty("favorite")]
+		Favorite,
+
+		[JsonProperty("unfavorite")]
+		Unfavorite,
+
+		[JsonProperty("follow")]
+		Follow,
+
+		[JsonProperty("unfollow")]
+		Unfollow,
+
+		[JsonProperty("list_created")]
+		ListCreated,
+
+		[JsonProperty("list_destroyed")]
+		ListDestroyed,
+
+		[JsonProperty("list_updated")]
+		ListUpdated,
+
+		[JsonProperty("list_member_added")]
+		ListMemberAdded,
+
+		[JsonProperty("list_member_removed")]
+		ListMemberRemoved,
+
+		[JsonProperty("list_user_subscribed")]
+		ListUserSubscribed,
+
+		[JsonProperty("list_user_unsubscribed")]
+		ListUserUnsubscribed,
+
+		[JsonProperty("user_update")]
+		UserUpdate,
+
+		[JsonProperty("mute")]
+		Mute,
+
+		[JsonProperty("unmute")]
+		Unmute,
+
+		[JsonProperty("favorited_retweet")]
+		FavoritedRetweet,
+
+		[JsonProperty("retweeted_retweet")]
+		RetweetedRetweet,
+
+		[JsonProperty("quoted_tweet")]
+		QuotedTweet
 	}
 }
