@@ -13,7 +13,7 @@
 		<local:MainWindowViewModel x:Key="ViewModel" />
 	</Window.Resources>
 	<Window.DataContext>
-		<StaticResource ResourceKey="ViewModel" />
+		<local:ViewModelInstance ViewModel="{StaticResource ViewModel}" />
 	</Window.DataContext>
 	<Grid>
 		

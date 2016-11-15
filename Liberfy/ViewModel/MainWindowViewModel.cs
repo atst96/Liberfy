@@ -9,7 +9,7 @@ namespace Liberfy
 	class MainWindowViewModel : ViewModelBase
 	{
 		private bool _initialized;
-		public void Initialize()
+		internal override void OnInitialized()
 		{
 			if (_initialized) return;
 			_initialized = true;

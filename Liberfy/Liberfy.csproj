@@ -87,6 +87,7 @@
     <Compile Include="Model\Setting\Mute.cs" />
     <Compile Include="Model\Setting\Setting.cs" />
     <Compile Include="Model\Setting\UserCollection.cs" />
+    <Compile Include="MVVM\ViewModelInstance.cs" />
     <Compile Include="NativeMethods\Functions.cs" />
     <Compile Include="NativeMethods\NativeMethods.cs" />
     <Compile Include="NativeMethods\Values.cs" />

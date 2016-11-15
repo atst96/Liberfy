@@ -28,7 +28,7 @@ namespace Liberfy
 			mainView = view;
 		}
 
-		private void SetView(Window view)
+		public void RegisterView(Window view)
 		{
 			if (this.view != view)
 			{
@@ -40,6 +40,15 @@ namespace Liberfy
 			if (view != null)
 			{
 				RegisterEvents();
+			}
+		}
+
+		public void UnregisterView(Window view)
+		{
+			if(Equals(this.view, view))
+			{
+				UnregisterEvents();
+				this.view = null;
 			}
 		}
 
@@ -103,27 +112,30 @@ namespace Liberfy
 
 		public void OpenSetting(int? page = null, bool modal = false)
 		{
-			var sw = app.Windows
-				.OfType<SettingWindow>()
-				.SingleOrDefault();
+			var settingWindow = app.Windows
+				.OfType<SettingWindow>().SingleOrDefault();
 
-			if (sw == null)
+			if (settingWindow == null)
 			{
-				sw = new SettingWindow(page)
-				{
-					Owner = app.MainWindow,
-				};
+				var owner = app.MainWindow;
 
-				if (modal) sw.ShowDialog();
-				else sw.Show();
+				settingWindow = new SettingWindow(page);
+
+				if(owner.IsVisible)
+				{
+					settingWindow.Owner = owner;
+				}
+
+				if (modal) settingWindow.ShowDialog();
+				else settingWindow.Show();
 			}
 			else
 			{
 				if (page.HasValue)
-					sw.TabPage = page.Value;
+					settingWindow.TabPage = page.Value;
 
-				if (sw.IsVisible) sw.Activate();
-				else sw.Show();
+				if (settingWindow.IsVisible) settingWindow.Activate();
+				else settingWindow.Show();
 			}
 		}
 
@@ -166,7 +178,7 @@ namespace Liberfy
 				var vm = e.NewValue as ViewModelBase;
 				if (vm != null)
 				{
-					vm.DialogService.SetView(window);
+					vm.DialogService.RegisterView(window);
 				}
 			}
 		}

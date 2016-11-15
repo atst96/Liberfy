@@ -38,6 +38,8 @@ namespace Liberfy
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
+		internal virtual void OnInitialized() { }
+
 		public virtual bool CanClose() => true;
 
 		public virtual void Dispose() { }
