@@ -310,6 +310,71 @@ namespace Liberfy
 			set { SetProperty(ref _enableBalloonNotification, value); }
 		}
 
+		public DictionaryEx<NotifyCode, bool> NotificationEvents { get; } = new DictionaryEx<NotifyCode, bool>();
+
+		[JsonProperty("Notification_Reply")]
+		public bool Notification_Reply
+		{
+			get { return NotificationEvents.GetOrAdd(NotifyCode.Reply, true); }
+			set { NotificationEvents[NotifyCode.Reply] = value; }
+		}
+
+		[JsonProperty("Notification_Favorite")]
+		public bool Notification_Favorite
+		{
+			get { return NotificationEvents.GetOrAdd(NotifyCode.Favorite, true); }
+			set { NotificationEvents[NotifyCode.Favorite] = value; }
+		}
+
+		[JsonProperty("Notification_QuotedTweet")]
+		public bool Notification_QuotedTweet
+		{
+			get { return NotificationEvents.GetOrAdd(NotifyCode.QuotedTweet, true); }
+			set { NotificationEvents[NotifyCode.QuotedTweet] = value; }
+		}
+
+		[JsonProperty("Notification_Retweet")]
+		public bool Notification_Retweet
+		{
+			get { return NotificationEvents.GetOrAdd(NotifyCode.Retweet, true); }
+			set { NotificationEvents[NotifyCode.Retweet] = value; }
+		}
+
+		[JsonProperty("Notification_RetweetedRetweet")]
+		public bool Notification_RetweetedRetweet
+		{
+			get { return NotificationEvents.GetOrAdd(NotifyCode.RetweetedRetweet, true); }
+			set { NotificationEvents[NotifyCode.RetweetedRetweet] = value; }
+		}
+
+		[JsonProperty("Notification_FavoritedRetweet")]
+		public bool Notification_FavoritedRetweet
+		{
+			get { return NotificationEvents.GetOrAdd(NotifyCode.FavoritedRetweet, true); }
+			set { NotificationEvents[NotifyCode.FavoritedRetweet] = value; }
+		}
+
+		[JsonProperty("Notification_ListMemberAdded")]
+		public bool Notification_ListMemberAdded
+		{
+			get { return NotificationEvents.GetOrAdd(NotifyCode.ListMemberAdded, true); }
+			set { NotificationEvents[NotifyCode.ListMemberAdded] = value; }
+		}
+
+		[JsonProperty("Notification_Follow")]
+		public bool Notification_Follow
+		{
+			get { return NotificationEvents.GetOrAdd(NotifyCode.Follow, true); }
+			set { NotificationEvents[NotifyCode.Follow] = value; }
+		}
+
+		[JsonProperty("Notification_DirectMessageReceived")]
+		public bool Notification_DirectMessageReceived
+		{
+			get { return NotificationEvents.GetOrAdd(NotifyCode.DirectMessageCreated, true); }
+			set { NotificationEvents[NotifyCode.DirectMessageCreated] = value; }
+		}
+
 		#endregion
 
 		#region Mute settings

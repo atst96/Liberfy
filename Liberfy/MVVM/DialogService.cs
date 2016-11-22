@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interop;
 
 namespace Liberfy
 {
@@ -13,8 +14,11 @@ namespace Liberfy
 		private Application app = Application.Current;
 
 		private Window view;
+		private IntPtr hWnd;
 		private ViewModelBase viewModel;
 		private static Window mainView;
+		private MessageBox msgBox = new MessageBox();
+
 
 		public DialogService() { }
 
@@ -39,25 +43,30 @@ namespace Liberfy
 
 			if (view != null)
 			{
+				hWnd = new WindowInteropHelper(view).Handle;
+				msgBox.SetWindowHandle(hWnd);
+
 				RegisterEvents();
 			}
 		}
 
 		public void UnregisterView(Window view)
 		{
-			if(Equals(this.view, view))
+			if (Equals(this.view, view))
 			{
 				UnregisterEvents();
+				msgBox.SetWindowHandle(IntPtr.Zero);
 				this.view = null;
 			}
 		}
 
-		private void ViewClosing(object sender, CancelEventArgs e)
+		private void viewLoaded(object sender, RoutedEventArgs e)
 		{
-			e.Cancel = !viewModel?.CanClose() ?? true;
+			hWnd = new WindowInteropHelper(view).Handle;
+			msgBox.SetWindowHandle(hWnd);
 		}
 
-		private void ViewClosed(object sender, EventArgs e)
+		private void viewClosed(object sender, EventArgs e)
 		{
 			UnregisterEvents();
 		}
@@ -66,8 +75,8 @@ namespace Liberfy
 		{
 			if (view != null)
 			{
-				view.Closed += ViewClosed;
-				view.Closing += ViewClosing;
+				view.Loaded += viewLoaded;
+				view.Closed += viewClosed;
 			}
 		}
 
@@ -75,8 +84,8 @@ namespace Liberfy
 		{
 			if (view != null)
 			{
-				view.Closed -= ViewClosed;
-				view.Closing -= ViewClosing;
+				view.Loaded -= viewLoaded;
+				view.Closed -= viewClosed;
 			}
 		}
 
@@ -92,8 +101,7 @@ namespace Liberfy
 			switch (viewState)
 			{
 				case ViewState.Close:
-					if (view.IsVisible)
-						view.Close();
+					view.Close();
 					return;
 
 				case ViewState.Minimize:
@@ -121,7 +129,7 @@ namespace Liberfy
 
 				settingWindow = new SettingWindow(page);
 
-				if(owner.IsVisible)
+				if (owner.IsVisible)
 				{
 					settingWindow.Owner = owner;
 				}
@@ -139,6 +147,10 @@ namespace Liberfy
 			}
 		}
 
+		public MsgBoxResult MessageBox(string text, string caption = null, MsgBoxButtons buttons = 0, MsgBoxIcon icon = 0, MsgBoxFlags flags = 0)
+		{
+			return msgBox.Show(text, caption, buttons, icon, flags);
+		}
 
 		public static DialogService GetViewModel(DependencyObject obj)
 		{
