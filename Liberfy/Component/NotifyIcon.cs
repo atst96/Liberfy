@@ -15,24 +15,15 @@ namespace Liberfy
 		private NativeWindow niNativeWindow;
 		private System.Windows.Forms.NotifyIcon notifyIcon;
 
-		private static Type niType;
-		private static FieldInfo nifiId;
-		private static FieldInfo nifiWindow;
-		static NotifyIcon()
-		{
-			niType = typeof(System.Windows.Forms.NotifyIcon);
-
-			BindingFlags flags = GetField | NonPublic | Instance;
-			nifiId = niType.GetField("id", flags);
-			nifiWindow = niType.GetField("window", flags);
-		}
-
 		public NotifyIcon()
 		{
 			notifyIcon = new System.Windows.Forms.NotifyIcon();
 
-			id = (int)nifiId.GetValue(notifyIcon);
-			niNativeWindow = (NativeWindow)nifiWindow.GetValue(notifyIcon);
+			Type niType = typeof(System.Windows.Forms.NotifyIcon);
+			BindingFlags niFlags = GetField | NonPublic | Instance;
+
+			id = (int)niType.GetField("id", niFlags).GetValue(notifyIcon);
+			niNativeWindow = (NativeWindow)niType.GetField("window", niFlags).GetValue(notifyIcon);
 		}
 
 		public bool Visible

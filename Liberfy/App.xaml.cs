@@ -3,8 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -18,7 +21,11 @@ namespace Liberfy
 		internal static readonly object CommonLockObject = new object();
 
 		internal static AccountCollection Accounts { get; private set; }
-		internal static Setting Setting { get; private set; } 
+		internal static Setting Setting { get; private set; }
+
+		internal static Assembly Assembly { get; } = Assembly.GetExecutingAssembly();
+
+		public static string ApplicationName { get; } = "Liberfy";
 
 		protected override void OnStartup(StartupEventArgs e)
 		{
@@ -29,10 +36,46 @@ namespace Liberfy
 
 		private static bool InitializeSettings()
 		{
-			Setting = OpenSettingFile<Setting>("settings.json");
-			Accounts = OpenSettingFile<AccountCollection>("accounts.json");
+			Setting = OpenSettingFile<Setting>(Defines.SettingFile);
+			Accounts = OpenSettingFile<AccountCollection>(Defines.AccountsFile);
 
 			return false;
+		}
+
+		private static void SaveSettings()
+		{
+			SaveJsonFile(Defines.SettingFile, Setting);
+			SaveJsonFile(Defines.AccountsFile, Accounts);
+		}
+
+		public static void Shutdown(bool saveSettings = true)
+		{
+			if (saveSettings)
+				SaveSettings();
+
+			Current.Shutdown();
+		}
+
+		private static bool SaveJsonFile(string path, object value)
+		{
+			byte[] data = Encoding.UTF8.GetBytes(
+				JsonConvert.SerializeObject(value, Formatting.Indented));
+
+			FileStream fs = null;
+
+			try
+			{
+				fs = File.OpenWrite(path);
+				fs.SetLength(data.Length);
+				fs.Write(data, 0, data.Length);
+
+				return true;
+			}
+			finally
+			{
+				data = null;
+				fs?.Dispose();
+			}
 		}
 
 		private static T OpenJsonFile<T>(string path)
@@ -50,7 +93,7 @@ namespace Liberfy
 			}
 		}
 
-		private static T OpenSettingFile<T>(string path) where T: class
+		private static T OpenSettingFile<T>(string path) where T : class
 		{
 			try
 			{
@@ -63,7 +106,7 @@ namespace Liberfy
 			catch (Exception ex)
 			{
 				MsgBoxResult i;
-				switch(i = MessageBox.Show(IntPtr.Zero,
+				switch (i = MessageBox.Show(IntPtr.Zero,
 					"設定ファイルの読み込みに失敗しました:\n" + ex.Message,
 					"Liberfy", MsgBoxButtons.CancelTryContinue, MsgBoxIcon.Error))
 				{
@@ -82,6 +125,24 @@ namespace Liberfy
 		{
 			// TODO: 仮処理
 			Environment.Exit(0);
+		}
+
+		internal static bool Open(string path)
+		{
+			try
+			{
+				Process.Start(path);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		internal static bool Open(Uri uri)
+		{
+			return Open(uri.AbsoluteUri);
 		}
 	}
 }

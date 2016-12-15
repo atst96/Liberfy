@@ -8,23 +8,29 @@ namespace Liberfy
 {
 	class MainWindowViewModel : ViewModelBase
 	{
-		private bool hasAccounts => App.Accounts.Count > 0;
+		public AccountCollection Accounts { get; } = App.Accounts;
 
 		private bool _initialized;
-		internal async override void OnInitialized()
+		internal override void OnInitialized()
 		{
 			if (_initialized) return;
 			_initialized = true;
 
-			if (!hasAccounts)
+			if (Accounts.Count == 0)
 			{
-				DialogService.OpenSetting(1, true);
-
-				if (!hasAccounts)
+				if(!DialogService.OpenSetting(1, true))
 				{
 					DialogService.Invoke(ViewState.Close);
+					return;
 				}
 			}
+		}
+
+		public override bool CanClose()
+		{
+			App.Shutdown(true);
+
+			return true;
 		}
 	}
 }

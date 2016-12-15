@@ -16,6 +16,7 @@ namespace Liberfy
 	{
 		#region
 
+		[JsonIgnore]
 		public Application app = Application.Current;
 
 		private void SetValue(string key, object value)
@@ -32,37 +33,19 @@ namespace Liberfy
 
 		#region Generic
 
-		[JsonProperty("CheckUpdate")]
-		public bool _checkUpdate = true;
-
-		[JsonProperty("LastUpdateCheck")]
+		private bool _checkUpdate = true;
 		public DateTime LastUpdateChecked { get; set; }
-
-		[JsonProperty("StayingInTaskTray")]
+		public bool MinimizeStartup { get; set; } = true;
 		public bool StayingInTaskTray { get; set; } = false;
-
-		[JsonProperty("AlwaysShowInTaskbar")]
 		public bool AlwaysShowInTaskbar { get; set; } = true;
-
-		[JsonProperty("BackgroundType", ItemConverterType = typeof(StringEnumConverter))]
 		private BackgroundType _backgroundType = BackgroundType.None;
-
-		[JsonProperty("ImageAlignmentX")]
 		private AlignmentX _imageAlignmentX = AlignmentX.Left;
-
-		[JsonProperty("ImageAlignmentY")]
 		private AlignmentY _imageAlignmentY = AlignmentY.Top;
-
-		[JsonProperty("ImageStretch")]
 		private Stretch _imageStretch = Stretch.UniformToFill;
-
-		[JsonProperty("ImageOpacity")]
-		public double _imageOpacity = 1.0d;
-
-		[JsonProperty("ImagePath")]
+		private double _imageOpacity = 1.0d;
 		private string _imagePath = string.Empty;
 
-		[JsonProperty("SuppressShutdown")]
+
 		public bool SupressShutdown { get; set; } = false;
 
 		public bool CheckUpdate
@@ -107,7 +90,6 @@ namespace Liberfy
 			set { SetProperty(ref _imagePath, value); }
 		}
 
-		[JsonProperty("StartupWindowMode")]
 		public uint StartupWindowMode { get; set; } = 0;
 
 		#endregion
@@ -120,22 +102,11 @@ namespace Liberfy
 		public const string DefaultUIFont = "Meiryo";
 		public const double DefaultUIFontSize = 12;
 
-		[JsonProperty("TimelineUseUIFont")]
-		public bool _timelineUseUIFont = true;
-
-		[JsonProperty("TimelineFont")]
+		private bool _timelineUseUIFont = true;
 		private string _timelineFont = DefaultTimelineFont;
-
-		[JsonProperty("TimelineFontSize")]
 		private double _timelineFontSize = DefaultTimelineFontSize;
-
-		[JsonProperty("UIUseSystemFont")]
-		public bool _uiUseSystemFont;
-
-		[JsonProperty("UIFont")]
+		private bool _uiUseSystemFont;
 		private string _uiFont = DefaultUIFont;
-
-		[JsonProperty("UIFontSize")]
 		private double _uiFontSize = DefaultUIFontSize;
 
 		public bool TimelineUseUIFont
@@ -200,7 +171,6 @@ namespace Liberfy
 			set { SetProperty(ref _uiFontSize, value); }
 		}
 
-		[JsonProperty("ShowImageInTimeline")]
 		public bool ShowImageInTimeline
 		{
 			get { return GetValue<bool>("ShowImageInTimeline"); }
@@ -211,7 +181,6 @@ namespace Liberfy
 			}
 		}
 
-		[JsonProperty("ShowImageInDetail")]
 		public bool ShowImageInDetail
 		{
 			get { return GetValue<bool>("ShowImageInDetail"); }
@@ -222,14 +191,12 @@ namespace Liberfy
 			}
 		}
 
-		[JsonProperty("RelativeTime")]
 		public bool RelativeTime
 		{
 			get { return GetValue<bool>("RelativeTime"); }
 			set { SetValue("RelativeTime", value); }
 		}
 
-		[JsonProperty("TextFormattingMode")]
 		public TextFormattingMode TextFormattingMode
 		{
 			get { return GetValue<TextFormattingMode>("TextFormattingMode"); }
@@ -240,13 +207,10 @@ namespace Liberfy
 			}
 		}
 
-		[JsonProperty("EnableTimelineAnimation")]
 		public bool EnableTimelineAnimation { get; set; } = true;
 
-		[JsonProperty("DisableAnimationAtTerminalConnection")]
 		public bool DisableAnimationAtTerminalConnection { get; set; } = false;
 
-		[JsonProperty("ShowActionButtonInTimeline")]
 		public bool ShowActionButtonInTimeline
 		{
 			get { return GetValue<bool>("ShowActionButtonInTimeline"); }
@@ -259,10 +223,8 @@ namespace Liberfy
 
 		const string DefaultNowPlayingFormat = @"%artist% - %name% / %album% #NowPlaying";
 
-		[JsonProperty("NowPlayingFormat")]
 		public string NowPlayingFormat { get; set; }
 
-		[JsonProperty("InsertThumbnailAtNowPlaying")]
 		private bool _insertThumbnailAtNowPlaying;
 
 		public bool InsertThumbnailAtNowPlayying
@@ -278,7 +240,6 @@ namespace Liberfy
 		private const string _defSoundPath = @"%windir%\Media\Windows Notify.wav";
 		private static string @DefaultSoundFile => Environment.ExpandEnvironmentVariables(_defSoundPath);
 
-		[JsonProperty("EnableNotification")]
 		private bool _enableNotification = true;
 		public bool EnableNotification
 		{
@@ -286,7 +247,6 @@ namespace Liberfy
 			set { SetProperty(ref _enableNotification, value); }
 		}
 
-		[JsonProperty("NotificationSoundFile")]
 		private string _notificationSoundFile;
 		public string NotificationSoundFile
 		{
@@ -294,7 +254,6 @@ namespace Liberfy
 			set { SetProperty(ref _notificationSoundFile, value); }
 		}
 
-		[JsonProperty("EnableSoundNotification")]
 		private bool _enableSoundNotification;
 		public bool EnableSoundNotification
 		{
@@ -302,7 +261,6 @@ namespace Liberfy
 			set { SetProperty(ref _enableSoundNotification, value); }
 		}
 
-		[JsonProperty("EnableBalloonNotification")]
 		private bool _enableBalloonNotification;
 		public bool EnableBalloonNotification
 		{
@@ -310,65 +268,57 @@ namespace Liberfy
 			set { SetProperty(ref _enableBalloonNotification, value); }
 		}
 
+		[JsonIgnore]
 		public DictionaryEx<NotifyCode, bool> NotificationEvents { get; } = new DictionaryEx<NotifyCode, bool>();
 
-		[JsonProperty("Notification_Reply")]
 		public bool Notification_Reply
 		{
 			get { return NotificationEvents.GetOrAdd(NotifyCode.Reply, true); }
 			set { NotificationEvents[NotifyCode.Reply] = value; }
 		}
 
-		[JsonProperty("Notification_Favorite")]
 		public bool Notification_Favorite
 		{
 			get { return NotificationEvents.GetOrAdd(NotifyCode.Favorite, true); }
 			set { NotificationEvents[NotifyCode.Favorite] = value; }
 		}
 
-		[JsonProperty("Notification_QuotedTweet")]
 		public bool Notification_QuotedTweet
 		{
 			get { return NotificationEvents.GetOrAdd(NotifyCode.QuotedTweet, true); }
 			set { NotificationEvents[NotifyCode.QuotedTweet] = value; }
 		}
 
-		[JsonProperty("Notification_Retweet")]
 		public bool Notification_Retweet
 		{
 			get { return NotificationEvents.GetOrAdd(NotifyCode.Retweet, true); }
 			set { NotificationEvents[NotifyCode.Retweet] = value; }
 		}
 
-		[JsonProperty("Notification_RetweetedRetweet")]
 		public bool Notification_RetweetedRetweet
 		{
 			get { return NotificationEvents.GetOrAdd(NotifyCode.RetweetedRetweet, true); }
 			set { NotificationEvents[NotifyCode.RetweetedRetweet] = value; }
 		}
 
-		[JsonProperty("Notification_FavoritedRetweet")]
 		public bool Notification_FavoritedRetweet
 		{
 			get { return NotificationEvents.GetOrAdd(NotifyCode.FavoritedRetweet, true); }
 			set { NotificationEvents[NotifyCode.FavoritedRetweet] = value; }
 		}
 
-		[JsonProperty("Notification_ListMemberAdded")]
 		public bool Notification_ListMemberAdded
 		{
 			get { return NotificationEvents.GetOrAdd(NotifyCode.ListMemberAdded, true); }
 			set { NotificationEvents[NotifyCode.ListMemberAdded] = value; }
 		}
 
-		[JsonProperty("Notification_Follow")]
 		public bool Notification_Follow
 		{
 			get { return NotificationEvents.GetOrAdd(NotifyCode.Follow, true); }
 			set { NotificationEvents[NotifyCode.Follow] = value; }
 		}
 
-		[JsonProperty("Notification_DirectMessageReceived")]
 		public bool Notification_DirectMessageReceived
 		{
 			get { return NotificationEvents.GetOrAdd(NotifyCode.DirectMessageCreated, true); }
@@ -379,23 +329,19 @@ namespace Liberfy
 
 		#region Mute settings
 
-		[JsonProperty("Mute")]
 		private FluidCollection<Mute> _mute;
-		public FluidCollection<Mute> Mute => _mute
-			?? (_mute = new FluidCollection<Mute>());
+		public FluidCollection<Mute> Mute => _mute ?? (_mute = new FluidCollection<Mute>());
 
 		#endregion
 
 		#region Post settings
 
-		[JsonProperty("CloseWindowAfterPostComplated")]
 		public bool CloseWindowAfterPostComplated { get; set; }
 
 		#endregion
 
 		#region Network settings
 
-		[JsonProperty("UseSystemProxy")]
 		public bool UseSystemProxy { get; set; }
 
 		#endregion

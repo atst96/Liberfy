@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	[Newtonsoft.Json.JsonArray]
-	class AccountCollection : FluidCollection<Account>
+	static class Regexes
 	{
 	}
 }

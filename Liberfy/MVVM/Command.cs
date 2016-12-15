@@ -10,21 +10,13 @@ namespace Liberfy
 	public abstract class Command : ICommand, IDisposable
 	{
 		readonly bool hookRequerySuggested;
-		WeakCollection<EventHandler> _events;
+		WeakCollection<EventHandler> _events = new WeakCollection<EventHandler>();
 
-		public Command()
-		{
-			CanExecuteChanged += dummyCanExecuteChanged;
-		}
+		public Command() { }
 
 		public Command(bool hookRequerySuggested) : this()
 		{
 			this.hookRequerySuggested = hookRequerySuggested;
-
-			if(hookRequerySuggested)
-			{
-				_events = new WeakCollection<EventHandler>();
-			}
 		}
 
 		private EventHandler dummyCanExecuteChanged;
@@ -33,17 +25,21 @@ namespace Liberfy
 		{
 			add
 			{
-				if(hookRequerySuggested)
+				dummyCanExecuteChanged += value;
+				if (hookRequerySuggested)
 				{
-					_events.Add(value);
+					CommandManager.RequerySuggested += value;
 				}
+				_events.Add(value);
 			}
 			remove
 			{
-				if(hookRequerySuggested)
+				dummyCanExecuteChanged -= value;
+				if (hookRequerySuggested)
 				{
-					_events.Remove(value);
+					CommandManager.RequerySuggested -= value;
 				}
+				_events.Remove(value);
 			}
 		}
 
@@ -53,7 +49,7 @@ namespace Liberfy
 
 		public void RaiseCanExecute()
 		{
-			dummyCanExecuteChanged.Invoke(this, EventArgs.Empty);
+			dummyCanExecuteChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		public virtual void Dispose()
@@ -65,21 +61,13 @@ namespace Liberfy
 	public abstract class Command<T> : ICommand, IDisposable
 	{
 		readonly bool hookRequerySuggested;
-		WeakCollection<EventHandler> _events;
+		WeakCollection<EventHandler> _events = new WeakCollection<EventHandler>();
 
-		public Command()
-		{
-			CanExecuteChanged += dummyCanExecuteChanged;
-		}
+		public Command() { }
 
 		public Command(bool hookRequerySuggested) : this()
 		{
 			this.hookRequerySuggested = hookRequerySuggested;
-
-			if (hookRequerySuggested)
-			{
-				_events = new WeakCollection<EventHandler>();
-			}
 		}
 
 		private EventHandler dummyCanExecuteChanged;
@@ -88,17 +76,21 @@ namespace Liberfy
 		{
 			add
 			{
+				dummyCanExecuteChanged += value;
 				if (hookRequerySuggested)
 				{
-					_events.Add(value);
+					CommandManager.RequerySuggested += value;
 				}
+				_events.Add(value);
 			}
 			remove
 			{
+				dummyCanExecuteChanged -= value;
 				if (hookRequerySuggested)
 				{
-					_events.Remove(value);
+					CommandManager.RequerySuggested -= value;
 				}
+				_events.Remove(value);
 			}
 		}
 

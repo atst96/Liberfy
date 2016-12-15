@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Liberfy
 {
@@ -7,24 +8,39 @@ namespace Liberfy
 	{
 		public ViewModelBase() : base()
 		{
-			DialogService = new Liberfy.DialogService(this);
+			DialogService = new DialogService(this);
 		}
 
 		public DialogService DialogService { get; }
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		protected bool SetProperty<T>(ref T refVal, T value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+		protected bool SetProperty<T>(ref T refVal, T value, [CallerMemberName] string propertyName = "")
 		{
-			bool eq = Equals(refVal, value);
-
-			if (eq)
+			if (!Equals(refVal, value))
 			{
 				refVal = value;
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-			}
 
-			return eq;
+				return true;
+			}
+			else
+				return false;
+		}
+
+		protected bool SetProperty<T>(ref T refVal, T value, Command command, [CallerMemberName] string propertyName = "")
+		{
+			if (!Equals(refVal, value))
+			{
+				refVal = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+				command?.RaiseCanExecute();
+
+				return true;
+			}
+			else
+				return false;
 		}
 
 		protected void SetPropertyForce<T>(ref T refValue, T value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")

@@ -8,13 +8,18 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	[Newtonsoft.Json.JsonObject]
+	[JsonObject]
 	class Account : NotificationObject
 	{
+		private string _screenName;
+		private string _name;
+		private string _profileImageUrl;
+		private bool _isProtected;
+
+
 		[JsonProperty("Id")]
 		public long Id { get; private set; }
 
-		private string _screenName;
 		[JsonProperty("ScreenName")]
 		public string ScreenName
 		{
@@ -22,7 +27,6 @@ namespace Liberfy
 			set { _screenName = value; }
 		}
 
-		private string _name;
 		[JsonProperty("Name")]
 		public string Name
 		{
@@ -30,7 +34,6 @@ namespace Liberfy
 			set { _name = value; }
 		}
 
-		private string _profileImageUrl;
 		[JsonProperty("ProfileImageUrl")]
 		public string ProfileImageUrl
 		{
@@ -38,7 +41,6 @@ namespace Liberfy
 			set { _profileImageUrl = value; }
 		}
 
-		private bool _isProtected;
 		[JsonProperty("IsProtected")]
 		public bool IsProtected
 		{
@@ -46,43 +48,83 @@ namespace Liberfy
 			set { _isProtected = value; }
 		}
 
+		[JsonProperty]
+		public string ConsumerKey { get; set; }
 
-		[JsonProperty("Token")]
-		public Tokens Tokens { get; private set; }
+		[JsonProperty]
+		public string ConsumerSecret { get; set; }
 
-		[JsonProperty("OfficialToken")]
-		public Tokens OfficialTokens { get; private set; }
+		[JsonProperty]
+		public string AccessToen { get; set; }
+
+		[JsonProperty]
+		public string AccessTokenSecret { get; set; }
+
 
 		private bool _validUserInfo;
-		private UserInfo _info;
-		public UserInfo Info => _validUserInfo ? _info : (_info ?? (_info = new UserInfo(this)));
+		private bool _isLoading;
+		[JsonIgnore]
+		public bool IsLoading
+		{
+			get { return _isLoading; }
+			set { SetProperty(ref _isLoading, value); }
+		}
+
+		[JsonIgnore]
+		public UserInfo Info { get; private set; }
 
 
-		private HashSet<long> _following;
-		public HashSet<long> Following => _following ?? (_following = new HashSet<long>());
+		[JsonIgnore]
+		public HashSet<long> Following { get; } = new HashSet<long>();
 
-		private HashSet<long> _follower;
-		public HashSet<long> Follower => _follower ?? (_follower = new HashSet<long>());
+		[JsonIgnore]
+		public HashSet<long> Follower { get; } = new HashSet<long>();
 
-		private HashSet<long> _blocking;
-		public HashSet<long> Blocking => _blocking ?? (_blocking = new HashSet<long>());
+		[JsonIgnore]
+		public HashSet<long> Blocking { get; } = new HashSet<long>();
 
-		private HashSet<long> _muting;
-		public HashSet<long> Muting => _muting ?? (_muting = new HashSet<long>());
+		[JsonIgnore]
+		public HashSet<long> Muting { get; } = new HashSet<long>();
 
-		private HashSet<long> _incoming;
-		public HashSet<long> Incoming => _incoming ?? (_incoming = new HashSet<long>());
+		[JsonIgnore]
+		public HashSet<long> Incoming { get; } = new HashSet<long>();
 
-		private HashSet<long> _outgoing;
-		public HashSet<long> Outgoing => _outgoing ?? (_outgoing = new HashSet<long>());
+		[JsonIgnore]
+		public HashSet<long> Outgoing { get; } = new HashSet<long>();
 
-
+		[JsonIgnore]
 		public IdBaseCollection<Reaction> Reactions { get; } = new IdBaseCollection<Reaction>();
 
 
+		[Obsolete]
+		public Account()
+		{
+			Info = new UserInfo(this);
+		}
+
+		public void SetTokens(Tokens tokens)
+		{
+			ConsumerKey = tokens.ConsumerKey;
+			ConsumerSecret = tokens.ConsumerSecret;
+			AccessToen = tokens.AccessToken;
+			AccessTokenSecret = tokens.AccessTokenSecret;
+		}
+
+		public Account(Tokens tokens)
+		{
+			SetTokens(tokens);
+
+			Id = tokens.UserId;
+			ScreenName = tokens.ScreenName;
+			Name = tokens.ScreenName;
+
+			Info = new UserInfo(this);
+		}
+
 		public Account(Tokens tokens, User user)
 		{
-			Tokens = tokens;
+			SetTokens(tokens);
+			Info = new UserInfo(this);
 
 			SetUser(user);
 		}
@@ -91,8 +133,7 @@ namespace Liberfy
 		{
 			Id = user.Id ?? Id;
 
-			_info = DataStore.UserAddOrUpdate(user);
-			RaisePropertyChanged("Info");
+			Info.Update(user);
 
 			_validUserInfo = true;
 		}

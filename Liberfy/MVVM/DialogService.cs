@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Liberfy.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
+using System.Windows.Shell;
 
 namespace Liberfy
 {
@@ -118,7 +120,7 @@ namespace Liberfy
 			}
 		}
 
-		public void OpenSetting(int? page = null, bool modal = false)
+		public bool OpenSetting(int? page = null, bool modal = false)
 		{
 			var settingWindow = app.Windows
 				.OfType<SettingWindow>().SingleOrDefault();
@@ -145,11 +147,23 @@ namespace Liberfy
 				if (settingWindow.IsVisible) settingWindow.Activate();
 				else settingWindow.Show();
 			}
+
+			if(App.Accounts.Count == 0)
+			{
+				App.ForceExit();
+				return false;
+			}
+			else return true;
+		}
+
+		public MsgBoxResult MessageBox(string text, MsgBoxButtons buttons = 0, MsgBoxIcon icon = 0, MsgBoxFlags flags = 0)
+		{
+			return msgBox.Show(text, App.ApplicationName, buttons, icon, flags);
 		}
 
 		public MsgBoxResult MessageBox(string text, string caption = null, MsgBoxButtons buttons = 0, MsgBoxIcon icon = 0, MsgBoxFlags flags = 0)
 		{
-			return msgBox.Show(text, caption, buttons, icon, flags);
+			return msgBox.Show(text, caption ?? App.ApplicationName, buttons, icon, flags);
 		}
 
 		public static DialogService GetViewModel(DependencyObject obj)
@@ -203,6 +217,67 @@ namespace Liberfy
 				SetMainView((bool)e.NewValue ? window : null);
 			}
 		}
+
+		public void Open(ContentWindowViewModel viewModel)
+		{ 
+			new ContentWindow(viewModel)
+			{
+				Owner = view,
+			}.Show();
+		}
+
+		public void Open(ContentWindowViewModel viewModel, ViewOption option)
+		{
+			new ContentWindow(viewModel, option)
+			{
+				Owner = view,
+			}.Show();
+		}
+
+		public void Open(ContentWindowViewModel viewModel, ViewOption option, string templateKey)
+		{
+			new ContentWindow(viewModel, option, app.TryFindResource(templateKey) as DataTemplate)
+			{
+				Owner = view,
+			}.Show();
+		}
+
+		public bool OpenModal(ContentWindowViewModel content)
+		{
+			return new ContentWindow(content)
+			{
+				Owner = view,
+			}.ShowDialog() ?? false;
+		}
+
+		public bool OpenModal(ContentWindowViewModel viewModel, ViewOption option)
+		{
+			return new ContentWindow(viewModel, option)
+			{
+				Owner = view,
+			}.ShowDialog() ?? false;
+		}
+
+		public bool OpenModal(ContentWindowViewModel viewModel, ViewOption option, string templateKey)
+		{
+			return new ContentWindow(viewModel, option, app.TryFindResource(templateKey) as DataTemplate)
+			{
+				Owner = view,
+			}.ShowDialog() ?? false;
+		}
+	}
+
+	public struct ViewOption
+	{
+		public double? Width { get; set; }
+		public double? Height { get; set; }
+		public ResizeMode? ResizeMode { get; set; }
+		public SizeToContent? SizeToContent { get; set; }
+		public WindowChrome WindowChrome { get; set; }
+		public WindowStyle? Style { get; set; }
+		public WindowState? State { get; set; }
+		public WindowStartupLocation? StartupLocation { get; set; }
+		public bool? ShowInTaskbar { get; set; }
 	}
 
 	public enum ViewState

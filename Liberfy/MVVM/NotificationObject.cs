@@ -8,15 +8,15 @@ namespace Liberfy
 
 		protected bool SetProperty<T>(ref T refVal, T value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
 		{
-			bool eq = Equals(refVal, value);
-
-			if(eq)
+			if (!Equals(refVal, value))
 			{
 				refVal = value;
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-			}
 
-			return eq;
+				return true;
+			}
+			else
+				return false;
 		}
 
 		protected void SetPropertyForce<T>(ref T refValue, T value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")

@@ -9,27 +9,22 @@ namespace Liberfy
 	{
 		public Type InstanceType { get; set; }
 
-		public ViewModelBase ViewModel
-		{
-			get { return _viewModel; }
-			set { _viewModel = value; }
-		}
+		public ViewModelBase ViewModel { get; set; }
 
 		private IProvideValueTarget _provider;
-		private ViewModelBase _viewModel;
 		private Window _view;
 
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
-			if (_viewModel != null)
+			if (ViewModel != null)
 			{
-				InstanceType = _viewModel.GetType();
+				InstanceType = ViewModel.GetType();
 			}
 			if (InstanceType != null)
 			{
 				var _inst = Activator.CreateInstance(InstanceType);
 
-				if ((_viewModel = _inst as ViewModelBase) == null)
+				if ((ViewModel = _inst as ViewModelBase) == null)
 				{
 					throw new NotSupportedException();
 				}
@@ -47,10 +42,10 @@ namespace Liberfy
 			if (_view != null)
 			{
 				registerEvents();
-				_viewModel?.DialogService.RegisterView(_view);
+				ViewModel?.DialogService.RegisterView(_view);
 			}
 
-			return _viewModel;
+			return ViewModel;
 		}
 
 		void registerEvents()
@@ -69,19 +64,19 @@ namespace Liberfy
 
 		void View_Initialized(object sender, EventArgs e)
 		{
-			_viewModel?.OnInitialized();
+			ViewModel?.OnInitialized();
 		}
 
 		void View_Closing(object sender, CancelEventArgs e)
 		{
-			e.Cancel = !_viewModel?.CanClose() ?? false;
+			e.Cancel = !ViewModel?.CanClose() ?? false;
 		}
 
 		void View_Closed(object sender, EventArgs e)
 		{
-			_viewModel?.Dispose();
+			ViewModel?.Dispose();
 
-			_viewModel?.DialogService.UnregisterView(_view);
+			ViewModel?.DialogService.UnregisterView(_view);
 			unregisterEvents();
 		}
 	}

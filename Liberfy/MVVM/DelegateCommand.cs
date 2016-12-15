@@ -11,18 +11,31 @@ namespace Liberfy
 		Action _execute;
 		Predicate<object> _canExecute;
 
-		public DelegateCommand(Action action, bool hookRequerySuggested = false)
+		public DelegateCommand(Action action) : base(false)
+		{
+			_execute = action;
+			_canExecute = DefaultCanExecute;
+		}
+
+		public DelegateCommand(Action action, bool hookRequerySuggested)
 			: base(hookRequerySuggested)
 		{
 			_execute = action;
 			_canExecute = DefaultCanExecute;
 		}
 
+		public DelegateCommand(Action action, Predicate<object> predicate = null)
+			: base(false)
+		{
+			_execute = action;
+			_canExecute = predicate ?? DefaultCanExecute;
+		}
+
 		public DelegateCommand(Action action, Predicate<object> predicate = null, bool hookRequerySuggested = false)
 			: base(hookRequerySuggested)
 		{
 			_execute = action;
-			_canExecute = DefaultCanExecute;
+			_canExecute = predicate ?? DefaultCanExecute;
 		}
 
 		public override bool CanExecute(object parameter)

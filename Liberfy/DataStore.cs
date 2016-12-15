@@ -20,6 +20,7 @@ namespace Liberfy
 		public static IdBaseCollection<StatusInfo> Statuses { get; } = new IdBaseCollection<StatusInfo>();
 		public static IdBaseCollection<UserInfo> Users { get; } = new IdBaseCollection<UserInfo>();
 
+
 		public static UserInfo UserAddOrUpdate(User user)
 		{
 			return user.Id.HasValue

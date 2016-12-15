@@ -8,26 +8,45 @@
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
 	mc:Ignorable="d"
 	ResizeMode="NoResize"
-	Title="設定" Height="389" Width="560">
+	UseLayoutRounding="True"
+	TextOptions.TextFormattingMode="Display"
+	Title="設定" Height="434" Width="730">
 	<Window.Resources>
 		<local:SettingWindowViewModel x:Key="ViewModel" />
-		<sys:Double x:Key="tabItemWidth">140</sys:Double>
+		<sys:Double x:Key="tabItemWidth">120</sys:Double>
 
-		<SolidColorBrush x:Key="TabPanelBackground" Color="#FF00355B" />
+		<Thickness x:Key="ContainerMargin">6</Thickness>
 
+		<Style x:Key="ElementsContainerStyle" TargetType="{x:Type Panel}">
+			<Setter Property="Margin" Value="{StaticResource ContainerMargin}" />
+			<Style.Resources>
+				<Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
+					<Setter Property="Margin" Value="4 2" />
+				</Style>
+
+				<Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
+					<Setter Property="Padding" Value="4 0 4 6" />
+					<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+				</Style>
+			</Style.Resources>
+		</Style>
+		
 		<!--#region TabControl Template-->
 		<Style x:Key="tabItemStyle" TargetType="{x:Type TabItem}">
 			<Setter Property="Padding" Value="14 8" />
 			<Setter Property="Background" Value="{x:Static Brushes.Transparent}" />
-			<Setter Property="Foreground" Value="{x:Static Brushes.White}" />
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type TabItem}">
 						<Border
 							x:Name="border"
 							Padding="{TemplateBinding Padding}"
-							Background="{TemplateBinding Background}">
-							<ContentPresenter ContentSource="Header" />
+							Background="{TemplateBinding Background}"
+							BorderThickness="0 0 0 1"
+							BorderBrush="{DynamicResource SettingTabItemNormalBorderBrush}">
+							<ContentPresenter 
+								ContentSource="Header"
+								TextBlock.Foreground="{DynamicResource SettingTabItemForeground}"/>
 						</Border>
 
 						<ControlTemplate.Triggers>
@@ -38,6 +57,7 @@
 							<Trigger Property="IsSelected" Value="True">
 								<Setter TargetName="border" Property="Background" Value="#dfff" />
 								<Setter Property="Foreground" Value="{DynamicResource TabPanelBackground}" />
+								<Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource SettingTabItemSelectedBorderBrush}" />
 							</Trigger>
 						</ControlTemplate.Triggers>
 					</ControlTemplate>
@@ -47,7 +67,7 @@
 
 		<Style x:Key="tabControlStyle" TargetType="{x:Type TabControl}">
 			<Setter Property="TabStripPlacement" Value="Left" />
-			<Setter Property="Background" Value="#fafafa" />
+			<Setter Property="Background" Value="#fcfcfc" />
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type TabControl}">
@@ -57,17 +77,24 @@
 								<ColumnDefinition />
 							</Grid.ColumnDefinitions>
 
+							<Border
+								BorderThickness="0 0 1 0"
+								Background="{DynamicResource SettingTabPanelBackground}"
+								BorderBrush="{DynamicResource SettingTabItemNormalBorderBrush}" />
+
 							<TabPanel
 								x:Name="HeaderPanel"
 								IsItemsHost="True"
 								KeyboardNavigation.TabIndex="1"
 								Width="{StaticResource tabItemWidth}"
-								Background="{DynamicResource TabPanelBackground}" />
-							
+								Background="{x:Static Brushes.Transparent}" />
+
 							<Border 
 								Grid.Column="1"
 								Background="{TemplateBinding Background}">
-								<ContentPresenter />
+								<ContentPresenter 
+									x:Name="PART_SelectedContentHost" 
+									ContentSource="SelectedContent" />
 							</Border>
 						</Grid>
 					</ControlTemplate>
@@ -78,50 +105,114 @@
 		<!--#endregion-->
 	</Window.Resources>
 	<Window.DataContext>
-		<local:ViewModelInstance ViewModel="{StaticResource ViewModel}"  />
+		<local:ViewModelInstance ViewModel="{StaticResource ViewModel}" />
 	</Window.DataContext>
 	<DockPanel>
-		<Grid
-			DockPanel.Dock="Top" Height="32"
-			Background="{DynamicResource TabPanelBackground}">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="140" />
-				<ColumnDefinition />
-				<ColumnDefinition Width="auto" />
-			</Grid.ColumnDefinitions>
+		<Border 
+			Height="32" DockPanel.Dock="Top"
+			Style="{StaticResource ToolBarBorderStyle}">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="120" />
+					<ColumnDefinition />
+					<ColumnDefinition Width="auto" />
+				</Grid.ColumnDefinitions>
 
-			<Border Grid.Column="1" BorderThickness="1 0 0 0" Grid.ColumnSpan="2" BorderBrush="#1000" Background="#6000" />
-
-			<Border Background="#6000">
 				<TextBlock
 					Text="設定"
 					FontWeight="Bold"
 					VerticalAlignment="Center"
-					HorizontalAlignment="Center"
-					Foreground="{x:Static Brushes.White}" />
-			</Border>
+					HorizontalAlignment="Center" />
 
-			<TextBlock
-				Grid.Column="1"
-				FontWeight="Bold"
-				VerticalAlignment="Center"
-				HorizontalAlignment="Center"
-				Foreground="{x:Static Brushes.White}"
-				Text="{Binding ElementName=tabControl, Path=SelectedItem.Header}" />
-		</Grid>
-		
-		<TabControl x:Name="tabControl" Style="{StaticResource tabControlStyle}">
-			<TabItem Header="全般">
-				<Button />
+				<Border 
+					Width="1"
+					Background="{DynamicResource ToolBarBorderBrush}"
+					HorizontalAlignment="Right"
+					VerticalAlignment="Stretch" />
+
+				<TextBlock
+					Grid.Column="1"
+					FontWeight="Bold"
+					VerticalAlignment="Center"
+					HorizontalAlignment="Center"
+					Text="{Binding ElementName=tabControl, Path=SelectedItem.Header}" />
+
+				<ToolBar
+					Grid.Column="3"
+					ToolBarTray.IsLocked="True"
+					local:ElementBehavior.Visible="{Binding IsAccountPage, Mode=OneWay}">
+					<Button 
+						Content="アカウントの追加"
+						Command="{Binding AddAccountCommand, Mode=OneTime}"/>
+					<Button 
+						Content="削除"
+						Command="{Binding DeleteAccountCommand, Mode=OneTime}"/>
+					<Button 
+						Content="上に移動"
+						Command="{Binding AccountMoveUpCommand, Mode=OneTime}"/>
+					<Button 
+						Content="下に移動"
+						Command="{Binding AccountMoveDownCommand, Mode=OneTime}"/>
+					<Button ToolBar.OverflowMode="Always" Content="拡張認証" />
+				</ToolBar>
+			</Grid>
+		</Border>
+
+		<TabControl 
+			x:Name="tabControl" 
+			Style="{StaticResource tabControlStyle}"
+			SelectedIndex="{Binding TabPageIndex, Mode=TwoWay}">
+			<TabItem Header="基本設定">
+				<StackPanel Style="{StaticResource ElementsContainerStyle}">
+					<CheckBox Content="起動時にアップデートを確認する"
+							  IsChecked="{Binding Setting.CheckUpdate}"/>
+					<Label Content="アプリケーションの起動時にアップデートの確認を行います。" />
+					
+					<CheckBox Content="ログオン時に自動的に起動する"
+							  IsChecked="{Binding AutoStartup}"/>
+					<Label Content="ユーザーアカウントのログオン時にアプリケーションを自動的に起動します" />
+					
+					<CheckBox Content="ウィンドウを最小化して起動する"
+							  IsChecked="{Binding Setting.MinimizeStartup}"/>
+					<Label Content="アプリケーション起動時にウィンドウを最小化します" />
+					
+					<CheckBox Content="タスクトレイに常駐する"
+							  IsChecked="{Binding Setting.StayingInTaskTray}"/>
+					<Label Content="アプリケーションを終了せずに最小化します" />
+					
+					<CheckBox Content="最小化時にバルーンを表示する" />
+					<Label Content="タスクトレイに格納された場合に起動中である旨のメッセージをバルーンで表示します" />
+					
+					<CheckBox Content="最小化時にタスクバーに表示する"
+							  IsChecked="{Binding Setting.AlwaysShowInTaskbar}"/>
+					<Label Content="タスクトレイ常駐時もアプリケーションアイコンをタスクバーに表示します" />
+					
+					<CheckBox Content="ログオフを抑止する"
+							  IsChecked="{Binding Setting.SuppressShutdown}"/>
+					<Label Content="シャットダウンまたはログオフ（セッション終了要求）をキャンセルします" />
+				</StackPanel>
 			</TabItem>
 
 			<TabItem Header="アカウント">
-
+				<ListView
+					BorderThickness="0"
+					Background="Transparent"
+					SelectedIndex="{Binding SelectedAccountIndex}"
+					ItemsSource="{Binding Accounts, Mode=OneTime}"
+					ItemContainerStyle="{StaticResource AccountListItemTemplate}"
+					ItemTemplate="{StaticResource AccountItemTemplate}">
+				</ListView>
 			</TabItem>
 
 			<TabItem Header="通知">
 
 			</TabItem>
+
+			<TabItem Header="タイムライン"></TabItem>
+
+			<TabItem Header="ミュート" />
+
+			<TabItem Header="書式" />
 		</TabControl>
 	</DockPanel>
 </Window>
