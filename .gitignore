@@ -1,0 +1,8 @@
+*.suo
+bin/
+obj/
+.vs/
+/packages/Newtonsoft.Json.9.0.1
+/Liberfy/Liberfy.csproj.user
+/Liberfy.VC.db
+/Liberfy/Defines_secret.cs
