@@ -1,202 +1,175 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Data;
 
 namespace Liberfy
 {
-	public class FluidCollection<T> : ICollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
+	class FluidCollection<T> : ICollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
 	{
-		private IList<T> collection;
-		public event PropertyChangedEventHandler PropertyChanged;
+		public List<T> list;
+
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 
-		public FluidCollection() : this(new List<T>()) { }
-
-		public FluidCollection(List<T> list)
+		public FluidCollection()
 		{
-			BindingOperations.EnableCollectionSynchronization(this, App.CommonLockObject);
-			collection = list ?? new List<T>();
+			list = new List<T>();
 		}
 
-		public FluidCollection(IEnumerable<T> list) : this(new List<T>(list)) { }
-
-		public virtual T this[int index]
+		public FluidCollection(IEnumerable<T> collection)
 		{
-			get { return collection[index]; }
-			set
-			{
-				T oldItem = collection[index];
-				if (!Equals(oldItem, value))
-				{
-					collection[index] = value;
-
-					RaiseCollectionChanged(
-						new NotifyCollectionChangedEventArgs(
-							NotifyCollectionChangedAction.Replace,
-							value, oldItem, index));
-				}
-			}
+			list = collection?.ToList() ?? new List<T>();
 		}
 
-		public int Count => collection.Count;
+		public int Count => list.Count;
 
-		public bool IsReadOnly { get; } = false;
+		public bool IsReadOnly => false;
+
+		public bool Contains(T item)
+		{
+			return list.Contains(item);
+		}
+
+		public void CopyTo(T[] array, int arrayIndex)
+		{
+			list.CopyTo(array, arrayIndex);
+		}
+
+		public IEnumerator<T> GetEnumerator()
+		{
+			return list.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return list.GetEnumerator();
+		}
 
 		public void Add(T item)
 		{
-			collection.Add(item);
+			list.Add(item);
 
 			RaiseCollectionChanged(
 				new NotifyCollectionChangedEventArgs(
-					NotifyCollectionChangedAction.Add,
-					item, collection.Count - 1));
+					NotifyCollectionChangedAction.Add, item, Count - 1));
 
-			RaisePropertyChanged(nameof(Count));
+			RaiseCountPropertyChanged();
 		}
 
-		public void AddRange(IEnumerable<T> items)
+		public void AddRange(IEnumerable<T> collection)
 		{
-			int count = collection.Count;
-
-			foreach (T item in items)
+			foreach (var item in collection)
 			{
-				collection.Add(item);
+				Add(item);
 			}
-
-			RaiseCollectionChanged(
-				new NotifyCollectionChangedEventArgs(
-					NotifyCollectionChangedAction.Reset));
-
-			RaisePropertyChanged(nameof(Count));
 		}
-
-		public void AddRange(params T[] items) => AddRange((IEnumerable<T>)items);
-
-		public void AddFirst(T item) => Insert(0, item);
-
-		public void AddFirst(IEnumerable<T> items, int startIndex) => Insert(startIndex, items);
 
 		public void Insert(int index, T item)
 		{
-			collection.Insert(index, item);
+			list.Insert(index, item);
 
 			RaiseCollectionChanged(
 				new NotifyCollectionChangedEventArgs(
-					NotifyCollectionChangedAction.Add,
-					item, index));
-			RaisePropertyChanged(nameof(Count));
+					NotifyCollectionChangedAction.Add, item, index));
+
+			RaiseCountPropertyChanged();
 		}
 
-		public void Insert(int startIndex, IEnumerable<T> items, bool alwaysNotify = false)
+		public void InsertRange(int index, IEnumerable<T> collection)
 		{
-			if (alwaysNotify)
+			int i = index;
+			foreach (var item in collection)
 			{
-				foreach (var item in items.Reverse())
-				{
-					Insert(startIndex, item);
-				}
-			}
-			else
-			{
-				int index = startIndex;
-				foreach (var item in items)
-				{
-					collection.Insert(index, item);
-					index++;
-				}
-
-				RaiseCollectionChanged(
-					new NotifyCollectionChangedEventArgs(
-						NotifyCollectionChangedAction.Reset));
-
-				RaisePropertyChanged(nameof(Count));
+				Insert(i, item);
+				i++;
 			}
 		}
 
-		public void Clear()
-		{
-			collection.Clear();
-
-			RaiseCollectionChanged(
-				new NotifyCollectionChangedEventArgs(
-					NotifyCollectionChangedAction.Reset));
-			RaisePropertyChanged(nameof(Count));
-		}
-
-		public IEnumerator<T> GetEnumerator() => collection.GetEnumerator();
-
-		IEnumerator IEnumerable.GetEnumerator() => collection.GetEnumerator();
-
-		public void CopyTo(T[] array, int arrayIndex) => collection.CopyTo(array, arrayIndex);
-
-		public bool Contains(T item) => collection.Contains(item);
-
-		public int IndexOf(T item) => collection.IndexOf(item);
 
 		public void Move(int oldIndex, int newIndex)
 		{
-			if (oldIndex < collection.Count)
+			if (HasItems && IsRange(0, Count - 1, oldIndex))
 			{
-				T item = collection.ElementAtOrDefault(oldIndex);
-				collection.Remove(item);
-				collection.Insert(newIndex, item);
+				T item = list[oldIndex];
+				list.RemoveAt(oldIndex);
+				list.Insert(newIndex, item);
 
 				RaiseCollectionChanged(
 					new NotifyCollectionChangedEventArgs(
 						NotifyCollectionChangedAction.Move,
 						item, newIndex, oldIndex));
-				RaisePropertyChanged(nameof(Count));
+
+				RaiseCountPropertyChanged();
 			}
 		}
 
 		public bool Remove(T item)
 		{
-			int index = collection.IndexOf(item);
-			bool removed = collection.Remove(item);
+			int index = list.IndexOf(item);
 
-			if (removed)
+			if (list.Remove(item))
 			{
 				RaiseCollectionChanged(
 					new NotifyCollectionChangedEventArgs(
 						NotifyCollectionChangedAction.Remove, item, index));
-				RaisePropertyChanged(nameof(Count));
-			}
 
-			return removed;
+				return true;
+			}
+			else
+				return false;
 		}
 
 		public void RemoveAt(int index)
 		{
-			int count = collection.Count;
-			T item = collection.ElementAtOrDefault(index);
-			collection.RemoveAt(index);
+			int oldCount = list.Count;
 
-			if (count != collection.Count)
+			if (HasItems && IsRange(0, oldCount - 1, index))
 			{
-				RaiseCollectionChanged(
-					new NotifyCollectionChangedEventArgs(
-						NotifyCollectionChangedAction.Remove, item, index));
-				RaisePropertyChanged(nameof(Count));
+				T item = list[index];
+				list.RemoveAt(index);
+
+				if (oldCount != Count)
+				{
+					RaiseCollectionChanged(
+						new NotifyCollectionChangedEventArgs(
+							NotifyCollectionChangedAction.Remove, item, index));
+
+					RaiseCountPropertyChanged();
+				}
 			}
 		}
 
-
-		protected void RaisePropertyChanged(string name)
+		public void Clear()
 		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+			list.Clear();
+
+			RaiseCollectionChanged(
+				new NotifyCollectionChangedEventArgs(
+					NotifyCollectionChangedAction.Reset));
+
+			RaiseCountPropertyChanged();
 		}
 
-		protected void RaiseCollectionChanged(NotifyCollectionChangedEventArgs e)
+		void RaiseCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
 			CollectionChanged?.Invoke(this, e);
 		}
 
+		void RaiseCountPropertyChanged()
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
+		}
+
+		private bool HasItems => list.Count > 0;
+
+		private static bool IsRange(int min, int max, int value)
+		{
+			return min >= value && max <= value;
+		}
 	}
 }

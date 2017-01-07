@@ -24,7 +24,7 @@ namespace Liberfy
 		private bool _useRegex;
 		private string _text;
 
-		[JsonProperty("Type")]
+		[JsonProperty("type")]
 		public MuteType Type
 		{
 			get { return _type; }
@@ -35,7 +35,7 @@ namespace Liberfy
 			}
 		}
 
-		[JsonProperty("UseRegex")]
+		[JsonProperty("use_regex")]
 		public bool UseRegex
 		{
 			get { return _useRegex; }
@@ -46,7 +46,7 @@ namespace Liberfy
 			}
 		}
 
-		[JsonProperty("Text")]
+		[JsonProperty("text")]
 		public string Text
 		{
 			get { return _text; }

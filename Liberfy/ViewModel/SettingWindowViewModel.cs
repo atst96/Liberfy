@@ -76,6 +76,28 @@ namespace Liberfy
 			}
 		}
 
+		public bool ShowInTaskTray
+		{
+			get { return Setting.ShowInTaskTray; }
+			set
+			{
+				Setting.ShowInTaskTray = value;
+				RaisePropertyChanged(nameof(ShowInTaskTray));
+			}
+		}
+
+		public bool ShowInTaskTrayAtMinimized
+		{
+			get { return Setting.ShowInTaskTrayAtMinimzied; }
+			set
+			{
+				Setting.ShowInTaskTrayAtMinimzied = value;
+				RaisePropertyChanged(nameof(ShowInTaskTrayAtMinimized));
+			}
+		}
+
+
+
 		#region Accounts
 
 		private int _selectedAccountIndex = -1;
@@ -150,24 +172,70 @@ namespace Liberfy
 
 						acc.IsLoading = true;
 
-						try
+						await Task.Run(() =>
 						{
-							acc.SetUser(await tokens.Account.VerifyCredentialsAsync());
-						}
-						catch (Exception ex)
-						{
-							DialogService.MessageBox(
-								$"アカウント情報の取得に失敗しました:\n{ex.Message}",
-								MsgBoxButtons.Ok, MsgBoxIcon.Information);
+							if (!acc.Login())
+							{
+								DialogService.MessageBox(
+									$"アカウント情報の取得に失敗しました:\n",
+									MsgBoxButtons.Ok, MsgBoxIcon.Information);
 
-							Accounts.Remove(acc);
-						}
+								Accounts.Remove(acc);
+							}
+						});
 
 						acc.IsLoading = false;
 					}
 				}
 
 			}));
+
+		#endregion
+
+		#region Pages & Columns
+
+		public FluidCollection<PageItem> Pages { get; } = App.Client.Pages;
+
+		private PageItem _selectedPage;
+		public PageItem SelectedPage
+		{
+			get { return _selectedPage; }
+			set
+			{
+				if (SetProperty(ref _selectedPage, value))
+				{
+					_deletePageCommand?.RaiseCanExecute();
+				}
+			}
+		}
+
+		private string _pageTitle;
+		public string PageTitle
+		{
+			get { return _pageTitle; }
+			set
+			{
+				if (SetProperty(ref _pageTitle, value))
+				{
+					_addPageCommand?.RaiseCanExecute();
+				}
+			}
+		}
+
+		private Command _addPageCommand;
+		public Command AddPageCommand => _addPageCommand
+			?? (_addPageCommand = new DelegateCommand(() =>
+			{
+				Pages.Add(new PageItem { Title = _pageTitle });
+				PageTitle = string.Empty;
+			}, _ => !string.IsNullOrEmpty(_pageTitle)));
+
+		private Command _deletePageCommand;
+		public Command DeletePageCommand => _deletePageCommand
+			?? (_deletePageCommand = new DelegateCommand(() =>
+			{
+				Pages.Remove(_selectedPage);
+			}, _ => _selectedPage != null));
 
 		#endregion
 

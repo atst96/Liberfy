@@ -17,31 +17,31 @@ namespace Liberfy
 		private bool _isProtected;
 
 
-		[JsonProperty("Id")]
+		[JsonProperty]
 		public long Id { get; private set; }
 
-		[JsonProperty("ScreenName")]
+		[JsonProperty]
 		public string ScreenName
 		{
 			get { return _validUserInfo ? Info.ScreenName : _screenName; }
 			set { _screenName = value; }
 		}
 
-		[JsonProperty("Name")]
+		[JsonProperty]
 		public string Name
 		{
 			get { return _validUserInfo ? Info.Name : _name; }
 			set { _name = value; }
 		}
 
-		[JsonProperty("ProfileImageUrl")]
+		[JsonProperty]
 		public string ProfileImageUrl
 		{
 			get { return _validUserInfo ? Info.ProfileImageUrl : _profileImageUrl; }
 			set { _profileImageUrl = value; }
 		}
 
-		[JsonProperty("IsProtected")]
+		[JsonProperty]
 		public bool IsProtected
 		{
 			get { return _validUserInfo ? Info.IsProtected : _isProtected; }
@@ -49,16 +49,16 @@ namespace Liberfy
 		}
 
 		[JsonProperty]
-		public string ConsumerKey { get; set; }
+		public string ConsumerKey { get; private set; }
 
 		[JsonProperty]
-		public string ConsumerSecret { get; set; }
+		public string ConsumerSecret { get; private set; }
 
 		[JsonProperty]
-		public string AccessToen { get; set; }
+		public string AccessToken { get; private set; }
 
 		[JsonProperty]
-		public string AccessTokenSecret { get; set; }
+		public string AccessTokenSecret { get; private set; }
 
 
 		private bool _validUserInfo;
@@ -73,6 +73,17 @@ namespace Liberfy
 		[JsonIgnore]
 		public UserInfo Info { get; private set; }
 
+		private Tokens _tokens;
+		[JsonIgnore]
+		public Tokens Tokens
+		{
+			get
+			{
+				return _tokens ?? (_tokens = Tokens.Create(
+				  ConsumerKey, ConsumerSecret,
+				  AccessToken, AccessTokenSecret));
+			}
+		}
 
 		[JsonIgnore]
 		public HashSet<long> Following { get; } = new HashSet<long>();
@@ -95,19 +106,14 @@ namespace Liberfy
 		[JsonIgnore]
 		public IdBaseCollection<Reaction> Reactions { get; } = new IdBaseCollection<Reaction>();
 
+		private Timeline _timeline;
+		[JsonIgnore]
+		public Timeline Timeline => _timeline ?? (_timeline = new Timeline(this));
 
 		[Obsolete]
 		public Account()
 		{
 			Info = new UserInfo(this);
-		}
-
-		public void SetTokens(Tokens tokens)
-		{
-			ConsumerKey = tokens.ConsumerKey;
-			ConsumerSecret = tokens.ConsumerSecret;
-			AccessToen = tokens.AccessToken;
-			AccessTokenSecret = tokens.AccessTokenSecret;
 		}
 
 		public Account(Tokens tokens)
@@ -123,19 +129,48 @@ namespace Liberfy
 
 		public Account(Tokens tokens, User user)
 		{
+			Id = (long)user.Id;
+
 			SetTokens(tokens);
-			Info = new UserInfo(this);
 
-			SetUser(user);
-		}
-
-		public void SetUser(User user)
-		{
-			Id = user.Id ?? Id;
-
-			Info.Update(user);
-
+			Info = new UserInfo(user);
 			_validUserInfo = true;
 		}
+
+		public void SetTokens(Tokens tokens)
+		{
+			_tokens = new Tokens(tokens);
+
+			ConsumerKey = tokens.ConsumerKey;
+			ConsumerSecret = tokens.ConsumerSecret;
+			AccessToken = tokens.AccessToken;
+			AccessTokenSecret = tokens.AccessTokenSecret;
+		}
+
+		[JsonIgnore]
+		public bool IsLoggedIn { get; set; }
+
+		[JsonIgnore]
+		public bool IsMetadataLoaded { get; set; }
+
+		public bool Login()
+		{
+			if (IsLoggedIn) return true;
+
+			try
+			{
+				var user = Tokens.Account.VerifyCredentials();
+
+				Info.Update(user);
+				Id = user.Id.Value;
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				return false;
+			}
+		}
+
 	}
 }

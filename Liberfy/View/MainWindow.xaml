@@ -16,6 +16,60 @@
 		<local:ViewModelInstance ViewModel="{StaticResource ViewModel}" />
 	</Window.DataContext>
 	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="auto" />
+			<RowDefinition />
+		</Grid.RowDefinitions>
+		
+		<!--#region Toolbar -->
+
+		<Border
+			Height="32" ToolBarTray.IsLocked="True"
+			Style="{StaticResource ToolBarBorderStyle}">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition />
+					<ColumnDefinition Width="auto" />
+				</Grid.ColumnDefinitions>
+
+				<ToolBar
+					ItemsSource="{Binding Client.Pages, Mode=OneTime}">
+					<ToolBar.ItemTemplate>
+						<DataTemplate DataType="{x:Type local:PageItem}">
+							<Button Style="{DynamicResource {x:Static ToolBar.ButtonStyleKey}}">
+								<TextBlock Text="{Binding Title, Mode=OneWay}" />
+							</Button>
+						</DataTemplate>
+					</ToolBar.ItemTemplate>
+				</ToolBar>
+				
+				<ToolBar Grid.Column="1">
+					<Button 
+					Content="設定を開く"
+					Command="{Binding ShowSettingDialog, Mode=OneTime}" />
+				</ToolBar>
+			</Grid>
+		</Border>
+
+		<TabControl
+			Grid.Row="1"
+			Padding="0"
+			Background="Transparent"
+			BorderThickness="0">
+			<TabControl.ItemContainerStyle>
+				<Style TargetType="{x:Type TabItem}">
+					<Setter Property="Visibility" Value="Collapsed" />
+				</Style>
+			</TabControl.ItemContainerStyle>
+
+			<TabControl.ItemTemplate>
+				<DataTemplate DataType="{x:Type local:PageItem}">
+					
+				</DataTemplate>
+			</TabControl.ItemTemplate>
+		</TabControl>
+
+		<!--#endregion-->
 		
 	</Grid>
 </Window>

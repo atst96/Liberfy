@@ -14,6 +14,10 @@
 				<ResourceDictionary Source="Themes\Generic.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 
+			<ItemsPanelTemplate x:Key="HorizontalPanelTemplate">
+				<StackPanel Orientation="Horizontal" />
+			</ItemsPanelTemplate>
+			
 			<!--#region -->
 			<conv:BoolInverter x:Key="BoolInverter" />
 			<!--#endregion-->
@@ -205,7 +209,7 @@
 
 					<Image
 						Margin="0 0 8 0" Width="36" Height="36"
-						Source="{Binding Info.ProfileImageUrl}" />
+						Source="{Binding Info.ProfileImageUrl, IsAsync=True}" />
 
 					<StackPanel Grid.Column="1" VerticalAlignment="Center">
 						<TextBlock Text="{Binding Info.Name, Mode=OneWay}" FontWeight="Bold" />

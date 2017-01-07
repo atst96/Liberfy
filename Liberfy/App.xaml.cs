@@ -27,6 +27,8 @@ namespace Liberfy
 
 		public static string ApplicationName { get; } = "Liberfy";
 
+		internal static DictionaryEx<NotifyCode, bool> NotificationEvents { get; } = new DictionaryEx<NotifyCode, bool>();
+
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			InitializeSettings();
@@ -36,8 +38,8 @@ namespace Liberfy
 
 		private static bool InitializeSettings()
 		{
-			Setting = OpenSettingFile<Setting>(Defines.SettingFile);
-			Accounts = OpenSettingFile<AccountCollection>(Defines.AccountsFile);
+			Setting = OpenSettingFile<Setting>(Defines.SettingFile) ?? new Setting();
+			Accounts = OpenSettingFile<AccountCollection>(Defines.AccountsFile) ?? new AccountCollection();
 
 			return false;
 		}
@@ -48,12 +50,19 @@ namespace Liberfy
 			SaveJsonFile(Defines.AccountsFile, Accounts);
 		}
 
-		public static void Shutdown(bool saveSettings = true)
+		private static bool _appClsoing;
+
+		public static bool Shutdown(bool saveSettings = true)
 		{
+			if (_appClsoing) return false;
+			_appClsoing = true;
+
 			if (saveSettings)
 				SaveSettings();
 
 			Current.Shutdown();
+
+			return true;
 		}
 
 		private static bool SaveJsonFile(string path, object value)
@@ -101,7 +110,7 @@ namespace Liberfy
 			}
 			catch (FileNotFoundException)
 			{
-				return Activator.CreateInstance<T>();
+				return null;
 			}
 			catch (Exception ex)
 			{

@@ -8,6 +8,7 @@ using System.Windows.Media;
 using Newtonsoft.Json.Converters;
 using System.Windows;
 using System.IO;
+using System.Runtime.Serialization;
 
 namespace Liberfy
 {
@@ -34,10 +35,22 @@ namespace Liberfy
 		#region Generic
 
 		private bool _checkUpdate = true;
-		public DateTime LastUpdateChecked { get; set; }
+
+		[JsonProperty("startup_minimized")]
 		public bool MinimizeStartup { get; set; } = true;
-		public bool StayingInTaskTray { get; set; } = false;
-		public bool AlwaysShowInTaskbar { get; set; } = true;
+
+		[JsonProperty("tasktray_show")]
+		public bool ShowInTaskTray { get; set; } = false;
+
+		[JsonProperty("tasktray_show_at_minimized")]
+		public bool ShowInTaskTrayAtMinimzied { get; set; } = true;
+
+		[JsonProperty("tasktray_balloon_at_minimized")]
+		public bool ShowBalloonAtMinized { get; set; } = false;
+
+		[JsonProperty("minimize_click_close_button")]
+		public bool MinimizeAtCloseButtonClick { get; set; } = false;
+
 		private BackgroundType _backgroundType = BackgroundType.None;
 		private AlignmentX _imageAlignmentX = AlignmentX.Left;
 		private AlignmentY _imageAlignmentY = AlignmentY.Top;
@@ -45,52 +58,57 @@ namespace Liberfy
 		private double _imageOpacity = 1.0d;
 		private string _imagePath = string.Empty;
 
-
+		[JsonProperty("supress_shutdown")]
 		public bool SupressShutdown { get; set; } = false;
 
+		[JsonProperty("check_update")]
 		public bool CheckUpdate
 		{
 			get { return _checkUpdate; }
 			set { SetProperty(ref _checkUpdate, value); }
 		}
 
+		[JsonProperty("background_type")]
 		public BackgroundType BackgroundType
 		{
 			get { return _backgroundType; }
 			set { SetProperty(ref _backgroundType, value); }
 		}
 
+		[JsonProperty("background_alignment_x")]
 		public AlignmentX ImageAlignmentX
 		{
 			get { return _imageAlignmentX; }
 			set { SetProperty(ref _imageAlignmentX, value); }
 		}
 
+		[JsonProperty("background_alignment_y")]
 		public AlignmentY ImageAlignmentY
 		{
 			get { return _imageAlignmentY; }
 			set { SetProperty(ref _imageAlignmentY, value); }
 		}
 
-		public Stretch ImageStretch
+		[JsonProperty("background_image_stretch")]
+		public Stretch BackgroundImageStretch
 		{
 			get { return _imageStretch; }
 			set { SetProperty(ref _imageStretch, value); }
 		}
 
-		public double ImageOpacity
+		[JsonProperty("background_image_opacity")]
+		public double BackgroundImageOpacity
 		{
 			get { return _imageOpacity; }
 			set { SetProperty(ref _imageOpacity, value); }
 		}
 
-		public string ImagePath
+		[JsonProperty("background_image_path")]
+		public string BackgroundImagePath
 		{
 			get { return _imagePath; }
 			set { SetProperty(ref _imagePath, value); }
 		}
-
-		public uint StartupWindowMode { get; set; } = 0;
 
 		#endregion
 
@@ -99,78 +117,42 @@ namespace Liberfy
 		public const string DefaultTimelineFont = "Meiryo, Segoe UI Symbol";
 		public const double DefaultTimelineFontSize = 12;
 
-		public const string DefaultUIFont = "Meiryo";
-		public const double DefaultUIFontSize = 12;
-
-		private bool _timelineUseUIFont = true;
 		private string _timelineFont = DefaultTimelineFont;
 		private double _timelineFontSize = DefaultTimelineFontSize;
-		private bool _uiUseSystemFont;
-		private string _uiFont = DefaultUIFont;
-		private double _uiFontSize = DefaultUIFontSize;
 
-		public bool TimelineUseUIFont
+		[JsonProperty("pages")]
+		private IEnumerable<PageItem> __pages
 		{
-			get { return _timelineUseUIFont; }
+			get { return App.Client.Pages; }
 			set
 			{
-				if (SetProperty(ref _timelineUseUIFont, value))
-				{
-					RaisePropertyChanged(nameof(TimelineFont));
-					RaisePropertyChanged(nameof(TimelineFontSize));
-				}
+				var pages = App.Client.Pages;
+
+
+				pages.Clear();
+
+				if (value == null)
+					return;
+
+				pages.AddRange(value);
 			}
 		}
 
+		[JsonProperty("timeline_fonts")]
 		public string TimelineFont
 		{
-			get
-			{
-				return _timelineUseUIFont
-				  ? UIFont : string.IsNullOrEmpty(_timelineFont)
-				  ? _timelineFont : _timelineFont = DefaultTimelineFont;
-			}
+			get { return _timelineFont; }
 			set { SetProperty(ref _timelineFont, value); }
 		}
 
+		[JsonProperty("timeline_font_size")]
 		public double TimelineFontSize
 		{
-			get { return _timelineUseUIFont ? UIFontSize : _timelineFontSize; }
+			get { return _timelineFontSize; }
 			set { SetProperty(ref _timelineFontSize, value); }
 		}
 
-		public bool UIUseSystemFont
-		{
-			get { return _uiUseSystemFont; }
-			set
-			{
-				if (SetProperty(ref _uiUseSystemFont, value))
-				{
-					RaisePropertyChanged(nameof(UIFont));
-					RaisePropertyChanged(nameof(UIFontSize));
-					RaisePropertyChanged(nameof(TimelineFont));
-					RaisePropertyChanged(nameof(TimelineFontSize));
-				}
-			}
-		}
-
-		public string UIFont
-		{
-			get
-			{
-				return _uiUseSystemFont
-				  ? "" : !string.IsNullOrEmpty(_uiFont)
-				  ? _uiFont : _uiFont = DefaultUIFont;
-			}
-			set { SetProperty(ref _uiFont, value); }
-		}
-
-		public double UIFontSize
-		{
-			get { return _uiUseSystemFont ? double.NaN : _uiFontSize; }
-			set { SetProperty(ref _uiFontSize, value); }
-		}
-
+		[JsonProperty("timeline_show_images")]
 		public bool ShowImageInTimeline
 		{
 			get { return GetValue<bool>("ShowImageInTimeline"); }
@@ -181,6 +163,7 @@ namespace Liberfy
 			}
 		}
 
+		[JsonProperty("timeline_show_images_detail")]
 		public bool ShowImageInDetail
 		{
 			get { return GetValue<bool>("ShowImageInDetail"); }
@@ -191,12 +174,14 @@ namespace Liberfy
 			}
 		}
 
+		[JsonProperty("timeline_show_relative_time")]
 		public bool RelativeTime
 		{
 			get { return GetValue<bool>("RelativeTime"); }
 			set { SetValue("RelativeTime", value); }
 		}
 
+		[JsonProperty("timeline_font_text_rendering")]
 		public TextFormattingMode TextFormattingMode
 		{
 			get { return GetValue<TextFormattingMode>("TextFormattingMode"); }
@@ -207,10 +192,13 @@ namespace Liberfy
 			}
 		}
 
+		[JsonProperty("timeline_enable_item_animation")]
 		public bool EnableTimelineAnimation { get; set; } = true;
 
+		[JsonProperty("timeline_disable_animation_at_rdp")]
 		public bool DisableAnimationAtTerminalConnection { get; set; } = false;
 
+		[JsonProperty("timeline_items_show_action_button")]
 		public bool ShowActionButtonInTimeline
 		{
 			get { return GetValue<bool>("ShowActionButtonInTimeline"); }
@@ -223,10 +211,13 @@ namespace Liberfy
 
 		const string DefaultNowPlayingFormat = @"%artist% - %name% / %album% #NowPlaying";
 
+		[JsonProperty("format_now_playing")]
 		public string NowPlayingFormat { get; set; }
+
 
 		private bool _insertThumbnailAtNowPlaying;
 
+		[JsonProperty("now_playing_set_thumbnails")]
 		public bool InsertThumbnailAtNowPlayying
 		{
 			get { return _insertThumbnailAtNowPlaying; }
@@ -240,7 +231,10 @@ namespace Liberfy
 		private const string _defSoundPath = @"%windir%\Media\Windows Notify.wav";
 		private static string @DefaultSoundFile => Environment.ExpandEnvironmentVariables(_defSoundPath);
 
+		private DictionaryEx<NotifyCode, bool> _ne => App.NotificationEvents;
+
 		private bool _enableNotification = true;
+		[JsonProperty("notification_enable")]
 		public bool EnableNotification
 		{
 			get { return _enableNotification; }
@@ -248,6 +242,7 @@ namespace Liberfy
 		}
 
 		private string _notificationSoundFile;
+		[JsonProperty("notification_sound_path")]
 		public string NotificationSoundFile
 		{
 			get { return _notificationSoundFile ?? (_notificationSoundFile = DefaultNowPlayingFormat); }
@@ -255,6 +250,7 @@ namespace Liberfy
 		}
 
 		private bool _enableSoundNotification;
+		[JsonProperty("notification_sound_enable")]
 		public bool EnableSoundNotification
 		{
 			get { return _enableSoundNotification; }
@@ -262,67 +258,74 @@ namespace Liberfy
 		}
 
 		private bool _enableBalloonNotification;
+		[JsonProperty("notification_balloon_enable")]
 		public bool EnableBalloonNotification
 		{
 			get { return _enableBalloonNotification; }
 			set { SetProperty(ref _enableBalloonNotification, value); }
 		}
 
-		[JsonIgnore]
-		public DictionaryEx<NotifyCode, bool> NotificationEvents { get; } = new DictionaryEx<NotifyCode, bool>();
-
+		[JsonProperty("notification_reply")]
 		public bool Notification_Reply
 		{
-			get { return NotificationEvents.GetOrAdd(NotifyCode.Reply, true); }
-			set { NotificationEvents[NotifyCode.Reply] = value; }
+			get { return _ne.GetOrAdd(NotifyCode.Reply, true); }
+			set { _ne[NotifyCode.Reply] = value; }
 		}
 
+		[JsonProperty("notification_favorite")]
 		public bool Notification_Favorite
 		{
-			get { return NotificationEvents.GetOrAdd(NotifyCode.Favorite, true); }
-			set { NotificationEvents[NotifyCode.Favorite] = value; }
+			get { return _ne.GetOrAdd(NotifyCode.Favorite, true); }
+			set { _ne[NotifyCode.Favorite] = value; }
 		}
 
+		[JsonProperty("notification_quoted_tweet")]
 		public bool Notification_QuotedTweet
 		{
-			get { return NotificationEvents.GetOrAdd(NotifyCode.QuotedTweet, true); }
-			set { NotificationEvents[NotifyCode.QuotedTweet] = value; }
+			get { return _ne.GetOrAdd(NotifyCode.QuotedTweet, true); }
+			set { _ne[NotifyCode.QuotedTweet] = value; }
 		}
 
+		[JsonProperty("notification_retweet")]
 		public bool Notification_Retweet
 		{
-			get { return NotificationEvents.GetOrAdd(NotifyCode.Retweet, true); }
-			set { NotificationEvents[NotifyCode.Retweet] = value; }
+			get { return _ne.GetOrAdd(NotifyCode.Retweet, true); }
+			set { _ne[NotifyCode.Retweet] = value; }
 		}
 
+		[JsonProperty("notification_retweeted_retweet")]
 		public bool Notification_RetweetedRetweet
 		{
-			get { return NotificationEvents.GetOrAdd(NotifyCode.RetweetedRetweet, true); }
-			set { NotificationEvents[NotifyCode.RetweetedRetweet] = value; }
+			get { return _ne.GetOrAdd(NotifyCode.RetweetedRetweet, true); }
+			set { _ne[NotifyCode.RetweetedRetweet] = value; }
 		}
 
+		[JsonProperty("notification_favorited_retweet")]
 		public bool Notification_FavoritedRetweet
 		{
-			get { return NotificationEvents.GetOrAdd(NotifyCode.FavoritedRetweet, true); }
-			set { NotificationEvents[NotifyCode.FavoritedRetweet] = value; }
+			get { return _ne.GetOrAdd(NotifyCode.FavoritedRetweet, true); }
+			set { _ne[NotifyCode.FavoritedRetweet] = value; }
 		}
 
+		[JsonProperty("notification_list_member_added")]
 		public bool Notification_ListMemberAdded
 		{
-			get { return NotificationEvents.GetOrAdd(NotifyCode.ListMemberAdded, true); }
-			set { NotificationEvents[NotifyCode.ListMemberAdded] = value; }
+			get { return _ne.GetOrAdd(NotifyCode.ListMemberAdded, true); }
+			set { _ne[NotifyCode.ListMemberAdded] = value; }
 		}
 
+		[JsonProperty("notification_follow")]
 		public bool Notification_Follow
 		{
-			get { return NotificationEvents.GetOrAdd(NotifyCode.Follow, true); }
-			set { NotificationEvents[NotifyCode.Follow] = value; }
+			get { return _ne.GetOrAdd(NotifyCode.Follow, true); }
+			set { _ne[NotifyCode.Follow] = value; }
 		}
 
+		[JsonProperty("notification_dm_received")]
 		public bool Notification_DirectMessageReceived
 		{
-			get { return NotificationEvents.GetOrAdd(NotifyCode.DirectMessageCreated, true); }
-			set { NotificationEvents[NotifyCode.DirectMessageCreated] = value; }
+			get { return _ne.GetOrAdd(NotifyCode.DirectMessageCreated, true); }
+			set { _ne[NotifyCode.DirectMessageCreated] = value; }
 		}
 
 		#endregion
@@ -330,18 +333,21 @@ namespace Liberfy
 		#region Mute settings
 
 		private FluidCollection<Mute> _mute;
+		[JsonProperty("mute")]
 		public FluidCollection<Mute> Mute => _mute ?? (_mute = new FluidCollection<Mute>());
 
 		#endregion
 
 		#region Post settings
 
+		[JsonProperty("post_close_window")]
 		public bool CloseWindowAfterPostComplated { get; set; }
 
 		#endregion
 
 		#region Network settings
 
+		[JsonProperty("network_system_proxy")]
 		public bool UseSystemProxy { get; set; }
 
 		#endregion
@@ -349,85 +355,85 @@ namespace Liberfy
 
 	enum BackgroundType
 	{
-		[JsonProperty("none")]
+		[EnumMember(Value = "none")]
 		None,
 
-		[JsonProperty("color")]
+		[EnumMember(Value = "color")]
 		Color,
 
-		[JsonProperty("picture")]
+		[EnumMember(Value = "picture")]
 		Picture,
 	}
 
 	enum NotifyCode
 	{
-		[JsonProperty("reply")]
+		[EnumMember(Value = "reply")]
 		Reply,
 
-		[JsonProperty("retweet")]
+		[EnumMember(Value = "retweet")]
 		Retweet,
 
-		[JsonProperty("direct_message_created")]
+		[EnumMember(Value = "direct_message_created")]
 		DirectMessageCreated,
 
-		[JsonProperty("direct_message_deleted")]
+		[EnumMember(Value = "direct_message_deleted")]
 		DirectMessageDeleted,
 
-		[JsonProperty("block")]
+		[EnumMember(Value = "block")]
 		Block,
 
-		[JsonProperty("unblock")]
+		[EnumMember(Value = "unblock")]
 		Unblock,
 
-		[JsonProperty("favorite")]
+		[EnumMember(Value = "favorite")]
 		Favorite,
 
-		[JsonProperty("unfavorite")]
+		[EnumMember(Value = "unfavorite")]
 		Unfavorite,
 
-		[JsonProperty("follow")]
+		[EnumMember(Value = "follow")]
 		Follow,
 
-		[JsonProperty("unfollow")]
+		[EnumMember(Value = "unfollow")]
 		Unfollow,
 
-		[JsonProperty("list_created")]
+		[EnumMember(Value = "list_created")]
 		ListCreated,
 
-		[JsonProperty("list_destroyed")]
+		[EnumMember(Value = "list_destroyed")]
 		ListDestroyed,
 
-		[JsonProperty("list_updated")]
+		[EnumMember(Value = "list_updated")]
 		ListUpdated,
 
-		[JsonProperty("list_member_added")]
+		[EnumMember(Value = "list_member_added")]
 		ListMemberAdded,
 
-		[JsonProperty("list_member_removed")]
+		[EnumMember(Value = "list_member_removed")]
 		ListMemberRemoved,
 
-		[JsonProperty("list_user_subscribed")]
+		[EnumMember(Value = "list_user_subscribed")]
 		ListUserSubscribed,
 
-		[JsonProperty("list_user_unsubscribed")]
+		[EnumMember(Value = "list_user_unsubscribed")]
 		ListUserUnsubscribed,
 
-		[JsonProperty("user_update")]
+		[EnumMember(Value = "user_update")]
 		UserUpdate,
 
-		[JsonProperty("mute")]
+		[EnumMember(Value = "mute")]
 		Mute,
 
-		[JsonProperty("unmute")]
+		[EnumMember(Value = "unmute")]
 		Unmute,
 
-		[JsonProperty("favorited_retweet")]
+		[EnumMember(Value = "favorited_retweet")]
 		FavoritedRetweet,
 
-		[JsonProperty("retweeted_retweet")]
+		[EnumMember(Value = "retweeted_retweet")]
 		RetweetedRetweet,
 
-		[JsonProperty("quoted_tweet")]
+		[EnumMember(Value = "quoted_tweet")]
 		QuotedTweet
 	}
 }

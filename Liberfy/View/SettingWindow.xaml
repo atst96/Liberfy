@@ -30,7 +30,7 @@
 				</Style>
 			</Style.Resources>
 		</Style>
-		
+
 		<!--#region TabControl Template-->
 		<Style x:Key="tabItemStyle" TargetType="{x:Type TabItem}">
 			<Setter Property="Padding" Value="14 8" />
@@ -166,30 +166,31 @@
 				<StackPanel Style="{StaticResource ElementsContainerStyle}">
 					<CheckBox Content="起動時にアップデートを確認する"
 							  IsChecked="{Binding Setting.CheckUpdate}"/>
-					<Label Content="アプリケーションの起動時にアップデートの確認を行います。" />
-					
+
 					<CheckBox Content="ログオン時に自動的に起動する"
 							  IsChecked="{Binding AutoStartup}"/>
-					<Label Content="ユーザーアカウントのログオン時にアプリケーションを自動的に起動します" />
-					
+
 					<CheckBox Content="ウィンドウを最小化して起動する"
 							  IsChecked="{Binding Setting.MinimizeStartup}"/>
-					<Label Content="アプリケーション起動時にウィンドウを最小化します" />
-					
-					<CheckBox Content="タスクトレイに常駐する"
-							  IsChecked="{Binding Setting.StayingInTaskTray}"/>
-					<Label Content="アプリケーションを終了せずに最小化します" />
-					
-					<CheckBox Content="最小化時にバルーンを表示する" />
-					<Label Content="タスクトレイに格納された場合に起動中である旨のメッセージをバルーンで表示します" />
-					
-					<CheckBox Content="最小化時にタスクバーに表示する"
-							  IsChecked="{Binding Setting.AlwaysShowInTaskbar}"/>
-					<Label Content="タスクトレイ常駐時もアプリケーションアイコンをタスクバーに表示します" />
-					
+
+					<CheckBox Content="閉じるボタンを押した際に最小化する"
+							  IsChecked="{Binding Setting.MimizeAtCloseButtonClick}"/>
+
+					<CheckBox Content="アイコンをタスクトレイに表示する"
+							  IsChecked="{Binding ShowInTaskTray}" />
+
+					<CheckBox Margin="24 2 0 2"
+							  Content="最小化時にタスクバーに表示しない"
+							  IsChecked="{Binding ShowInTaskTrayAtMinized}"
+							  IsEnabled="{Binding ShowInTaskTray, Mode=OneWay}" />
+
+					<CheckBox Margin="24 2 0 2"
+							  Content="最小化時にバルーンを表示する"
+							  IsChecked="{Binding Setting.ShowBalloonAtMinimized}"
+							  IsEnabled="{Binding ShowInTaskTray, Mode=OneWay}"/>
+
 					<CheckBox Content="ログオフを抑止する"
-							  IsChecked="{Binding Setting.SuppressShutdown}"/>
-					<Label Content="シャットダウンまたはログオフ（セッション終了要求）をキャンセルします" />
+							  IsChecked="{Binding Setting.SuppressShutdown}" />
 				</StackPanel>
 			</TabItem>
 
@@ -208,7 +209,112 @@
 
 			</TabItem>
 
-			<TabItem Header="タイムライン"></TabItem>
+			<TabItem Header="ページとカラム">
+				<StackPanel Margin="{StaticResource ContainerMargin}">
+					<ToolBar
+						HorizontalAlignment="Right"
+						HorizontalContentAlignment="Right"
+						ToolBarTray.IsLocked="True">
+						<Label Content="ページ名: " Foreground="#444" />
+						<TextBox 
+							Width="180"
+							Text="{Binding PageTitle, UpdateSourceTrigger=PropertyChanged}"/>
+						<Button
+							Content="追加"
+							Command="{Binding AddPageCommand, Mode=OneTime}"/>
+						<Separator />
+						<Button
+							Content="削除"
+							Command="{Binding DeletePageCommand, Mode=OneTime}"/>
+					</ToolBar>
+					<ListView
+						Padding="4"
+						MinHeight="80"
+						BorderBrush="#ccc"
+						SelectionMode="Single"
+						SelectedItem="{Binding SelectedPage, Mode=TwoWay}"
+						ItemsSource="{Binding Pages, Mode=OneTime}"
+						ItemsPanel="{StaticResource HorizontalPanelTemplate}"
+						ScrollViewer.CanContentScroll="false">
+						<ListView.ItemTemplate>
+							<DataTemplate DataType="{x:Type local:PageItem}">
+								<TextBlock 
+									Margin="4"
+									TextWrapping="Wrap"
+									TextTrimming="CharacterEllipsis"
+									Text="{Binding Title, Mode=OneWay}" />
+							</DataTemplate>
+						</ListView.ItemTemplate>
+						<ListView.ItemContainerStyle>
+							<Style TargetType="{x:Type ListViewItem}">
+								<Setter Property="Margin" Value="4" />
+								<Setter Property="Width" Value="120" />
+								<Setter Property="Height" Value="60" />
+								<Setter Property="Cursor" Value="Hand" />
+								<Setter Property="Opacity" Value="0.0" />
+								<Setter Property="Template">
+									<Setter.Value>
+										<ControlTemplate TargetType="{x:Type ListViewItem}">
+											<Border x:Name="border"
+													BorderThickness="1"
+													Background="#fff"
+													BorderBrush="#ddd">
+												<Border.Effect>
+													<DropShadowEffect
+														x:Name="shadow"
+														Color="#ddd"
+														Opacity=".8"
+														BlurRadius="4"
+														ShadowDepth="0" />
+												</Border.Effect>
+
+												<Border
+													x:Name="innerBorder"
+													BorderThickness="1"
+													BorderBrush="#fff">
+													<ContentPresenter
+														VerticalAlignment="Center"
+														HorizontalAlignment="Center"/>
+												</Border>
+											</Border>
+
+											<ControlTemplate.Triggers>
+												<Trigger Property="IsMouseOver" Value="true">
+													<Setter TargetName="border" Property="BorderBrush" Value="#ccc" />
+												</Trigger>
+
+												<Trigger Property="IsSelected" Value="true">
+													<Setter TargetName="border" Property="Background" Value="#fafafa" />
+													<Setter TargetName="border" Property="BorderBrush" Value="#07c" />
+													<Setter TargetName="innerBorder" Property="BorderBrush" Value="#fbfbfb" />
+													<!--<Setter TargetName="shadow" Property="Opacity" Value=".4" />-->
+												</Trigger>
+											</ControlTemplate.Triggers>
+										</ControlTemplate>
+									</Setter.Value>
+								</Setter>
+								<Style.Triggers>
+									<EventTrigger RoutedEvent="Loaded">
+										<EventTrigger.Actions>
+											<BeginStoryboard>
+												<Storyboard>
+													<DoubleAnimation
+														To="1.0" Duration="0:0:0.2"
+														Storyboard.TargetProperty="Opacity"/>
+												</Storyboard>
+											</BeginStoryboard>
+										</EventTrigger.Actions>
+									</EventTrigger>
+								</Style.Triggers>
+							</Style>
+						</ListView.ItemContainerStyle>
+					</ListView>
+				</StackPanel>
+			</TabItem>
+
+			<TabItem Header="タイムライン">
+
+			</TabItem>
 
 			<TabItem Header="ミュート" />
 

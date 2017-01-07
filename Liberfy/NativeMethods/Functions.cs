@@ -18,12 +18,6 @@ namespace Liberfy
 
 		#region Shell32
 
-		[DllImport("shell32", CharSet = CharSet.Unicode)]
-		public static extern bool Shell_NotifyIcon(
-			[In] NIM dwMessage, 
-			[In] ref NOTIFYICONDATA lpData
-		);
-
 		#endregion
 
 		#region User32 
