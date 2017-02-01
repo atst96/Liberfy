@@ -6,5 +6,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    class Query : Dictionary<string, object> { }
+	class AppInfo : NotificationObject
+	{
+	}
 }

@@ -55,11 +55,15 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icons\app.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Newtonsoft.Json.dll</HintPath>
@@ -75,6 +79,7 @@
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -97,12 +102,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Info\AppInfo.cs" />
+    <Compile Include="ColumnOptionTemplateSelector.cs" />
     <Compile Include="Component\ColumnOptions.cs" />
     <Compile Include="Component\Converters.cs" />
     <Compile Include="Component\FluidCollection.cs" />
     <Compile Include="Component\IdBaseCollection.cs" />
     <Compile Include="Component\MessageBox.cs" />
     <Compile Include="Component\Regexes.cs" />
+    <Compile Include="Converters\Converters.cs" />
+    <Compile Include="Converters\NameConverters.cs" />
     <Compile Include="DataStore.cs" />
     <Compile Include="Component\DictionaryEx.cs" />
     <Compile Include="Defines_secret.cs" />
@@ -110,15 +119,19 @@
     <Compile Include="Extensions\WindowExtension.cs" />
     <Compile Include="Defines.cs" />
     <Compile Include="ClientContent.cs" />
-    <Compile Include="Model\Column\ColumnBase.cs" />
-    <Compile Include="Model\Column\ListColumn.cs" />
-    <Compile Include="Model\Column\SearchColumn.cs" />
-    <Compile Include="Model\Column\SearchColumnBase.cs" />
-    <Compile Include="Model\Column\StatusColumn.cs" />
-    <Compile Include="Model\Column\StatusColumnBase.cs" />
+    <Compile Include="Info\Info.cs" />
+    <Compile Include="Info\OSInfo.cs" />
+    <Compile Include="ViewModel\Column\Base\ColumnBase.cs" />
+    <Compile Include="ViewModel\Column\ListColumn.cs" />
+    <Compile Include="ViewModel\Column\MessageColumn.cs" />
+    <Compile Include="ViewModel\Column\SearchColumn.cs" />
+    <Compile Include="ViewModel\Column\Base\SearchColumnBase.cs" />
+    <Compile Include="ViewModel\Column\StatusColumn.cs" />
+    <Compile Include="ViewModel\Column\Base\StatusColumnBase.cs" />
+    <Compile Include="ViewModel\Column\StreamSearchColumn.cs" />
     <Compile Include="Model\IObjectInfo.cs" />
-    <Compile Include="Model\Item\IItem.cs" />
-    <Compile Include="Model\Item\StatusItem.cs" />
+    <Compile Include="ViewModel\Item\IItem.cs" />
+    <Compile Include="ViewModel\Item\StatusItem.cs" />
     <Compile Include="Model\MediaEntityInfo.cs" />
     <Compile Include="Model\Reaction.cs" />
     <Compile Include="Account.cs" />
@@ -134,7 +147,9 @@
     <Compile Include="Model\StatusInfo.cs" />
     <Compile Include="Model\UserInfo.cs" />
     <Compile Include="PageItem.cs" />
+    <Compile Include="PlaceHolderTextBox.cs" />
     <Compile Include="Query.cs" />
+    <Compile Include="Component\TextBoxBehavior.cs" />
     <Compile Include="Timeline.cs" />
     <Compile Include="ViewModel\AuthenticationViewModel.cs" />
     <Compile Include="ViewModel\ContentWindowViewModel.cs" />
@@ -207,6 +222,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Icons\app.ico" />
+    <Resource Include="Icons\app_tasktray.ico" />
     <Content Include="lib\Hardcodet.Wpf.TaskbarNotification.dll" />
     <Content Include="lib\Hardcodet.Wpf.TaskbarNotification.pdb" />
     <Resource Include="lib\Hardcodet.Wpf.TaskbarNotification.xml" />
@@ -240,6 +257,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

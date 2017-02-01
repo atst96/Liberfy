@@ -105,7 +105,7 @@ namespace Liberfy
 
 		void ICommand.Execute(object parameter)
 		{
-			CanExecute(parameter.CastOrDefault<T>());
+			Execute(parameter.CastOrDefault<T>());
 		}
 
 		public void RaiseCanExecute()

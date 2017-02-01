@@ -56,7 +56,13 @@ namespace Liberfy
 		Action<T> _execute;
 		Predicate<T> _canExecute;
 
-		public DelegateCommand(Action<T> action, bool hookRequerySuggested = false)
+		public DelegateCommand(Action<T> action) : base(false)
+		{
+			_execute = action;
+			_canExecute = DefaultCanExecute;
+		}
+
+		public DelegateCommand(Action<T> action, bool hookRequerySuggested)
 			: base(hookRequerySuggested)
 		{
 			_execute = action;

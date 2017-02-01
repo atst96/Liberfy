@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -29,9 +30,13 @@ namespace Liberfy
 
 		internal static DictionaryEx<NotifyCode, bool> NotificationEvents { get; } = new DictionaryEx<NotifyCode, bool>();
 
+		internal static TaskbarIcon TaskbarIcon { get; private set; }
+
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			InitializeSettings();
+
+			TaskbarIcon = (TaskbarIcon)FindResource("taskbarIcon");
 
 			base.OnStartup(e);
 		}
@@ -40,6 +45,8 @@ namespace Liberfy
 		{
 			Setting = OpenSettingFile<Setting>(Defines.SettingFile) ?? new Setting();
 			Accounts = OpenSettingFile<AccountCollection>(Defines.AccountsFile) ?? new AccountCollection();
+
+			Setting.NormalizeSettings();
 
 			return false;
 		}

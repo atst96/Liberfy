@@ -15,6 +15,19 @@ namespace Liberfy
 	[JsonObject]
 	internal partial class Setting : NotificationObject
 	{
+		internal void NormalizeSettings()
+		{
+			if(DefaultColumns == null)
+			{
+				DefaultColumns = new FluidCollection<ColumnSetting>
+				{
+					new ColumnSetting(ColumnType.Home, Account.Dummy),
+					new ColumnSetting(ColumnType.Notification, Account.Dummy),
+					new ColumnSetting(ColumnType.Messages, Account.Dummy),
+				};
+			}
+		}
+
 		#region
 
 		[JsonIgnore]
@@ -112,34 +125,23 @@ namespace Liberfy
 
 		#endregion
 
+		#region Account
+
+		[JsonProperty("columns_default")]
+		public FluidCollection<ColumnSetting> DefaultColumns { get; private set; }
+
+		#endregion
+
 		#region View settings
 
-		public const string DefaultTimelineFont = "Meiryo, Segoe UI Symbol";
+		public static readonly string[] DefaultTimelineFont = { "Meiryo", "Segoe UI Symbol" };
 		public const double DefaultTimelineFontSize = 12;
 
-		private string _timelineFont = DefaultTimelineFont;
+		private string[] _timelineFont = DefaultTimelineFont;
 		private double _timelineFontSize = DefaultTimelineFontSize;
 
-		[JsonProperty("pages")]
-		private IEnumerable<PageItem> __pages
-		{
-			get { return App.Client.Pages; }
-			set
-			{
-				var pages = App.Client.Pages;
-
-
-				pages.Clear();
-
-				if (value == null)
-					return;
-
-				pages.AddRange(value);
-			}
-		}
-
 		[JsonProperty("timeline_fonts")]
-		public string TimelineFont
+		public string[] TimelineFont
 		{
 			get { return _timelineFont; }
 			set { SetProperty(ref _timelineFont, value); }
@@ -209,10 +211,14 @@ namespace Liberfy
 
 		#region Format settings
 
-		const string DefaultNowPlayingFormat = @"%artist% - %name% / %album% #NowPlaying";
+		private string _nowPlayingFormat;
 
 		[JsonProperty("format_now_playing")]
-		public string NowPlayingFormat { get; set; }
+		public string NowPlayingFormat
+		{
+			get { return _nowPlayingFormat ?? (_nowPlayingFormat = Defines.DefaultNowPlayingFormat); }
+			set { SetProperty(ref _nowPlayingFormat, value ?? Defines.DefaultNowPlayingFormat); }
+		}
 
 
 		private bool _insertThumbnailAtNowPlaying;
@@ -228,10 +234,7 @@ namespace Liberfy
 
 		#region Notification settings
 
-		private const string _defSoundPath = @"%windir%\Media\Windows Notify.wav";
-		private static string @DefaultSoundFile => Environment.ExpandEnvironmentVariables(_defSoundPath);
-
-		private DictionaryEx<NotifyCode, bool> _ne => App.NotificationEvents;
+		private DictionaryEx<NotifyCode, bool> _ne = App.NotificationEvents;
 
 		private bool _enableNotification = true;
 		[JsonProperty("notification_enable")]
@@ -245,7 +248,7 @@ namespace Liberfy
 		[JsonProperty("notification_sound_path")]
 		public string NotificationSoundFile
 		{
-			get { return _notificationSoundFile ?? (_notificationSoundFile = DefaultNowPlayingFormat); }
+			get { return _notificationSoundFile ?? (_notificationSoundFile = Defines.DefaultSoundFile); }
 			set { SetProperty(ref _notificationSoundFile, value); }
 		}
 
@@ -257,12 +260,12 @@ namespace Liberfy
 			set { SetProperty(ref _enableSoundNotification, value); }
 		}
 
-		private bool _enableBalloonNotification;
-		[JsonProperty("notification_balloon_enable")]
-		public bool EnableBalloonNotification
+		private bool _enablePopupNotification;
+		[JsonProperty("EnablePopupNotification")]
+		public bool EnablePopupNotification
 		{
-			get { return _enableBalloonNotification; }
-			set { SetProperty(ref _enableBalloonNotification, value); }
+			get { return _enablePopupNotification; }
+			set { SetProperty(ref _enablePopupNotification, value); }
 		}
 
 		[JsonProperty("notification_reply")]

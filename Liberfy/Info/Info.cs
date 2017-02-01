@@ -6,5 +6,10 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    class Query : Dictionary<string, object> { }
+	static class Info
+	{
+		public static OSInfo OS { get; } = new OSInfo();
+
+		public static AppInfo App { get; } = new AppInfo();
+	}
 }

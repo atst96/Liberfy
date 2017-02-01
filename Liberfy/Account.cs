@@ -116,6 +116,13 @@ namespace Liberfy
 			Info = new UserInfo(this);
 		}
 
+		private Account(long id, string name, string screen_name)
+		{
+			Id = id;
+			Name = name;
+			ScreenName = screen_name;
+		}
+
 		public Account(Tokens tokens)
 		{
 			SetTokens(tokens);
@@ -172,5 +179,8 @@ namespace Liberfy
 			}
 		}
 
+		public static readonly long DummyId = -2;
+
+		public static Account Dummy => new Account(DummyId, "Dummy User", "dummy");
 	}
 }

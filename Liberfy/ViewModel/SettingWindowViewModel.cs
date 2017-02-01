@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace Liberfy
 {
@@ -16,8 +17,9 @@ namespace Liberfy
 			base.OnInitialized();
 		}
 
-		public Setting Setting { get; } = App.Setting;
-		public AccountCollection Accounts { get; } = App.Accounts;
+		public Setting Setting => App.Setting;
+
+		public AccountCollection Accounts => App.Accounts;
 
 		public bool AutoStartup
 		{
@@ -96,9 +98,34 @@ namespace Liberfy
 			}
 		}
 
+		#region General
 
+		private string _selectedNewFont = "Arial";
+		public string SelectedNewFont
+		{
+			get { return _selectedNewFont; }
+			set
+			{
+				if (SetProperty(ref _selectedNewFont, value))
+				{
+				}
+			}
+		}
+
+		public FluidCollection<FontFamily> ViewFonts { get; }
+			= new FluidCollection<FontFamily>(
+				App.Setting.TimelineFont.Select(f => new FontFamily(f)));
+
+		#endregion
 
 		#region Accounts
+
+		private ColumnType _tempColumnType;
+		public ColumnType TempColumnType
+		{
+			get { return _tempColumnType; }
+			set { SetProperty(ref _tempColumnType, value); }
+		}
 
 		private int _selectedAccountIndex = -1;
 		public int SelectedAccountIndex
@@ -115,6 +142,15 @@ namespace Liberfy
 				}
 			}
 		}
+
+		public FluidCollection<ColumnSetting> DefaultColumns => Setting.DefaultColumns;
+
+		private Command _addDefaultColumnCommand;
+		public Command AddDefaultColumnCommand => _addDefaultColumnCommand
+			?? (_addDefaultColumnCommand = new DelegateCommand(() =>
+			{
+				DefaultColumns.Add(new ColumnSetting(_tempColumnType, Account.Dummy));
+			}));
 
 		private Command _accountMoveUpCommand;
 		public Command AccountMoveUpCommand => _accountMoveUpCommand
@@ -190,52 +226,50 @@ namespace Liberfy
 
 			}));
 
+		private ColumnType _addColumnType = ColumnType.Home;
+		public ColumnType AddColumnType
+		{
+			get { return _addColumnType; }
+			set { SetProperty(ref _addColumnType, value); }
+		}
+
 		#endregion
 
-		#region Pages & Columns
+		#region Formats
 
-		public FluidCollection<PageItem> Pages { get; } = App.Client.Pages;
+		public int NowPlayingSelectionStart { get; set; }
+		public int NowPlayingSelectionLength { get; set; }
 
-		private PageItem _selectedPage;
-		public PageItem SelectedPage
+		public string NowPlayingFormat
 		{
-			get { return _selectedPage; }
+			get { return Setting.NowPlayingFormat; }
 			set
 			{
-				if (SetProperty(ref _selectedPage, value))
-				{
-					_deletePageCommand?.RaiseCanExecute();
-				}
+				Setting.NowPlayingFormat = value;
+				RaisePropertyChanged(nameof(NowPlayingFormat));
 			}
 		}
 
-		private string _pageTitle;
-		public string PageTitle
-		{
-			get { return _pageTitle; }
-			set
-			{
-				if (SetProperty(ref _pageTitle, value))
-				{
-					_addPageCommand?.RaiseCanExecute();
-				}
-			}
-		}
+		private Command<string> _insertNowPlayingParamCommand;
+		public Command<string> InsertNowPlayingParamCommand => _insertNowPlayingParamCommand
+			?? (_insertNowPlayingParamCommand = new DelegateCommand<string>(p =>
+			   {
+				   int start = NowPlayingSelectionStart;
+				   int length = NowPlayingSelectionLength;
 
-		private Command _addPageCommand;
-		public Command AddPageCommand => _addPageCommand
-			?? (_addPageCommand = new DelegateCommand(() =>
-			{
-				Pages.Add(new PageItem { Title = _pageTitle });
-				PageTitle = string.Empty;
-			}, _ => !string.IsNullOrEmpty(_pageTitle)));
+				   NowPlayingFormat = NowPlayingSelectionLength == 0
+				   ? NowPlayingFormat.Insert(start, p)
+				   : NowPlayingFormat.Remove(start, length).Insert(start, p);
 
-		private Command _deletePageCommand;
-		public Command DeletePageCommand => _deletePageCommand
-			?? (_deletePageCommand = new DelegateCommand(() =>
+				   NowPlayingSelectionStart = start + length;
+			   }));
+
+		private Command _resetNowPlayingCommand;
+		public Command ResetNowPlayingCommand => _resetNowPlayingCommand
+			?? (_resetNowPlayingCommand = new DelegateCommand(() =>
 			{
-				Pages.Remove(_selectedPage);
-			}, _ => _selectedPage != null));
+				NowPlayingFormat = Defines.DefaultNowPlayingFormat;
+			}));
 
 		#endregion
 

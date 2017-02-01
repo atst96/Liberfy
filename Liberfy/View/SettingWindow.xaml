@@ -6,6 +6,10 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:Liberfy"
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
+	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+	xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+	xmlns:b="clr-namespace:Liberfy.Behaviors"
+	xmlns:conv="clr-namespace:Liberfy.Converter"
 	mc:Ignorable="d"
 	ResizeMode="NoResize"
 	UseLayoutRounding="True"
@@ -15,13 +19,32 @@
 		<local:SettingWindowViewModel x:Key="ViewModel" />
 		<sys:Double x:Key="tabItemWidth">120</sys:Double>
 
-		<Thickness x:Key="ContainerMargin">6</Thickness>
+		<conv:ColumnNameConverter x:Key="ColumnNameConverter" />
+		<conv:ListBoxIndexConverter x:Key="ListBoxIndexConverter" />
+		<conv:ColumnSettingToColumnConverter x:Key="ColumnSettingToColumnConverter" />
+
+		<Style x:Key="HeaderLabel" TargetType="{x:Type Label}">
+			<Setter Property="FontWeight" Value="Bold" />
+			<Setter Property="Foreground" Value="#333" />
+		</Style>
+
+		<Style x:Key="HeaderLabelStyle2" TargetType="{x:Type Label}" BasedOn="{StaticResource HeaderLabel}">
+			<Setter Property="Margin" Value="0 8 0 0" />
+		</Style>
+
+		<Thickness x:Key="ContainerMargin">12</Thickness>
 
 		<Style x:Key="ElementsContainerStyle" TargetType="{x:Type Panel}">
 			<Setter Property="Margin" Value="{StaticResource ContainerMargin}" />
 			<Style.Resources>
 				<Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
-					<Setter Property="Margin" Value="4 2" />
+					<Setter Property="Margin" Value="4 3" />
+					<Setter Property="HorizontalAlignment" Value="Left" />
+				</Style>
+
+				<Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource {x:Type RadioButton}}">
+					<Setter Property="Margin" Value="4 3" />
+					<Setter Property="HorizontalAlignment" Value="Left" />
 				</Style>
 
 				<Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
@@ -56,7 +79,7 @@
 
 							<Trigger Property="IsSelected" Value="True">
 								<Setter TargetName="border" Property="Background" Value="#dfff" />
-								<Setter Property="Foreground" Value="{DynamicResource TabPanelBackground}" />
+								<Setter Property="Foreground" Value="{DynamicResource SettingTabPanelBackground}" />
 								<Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource SettingTabItemSelectedBorderBrush}" />
 							</Trigger>
 						</ControlTemplate.Triggers>
@@ -102,7 +125,104 @@
 			</Setter>
 			<Setter Property="ItemContainerStyle" Value="{StaticResource tabItemStyle}" />
 		</Style>
+
+		<Style x:Key="TabControlStyle1" TargetType="{x:Type TabControl}">
+			<Setter Property="TabStripPlacement" Value="Top" />
+			<Setter Property="Background" Value="White" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type TabControl}">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="auto" />
+								<RowDefinition />
+							</Grid.RowDefinitions>
+
+							<Border
+								BorderThickness="0 0 0 1"
+								Background="{DynamicResource SettingTabPanelBackground}"
+								BorderBrush="{DynamicResource SettingTabItemNormalBorderBrush}" />
+
+							<TabPanel
+								x:Name="HeaderPanel"
+								Margin="4 4 4 0"
+								IsItemsHost="True"
+								KeyboardNavigation.TabIndex="1"
+								Background="{x:Static Brushes.Transparent}" />
+
+							<Border 
+								Grid.Row="1"
+								Background="{TemplateBinding Background}">
+								<ContentPresenter 
+									x:Name="PART_SelectedContentHost" 
+									ContentSource="SelectedContent" />
+							</Border>
+						</Grid>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+			<Setter Property="ItemContainerStyle">
+				<Setter.Value>
+					<Style TargetType="{x:Type TabItem}">
+						<Setter Property="Template">
+							<Setter.Value>
+								<ControlTemplate TargetType="{x:Type TabItem}">
+									<Border 
+										x:Name="border"
+										Padding="12 6"
+										BorderThickness="1 1 1 1"
+										Margin="0 0 -1 0"
+										Background="#f4f4f4"
+										BorderBrush="#ccc">
+										<ContentPresenter ContentSource="Header" />
+									</Border>
+
+									<ControlTemplate.Triggers>
+										<Trigger Property="IsMouseOver" Value="true">
+											<Setter TargetName="border" Property="Background" Value="#fafafa" />
+											<Setter TargetName="border" Property="BorderBrush" Value="#aaa" />
+										</Trigger>
+
+										<Trigger Property="IsSelected" Value="true">
+											<Setter TargetName="border" Property="BorderThickness" Value="1 1 1 0" />
+											<Setter TargetName="border" Property="Background" Value="#fff" />
+											<Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource SettingTabItemNormalBorderBrush}" />
+										</Trigger>
+
+										<Trigger Property="IsSelected" Value="false">
+											<Setter Property="Foreground" Value="#666" />
+										</Trigger>
+									</ControlTemplate.Triggers>
+								</ControlTemplate>
+							</Setter.Value>
+						</Setter>
+					</Style>
+				</Setter.Value>
+			</Setter>
+		</Style>
 		<!--#endregion-->
+
+		<conv:LocalFontNameConverter x:Key="LocalFontNameConverter" />
+
+		<DataTemplate x:Key="FontViewTemplate" DataType="{x:Type FontFamily}">
+			<Grid Margin="4">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="auto" />
+					<RowDefinition Height="auto" />
+				</Grid.RowDefinitions>
+
+				<TextBlock
+					FontSize="16"
+					Text="{Binding Converter={StaticResource LocalFontNameConverter}, Mode=OneTime}"
+					FontFamily="{Binding Mode=OneTime}" />
+
+				<TextBlock
+					Grid.Row="1" Margin="0 3 0 0"
+					Foreground="{DynamicResource DisabledForeground}"
+					Text="{Binding Converter={StaticResource LocalFontNameConverter}, Mode=OneTime}" />
+			</Grid>
+		</DataTemplate>
+
 	</Window.Resources>
 	<Window.DataContext>
 		<local:ViewModelInstance ViewModel="{StaticResource ViewModel}" />
@@ -136,180 +256,388 @@
 					VerticalAlignment="Center"
 					HorizontalAlignment="Center"
 					Text="{Binding ElementName=tabControl, Path=SelectedItem.Header}" />
-
-				<ToolBar
-					Grid.Column="3"
-					ToolBarTray.IsLocked="True"
-					local:ElementBehavior.Visible="{Binding IsAccountPage, Mode=OneWay}">
-					<Button 
-						Content="アカウントの追加"
-						Command="{Binding AddAccountCommand, Mode=OneTime}"/>
-					<Button 
-						Content="削除"
-						Command="{Binding DeleteAccountCommand, Mode=OneTime}"/>
-					<Button 
-						Content="上に移動"
-						Command="{Binding AccountMoveUpCommand, Mode=OneTime}"/>
-					<Button 
-						Content="下に移動"
-						Command="{Binding AccountMoveDownCommand, Mode=OneTime}"/>
-					<Button ToolBar.OverflowMode="Always" Content="拡張認証" />
-				</ToolBar>
 			</Grid>
 		</Border>
 
 		<TabControl 
-			x:Name="tabControl" 
+			x:Name="tabControl"
 			Style="{StaticResource tabControlStyle}"
 			SelectedIndex="{Binding TabPageIndex, Mode=TwoWay}">
 			<TabItem Header="基本設定">
-				<StackPanel Style="{StaticResource ElementsContainerStyle}">
-					<CheckBox Content="起動時にアップデートを確認する"
-							  IsChecked="{Binding Setting.CheckUpdate}"/>
+				<TabControl
+					Style="{StaticResource TabControlStyle1}">
+					<TabItem Header="全般">
+						<StackPanel Style="{StaticResource ElementsContainerStyle}">
+							<CheckBox Content="起動時にアップデートを確認する"
+									  IsChecked="{Binding Setting.CheckUpdate}"/>
 
-					<CheckBox Content="ログオン時に自動的に起動する"
-							  IsChecked="{Binding AutoStartup}"/>
+							<CheckBox Content="ログオン時に自動的に起動する"
+									  IsChecked="{Binding AutoStartup}"/>
 
-					<CheckBox Content="ウィンドウを最小化して起動する"
-							  IsChecked="{Binding Setting.MinimizeStartup}"/>
+							<Label Content="メインウィンドウ" Style="{StaticResource HeaderLabelStyle2}" />
 
-					<CheckBox Content="閉じるボタンを押した際に最小化する"
-							  IsChecked="{Binding Setting.MimizeAtCloseButtonClick}"/>
+							<CheckBox
+								Content="最小化して起動する"
+								IsChecked="{Binding Setting.MinimizeStartup}"/>
 
-					<CheckBox Content="アイコンをタスクトレイに表示する"
-							  IsChecked="{Binding ShowInTaskTray}" />
+							<CheckBox
+								Content="閉じるボタンを押した際に最小化する"
+								IsChecked="{Binding Setting.MimizeAtCloseButtonClick}"/>
 
-					<CheckBox Margin="24 2 0 2"
-							  Content="最小化時にタスクバーに表示しない"
-							  IsChecked="{Binding ShowInTaskTrayAtMinized}"
-							  IsEnabled="{Binding ShowInTaskTray, Mode=OneWay}" />
+							<Label Content="タスクトレイ" Style="{StaticResource HeaderLabelStyle2}" />
 
-					<CheckBox Margin="24 2 0 2"
-							  Content="最小化時にバルーンを表示する"
-							  IsChecked="{Binding Setting.ShowBalloonAtMinimized}"
-							  IsEnabled="{Binding ShowInTaskTray, Mode=OneWay}"/>
+							<CheckBox
+								Content="アイコンをタスクトレイに表示する"
+								IsChecked="{Binding ShowInTaskTray}" />
 
-					<CheckBox Content="ログオフを抑止する"
-							  IsChecked="{Binding Setting.SuppressShutdown}" />
-				</StackPanel>
+							<CheckBox 
+								Margin="24 2 0 2"
+								Content="最小化時にタスクバーに表示しない"
+								IsChecked="{Binding ShowInTaskTrayAtMinized}"
+								IsEnabled="{Binding ShowInTaskTray, Mode=OneWay}" />
+
+							<CheckBox 
+								Margin="24 2 0 2"
+								Content="最小化時にバルーンを表示する"
+								IsChecked="{Binding Setting.ShowBalloonAtMinimized}"
+								IsEnabled="{Binding ShowInTaskTray, Mode=OneWay}"/>
+
+
+							<Label Content="システム" Style="{StaticResource HeaderLabelStyle2}" />
+
+							<CheckBox
+								Content="ログオフを抑止する"
+								IsChecked="{Binding Setting.SuppressShutdown}" />
+						</StackPanel>
+
+					</TabItem>
+
+					<TabItem Header="フォント設定">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="auto" MaxHeight="84" />
+								<RowDefinition Height="auto" />
+								<RowDefinition />
+							</Grid.RowDefinitions>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition />
+								<ColumnDefinition Width="auto" />
+							</Grid.ColumnDefinitions>
+
+							<Rectangle
+								Fill="{DynamicResource ToolBarBackground}"
+								Grid.ColumnSpan="2" />
+
+							<TextBox
+								Margin="6"
+								TextWrapping="WrapWithOverflow"
+								AcceptsReturn="True"
+								AcceptsTab="False"
+								ScrollViewer.VerticalScrollBarVisibility="Auto"
+								ScrollViewer.HorizontalScrollBarVisibility="Auto"
+								Height="60"
+								Text="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJLMNOPQSTUVWXYZ&#xa;1234567890.:,; ' &#x22; (!?) +-*/=&#xa;C# でプログラミングの世界が広がります。1234567890" />
+
+							<StackPanel
+								Grid.Column="1"
+								Margin="0 6 6 6">
+								<Button Content="button-1" />
+								<Button Content="button-2" Margin="0 6 0 0" />
+							</StackPanel>
+
+							<Border
+								Grid.Row="1" Grid.ColumnSpan="2"
+								Style="{StaticResource ToolBarBorderStyle}">
+								<ToolBar>
+									<Label Margin="6 0 0 0" Content="フォント：" />
+
+									<ComboBox
+										Width="180"
+										IsEditable="True"
+										ItemTemplate="{StaticResource FontViewTemplate}"
+										Text="{Binding SelectedNewFont, UpdateSourceTrigger=PropertyChanged}"
+										ItemsSource="{Binding FontFamilies, Source={x:Static local:Info.OS}}">
+										<ComboBox.ItemsPanel>
+											<ItemsPanelTemplate>
+												<VirtualizingStackPanel Orientation="Vertical" />
+											</ItemsPanelTemplate>
+										</ComboBox.ItemsPanel>
+									</ComboBox>
+
+									<Button Content="追加" />
+
+									<Separator />
+
+									<Button Content="削除" />
+
+									<Button Content="下に移動" />
+
+									<Button Content="下に移動" />
+
+									<Separator />
+
+									<Button
+										Content="初期値を読み込む"
+										ToolBar.OverflowMode="AsNeeded"/>
+
+									<Button
+										Content="キャンセル"
+										ToolBar.OverflowMode="Always"/>
+								</ToolBar>
+							</Border>
+
+							<ListBox
+								Grid.Row="2"
+								Grid.ColumnSpan="2"
+								BorderThickness="0"
+								ItemTemplate="{StaticResource FontViewTemplate}"
+								ItemsSource="{Binding ViewFonts, Mode=OneTime}">
+								
+							</ListBox>
+						</Grid>
+					</TabItem>
+				</TabControl>
 			</TabItem>
 
 			<TabItem Header="アカウント">
-				<ListView
-					BorderThickness="0"
-					Background="Transparent"
-					SelectedIndex="{Binding SelectedAccountIndex}"
-					ItemsSource="{Binding Accounts, Mode=OneTime}"
-					ItemContainerStyle="{StaticResource AccountListItemTemplate}"
-					ItemTemplate="{StaticResource AccountItemTemplate}">
-				</ListView>
+				<TabControl Style="{StaticResource TabControlStyle1}">
+					<TabItem Header="アカウント管理">
+						<DockPanel>
+							<Border DockPanel.Dock="Top" Style="{StaticResource ToolBarBorderStyle}">
+								<ToolBar HorizontalAlignment="Right">
+									<Button 
+										Content="アカウントの追加"
+										Command="{Binding AddAccountCommand, Mode=OneTime}"/>
+									<Button 
+										Content="削除"
+										Command="{Binding DeleteAccountCommand, Mode=OneTime}"/>
+									<Button 
+										Content="上に移動"
+										Command="{Binding AccountMoveUpCommand, Mode=OneTime}"/>
+									<Button 
+										Content="下に移動"
+										Command="{Binding AccountMoveDownCommand, Mode=OneTime}"/>
+									<Button ToolBar.OverflowMode="Always" Content="拡張認証" />
+								</ToolBar>
+							</Border>
+
+							<ListView
+								BorderThickness="0"
+								Background="Transparent"
+								SelectedIndex="{Binding SelectedAccountIndex}"
+								ItemsSource="{Binding Accounts, Mode=OneTime}"
+								ItemContainerStyle="{StaticResource AccountListItemTemplate}"
+								ItemTemplate="{StaticResource AccountItemTemplate}">
+							</ListView>
+						</DockPanel>
+					</TabItem>
+					<TabItem Header="カラム設定">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="2*" />
+								<ColumnDefinition Width="3*" />
+								<ColumnDefinition Width="5*" />
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="auto" />
+								<RowDefinition Height="auto" />
+								<RowDefinition Height="*" />
+							</Grid.RowDefinitions>
+
+							<Rectangle
+								Grid.RowSpan="2"
+								Grid.ColumnSpan="3"
+								Fill="{DynamicResource ToolBarBackground}" />
+
+							<Label 
+								Grid.ColumnSpan="3"
+								Margin="8 8 0 0"
+								Content="アカウント追加時にタイムラインに追加するカラム"
+								Style="{StaticResource HeaderLabel}" />
+
+							<Border
+								Grid.Row="1"
+								Grid.ColumnSpan="3"
+								Padding="8 0 0 0"
+								Style="{StaticResource ToolBarBorderStyle}">
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="auto" />
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="auto" />
+									</Grid.ColumnDefinitions>
+
+									<ToolBar
+										ToolBarTray.IsLocked="True">
+										<Label Content="カラムの種類：" />
+										<ComboBox
+											Width="160" Margin="4 0"
+											SelectedIndex="0"
+											SelectedValuePath="Key"
+											DisplayMemberPath="Value"
+											SelectedValue="{Binding TempColumnType}"
+											ItemsSource="{x:Static local:ColumnBase.ColumnTypes}" />
+										<Button Content="追加(_D)" Command="{Binding AddDefaultColumnCommand, Mode=OneTime}" />
+									</ToolBar>
+
+									<ToolBar Grid.Column="2" ToolBarTray.IsLocked="True">
+
+									</ToolBar>
+								</Grid>
+							</Border>
+
+							<ListBox
+								Grid.Row="2"
+								Grid.ColumnSpan="3"
+								BorderThickness="0"
+								ScrollViewer.CanContentScroll="False"
+								ItemsSource="{Binding DefaultColumns, Mode=OneTime}">
+								<ListBox.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Orientation="Horizontal" />
+									</ItemsPanelTemplate>
+								</ListBox.ItemsPanel>
+								<ListBox.ItemContainerStyle>
+									<Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+										<Setter Property="BorderThickness" Value="2" />
+										<Setter Property="Margin" Value="2" />
+									</Style>
+								</ListBox.ItemContainerStyle>
+								<ListBox.ItemTemplate>
+									<DataTemplate DataType="{x:Type local:ColumnSetting}">
+										<Grid Background="White" Width="240">
+											<Grid.RowDefinitions>
+												<RowDefinition Height="auto" />
+												<RowDefinition Height="*" />
+											</Grid.RowDefinitions>
+
+											<Border
+												Margin="1"
+												Padding="10 4"
+												Background="#eee"
+												BorderThickness="0 0 0 1"
+												BorderBrush="#ddd">
+												<TextBlock
+													FontSize="14"
+													FontWeight="Bold">
+													<Run Text="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Converter={StaticResource ListBoxIndexConverter}, Mode=OneWay, StringFormat='{}{0}.'}" />
+													<Run Text="{Binding Type, Mode=OneTime, Converter={StaticResource ColumnNameConverter}}" />
+												</TextBlock>
+											</Border>
+
+											<ScrollViewer
+												Grid.Row="1"
+												ScrollViewer.VerticalScrollBarVisibility="Auto"
+												ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+												<ContentPresenter
+													Margin="10 6"
+													VerticalAlignment="Top"
+													Content="{Binding Converter={StaticResource ColumnSettingToColumnConverter}, Mode=OneTime}"
+													ContentTemplateSelector="{StaticResource ColumnOptionTemplateSelector}" />
+											</ScrollViewer>
+										</Grid>
+									</DataTemplate>
+								</ListBox.ItemTemplate>
+							</ListBox>
+						</Grid>
+					</TabItem>
+				</TabControl>
 			</TabItem>
 
 			<TabItem Header="通知">
+				<TabControl Style="{StaticResource TabControlStyle1}">
+					<TabItem Header="全般">
+						<StackPanel Style="{StaticResource ElementsContainerStyle}">
+							<CheckBox
+								Content="通知機能を使用する"
+								IsChecked="{Binding Setting.EnableNotification}"/>
 
-			</TabItem>
+							<Label
+								Margin="0 8 0 0" Content="通知方法"
+								Style="{StaticResource HeaderLabel}" />
 
-			<TabItem Header="ページとカラム">
-				<StackPanel Margin="{StaticResource ContainerMargin}">
-					<ToolBar
-						HorizontalAlignment="Right"
-						HorizontalContentAlignment="Right"
-						ToolBarTray.IsLocked="True">
-						<Label Content="ページ名: " Foreground="#444" />
-						<TextBox 
-							Width="180"
-							Text="{Binding PageTitle, UpdateSourceTrigger=PropertyChanged}"/>
-						<Button
-							Content="追加"
-							Command="{Binding AddPageCommand, Mode=OneTime}"/>
-						<Separator />
-						<Button
-							Content="削除"
-							Command="{Binding DeletePageCommand, Mode=OneTime}"/>
-					</ToolBar>
-					<ListView
-						Padding="4"
-						MinHeight="80"
-						BorderBrush="#ccc"
-						SelectionMode="Single"
-						SelectedItem="{Binding SelectedPage, Mode=TwoWay}"
-						ItemsSource="{Binding Pages, Mode=OneTime}"
-						ItemsPanel="{StaticResource HorizontalPanelTemplate}"
-						ScrollViewer.CanContentScroll="false">
-						<ListView.ItemTemplate>
-							<DataTemplate DataType="{x:Type local:PageItem}">
-								<TextBlock 
-									Margin="4"
-									TextWrapping="Wrap"
-									TextTrimming="CharacterEllipsis"
-									Text="{Binding Title, Mode=OneWay}" />
-							</DataTemplate>
-						</ListView.ItemTemplate>
-						<ListView.ItemContainerStyle>
-							<Style TargetType="{x:Type ListViewItem}">
-								<Setter Property="Margin" Value="4" />
-								<Setter Property="Width" Value="120" />
-								<Setter Property="Height" Value="60" />
-								<Setter Property="Cursor" Value="Hand" />
-								<Setter Property="Opacity" Value="0.0" />
-								<Setter Property="Template">
-									<Setter.Value>
-										<ControlTemplate TargetType="{x:Type ListViewItem}">
-											<Border x:Name="border"
-													BorderThickness="1"
-													Background="#fff"
-													BorderBrush="#ddd">
-												<Border.Effect>
-													<DropShadowEffect
-														x:Name="shadow"
-														Color="#ddd"
-														Opacity=".8"
-														BlurRadius="4"
-														ShadowDepth="0" />
-												</Border.Effect>
+							<CheckBox
+								Content="音声を再生する"
+								IsChecked="{Binding Setting.EnableSoundNotification}" />
 
-												<Border
-													x:Name="innerBorder"
-													BorderThickness="1"
-													BorderBrush="#fff">
-													<ContentPresenter
-														VerticalAlignment="Center"
-														HorizontalAlignment="Center"/>
-												</Border>
-											</Border>
+							<CheckBox 
+								Content="ポップアップを表示する"
+								IsChecked="{Binding Setting.EnablePopupNotification}"/>
 
-											<ControlTemplate.Triggers>
-												<Trigger Property="IsMouseOver" Value="true">
-													<Setter TargetName="border" Property="BorderBrush" Value="#ccc" />
-												</Trigger>
+							<Label
+								Margin="0 8 0 0" Content="通知項目"
+								Style="{StaticResource HeaderLabel}" />
 
-												<Trigger Property="IsSelected" Value="true">
-													<Setter TargetName="border" Property="Background" Value="#fafafa" />
-													<Setter TargetName="border" Property="BorderBrush" Value="#07c" />
-													<Setter TargetName="innerBorder" Property="BorderBrush" Value="#fbfbfb" />
-													<!--<Setter TargetName="shadow" Property="Opacity" Value=".4" />-->
-												</Trigger>
-											</ControlTemplate.Triggers>
-										</ControlTemplate>
-									</Setter.Value>
-								</Setter>
-								<Style.Triggers>
-									<EventTrigger RoutedEvent="Loaded">
-										<EventTrigger.Actions>
-											<BeginStoryboard>
-												<Storyboard>
-													<DoubleAnimation
-														To="1.0" Duration="0:0:0.2"
-														Storyboard.TargetProperty="Opacity"/>
-												</Storyboard>
-											</BeginStoryboard>
-										</EventTrigger.Actions>
-									</EventTrigger>
-								</Style.Triggers>
-							</Style>
-						</ListView.ItemContainerStyle>
-					</ListView>
-				</StackPanel>
+							<UniformGrid Columns="2">
+								<CheckBox
+									Content="リプライ"
+									IsChecked="{Binding Setting.Notification_Reply}"/>
+
+								<CheckBox
+									Content="フォロー"
+									IsChecked="{Binding Setting.Notification_Follow}" />
+
+								<CheckBox
+									Content="いいね"
+									IsChecked="{Binding Setting.Notification_Favorite}" />
+
+								<CheckBox
+									Content="リツイート"
+									IsChecked="{Binding Setting.Notification_Retweet}" />
+
+								<CheckBox
+									Content="リストへ追加"
+									IsChecked="{Binding Setting.Notification_ListMemberAdded}" />
+
+								<!--<CheckBox Content="リストから除外された"
+										  IsChecked="{Binding Setting.}" />-->
+
+								<CheckBox
+									Content="リツイートにいいね"
+									IsChecked="{Binding Setting.Notification_FavoritedRetweet}" />
+
+								<CheckBox
+									Content="リツイートがリツイート"
+									IsChecked="{Binding Setting.Notification_RetweetedRetweet}" />
+
+								<CheckBox
+									Content="引用ツイート"
+									IsChecked="{Binding Setting.}" />
+
+								<CheckBox
+									Content="ダイレクトメッセージ"
+									IsChecked="{Binding Setting.notification_dm_received}" />
+							</UniformGrid>
+						</StackPanel>
+					</TabItem>
+
+					<TabItem Header="音声設定">
+						<StackPanel Margin="{StaticResource ContainerMargin}">
+							<Label Content="ファイル" Style="{StaticResource HeaderLabel}" />
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="auto" />
+								</Grid.ColumnDefinitions>
+
+								<TextBox
+									IsReadOnly="True"
+									Text="{Binding NotificationSoundFilePath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+								<Button
+									Margin="6 0 0 0"
+									Padding="6 4"
+									Content="..."
+									Grid.Column="1" />
+							</Grid>
+
+							<StackPanel Margin="0 6 0 0" Orientation="Horizontal" HorizontalAlignment="Left">
+								<Button Content="再生" />
+								<Button Content="停止" Margin="6 0 0 0" />
+							</StackPanel>
+						</StackPanel>
+					</TabItem>
+				</TabControl>
 			</TabItem>
 
 			<TabItem Header="タイムライン">
@@ -318,7 +646,46 @@
 
 			<TabItem Header="ミュート" />
 
-			<TabItem Header="書式" />
+			<TabItem Header="書式">
+				<StackPanel Margin="{StaticResource ContainerMargin}">
+					<Label Content="NowPlaying" Style="{StaticResource HeaderLabel}" />
+					<CheckBox Content="ジャケット画像を添付する"
+							  IsChecked="{Binding Setting.InsertThumbnailAtNowPlayying}"/>
+					<TextBox Text="{Binding NowPlayingFormat, UpdateSourceTrigger=PropertyChanged}">
+						<i:Interaction.Behaviors>
+							<b:TextBoxBehavior 
+								SelectionStart="{Binding NowPlayingSelectionStart}" 
+								SelectionLength="{Binding NowPlayingSelectionLength}" />
+						</i:Interaction.Behaviors>
+					</TextBox>
+
+					<Label
+						Content="NowPlayingの置換文字列："
+						Style="{StaticResource HeaderLabelStyle2}" />
+
+					<UniformGrid Columns="2" Margin="8 0 0 0">
+						<Button Content="%album% - アルバム名" CommandParameter="%album%" />
+						<Button Content="%album_artist% - アルバムのアーティスト" CommandParameter="%album_artist%" />
+						<Button Content="%artist% - アーティスト名" CommandParameter="%artist%" />
+						<Button Content="%composer% - 作曲者" CommandParameter="%composer%" />
+						<Button Content="%category% - カテゴリ" CommandParameter="%category%" />
+						<Button Content="%genre% - ジャンル" CommandParameter="%genre%" />
+						<Button Content="%name% - 楽曲名" CommandParameter="%name%" />
+						<Button Content="%number% - トラック番号" CommandParameter="%number%" />
+						<Button Content="%year% - 年代" CommandParameter="%year%" />
+						<Button Content="リセット" Command="{Binding ResetNowPlayingCommand, Mode=OneTime}" />
+						<UniformGrid.Resources>
+							<Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+								<Setter Property="Padding" Value="8 4 12 4" />
+								<Setter Property="Margin" Value="0 4 8 2" />
+								<Setter Property="HorizontalAlignment" Value="Stretch" />
+								<Setter Property="HorizontalContentAlignment" Value="Left" />
+								<Setter Property="Command" Value="{Binding InsertNowPlayingParamCommand, Mode=OneTime}" />
+							</Style>
+						</UniformGrid.Resources>
+					</UniformGrid>
+				</StackPanel>
+			</TabItem>
 		</TabControl>
 	</DockPanel>
 </Window>

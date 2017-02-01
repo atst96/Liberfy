@@ -6,5 +6,11 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    class Query : Dictionary<string, object> { }
+	class StreamSearchColumn : SearchColumnBase
+	{
+		public StreamSearchColumn(Account account)
+			: base(account, ColumnType.Stream)
+		{
+		}
+	}
 }

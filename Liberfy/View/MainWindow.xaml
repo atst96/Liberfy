@@ -22,7 +22,7 @@
 		</Grid.RowDefinitions>
 		
 		<!--#region Toolbar -->
-
+		
 		<Border
 			Height="32" ToolBarTray.IsLocked="True"
 			Style="{StaticResource ToolBarBorderStyle}">

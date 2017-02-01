@@ -17,5 +17,10 @@ namespace Liberfy
 		public const string @SettingFile = "settings.json";
 		public const string @WindowFile = "winconf.json";
 		public const string @AccountsFile = "accounts.json";
+
+		public const string @DefaultNowPlayingFormat = @"%artist% - %name% / %album% #NowPlaying";
+
+		private const string _defSoundPath = @"%windir%\Media\Windows Notify.wav";
+		public static readonly string @DefaultSoundFile = Environment.ExpandEnvironmentVariables(_defSoundPath);
 	}
 }

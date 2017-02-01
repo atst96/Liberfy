@@ -25,24 +25,16 @@ namespace Liberfy
 			};
 		}
 
-		public long ListId { get; set; }
+		private long? _listId;
+		public long ListId
+		{
+			get { return GetPropValue(ref _listId, "list_id", -1); }
+			set { SetValueWithProp(ref _listId, value, "list_id"); }
+		}
 
 		private void listTimerTicked(object sender, EventArgs e)
 		{
 			
-		}
-
-		protected override ColumnProperties CreateProperties()
-			=> new ColumnProperties(base.CreateProperties())
-			{
-				["list_id"] = ListId,
-			};
-
-		protected override void ApplyProperties(ColumnProperties prop)
-		{
-			base.ApplyProperties(prop);
-
-			ListId = prop.TryGetValue<long>("list_id");
 		}
 	}
 }
