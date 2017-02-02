@@ -12,6 +12,12 @@ namespace Liberfy
 {
 	class SettingWindowViewModel : ViewModelBase
 	{
+		public SettingWindowViewModel() : base()
+		{
+			ViewFonts = new FluidCollection<FontFamily>();
+			SetFontSettings();
+		}
+
 		internal override void OnInitialized()
 		{
 			base.OnInitialized();
@@ -100,6 +106,58 @@ namespace Liberfy
 
 		#region General
 
+		void SetFontSettings()
+		{
+			ViewFont = new FontFamily(string.Join(", ", Setting.TimelineFont));
+			_viewFontSize = Setting.TimelineFontSize;
+			ViewFonts.Reset(Setting.TimelineFont.Select(f => new FontFamily(f)));
+			ViewFontRendering = Setting.TimelineFontRendering;
+
+			RaisePropertyChanged(nameof(ViewFont));
+			RaisePropertyChanged(nameof(IsLegacyGDIRender));
+			RaisePropertyChanged(nameof(IsGDIPlusRender));
+			RaisePropertyChanged(nameof(ViewFontSize));
+		}
+
+		public FontFamily ViewFont { get; set; }
+
+		public bool IsLegacyGDIRender
+		{
+			get { return ViewFontRendering == TextFormattingMode.Display; }
+			set
+			{
+				ViewFontRendering = TextFormattingMode.Display;
+				RaisePropertyChanged(nameof(ViewFontRendering));
+				RaisePropertyChanged(nameof(IsGDIPlusRender));
+			}
+		}
+
+		public bool IsGDIPlusRender
+		{
+			get { return ViewFontRendering == TextFormattingMode.Ideal; }
+			set
+			{
+				ViewFontRendering = TextFormattingMode.Ideal;
+				RaisePropertyChanged(nameof(ViewFontRendering));
+				RaisePropertyChanged(nameof(IsLegacyGDIRender));
+			}
+		}
+
+		private double? _viewFontSize;
+		public double? ViewFontSize
+		{
+			get { return _viewFontSize; }
+			set
+			{
+				if (SetProperty(ref _viewFontSize, value))
+				{
+					FontCommand.RaiseCanExecute();
+				}
+			}
+		}
+
+		public TextFormattingMode ViewFontRendering { get; private set; }
+
 		private string _selectedNewFont = "Arial";
 		public string SelectedNewFont
 		{
@@ -108,13 +166,103 @@ namespace Liberfy
 			{
 				if (SetProperty(ref _selectedNewFont, value))
 				{
+					FontCommand.RaiseCanExecute();
+				}
+			}
+		}
+
+		private FontFamily _selectedFont;
+		public FontFamily SelectedFont
+		{
+			get { return _selectedFont; }
+			set
+			{
+				if (SetProperty(ref _selectedFont, value))
+				{
+					FontCommand.RaiseCanExecute();
 				}
 			}
 		}
 
 		public FluidCollection<FontFamily> ViewFonts { get; }
-			= new FluidCollection<FontFamily>(
-				App.Setting.TimelineFont.Select(f => new FontFamily(f)));
+
+		private Command<string> _fontCommand;
+		public Command<string> FontCommand => _fontCommand
+			?? (_fontCommand = new DelegateCommand<string>(
+			cmd =>
+			{
+				switch (cmd)
+				{
+					case "add":
+						ViewFonts.Add(new FontFamily(_selectedNewFont));
+						break;
+
+					case "del":
+						ViewFonts.Remove(_selectedFont);
+						break;
+
+					case "up":
+						ViewFonts.MoveUp(ViewFonts.IndexOf(_selectedFont));
+						FontCommand.RaiseCanExecute();
+						break;
+
+					case "down":
+						ViewFonts.MoveDown(ViewFonts.IndexOf(_selectedFont));
+						FontCommand.RaiseCanExecute();
+						break;
+
+					case "save":
+						Setting.TimelineFont = ViewFonts.Select(f => f.Source).ToArray();
+						Setting.TimelineFontSize = ViewFontSize.Value;
+						Setting.TimelineFontRendering = ViewFontRendering;
+						break;
+
+					case "reset":
+						Setting.TimelineFont = Setting.DefaultTimelineFont;
+						Setting.TimelineFontSize = Setting.DefaultTimelineFontSize;
+						goto case "reload";
+
+					case "reload":
+						SetFontSettings();
+
+						RaisePropertyChanged(nameof(ViewFonts));
+						break;
+				}
+
+				ViewFont = new FontFamily(string.Join(", ", ViewFonts.Select(f => f.Source)));
+
+				RaisePropertyChanged(nameof(ViewFont));
+			},
+			cmd =>
+			{
+				switch (cmd)
+				{
+					case "add":
+						return !string.IsNullOrWhiteSpace(_selectedNewFont);
+
+					case "del":
+						return _selectedFont != null;
+
+					case "up":
+						return _selectedFont != null
+							&& MathEx.IsWithin(Math.Min(
+								ViewFonts.Count, ViewFonts.IndexOf(_selectedFont)), 1, ViewFonts.Count);
+
+					case "down":
+						return _selectedFont != null
+							&& Math.Max(0, ViewFonts.IndexOf(_selectedFont)) < ViewFonts.Count - 1;
+
+					case "save":
+						return ViewFonts.Count > 0 && ViewFontSize.HasValue;
+
+					case "reset":
+					case "reload":
+						return true;
+
+					default:
+						return false;
+				}
+			}));
 
 		#endregion
 

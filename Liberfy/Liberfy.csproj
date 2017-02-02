@@ -121,6 +121,7 @@
     <Compile Include="ClientContent.cs" />
     <Compile Include="Info\Info.cs" />
     <Compile Include="Info\OSInfo.cs" />
+    <Compile Include="MathEx.cs" />
     <Compile Include="ViewModel\Column\Base\ColumnBase.cs" />
     <Compile Include="ViewModel\Column\ListColumn.cs" />
     <Compile Include="ViewModel\Column\MessageColumn.cs" />

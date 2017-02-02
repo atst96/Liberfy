@@ -73,7 +73,7 @@ namespace Liberfy
 			: base(hookRequerySuggested)
 		{
 			_execute = action;
-			_canExecute = DefaultCanExecute;
+			_canExecute = predicate ?? DefaultCanExecute;
 		}
 
 		public override bool CanExecute(T parameter)

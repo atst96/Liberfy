@@ -1081,22 +1081,11 @@
 				</Setter>
 			</Style>
 
-			<Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource BoxItemBase}">
-				<Style.Triggers>
-					<Trigger Property="IsKeyboardFocusWithin" Value="true">
-						<Setter Property="IsSelected" Value="true" />
-					</Trigger>
-				</Style.Triggers>
-			</Style>
-			
-			<Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource BoxItemBase}">
-				<Style.Triggers>
-					<Trigger Property="IsKeyboardFocusWithin" Value="true">
-						<Setter Property="IsSelected" Value="true" />
-					</Trigger>
-				</Style.Triggers>
-			</Style>
-			
+			<Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource BoxItemBase}" />
+
+			<Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource BoxItemBase}" />
+
+
 			<Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource BoxItemBase}">
 				<Setter Property="BorderThickness" Value="0" />
 				<Setter Property="Padding" Value="4 2" />
@@ -1479,7 +1468,12 @@
 			
 			<!--#endregion-->
 
-
+			<Style x:Key="ToolBarStyle" TargetType="{x:Type ToolBar}" BasedOn="{StaticResource {x:Type ToolBar}}">
+				<Setter Property="Background" Value="{DynamicResource ToolBarBackground}" />
+				<Setter Property="BorderThickness" Value="{DynamicResource BottomThickness}" />
+				<Setter Property="BorderBrush" Value="{DynamicResource ToolBarBorderBrush}" />
+				<Setter Property="Foreground" Value="{DynamicResource ToolBarForeground}" />
+			</Style>
 		</ResourceDictionary>
 	</Application.Resources>
 </Application>

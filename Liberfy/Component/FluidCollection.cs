@@ -6,10 +6,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Liberfy
 {
-	class FluidCollection<T> : ICollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
+	class FluidCollection<T> : ICollection<T>, IList<T>, INotifyCollectionChanged, INotifyPropertyChanged
 	{
 		public List<T> list;
 
@@ -90,10 +91,13 @@ namespace Liberfy
 			}
 		}
 
+		public void MoveUp(int oldIndex, int count = 1) => Move(oldIndex, oldIndex - count);
+
+		public void MoveDown(int oldIndex, int count = 1) => Move(oldIndex, oldIndex + count);
 
 		public void Move(int oldIndex, int newIndex)
 		{
-			if (HasItems && IsRange(0, Count - 1, oldIndex))
+			if (HasItems && MathEx.IsWithin(oldIndex, 0, Count - 1))
 			{
 				T item = list[oldIndex];
 				list.RemoveAt(oldIndex);
@@ -128,7 +132,7 @@ namespace Liberfy
 		{
 			int oldCount = list.Count;
 
-			if (HasItems && IsRange(0, oldCount - 1, index))
+			if (HasItems && MathEx.IsWithin(index, 0, oldCount - 1))
 			{
 				T item = list[index];
 				list.RemoveAt(index);
@@ -167,9 +171,37 @@ namespace Liberfy
 
 		private bool HasItems => list.Count > 0;
 
-		private static bool IsRange(int min, int max, int value)
+		public T this[int index]
 		{
-			return min >= value && max <= value;
+			get
+			{
+				return list[index];
+			}
+
+			set
+			{
+				list[index] = value;
+			}
+		}
+
+		public int IndexOf(T item)
+		{
+			return list.IndexOf(item);
+		}
+
+		public void Reset() => Clear();
+
+		public void Reset(IEnumerable<T> collection)
+		{
+			list.Clear();
+
+			list.AddRange(collection);
+
+			RaiseCollectionChanged(
+				new NotifyCollectionChangedEventArgs(
+					NotifyCollectionChangedAction.Reset));
+
+			RaiseCountPropertyChanged();
 		}
 	}
 }

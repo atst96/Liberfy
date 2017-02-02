@@ -17,7 +17,7 @@ namespace Liberfy
 	{
 		internal void NormalizeSettings()
 		{
-			if(DefaultColumns == null)
+			if (DefaultColumns == null)
 			{
 				DefaultColumns = new FluidCollection<ColumnSetting>
 				{
@@ -25,6 +25,18 @@ namespace Liberfy
 					new ColumnSetting(ColumnType.Notification, Account.Dummy),
 					new ColumnSetting(ColumnType.Messages, Account.Dummy),
 				};
+			}
+
+			if (_timelineFont == null || _timelineFont.Length == 0)
+			{
+				_timelineFont = DefaultTimelineFont;
+			}
+			else
+			{
+				for (int i = 0, l = _timelineFont.Length; i < l; i++)
+				{
+					_timelineFont[i] = _timelineFont[i].Trim();
+				}
 			}
 		}
 
@@ -184,15 +196,7 @@ namespace Liberfy
 		}
 
 		[JsonProperty("timeline_font_text_rendering")]
-		public TextFormattingMode TextFormattingMode
-		{
-			get { return GetValue<TextFormattingMode>("TextFormattingMode"); }
-			set
-			{
-				SetValue("TextFormattingMode", value);
-				RaisePropertyChanged("TextFormattingMode");
-			}
-		}
+		public TextFormattingMode TimelineFontRendering { get; set; }
 
 		[JsonProperty("timeline_enable_item_animation")]
 		public bool EnableTimelineAnimation { get; set; } = true;

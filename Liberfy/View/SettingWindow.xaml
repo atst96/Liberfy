@@ -324,76 +324,134 @@
 								<ColumnDefinition Width="auto" />
 							</Grid.ColumnDefinitions>
 
-							<Rectangle
-								Fill="{DynamicResource ToolBarBackground}"
-								Grid.ColumnSpan="2" />
-
-							<TextBox
-								Margin="6"
-								TextWrapping="WrapWithOverflow"
-								AcceptsReturn="True"
-								AcceptsTab="False"
-								ScrollViewer.VerticalScrollBarVisibility="Auto"
-								ScrollViewer.HorizontalScrollBarVisibility="Auto"
-								Height="60"
-								Text="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJLMNOPQSTUVWXYZ&#xa;1234567890.:,; ' &#x22; (!?) +-*/=&#xa;C# でプログラミングの世界が広がります。1234567890" />
-
-							<StackPanel
-								Grid.Column="1"
-								Margin="0 6 6 6">
-								<Button Content="button-1" />
-								<Button Content="button-2" Margin="0 6 0 0" />
-							</StackPanel>
-
 							<Border
-								Grid.Row="1" Grid.ColumnSpan="2"
-								Style="{StaticResource ToolBarBorderStyle}">
-								<ToolBar>
-									<Label Margin="6 0 0 0" Content="フォント：" />
-
-									<ComboBox
-										Width="180"
-										IsEditable="True"
-										ItemTemplate="{StaticResource FontViewTemplate}"
-										Text="{Binding SelectedNewFont, UpdateSourceTrigger=PropertyChanged}"
-										ItemsSource="{Binding FontFamilies, Source={x:Static local:Info.OS}}">
-										<ComboBox.ItemsPanel>
-											<ItemsPanelTemplate>
-												<VirtualizingStackPanel Orientation="Vertical" />
-											</ItemsPanelTemplate>
-										</ComboBox.ItemsPanel>
-									</ComboBox>
-
-									<Button Content="追加" />
-
-									<Separator />
-
-									<Button Content="削除" />
-
-									<Button Content="下に移動" />
-
-									<Button Content="下に移動" />
-
-									<Separator />
-
-									<Button
-										Content="初期値を読み込む"
-										ToolBar.OverflowMode="AsNeeded"/>
-
-									<Button
-										Content="キャンセル"
-										ToolBar.OverflowMode="Always"/>
-								</ToolBar>
+								Background="{DynamicResource ToolBarBackground}"
+								Grid.ColumnSpan="2">
+								<TextBox
+									Margin="6"
+									TextWrapping="WrapWithOverflow"
+									AcceptsReturn="True"
+									AcceptsTab="False"
+									ScrollViewer.VerticalScrollBarVisibility="Auto"
+									ScrollViewer.HorizontalScrollBarVisibility="Auto"
+									Height="60"
+									FontSize="{Binding ViewFontSize, Mode=OneWay}"
+									FontFamily="{Binding ViewFont, Mode=OneWay}"
+									TextOptions.TextFormattingMode="{Binding ViewFontRendering}"
+									Text="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJLMNOPQSTUVWXYZ&#xa;1234567890.:,; ' &#x22; (!?) +-*/=&#xa;C# でプログラミングの世界が広がります。1234567890" />
 							</Border>
+
+							<ToolBar
+								Grid.Row="1" Grid.ColumnSpan="2"
+								Style="{StaticResource ToolBarStyle}">
+								<Label Content="フォント：" />
+
+								<ComboBox
+									Width="160"
+									IsEditable="True"
+									ItemTemplate="{StaticResource FontViewTemplate}"
+									Text="{Binding SelectedNewFont, UpdateSourceTrigger=PropertyChanged}"
+									ItemsSource="{Binding FontFamilies, Source={x:Static local:Info.OS}}">
+									<ComboBox.ItemsPanel>
+										<ItemsPanelTemplate>
+											<VirtualizingStackPanel Orientation="Vertical" />
+										</ItemsPanelTemplate>
+									</ComboBox.ItemsPanel>
+								</ComboBox>
+
+								<Button
+									Content="追加"
+									Command="{Binding FontCommand, Mode=OneTime}"
+									CommandParameter="add" />
+
+								<Separator />
+
+								<Button
+									Content="削除"
+									CommandParameter="del"
+									Command="{Binding FontCommand, Mode=OneTime}" />
+
+								<Label Content="優先度：" />
+
+								<Button
+									Content="▲"
+									CommandParameter="up"
+									Command="{Binding FontCommand, Mode=OneTime}" />
+
+								<Button
+									Content="▼"
+									CommandParameter="down"
+									Command="{Binding FontCommand, Mode=OneTime}" />
+
+								<Separator />
+
+								<Button
+									Content="リセット"
+									CommandParameter="reset"
+									Command="{Binding FontCommand, Mode=OneTime}"/>
+
+								<Button
+									Content="キャンセル"
+									CommandParameter="reload"
+									Command="{Binding FontCommand, Mode=OneTime}"/>
+							</ToolBar>
+
 
 							<ListBox
 								Grid.Row="2"
-								Grid.ColumnSpan="2"
-								BorderThickness="0"
+								BorderThickness="0 0 1 0"
+								BorderBrush="#ccc"
 								ItemTemplate="{StaticResource FontViewTemplate}"
-								ItemsSource="{Binding ViewFonts, Mode=OneTime}">
+								ItemsSource="{Binding ViewFonts, Mode=OneTime}"
+								SelectedValue="{Binding SelectedFont, Mode=TwoWay}"
+								TextOptions.TextFormattingMode="{Binding ViewFontRendering}" />
+
+							<StackPanel
+								Margin="6 0 6 6"
+								Grid.Row="3"
+								Grid.Column="1">
+								<Label Content="フォントサイズ(pt)" Style="{StaticResource HeaderLabelStyle2}" Margin="0" />
 								
-							</ListBox>
+								<ComboBox
+									Grid.Column="1"
+									IsEditable="True"
+									Text="{Binding ViewFontSize, UpdateSourceTrigger=PropertyChanged}">
+									<ComboBoxItem>8</ComboBoxItem>
+									<ComboBoxItem>9</ComboBoxItem>
+									<ComboBoxItem>10</ComboBoxItem>
+									<ComboBoxItem>10.5</ComboBoxItem>
+									<ComboBoxItem>11</ComboBoxItem>
+									<ComboBoxItem>12</ComboBoxItem>
+									<ComboBoxItem>14</ComboBoxItem>
+									<ComboBoxItem>16</ComboBoxItem>
+									<ComboBoxItem>18</ComboBoxItem>
+									<ComboBoxItem>20</ComboBoxItem>
+									<ComboBoxItem>22</ComboBoxItem>
+									<ComboBoxItem>24</ComboBoxItem>
+									<ComboBoxItem>26</ComboBoxItem>
+									<ComboBoxItem>28</ComboBoxItem>
+									<ComboBoxItem>36</ComboBoxItem>
+									<ComboBoxItem>48</ComboBoxItem>
+									<ComboBoxItem>72</ComboBoxItem>
+								</ComboBox>
+
+								<Label Content="フォントレンダリング" Style="{StaticResource HeaderLabelStyle2}" />
+								<RadioButton
+									Margin="12 0 0 4"
+									Content="GDI互換"
+									IsChecked="{Binding IsLegacyGDIRender}"/>
+								<RadioButton
+									Margin="12 0 0 0"
+									Content="GDI+"
+									IsChecked="{Binding IsGDIPlusRender}"/>
+
+								<Button
+									Grid.ColumnSpan="2"
+									Grid.Row="1"
+									Content="フォント設定を適用" Margin="0 24 0 0"
+									Command="{Binding FontCommand, Mode=OneTime}"
+									CommandParameter="save"/>
+							</StackPanel>
 						</Grid>
 					</TabItem>
 				</TabControl>
@@ -501,6 +559,11 @@
 									<Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
 										<Setter Property="BorderThickness" Value="2" />
 										<Setter Property="Margin" Value="2" />
+										<Style.Triggers>
+											<Trigger Property="IsKeyboardFocusWithin" Value="true">
+												<Setter Property="IsSelected" Value="True" />
+											</Trigger>
+										</Style.Triggers>
 									</Style>
 								</ListBox.ItemContainerStyle>
 								<ListBox.ItemTemplate>
