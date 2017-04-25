@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	partial class Defines
+	internal static partial class Defines
 	{
 		// public const string @ConsumerKey = "";
 		// public const string @ConsumerSecret = "";
@@ -18,9 +18,42 @@ namespace Liberfy
 		public const string @WindowFile = "winconf.json";
 		public const string @AccountsFile = "accounts.json";
 
+		public const string @DefaultNowPlayingPlayer = "wmplayer";
 		public const string @DefaultNowPlayingFormat = @"%artist% - %name% / %album% #NowPlaying";
 
 		private const string _defSoundPath = @"%windir%\Media\Windows Notify.wav";
 		public static readonly string @DefaultSoundFile = Environment.ExpandEnvironmentVariables(_defSoundPath);
+
+		public static readonly string[] DefaultTimelineFont = { "Meiryo", "Segoe UI Symbol" };
+		public const double DefaultTimelineFontSize = 12;
+
+		public readonly static string[] ImageExtensions =
+		{
+			// JPEG
+			".jpeg",
+			".jpg",
+			".jpe",
+			".jfif",
+			".jfi",
+			".jif",
+
+			// PNG
+			".png",
+
+			// GIF
+			".gif",
+
+			// WebP
+			".webp",
+		};
+
+		public readonly static string[] VideoExtensions =
+		{
+			".gif",
+			".mp4",
+		};
+
+		public readonly static string[] UploadableMediaExtensions
+			= ImageExtensions.Union(VideoExtensions).ToArray();
 	}
 }

@@ -100,6 +100,8 @@ namespace Liberfy
 
 		public static ColumnBase FromSettings(ColumnSetting s)
 		{
+			if (s == null) return null;
+
 			ColumnBase column;
 
 			Account ac;
@@ -110,7 +112,7 @@ namespace Liberfy
 			}
 			else
 			{
-				ac = App.Accounts.FromId(s.UserId);
+				ac = App.AccountSetting.FromId(s.UserId);
 				if (ac == null) {
 					throw new ArgumentOutOfRangeException();
 				}

@@ -42,6 +42,7 @@
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -58,12 +59,18 @@
   <PropertyGroup>
     <ApplicationIcon>Icons\app.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Liberfy.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.1.2\lib\portable-windows8+net40+sl5+windowsphone8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Newtonsoft.Json.dll</HintPath>
@@ -96,12 +103,21 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Xceed.Wpf.Toolkit, Version=3.0.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Behaviors\PasteImageBehavior.cs" />
+    <Compile Include="Component\ListBoxItemFocusBehavior.cs" />
+    <Compile Include="Behaviors\DragDropBehavior.cs" />
+    <Compile Include="DragDropHelper.cs" />
+    <Compile Include="Extensions\WpfBehavior.cs" />
     <Compile Include="Info\AppInfo.cs" />
     <Compile Include="ColumnOptionTemplateSelector.cs" />
     <Compile Include="Component\ColumnOptions.cs" />
@@ -121,7 +137,14 @@
     <Compile Include="ClientContent.cs" />
     <Compile Include="Info\Info.cs" />
     <Compile Include="Info\OSInfo.cs" />
+    <Compile Include="ListBoxEx.cs" />
     <Compile Include="MathEx.cs" />
+    <Compile Include="Model\Setting\SettingBase.cs" />
+    <Compile Include="MVVM\CommandHelper.cs" />
+    <Compile Include="Behaviors\TextBoxBehavior.cs" />
+    <Compile Include="Behaviors\TextBoxController.cs" />
+    <Compile Include="ViewModel\UploadMedia.cs" />
+    <Compile Include="UILocalize.cs" />
     <Compile Include="ViewModel\Column\Base\ColumnBase.cs" />
     <Compile Include="ViewModel\Column\ListColumn.cs" />
     <Compile Include="ViewModel\Column\MessageColumn.cs" />
@@ -139,9 +162,9 @@
     <Compile Include="Model\Setting\ColumnSetting.cs" />
     <Compile Include="Model\Setting\Mute.cs" />
     <Compile Include="Model\Setting\Setting.cs" />
-    <Compile Include="Model\Setting\AccountrCollection.cs" />
+    <Compile Include="Model\Setting\AccountSetting.cs" />
     <Compile Include="Model\WindowStatus.cs" />
-    <Compile Include="MVVM\ViewModelInstance.cs" />
+    <Compile Include="MVVM\ViewModelConnector.cs" />
     <Compile Include="NativeMethods\Functions.cs" />
     <Compile Include="NativeMethods\NativeMethods.cs" />
     <Compile Include="NativeMethods\Values.cs" />
@@ -150,23 +173,37 @@
     <Compile Include="PageItem.cs" />
     <Compile Include="PlaceHolderTextBox.cs" />
     <Compile Include="Query.cs" />
-    <Compile Include="Component\TextBoxBehavior.cs" />
     <Compile Include="Timeline.cs" />
     <Compile Include="ViewModel\AuthenticationViewModel.cs" />
     <Compile Include="ViewModel\ContentWindowViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\SettingWindowViewModel.cs" />
+    <Compile Include="ViewModel\TweetWindowViewModel.cs" />
     <Compile Include="View\ContentWindow.xaml.cs">
       <DependentUpon>ContentWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\FontSelectWindow.xaml.cs">
+      <DependentUpon>FontSelectWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SettingWindow.xaml.cs">
       <DependentUpon>SettingWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\TweetWindow.xaml.cs">
+      <DependentUpon>TweetWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Themes\Black.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ContentWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\FontSelectWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -184,6 +221,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\SettingWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TweetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -213,6 +254,8 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.manifest" />
+    <Resource Include="Resources\FontAwesome.otf" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -223,6 +266,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="lib\Xceed.Wpf.Toolkit.dll" />
     <Resource Include="Icons\app.ico" />
     <Resource Include="Icons\app_tasktray.ico" />
     <Content Include="lib\Hardcodet.Wpf.TaskbarNotification.dll" />

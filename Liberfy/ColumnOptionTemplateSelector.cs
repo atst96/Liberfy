@@ -10,9 +10,9 @@ namespace Liberfy
 {
 	class ColumnOptionTemplateSelector : DataTemplateSelector
 	{
-		static DataTemplate _emptyTemplate { get; } = GetTemplate("EmptyDataTemplate");
-		static DataTemplate _searchTemplate { get; } = GetTemplate("SearchColumnOptionTemplate");
-		static DataTemplate _streamSearchTemplate { get; } = GetTemplate("StreamSearchColumnOptionTemplate");
+		static readonly DataTemplate _emptyTemplate = GetTemplate("EmptyDataTemplate");
+		static readonly DataTemplate _searchTemplate = GetTemplate("SearchColumnOptionTemplate");
+		static readonly DataTemplate _streamSearchTemplate = GetTemplate("StreamSearchColumnOptionTemplate");
 
 		public override DataTemplate SelectTemplate(object item, DependencyObject container)
 		{

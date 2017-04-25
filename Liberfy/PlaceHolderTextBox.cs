@@ -11,6 +11,10 @@ namespace Liberfy
 {
 	class PlaceHolderTextBox : TextBox
 	{
+		public PlaceHolderTextBox() : base()
+		{
+		}
+
 		public string PlaceHolder
 		{
 			get { return (string)GetValue(PlaceHolderProperty); }
@@ -20,27 +24,30 @@ namespace Liberfy
 		public bool IsPlaceHolderShown
 		{
 			get { return (bool)GetValue(IsPlaceHolderShownProperty); }
-			private set { SetValue(IsPlaceHolderShownProperty, value); }
+			private set { SetValue(IsPlaceHolderShownPropertyKey, value); }
 		}
 
 		public Brush PlaceHolderForeground
 		{
-			get { return (Brush)GetValue(PlaceHolderForegroundProperty);}
+			get { return (Brush)GetValue(PlaceHolderForegroundProperty); }
 			set { SetValue(PlaceHolderForegroundProperty, value); }
 		}
 
 		public static readonly DependencyProperty PlaceHolderProperty =
-			DependencyProperty.Register("PlaceHolder", typeof(string), typeof(PlaceHolderTextBox), new FrameworkPropertyMetadata(null));
+			DependencyProperty.Register("PlaceHolder",
+				typeof(string), typeof(PlaceHolderTextBox),
+				new FrameworkPropertyMetadata(null));
 
 		public static readonly DependencyProperty PlaceHolderForegroundProperty =
 			DependencyProperty.Register("PlaceHolderForeground",
-				typeof(Brush), typeof(PlaceHolderTextBox), new PropertyMetadata(Brushes.Gray));
+				typeof(Brush), typeof(PlaceHolderTextBox),
+				new PropertyMetadata(Brushes.Gray));
 
 		private static readonly DependencyPropertyKey IsPlaceHolderShownPropertyKey
 			= DependencyProperty.RegisterReadOnly(
 				"IsPlaceHolderShown",
 				typeof(bool), typeof(PlaceHolderTextBox),
-				new PropertyMetadata(false));
+				new PropertyMetadata(true));
 
 		public static readonly DependencyProperty IsPlaceHolderShownProperty
 			= IsPlaceHolderShownPropertyKey.DependencyProperty;
@@ -51,7 +58,7 @@ namespace Liberfy
 		{
 			bool newIsPlaceHolderShown = string.IsNullOrEmpty(Text);
 
-			if(!Equals(newIsPlaceHolderShown, IsPlaceHolderShown))
+			if (!Equals(newIsPlaceHolderShown, IsPlaceHolderShown))
 			{
 				IsPlaceHolderShown = newIsPlaceHolderShown;
 				OnPlaceHolderShownChanged(newIsPlaceHolderShown);

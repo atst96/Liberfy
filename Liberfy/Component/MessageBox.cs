@@ -7,7 +7,7 @@ using static Liberfy.NativeMethods;
 
 namespace Liberfy
 {
-	class MessageBox
+	internal class MessageBox
 	{
 		public MessageBox() { }
 
@@ -44,15 +44,14 @@ namespace Liberfy
 		{
 			if (nCode == (int)HCBT.ACTIVATE)
 			{
-				RECT parentRect, msgBoxRect;
 				IntPtr res;
 				int x, y;
 
-				GetWindowRect(hWnd, out parentRect);
-				GetWindowRect(wParam, out msgBoxRect);
+				GetWindowRect(hWnd, out var parentRect);
+				GetWindowRect(wParam, out var msgBoxRect);
 
-				x = (parentRect.left + (parentRect.right - parentRect.left) / 2) - ((msgBoxRect.right - msgBoxRect.left) / 2);
-				y = (parentRect.top + (parentRect.bottom - parentRect.top)  / 2) - ((msgBoxRect.bottom - msgBoxRect.top) / 2);
+				x = (parentRect.left + ((parentRect.right - parentRect.left) / 2)) - ((msgBoxRect.right - msgBoxRect.left) / 2);
+				y = (parentRect.top + ((parentRect.bottom - parentRect.top)  / 2)) - ((msgBoxRect.bottom - msgBoxRect.top) / 2);
 
 				SetWindowPos(wParam, IntPtr.Zero, x, y, 0, 0, SWP.NOSIZE | SWP.NOZORDER | SWP.NOACTIVATE);
 
@@ -68,63 +67,67 @@ namespace Liberfy
 				return CallNextHookEx(hook, nCode, wParam, lParam);
 			}
 		}
+
+		~MessageBox()
+		{
+			hook = IntPtr.Zero;
+			hWnd = IntPtr.Zero;
+		}
 	}
 
 	[Flags]
-	enum MsgBoxButtons : int
+	internal enum MsgBoxButtons
 	{
-		AbortRetryIgnore = MB.MB_ABORTRETRYIGNORE,
+		Ok                = MB.MB_OK,
+		OkCancel          = MB.MB_OKCANCEL,
+		AbortRetryIgnore  = MB.MB_ABORTRETRYIGNORE,
+		YesNoCancel       = MB.MB_YESNOCANCEL,
+		YesNo             = MB.MB_YESNO,
+		RetryCancel       = MB.MB_RETRYCANCEL,
 		CancelTryContinue = MB.MB_CANCELTRYCONTINUE,
-		Help = MB.MB_HELP,
-		Ok = MB.MB_OK,
-		OkCancel = MB.MB_OKCANCEL,
-		RetryCancel = MB.MB_RETRYCANCEL,
-		YesNo = MB.MB_YESNO,
-		YesNoCancel = MB.MB_YESNOCANCEL,
+		Help              = MB.MB_HELP
 	}
 
-	enum MsgBoxIcon : int
+	internal enum MsgBoxIcon : int
 	{
+		Stop        = MB.MB_ICONSTOP,
+		Error       = MB.MB_ICONERROR,
+		Hand        = MB.MB_ICONHAND,
+		Question    = MB.MB_ICONQUESTION,
 		Exclamation = MB.MB_ICONEXCLAMATION,
-		Warning = MB.MB_ICONWARNING,
+		Warning     = MB.MB_ICONWARNING,
 		Information = MB.MB_ICONINFORMATION,
-		Asterisk = MB.MB_ICONASTERISK,
-		Question = MB.MB_ICONQUESTION,
-		Stop = MB.MB_ICONSTOP,
-		Error = MB.MB_ICONERROR,
-		Hand = MB.MB_ICONHAND,
+		Asterisk    = MB.MB_ICONASTERISK
 	}
 
 	[Flags]
-	enum MsgBoxFlags : int
+	internal enum MsgBoxFlags
 	{
-		DefButton1 = MB.MB_DEFBUTTON1,
-		DefButton2 = MB.MB_DEFBUTTON2,
-		DefButton3 = MB.MB_DEFBUTTON3,
-		DefButton4 = MB.MB_DEFBUTTON4,
-
-		AppModal = MB.MB_APPMODAL,
-		SystemModal = MB.MB_SYSTEMMODAL,
-		TaskModal = MB.MB_TASKMODAL,
-
-		DefaultDesktopOnly = MB.MB_DEFAULT_DESKTOP_ONLY,
-		Right = MB.MB_RIGHT,
-		RTLReading = MB.MB_RTLREADING,
-		SetForeground = MB.MB_SETFOREGROUND,
-		TopMost = MB.MB_TOPMOST,
-		ServiceNotification = MB.MB_SERVICE_NOTIFICATION,
+		DefButton1          = MB.MB_DEFBUTTON1,
+		AppModal            = MB.MB_APPMODAL,
+		DefButton2          = MB.MB_DEFBUTTON2,
+		DefButton3          = MB.MB_DEFBUTTON3,
+		DefButton4          = MB.MB_DEFBUTTON4,
+		SystemModal         = MB.MB_SYSTEMMODAL,
+		TaskModal           = MB.MB_TASKMODAL,
+		SetForeground       = MB.MB_SETFOREGROUND,
+		DefaultDesktopOnly  = MB.MB_DEFAULT_DESKTOP_ONLY,
+		TopMost             = MB.MB_TOPMOST,
+		Right               = MB.MB_RIGHT,
+		RTLReading          = MB.MB_RTLREADING,
+		ServiceNotification = MB.MB_SERVICE_NOTIFICATION
 	}
 
-	enum MsgBoxResult : int
+	internal enum MsgBoxResult
 	{
-		Abort = ID.ABORT,
-		Cancel = ID.CANCEL,
-		Continue = ID.CONTINUE,
-		Ignore = ID.IGNORE,
-		No = ID.NO,
-		Ok = ID.OK,
-		Retry = ID.RETRY,
+		Ok       = ID.OK,
+		Cancel   = ID.CANCEL,
+		Abort    = ID.ABORT,
+		Retry    = ID.RETRY,
+		Ignore   = ID.IGNORE,
+		Yes      = ID.YES,
+		No       = ID.NO,
 		TryAgain = ID.TRYAGAIN,
-		Yes = ID.YES
+		Continue = ID.CONTINUE
 	}
 }

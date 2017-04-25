@@ -7,14 +7,14 @@ using System.Windows.Input;
 
 namespace Liberfy
 {
-	public abstract class Command : ICommand, IDisposable
+	abstract class Command : ICommand, IDisposable
 	{
 		readonly bool hookRequerySuggested;
 		WeakCollection<EventHandler> _events = new WeakCollection<EventHandler>();
 
-		public Command() { }
+		protected Command() { }
 
-		public Command(bool hookRequerySuggested) : this()
+		protected Command(bool hookRequerySuggested) : this()
 		{
 			this.hookRequerySuggested = hookRequerySuggested;
 		}
@@ -58,64 +58,25 @@ namespace Liberfy
 		}
 	}
 
-	public abstract class Command<T> : ICommand, IDisposable
+	abstract class Command<T> : Command
 	{
-		readonly bool hookRequerySuggested;
-		WeakCollection<EventHandler> _events = new WeakCollection<EventHandler>();
+		protected Command() : base() { }
 
-		public Command() { }
+		protected Command(bool hookRequerySuggested)
+			: base(hookRequerySuggested) { }
 
-		public Command(bool hookRequerySuggested) : this()
+		public override bool CanExecute(object parameter)
 		{
-			this.hookRequerySuggested = hookRequerySuggested;
+			return CanExecute(parameter.CastOrDefault<T>());
 		}
 
-		private EventHandler dummyCanExecuteChanged;
-
-		public event EventHandler CanExecuteChanged
+		public override void Execute(object parameter)
 		{
-			add
-			{
-				dummyCanExecuteChanged += value;
-				if (hookRequerySuggested)
-				{
-					CommandManager.RequerySuggested += value;
-				}
-				_events.Add(value);
-			}
-			remove
-			{
-				dummyCanExecuteChanged -= value;
-				if (hookRequerySuggested)
-				{
-					CommandManager.RequerySuggested -= value;
-				}
-				_events.Remove(value);
-			}
+			Execute(parameter.CastOrDefault<T>());
 		}
 
 		public abstract bool CanExecute(T parameter);
 
 		public abstract void Execute(T parameter);
-
-		bool ICommand.CanExecute(object parameter)
-		{
-			return CanExecute(parameter.CastOrDefault<T>());
-		}
-
-		void ICommand.Execute(object parameter)
-		{
-			Execute(parameter.CastOrDefault<T>());
-		}
-
-		public void RaiseCanExecute()
-		{
-			dummyCanExecuteChanged.Invoke(this, EventArgs.Empty);
-		}
-
-		public virtual void Dispose()
-		{
-			_events.Clear();
-		}
 	}
 }

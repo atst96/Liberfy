@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,53 +6,90 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Microsoft.Win32;
+using System.Collections.ObjectModel;
 
-namespace Liberfy
+namespace Liberfy.ViewModel
 {
-	class SettingWindowViewModel : ViewModelBase
+	class SettingWindow : ViewModelBase
 	{
-		public SettingWindowViewModel() : base()
+		public SettingWindow() : base()
 		{
 			ViewFonts = new FluidCollection<FontFamily>();
 			SetFontSettings();
 		}
 
-		internal override void OnInitialized()
-		{
-			base.OnInitialized();
-		}
-
 		public Setting Setting => App.Setting;
 
-		public AccountCollection Accounts => App.Accounts;
+		public AccountSetting AccountSetting => App.AccountSetting;
+		public FluidCollection<Account> Accounts => AccountSetting.Accounts;
+
+		private const string AutoStartupRegSubKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
+
+		private RegistryKey CreateAutoStartuRegSubKey()
+		{
+			return Registry.CurrentUser.OpenSubKey(AutoStartupRegSubKey, true);
+		}
+
+		private bool GetAutoStartupEnabled()
+		{
+			using (var reg = CreateAutoStartuRegSubKey())
+			{
+				var path = Regex.Escape(App.Assembly.Location);
+
+				return reg.GetValue(App.ApplicationName) is string regKeyValue
+					&& !string.IsNullOrEmpty(regKeyValue)
+					&& Regex.IsMatch(regKeyValue, $@"^(""{path}""|{path})(?<params>\s+.*)?$", RegexOptions.IgnoreCase);
+			}
+		}
+
+		public bool IsAccountPage { get; private set; }
+
+		private int _tabPageIndex;
+		public int TabPageIndex
+		{
+			get => _tabPageIndex;
+			set
+			{
+				if (SetProperty(ref _tabPageIndex, value))
+				{
+					IsAccountPage = value == 1;
+					RaisePropertyChanged(nameof(IsAccountPage));
+				}
+			}
+		}
+
+		public bool ShowInTaskTray
+		{
+			get => Setting.ShowInTaskTray;
+			set
+			{
+				Setting.ShowInTaskTray = value;
+				RaisePropertyChanged(nameof(ShowInTaskTray));
+			}
+		}
 
 		public bool AutoStartup
 		{
-			get
-			{
-				using (var hkcu = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", false))
-				{
-					var path = Regex.Escape(App.Assembly.Location);
-					var fileName = hkcu.GetValue(App.ApplicationName) as string;
-					return !string.IsNullOrEmpty(fileName)
-						&& Regex.IsMatch(fileName, $@"^(""{path}""|{path})(?<params>\s+.*)?$", RegexOptions.IgnoreCase);
-				}
-			}
+
+			get => GetAutoStartupEnabled();
 			set
 			{
 				try
 				{
-					if (Equals(AutoStartup, value)) return;
+					bool isAutoStartupEnabled = GetAutoStartupEnabled();
+					if (Equals(isAutoStartupEnabled, value)) return;
 
-					if (!AutoStartup)
+					using (var reg = CreateAutoStartuRegSubKey())
 					{
-						using (var reg = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true))
-							reg.SetValue(App.ApplicationName, $"\"{App.Assembly.Location}\" /startup");
-					}
-					else if (AutoStartup)
-					{
-						using (var reg = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true))
+						if (isAutoStartupEnabled)
+						{
 							reg.DeleteValue(App.ApplicationName);
+						}
+						else
+						{
+							reg.SetValue(App.ApplicationName, $"\"{App.Assembly.Location}\" /startup");
+						}
 					}
 
 					DialogService.MessageBox($"自動起動を{(value ? "有効" : "無効")}にしました", MsgBoxButtons.Ok, MsgBoxIcon.Information);
@@ -64,39 +100,13 @@ namespace Liberfy
 					DialogService.MessageBox("自動起動の設定に失敗しました: " + ex.Message, MsgBoxButtons.Ok, MsgBoxIcon.Information);
 				}
 
-				RaisePropertyChanged("AutoStartup");
-			}
-		}
-
-		public bool IsAccountPage { get; private set; }
-
-		private int _tabPageIndex;
-		public int TabPageIndex
-		{
-			get { return _tabPageIndex; }
-			set
-			{
-				if (SetProperty(ref _tabPageIndex, value))
-				{
-					IsAccountPage = value == 1;
-					RaisePropertyChanged("IsAccountPage");
-				}
-			}
-		}
-
-		public bool ShowInTaskTray
-		{
-			get { return Setting.ShowInTaskTray; }
-			set
-			{
-				Setting.ShowInTaskTray = value;
-				RaisePropertyChanged(nameof(ShowInTaskTray));
+				RaisePropertyChanged(nameof(AutoStartup));
 			}
 		}
 
 		public bool ShowInTaskTrayAtMinimized
 		{
-			get { return Setting.ShowInTaskTrayAtMinimzied; }
+			get => Setting.ShowInTaskTrayAtMinimzied;
 			set
 			{
 				Setting.ShowInTaskTrayAtMinimzied = value;
@@ -106,7 +116,7 @@ namespace Liberfy
 
 		#region General
 
-		void SetFontSettings()
+		private void SetFontSettings()
 		{
 			ViewFont = new FontFamily(string.Join(", ", Setting.TimelineFont));
 			_viewFontSize = Setting.TimelineFontSize;
@@ -123,7 +133,7 @@ namespace Liberfy
 
 		public bool IsLegacyGDIRender
 		{
-			get { return ViewFontRendering == TextFormattingMode.Display; }
+			get => ViewFontRendering == TextFormattingMode.Display;
 			set
 			{
 				ViewFontRendering = TextFormattingMode.Display;
@@ -134,7 +144,7 @@ namespace Liberfy
 
 		public bool IsGDIPlusRender
 		{
-			get { return ViewFontRendering == TextFormattingMode.Ideal; }
+			get => ViewFontRendering == TextFormattingMode.Ideal;
 			set
 			{
 				ViewFontRendering = TextFormattingMode.Ideal;
@@ -146,123 +156,252 @@ namespace Liberfy
 		private double? _viewFontSize;
 		public double? ViewFontSize
 		{
-			get { return _viewFontSize; }
+			get => _viewFontSize;
 			set
 			{
 				if (SetProperty(ref _viewFontSize, value))
 				{
-					FontCommand.RaiseCanExecute();
+					UpdateFontUI();
 				}
 			}
 		}
 
 		public TextFormattingMode ViewFontRendering { get; private set; }
 
-		private string _selectedNewFont = "Arial";
-		public string SelectedNewFont
+		private string _fontFontFilter;
+		public string FontFontFilter
 		{
-			get { return _selectedNewFont; }
+			get => _fontFontFilter;
 			set
 			{
-				if (SetProperty(ref _selectedNewFont, value))
+				if (SetProperty(ref _fontFontFilter, value))
 				{
-					FontCommand.RaiseCanExecute();
+					FilteringFontFontList();
 				}
 			}
+		}
+
+		private ICollection<FontFamily> _baseFontList = Fonts.SystemFontFamilies;
+		private List<FontFamily> _fontFontList;
+		public List<FontFamily> FontFontList
+		{
+			get
+			{
+				if (_fontFontList == null)
+				{
+					FilteringFontFontList();
+				}
+
+				return _fontFontList;
+			}
+		}
+
+		private static readonly StringComparison strComp = StringComparison.CurrentCultureIgnoreCase;
+
+		private void FilteringFontFontList()
+		{
+			if (string.IsNullOrWhiteSpace(_fontFontFilter))
+			{
+				_fontFontList = new List<FontFamily>(_baseFontList);
+			}
+			else
+			{
+				bool isFontFiltering(FontFamily fontFamily)
+				{
+					return fontFamily.Source.Contains(_fontFontFilter, strComp)
+						|| fontFamily.FamilyNames.Any(kvp => kvp.Value.Contains(_fontFontFilter, strComp));
+				}
+
+				_fontFontList = new List<FontFamily>(_baseFontList.Where(isFontFiltering));
+			}
+
+			RaisePropertyChanged(nameof(FontFontList));
+		}
+
+		private FontFamily _newSelectedFont;
+		public FontFamily NewSelectedFont
+		{
+			get => _newSelectedFont;
+			set => SetProperty(ref _newSelectedFont, value, _addFontCommand);
 		}
 
 		private FontFamily _selectedFont;
 		public FontFamily SelectedFont
 		{
-			get { return _selectedFont; }
+			get => _selectedFont;
 			set
 			{
 				if (SetProperty(ref _selectedFont, value))
 				{
-					FontCommand.RaiseCanExecute();
+					UpdateFontUI();
 				}
 			}
 		}
 
 		public FluidCollection<FontFamily> ViewFonts { get; }
 
-		private Command<string> _fontCommand;
-		public Command<string> FontCommand => _fontCommand
-			?? (_fontCommand = new DelegateCommand<string>(
-			cmd =>
+		private void ReloadViewFont()
+		{
+			ViewFont = new FontFamily(string.Join(", ", ViewFonts.Select(f => f.Source)));
+			RaisePropertyChanged(nameof(ViewFont));
+		}
+
+		private void UpdateFontUI()
+		{
+			ReloadViewFont();
+
+			AddFontCommand.RaiseCanExecute();
+			RemoveFontCommand.RaiseCanExecute();
+			IncreaseFontPriorityCommand.RaiseCanExecute();
+			DecreaseFontPriorityCommand.RaiseCanExecute();
+		}
+
+		private void ApplyFontSetting()
+		{
+			Setting.TimelineFont = ViewFonts.Select(f => f.Source).ToArray();
+			Setting.TimelineFontSize = ViewFontSize.Value;
+			Setting.TimelineFontRendering = ViewFontRendering;
+		}
+
+		#region Command: AddFontCommand
+
+		private Command<FontFamily> _addFontCommand;
+		public Command AddFontCommand
+		{
+			get => _addFontCommand ?? (_addFontCommand = RegisterReleasableCommand<FontFamily>(AddNewFont, CanAddFont));
+		}
+
+		private void AddNewFont(FontFamily fontFamily)
+		{
+			ViewFonts.Insert(0, fontFamily);
+			UpdateFontUI();
+		}
+
+		private bool CanAddFont(FontFamily fontFamily) => fontFamily != null;
+
+		#endregion Command: AddFontCommand
+
+		#region Command: FontSelectCommand
+
+		private Command _fontSeelectCommand;
+		public Command FontSelectCommand
+		{
+			get => _fontSeelectCommand ?? (_fontSeelectCommand = RegisterReleasableCommand(SelectFontFile));
+		}
+
+		private static bool SupportedFont(FontFamily font)
+		{
+			return font.FamilyTypefaces.Any(face => face.Style == FontStyles.Normal);
+		}
+
+		private void SelectFontFile()
+		{
+			var ofd = new OpenFileDialog
 			{
-				switch (cmd)
-				{
-					case "add":
-						ViewFonts.Add(new FontFamily(_selectedNewFont));
-						break;
+				Filter = "フォントファイル|*.ttf;*.otf",
+				CheckFileExists = true,
+				CheckPathExists = true,
+			};
 
-					case "del":
-						ViewFonts.Remove(_selectedFont);
-						break;
-
-					case "up":
-						ViewFonts.MoveUp(ViewFonts.IndexOf(_selectedFont));
-						FontCommand.RaiseCanExecute();
-						break;
-
-					case "down":
-						ViewFonts.MoveDown(ViewFonts.IndexOf(_selectedFont));
-						FontCommand.RaiseCanExecute();
-						break;
-
-					case "save":
-						Setting.TimelineFont = ViewFonts.Select(f => f.Source).ToArray();
-						Setting.TimelineFontSize = ViewFontSize.Value;
-						Setting.TimelineFontRendering = ViewFontRendering;
-						break;
-
-					case "reset":
-						Setting.TimelineFont = Setting.DefaultTimelineFont;
-						Setting.TimelineFontSize = Setting.DefaultTimelineFontSize;
-						goto case "reload";
-
-					case "reload":
-						SetFontSettings();
-
-						RaisePropertyChanged(nameof(ViewFonts));
-						break;
-				}
-
-				ViewFont = new FontFamily(string.Join(", ", ViewFonts.Select(f => f.Source)));
-
-				RaisePropertyChanged(nameof(ViewFont));
-			},
-			cmd =>
+			if (DialogService.OpenModal(ofd))
 			{
-				switch (cmd)
+				try
 				{
-					case "add":
-						return !string.IsNullOrWhiteSpace(_selectedNewFont);
-
-					case "del":
-						return _selectedFont != null;
-
-					case "up":
-						return _selectedFont != null
-							&& MathEx.IsWithin(Math.Min(
-								ViewFonts.Count, ViewFonts.IndexOf(_selectedFont)), 1, ViewFonts.Count);
-
-					case "down":
-						return _selectedFont != null
-							&& Math.Max(0, ViewFonts.IndexOf(_selectedFont)) < ViewFonts.Count - 1;
-
-					case "save":
-						return ViewFonts.Count > 0 && ViewFontSize.HasValue;
-
-					case "reset":
-					case "reload":
-						return true;
-
-					default:
-						return false;
+					var fontFamily = Fonts.GetFontFamilies(ofd.FileName)
+						.FirstOrDefault(SupportedFont);
+					if (fontFamily != null)
+					{
+						ViewFonts.Insert(0, fontFamily);
+					}
 				}
-			}));
+				catch (Exception ex)
+				{
+
+				}
+			}
+		}
+
+		#endregion Command: FontSelectCommand
+
+		#region Command: RemoveFontCommand
+
+		private Command<FontFamily> _removeFontCommand;
+		public Command<FontFamily> RemoveFontCommand
+		{
+			get => _removeFontCommand ?? (_removeFontCommand = RegisterReleasableCommand<FontFamily>(RemoveFont, IsAvailableFont));
+		}
+
+		public void RemoveFont(FontFamily fontFamily)
+		{
+			ViewFonts.Remove(fontFamily);
+			UpdateFontUI();
+		}
+
+		private static bool IsAvailableFont(FontFamily fontFamily) => fontFamily != null;
+
+		#endregion Command: RemoveFontCommand
+
+		#region Command: IncreaseFontPriorityCommand
+
+		private Command<FontFamily> _increaseFontPriorityCommand;
+		public Command<FontFamily> IncreaseFontPriorityCommand
+		{
+			get => _increaseFontPriorityCommand ?? (_increaseFontPriorityCommand = RegisterReleasableCommand<FontFamily>(IncreaseFontPriority, CanIncreaseFontPriority));
+		}
+
+		private void IncreaseFontPriority(FontFamily obj)
+		{
+			ViewFonts.ItemIndexDecrement(obj);
+			UpdateFontUI();
+		}
+
+		private bool CanIncreaseFontPriority(FontFamily obj)
+		{
+			return obj != null && MathEx.IsWithin(Math.Min(ViewFonts.Count, ViewFonts.IndexOf(obj)), 1, ViewFonts.Count);
+		}
+
+		#endregion Command: IncreaseFontPriorityCommand
+
+		#region Command: DecreaseFontPriorityCommand
+
+		private Command<FontFamily> _decreaseFontPriorityCommand;
+		public Command<FontFamily> DecreaseFontPriorityCommand
+		{
+			get => _decreaseFontPriorityCommand ?? (_decreaseFontPriorityCommand = RegisterReleasableCommand<FontFamily>(DecreaseFontPriority, CanDecreaseFontPriority));
+		}
+
+		private void DecreaseFontPriority(FontFamily obj)
+		{
+			ViewFonts.ItemIndexIncrement(obj);
+			UpdateFontUI();
+		}
+
+		private bool CanDecreaseFontPriority(FontFamily obj)
+		{
+			return obj != null && Math.Max(0, ViewFonts.IndexOf(obj)) < ViewFonts.Count - 1;
+		}
+
+		#endregion Command: DecreaseFontPriorityCommand
+
+		#region Command: ResetFontCommand
+
+		private Command _resetFontSettingsCommand;
+		public Command ResetFontSettingsCommand
+		{
+			get => _resetFontSettingsCommand ?? (_resetFontSettingsCommand = RegisterReleasableCommand(ResetFontSettings));
+		}
+
+		private void ResetFontSettings()
+		{
+			Setting.TimelineFont = Defines.DefaultTimelineFont;
+			Setting.TimelineFontSize = Defines.DefaultTimelineFontSize;
+
+			SetFontSettings();
+
+			ReloadViewFont();
+		}
+
+		#endregion
 
 		#endregion
 
@@ -271,126 +410,215 @@ namespace Liberfy
 		private ColumnType _tempColumnType;
 		public ColumnType TempColumnType
 		{
-			get { return _tempColumnType; }
-			set { SetProperty(ref _tempColumnType, value); }
+			get => _tempColumnType;
+			set => SetProperty(ref _tempColumnType, value);
 		}
 
-		private int _selectedAccountIndex = -1;
-		public int SelectedAccountIndex
+		#region Commands for account
+
+		#region Command: AccountAddCommand
+
+		private Command _accountAddCommand;
+		public Command AccountAddCommand => _accountAddCommand
+			?? (_accountAddCommand = RegisterReleasableCommand(AccountAdd));
+
+		private async void AccountAdd()
 		{
-			get { return _selectedAccountIndex; }
-			set
+			var auth = new AuthenticationViewModel();
+
+			if (DialogService.OpenModal(auth, new ViewOption
 			{
-				if (SetProperty(ref _selectedAccountIndex, value))
+				ResizeMode = ResizeMode.NoResize,
+				StartupLocation = WindowStartupLocation.CenterOwner,
+				SizeToContent = SizeToContent.Manual,
+				Width = 400,
+				Height = 240,
+				WindowChrome = new System.Windows.Shell.WindowChrome
 				{
-					_addAccountCommand.RaiseCanExecute();
-					_deleteAccountCommand.RaiseCanExecute();
-					_accountMoveUpCommand.RaiseCanExecute();
-					_accountMoveDownCommand.RaiseCanExecute();
+					GlassFrameThickness = new Thickness(0),
+					UseAeroCaptionButtons = false,
+					CornerRadius = new CornerRadius(0),
+					CaptionHeight = 0,
+				},
+				ShowInTaskbar = false,
+			}))
+			{
+				var tokens = auth.Tokens;
+
+				var acc = Accounts.FirstOrDefault((a) => a.Id == tokens.UserId);
+
+				if (acc != null)
+				{
+					acc.SetTokens(tokens);
+				}
+				else
+				{
+					acc = new Account(tokens);
+					Accounts.Add(acc);
+
+					acc.IsLoading = true;
+
+					await Task.Run(() =>
+					{
+						if (!acc.Login())
+						{
+							DialogService.MessageBox(
+								$"アカウント情報の取得に失敗しました:\n",
+								MsgBoxButtons.Ok, MsgBoxIcon.Information);
+
+							Accounts.Remove(acc);
+						}
+					});
+
+					acc.IsLoading = false;
 				}
 			}
 		}
 
-		public FluidCollection<ColumnSetting> DefaultColumns => Setting.DefaultColumns;
+		#endregion
 
-		private Command _addDefaultColumnCommand;
-		public Command AddDefaultColumnCommand => _addDefaultColumnCommand
-			?? (_addDefaultColumnCommand = new DelegateCommand(() =>
-			{
-				DefaultColumns.Add(new ColumnSetting(_tempColumnType, Account.Dummy));
-			}));
 
-		private Command _accountMoveUpCommand;
-		public Command AccountMoveUpCommand => _accountMoveUpCommand
-			?? (_accountMoveUpCommand = new DelegateCommand(
-				() => Accounts.Move(_selectedAccountIndex, _selectedAccountIndex + 1),
-				__ => _selectedAccountIndex >= 0 && _selectedAccountIndex < Accounts.Count - 1));
+		#region Command: AccountDeleteCommand
 
-		private Command _accountMoveDownCommand;
-		public Command AccountMoveDownCommand => _accountMoveDownCommand
-			?? (_accountMoveDownCommand = new DelegateCommand(
-				() => Accounts.Move(_selectedAccountIndex, _selectedAccountIndex - 1),
-				__ => _selectedAccountIndex > 0));
+		private Command _accountDeleteCommand;
+		public Command AccountDeleteCommand => _accountDeleteCommand
+			?? (_accountDeleteCommand = RegisterReleasableCommand<Account>(AccountDelete, Accounts.Contains));
 
-		private Command _deleteAccountCommand;
-		public Command DeleteAccountCommand => _deleteAccountCommand
-			?? (_deleteAccountCommand = new DelegateCommand(() =>
-			{
-			}, _ => _selectedAccountIndex >= 0));
-
-		private Command _addAccountCommand;
-		public Command AddAccountCommand => _addAccountCommand
-			?? (_addAccountCommand = new DelegateCommand(async () =>
-			{
-				var auth = new ViewModel.AuthenticationViewModel();
-
-				if (DialogService.OpenModal(auth, new ViewOption
-				{
-					ResizeMode = ResizeMode.NoResize,
-					StartupLocation = WindowStartupLocation.CenterOwner,
-					SizeToContent = SizeToContent.Manual,
-					Width = 400,
-					Height = 240,
-					WindowChrome = new System.Windows.Shell.WindowChrome
-					{
-						GlassFrameThickness = new Thickness(0),
-						UseAeroCaptionButtons = false,
-						CornerRadius = new CornerRadius(0),
-						CaptionHeight = 0,
-					},
-					ShowInTaskbar = false,
-				}))
-				{
-					var tokens = auth.Tokens;
-
-					var acc = Accounts.FirstOrDefault((a) => a.Id == tokens.UserId);
-
-					if (acc != null)
-					{
-						acc.SetTokens(tokens);
-					}
-					else
-					{
-						acc = new Account(tokens);
-						Accounts.Add(acc);
-
-						acc.IsLoading = true;
-
-						await Task.Run(() =>
-						{
-							if (!acc.Login())
-							{
-								DialogService.MessageBox(
-									$"アカウント情報の取得に失敗しました:\n",
-									MsgBoxButtons.Ok, MsgBoxIcon.Information);
-
-								Accounts.Remove(acc);
-							}
-						});
-
-						acc.IsLoading = false;
-					}
-				}
-
-			}));
-
-		private ColumnType _addColumnType = ColumnType.Home;
-		public ColumnType AddColumnType
+		void AccountDelete(Account account)
 		{
-			get { return _addColumnType; }
-			set { SetProperty(ref _addColumnType, value); }
+			if (DialogService.ShowQuestion(
+				$"本当にアカウントを一覧から削除しますか？\n{account.Name}@{account.ScreenName}"))
+			{
+				Accounts.Remove(account);
+				account.Unload();
+			}
 		}
 
 		#endregion
 
+
+		#region Command: AccountMoveUpCommand
+
+		private Command _accountMoveUpCommand;
+		public Command AccountMoveUpCommand
+		{
+			get => _accountMoveUpCommand ?? (_accountMoveUpCommand = RegisterReleasableCommand<Account>(AccountMoveUp, CanAccountMoveUp));
+		}
+
+		private bool CanAccountMoveUp(Account account) => Accounts.CanItemIndexDecrement(account);
+
+		private void AccountMoveUp(Account account) => Accounts.ItemIndexDecrement(account);
+
+		#endregion
+
+		#region Command: AccountMoveDownCommand
+
+		private Command _accountMoveDownCommand;
+		public Command AccountMoveDownCommand
+		{
+			get => _accountMoveDownCommand ?? (_accountMoveDownCommand = RegisterReleasableCommand<Account>(AccountMoveDown, CanAccountMoveDown));
+		}
+
+		private bool CanAccountMoveDown(Account account) => Accounts.CanItemIndexIncrement(account);
+
+		private void AccountMoveDown(Account account) => Accounts.ItemIndexIncrement(account);
+
+		#endregion
+
+		#endregion Commands for account
+
+		public FluidCollection<ColumnSetting> DefaultColumns => Setting.DefaultColumns;
+
+		#region Commands for columns
+
+		private ColumnSetting _selectedColumnSetting;
+		public ColumnSetting SelectedColumnSetting
+		{
+			get => _selectedColumnSetting;
+			set => SetProperty(ref _selectedColumnSetting, value);
+		}
+
+		#region Command: ColumnAddCommand
+
+		private Command _columnAddCommand;
+		public Command ColumnAddCommand
+		{
+			get => _columnAddCommand ?? (_columnAddCommand = RegisterReleasableCommand(ColumnAdd));
+		}
+
+		private void ColumnAdd() => DefaultColumns.Add(new ColumnSetting(_tempColumnType, Account.Dummy));
+
+		#endregion
+
+		#region Command: ColumnDeleteCommand
+
+		private Command _columnDeleteCommand;
+		public Command ColumnDeleteCommand
+		{
+			get => _columnDeleteCommand ?? (_columnDeleteCommand = RegisterReleasableCommand<ColumnSetting>(ColumnDelete));
+		}
+
+		private void ColumnDelete(ColumnSetting column) => DefaultColumns.Remove(column);
+
+		#endregion
+
+		#region Command: ColumnMoveLeftCommand
+
+		private Command _columnMoveLeftCommand;
+		public Command ColumnMoveLeftCommand
+		{
+			get => _columnMoveLeftCommand ?? (_columnMoveLeftCommand = RegisterReleasableCommand<ColumnSetting>(ColumnMoveLeft, CanColumnMoveLeft));
+		}
+
+		private bool CanColumnMoveLeft(ColumnSetting column) => DefaultColumns.CanItemIndexDecrement(column);
+
+		private void ColumnMoveLeft(ColumnSetting column)
+		{
+			DefaultColumns.ItemIndexDecrement(column);
+			_columnMoveLeftCommand.RaiseCanExecute();
+		}
+
+		#endregion
+
+		#region Command: ColumnMoveCommand
+
+		private Command _columnMoveRightCommand;
+		public Command ColumnMoveRightCommand
+		{
+			get => _columnMoveRightCommand ?? (_columnMoveRightCommand = RegisterReleasableCommand<ColumnSetting>(ColumnMoveRight, CanColumnMoveRight));
+		}
+
+		private bool CanColumnMoveRight(ColumnSetting column)
+		{
+			return DefaultColumns.CanItemIndexIncrement(column);
+		}
+
+		private void ColumnMoveRight(ColumnSetting column)
+		{
+			DefaultColumns.ItemIndexIncrement(column);
+			_columnMoveRightCommand?.RaiseCanExecute();
+		}
+
+		#endregion
+
+		#endregion Commands for columns
+
+		private ColumnType _addColumnType = ColumnType.Home;
+		public ColumnType AddColumnType
+		{
+			get => _addColumnType;
+			set => SetProperty(ref _addColumnType, value);
+		}
+
+		#endregion Accounts
+
 		#region Formats
 
-		public int NowPlayingSelectionStart { get; set; }
-		public int NowPlayingSelectionLength { get; set; }
+		public TextBoxController NowPlayingTextBoxController { get; } = new TextBoxController();
 
 		public string NowPlayingFormat
 		{
-			get { return Setting.NowPlayingFormat; }
+			get => Setting.NowPlayingFormat;
 			set
 			{
 				Setting.NowPlayingFormat = value;
@@ -398,39 +626,174 @@ namespace Liberfy
 			}
 		}
 
-		private Command<string> _insertNowPlayingParamCommand;
-		public Command<string> InsertNowPlayingParamCommand => _insertNowPlayingParamCommand
-			?? (_insertNowPlayingParamCommand = new DelegateCommand<string>(p =>
-			   {
-				   int start = NowPlayingSelectionStart;
-				   int length = NowPlayingSelectionLength;
+		#region InsertNowPlayingCommand
 
-				   NowPlayingFormat = NowPlayingSelectionLength == 0
-				   ? NowPlayingFormat.Insert(start, p)
-				   : NowPlayingFormat.Remove(start, length).Insert(start, p);
+		private Command _insertNowPlayingCommand;
+		public Command InsertNowPlayingParamCommand
+		{
+			get => _insertNowPlayingCommand ?? (_insertNowPlayingCommand = RegisterReleasableCommand<string>(InsertNowPlaying));
+		}
 
-				   NowPlayingSelectionStart = start + length;
-			   }));
-
-		private Command _resetNowPlayingCommand;
-		public Command ResetNowPlayingCommand => _resetNowPlayingCommand
-			?? (_resetNowPlayingCommand = new DelegateCommand(() =>
-			{
-				NowPlayingFormat = Defines.DefaultNowPlayingFormat;
-			}));
+		private void InsertNowPlaying(string p)
+		{
+			NowPlayingTextBoxController.Insert(p);
+			NowPlayingTextBoxController.Focus();
+		}
 
 		#endregion
 
-		public override bool CanClose()
+		#region ResetNowPlayingCommand
+
+		private Command _resetNowPlayingCommand;
+		public Command ResetNowPlayingCommand
 		{
-			if (!App.Accounts.Any())
+			get => _resetNowPlayingCommand ?? (_resetNowPlayingCommand = RegisterReleasableCommand(ResetNowPlaying));
+		}
+
+		private void ResetNowPlaying() => NowPlayingFormat = Defines.DefaultNowPlayingFormat;
+
+		#endregion
+
+		#endregion
+
+		#region Mute
+
+		public FluidCollection<Mute> MuteList => App.Setting.Mute;
+
+		private MuteType _tempMuteType;
+		public MuteType TempMuteType
+		{
+			get => _tempMuteType;
+			set => SetProperty(ref _tempMuteType, value, _addMuteCommand);
+		}
+
+		private SearchMode _tempMuteSearch;
+		public SearchMode TempMuteSearch
+		{
+			get => _tempMuteSearch;
+			set => SetProperty(ref _tempMuteSearch, value, _addMuteCommand);
+		}
+
+		private string _tempMuteText;
+		public string TempMuteText
+		{
+			get => _tempMuteText;
+			set => SetProperty(ref _tempMuteText, value, _addMuteCommand);
+		}
+
+		private Mute _selectedMute;
+		public Mute SelectedMute
+		{
+			get => _selectedMute;
+			set => SetProperty(ref _selectedMute, value);
+		}
+
+		#region Command: AddMuteCommand
+
+		private Command _addMuteCommand;
+		public Command AddMuteCommand
+		{
+			get => _addMuteCommand ?? (_addMuteCommand = RegisterReleasableCommand(AddMute, CanAddMute));
+		}
+
+		private void AddMute()
+		{
+			var mute = new Mute(_tempMuteType, _tempMuteSearch, _tempMuteText);
+			MuteList.Add(mute);
+			SelectedMute = mute;
+		}
+
+		private bool CanAddMute(object _) => Mute.IsAvailable(_tempMuteType, _tempMuteSearch, _tempMuteText);
+
+		#endregion Command: AddMuteCommand
+
+		#region Command: RemoveMuteCommand
+
+		private Command _removeMuteCommand;
+		public Command RemoveMuteCommand
+		{
+			get => _removeMuteCommand ?? (_removeMuteCommand = RegisterReleasableCommand<Mute>(RemoveMute, IsAvailableMuteItem));
+		}
+
+		private void RemoveMute(Mute mute) => MuteList.Remove(mute);
+
+		private static bool IsAvailableMuteItem(Mute mute) => mute != null;
+
+		#endregion Command: RemoveMuteCommand
+
+		#endregion
+
+		#region Timeline
+
+		public bool TimelineStatusShowRelativeTime
+		{
+			get => Setting.TimelineStatusShowRelativeTime;
+			set
+			{
+				Setting.TimelineStatusShowRelativeTime = value;
+				RaisePropertyChanged(nameof(TimelineStatusShowAbsoluteTime));
+				RaisePropertyChanged(nameof(TimelineStatusShowRelativeTime));
+			}
+		}
+
+		public bool TimelineStatusShowAbsoluteTime
+		{
+			get => !Setting.TimelineStatusShowRelativeTime;
+			set
+			{
+				Setting.TimelineStatusShowRelativeTime = !value;
+				RaisePropertyChanged(nameof(TimelineStatusShowAbsoluteTime));
+				RaisePropertyChanged(nameof(TimelineStatusShowRelativeTime));
+			}
+		}
+
+
+		public bool TimelineStatusShowRelativeTimeDetail
+		{
+			get => Setting.TimelineStatusDetailShowRelativeTime;
+			set
+			{
+				Setting.TimelineStatusDetailShowRelativeTime = value;
+				RaisePropertyChanged(nameof(TimelineStatusShowAbsoluteTimeDetail));
+				RaisePropertyChanged(nameof(TimelineStatusShowRelativeTimeDetail));
+			}
+		}
+
+		public bool TimelineStatusShowAbsoluteTimeDetail
+		{
+			get => !Setting.TimelineStatusDetailShowRelativeTime;
+			set
+			{
+				Setting.TimelineStatusDetailShowRelativeTime = !value;
+				RaisePropertyChanged(nameof(TimelineStatusShowAbsoluteTimeDetail));
+				RaisePropertyChanged(nameof(TimelineStatusShowRelativeTimeDetail));
+			}
+		}
+		#endregion
+
+		internal override bool CanClose()
+		{
+			if (Accounts.Count == 0)
 			{
 				return DialogService.MessageBox(
 					"アカウントが登録されていません。終了しますか？", "Liberfy",
 					MsgBoxButtons.YesNo, MsgBoxIcon.Question) == MsgBoxResult.Yes;
 			}
 
+			if (ViewFonts.Count == 0)
+			{
+				return DialogService.MessageBox(
+					"フォントが指定されていません。続行しますか？",
+					MsgBoxButtons.YesNo, MsgBoxIcon.Question) == MsgBoxResult.Yes;
+			}
+
 			return true;
+		}
+
+		internal override void OnClosed()
+		{
+			ApplyFontSetting();
+			App.LoadUISettingsFromSetting();
 		}
 	}
 }

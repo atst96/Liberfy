@@ -11,25 +11,11 @@ namespace Liberfy
 		Action _execute;
 		Predicate<object> _canExecute;
 
-		public DelegateCommand(Action action) : base(false)
-		{
-			_execute = action;
-			_canExecute = DefaultCanExecute;
-		}
+		public DelegateCommand(Action action)
+			: this(action, null, false) { }
 
-		public DelegateCommand(Action action, bool hookRequerySuggested)
-			: base(hookRequerySuggested)
-		{
-			_execute = action;
-			_canExecute = DefaultCanExecute;
-		}
-
-		public DelegateCommand(Action action, Predicate<object> predicate = null)
-			: base(false)
-		{
-			_execute = action;
-			_canExecute = predicate ?? DefaultCanExecute;
-		}
+		public DelegateCommand(Action action, bool hookRequerySuggested = false)
+			: this(action, null, hookRequerySuggested) { }
 
 		public DelegateCommand(Action action, Predicate<object> predicate = null, bool hookRequerySuggested = false)
 			: base(hookRequerySuggested)
@@ -48,6 +34,14 @@ namespace Liberfy
 			_execute();
 		}
 
+		public override void Dispose()
+		{
+			_execute = null;
+			_canExecute = null;
+
+			base.Dispose();
+		}
+
 		static bool DefaultCanExecute(object p) => true;
 	}
 
@@ -56,24 +50,20 @@ namespace Liberfy
 		Action<T> _execute;
 		Predicate<T> _canExecute;
 
-		public DelegateCommand(Action<T> action) : base(false)
-		{
-			_execute = action;
-			_canExecute = DefaultCanExecute;
-		}
+		public DelegateCommand(Action<T> action)
+			: this(action, null, false) { }
 
-		public DelegateCommand(Action<T> action, bool hookRequerySuggested)
-			: base(hookRequerySuggested)
-		{
-			_execute = action;
-			_canExecute = DefaultCanExecute;
-		}
+		public DelegateCommand(Action<T> action, bool hookRequerySuggested = false)
+			: this(action, null, hookRequerySuggested) { }
 
 		public DelegateCommand(Action<T> action, Predicate<T> predicate = null, bool hookRequerySuggested = false)
 			: base(hookRequerySuggested)
 		{
 			_execute = action;
 			_canExecute = predicate ?? DefaultCanExecute;
+
+			new WeakReference(_execute);
+			new WeakReference(_canExecute);
 		}
 
 		public override bool CanExecute(T parameter)
@@ -84,6 +74,14 @@ namespace Liberfy
 		public override void Execute(T parameter)
 		{
 			_execute(parameter);
+		}
+
+		public override void Dispose()
+		{
+			_execute = null;
+			_canExecute = null;
+
+			base.Dispose();
 		}
 
 		static bool DefaultCanExecute(T parameter) => true;

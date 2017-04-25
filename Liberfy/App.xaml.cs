@@ -1,4 +1,5 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
+using Microsoft.Windows.Themes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 
 namespace Liberfy
 {
@@ -21,10 +23,14 @@ namespace Liberfy
 	{
 		internal static readonly object CommonLockObject = new object();
 
-		internal static AccountCollection Accounts { get; private set; }
-		internal static Setting Setting { get; private set; }
+		private static AccountSetting _accounts;
+		private static Setting _setting;
 
-		internal static Assembly Assembly { get; } = Assembly.GetExecutingAssembly();
+		internal static AccountSetting AccountSetting => _accounts;
+		internal static Setting Setting => _setting;
+
+		private static Assembly _assembly = Assembly.GetExecutingAssembly();
+		internal static Assembly Assembly => _assembly;
 
 		public static string ApplicationName { get; } = "Liberfy";
 
@@ -34,27 +40,62 @@ namespace Liberfy
 
 		protected override void OnStartup(StartupEventArgs e)
 		{
-			InitializeSettings();
+			// 設定を読み込む
+			// InitializeSettings();
+			if (!loadSettingWithErrorDialog(Defines.SettingFile, ref _setting))
+			{
+				App.Shutdown(false);
+				return;
+			}
+
+			if (!loadSettingWithErrorDialog(Defines.AccountsFile, ref _accounts))
+			{
+				App.Shutdown(false);
+				return;
+			}
 
 			TaskbarIcon = (TaskbarIcon)FindResource("taskbarIcon");
 
 			base.OnStartup(e);
 		}
 
-		private static bool InitializeSettings()
+		private static bool loadSettingWithErrorDialog<T>(string fileName, ref T setting) where T : SettingBase
 		{
-			Setting = OpenSettingFile<Setting>(Defines.SettingFile) ?? new Setting();
-			Accounts = OpenSettingFile<AccountCollection>(Defines.AccountsFile) ?? new AccountCollection();
+			var response = SettingBase.FromFile<T>(fileName);
 
-			Setting.NormalizeSettings();
+			switch (response.Status)
+			{
+				case FileProcessStatus.Success:
+					setting = response.Result;
+					return true;
 
-			return false;
+				case FileProcessStatus.FileNotFound:
+					setting = Activator.CreateInstance<T>();
+					return true;
+
+				default:
+					string instruction = response.Status == FileProcessStatus.ParseError ? "保存形式が誤っています" : "読み込みに失敗しました";
+					MessageBox.Show(IntPtr.Zero, $"設定ファイルの{instruction}：\n{response.ErrorMessage}\n\nアプリケーションを終了します。", caption: "エラー", icon: MsgBoxIcon.Error);
+					return false;
+			}
 		}
 
-		private static void SaveSettings()
+		private static void saveSettings()
 		{
-			SaveJsonFile(Defines.SettingFile, Setting);
-			SaveJsonFile(Defines.AccountsFile, Accounts);
+			saveSettingWithErrorDialog(Defines.SettingFile, Setting);
+			saveSettingWithErrorDialog(Defines.AccountsFile, AccountSetting);
+		}
+
+		private static void saveSettingWithErrorDialog<T>(string fileName, T setting) where T : SettingBase
+		{
+			var response = SettingBase.SaveFile(fileName, setting);
+
+			if(response.Status != FileProcessStatus.Success)
+			{
+				MessageBox.Show(IntPtr.Zero,
+					$"設定ファイルの保存に失敗しました。：\n{response.ErrorMessage}",
+					caption: "エラー", icon: MsgBoxIcon.Error);
+			}
 		}
 
 		private static bool _appClsoing;
@@ -65,76 +106,16 @@ namespace Liberfy
 			_appClsoing = true;
 
 			if (saveSettings)
-				SaveSettings();
+				App.saveSettings();
 
 			Current.Shutdown();
 
 			return true;
 		}
 
-		private static bool SaveJsonFile(string path, object value)
+		public static void LoadUISettingsFromSetting()
 		{
-			byte[] data = Encoding.UTF8.GetBytes(
-				JsonConvert.SerializeObject(value, Formatting.Indented));
 
-			FileStream fs = null;
-
-			try
-			{
-				fs = File.OpenWrite(path);
-				fs.SetLength(data.Length);
-				fs.Write(data, 0, data.Length);
-
-				return true;
-			}
-			finally
-			{
-				data = null;
-				fs?.Dispose();
-			}
-		}
-
-		private static T OpenJsonFile<T>(string path)
-		{
-			StreamReader sr = null;
-
-			try
-			{
-				return JsonConvert.DeserializeObject<T>(
-					(sr = File.OpenText(path)).ReadToEnd());
-			}
-			finally
-			{
-				sr?.Dispose();
-			}
-		}
-
-		private static T OpenSettingFile<T>(string path) where T : class
-		{
-			try
-			{
-				return OpenJsonFile<T>(path);
-			}
-			catch (FileNotFoundException)
-			{
-				return null;
-			}
-			catch (Exception ex)
-			{
-				MsgBoxResult i;
-				switch (i = MessageBox.Show(IntPtr.Zero,
-					"設定ファイルの読み込みに失敗しました:\n" + ex.Message,
-					"Liberfy", MsgBoxButtons.CancelTryContinue, MsgBoxIcon.Error))
-				{
-					case MsgBoxResult.TryAgain:
-						return OpenSettingFile<T>(path);
-
-					case MsgBoxResult.Continue:
-						return Activator.CreateInstance<T>();
-
-					default: ForceExit(); return null;
-				}
-			}
 		}
 
 		internal static void ForceExit()

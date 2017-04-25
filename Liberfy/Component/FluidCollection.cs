@@ -59,7 +59,7 @@ namespace Liberfy
 				new NotifyCollectionChangedEventArgs(
 					NotifyCollectionChangedAction.Add, item, Count - 1));
 
-			RaiseCountPropertyChanged();
+			OnItmesCountChanged();
 		}
 
 		public void AddRange(IEnumerable<T> collection)
@@ -78,7 +78,7 @@ namespace Liberfy
 				new NotifyCollectionChangedEventArgs(
 					NotifyCollectionChangedAction.Add, item, index));
 
-			RaiseCountPropertyChanged();
+			OnItmesCountChanged();
 		}
 
 		public void InsertRange(int index, IEnumerable<T> collection)
@@ -91,9 +91,53 @@ namespace Liberfy
 			}
 		}
 
-		public void MoveUp(int oldIndex, int count = 1) => Move(oldIndex, oldIndex - count);
+		#region Functions for ItemIndexDecrement
 
-		public void MoveDown(int oldIndex, int count = 1) => Move(oldIndex, oldIndex + count);
+		public void ItemIndexDecrement(int oldIndex, int count = 1)
+		{
+			Move(oldIndex, oldIndex - count);
+		}
+
+		public void ItemIndexDecrement(T item, int count = 1)
+		{
+			ItemIndexDecrement(IndexOf(item), count);
+		}
+
+		public bool CanItemIndexDecrement(int currentIndex, int upCount)
+		{
+			return MathEx.IsWithin(currentIndex, upCount, Count - 1);
+		}
+
+		public bool CanItemIndexDecrement(T item, int upCount = 1)
+		{
+			return CanItemIndexDecrement(IndexOf(item), upCount);
+		}
+
+		#endregion Functions for ItemIndexDecrement
+
+		#region Functions for ItemIndexIncrement
+
+		public void ItemIndexIncrement(int oldIndex, int count = 1)
+		{
+			Move(oldIndex, oldIndex + count);
+		}
+
+		public void ItemIndexIncrement(T item, int count = 1)
+		{
+			ItemIndexIncrement(IndexOf(item), count);
+		}
+
+		public bool CanItemIndexIncrement(int currentIndex, int downCount = 1)
+		{
+			return MathEx.IsWithin(currentIndex, 0, Count - (1 + downCount));
+		}
+
+		public bool CanItemIndexIncrement(T item, int downCount = 1)
+		{
+			return CanItemIndexIncrement(IndexOf(item), downCount);
+		}
+
+		#endregion Functions for ItemIndexIncrement
 
 		public void Move(int oldIndex, int newIndex)
 		{
@@ -108,7 +152,7 @@ namespace Liberfy
 						NotifyCollectionChangedAction.Move,
 						item, newIndex, oldIndex));
 
-				RaiseCountPropertyChanged();
+				OnItmesCountChanged();
 			}
 		}
 
@@ -122,10 +166,14 @@ namespace Liberfy
 					new NotifyCollectionChangedEventArgs(
 						NotifyCollectionChangedAction.Remove, item, index));
 
+				OnItmesCountChanged();
+
 				return true;
 			}
 			else
+			{
 				return false;
+			}
 		}
 
 		public void RemoveAt(int index)
@@ -143,7 +191,7 @@ namespace Liberfy
 						new NotifyCollectionChangedEventArgs(
 							NotifyCollectionChangedAction.Remove, item, index));
 
-					RaiseCountPropertyChanged();
+					OnItmesCountChanged();
 				}
 			}
 		}
@@ -156,7 +204,7 @@ namespace Liberfy
 				new NotifyCollectionChangedEventArgs(
 					NotifyCollectionChangedAction.Reset));
 
-			RaiseCountPropertyChanged();
+			OnItmesCountChanged();
 		}
 
 		void RaiseCollectionChanged(NotifyCollectionChangedEventArgs e)
@@ -164,12 +212,13 @@ namespace Liberfy
 			CollectionChanged?.Invoke(this, e);
 		}
 
-		void RaiseCountPropertyChanged()
+		void OnItmesCountChanged()
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasItems)));
 		}
 
-		private bool HasItems => list.Count > 0;
+		public bool HasItems => list.Count > 0;
 
 		public T this[int index]
 		{
@@ -191,6 +240,8 @@ namespace Liberfy
 
 		public void Reset() => Clear();
 
+		public void Reset(params T[] arry) => Reset(arry);
+
 		public void Reset(IEnumerable<T> collection)
 		{
 			list.Clear();
@@ -201,7 +252,7 @@ namespace Liberfy
 				new NotifyCollectionChangedEventArgs(
 					NotifyCollectionChangedAction.Reset));
 
-			RaiseCountPropertyChanged();
+			OnItmesCountChanged();
 		}
 	}
 }

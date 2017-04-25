@@ -9,95 +9,121 @@ using System.Threading.Tasks;
 namespace Liberfy
 {
 	[JsonObject]
-	sealed class Mute : ICloneable, IDisposable
+	sealed class Mute
 	{
-		public Mute() { }
+		[JsonConstructor]
+		private Mute() { }
 
+		public Mute(MuteType type, SearchMode search, string text)
+		{
+			Type = type;
+			Search = search;
+			Text = text;
+		}
 
-		private Regex customRegex;
+		private static readonly StringComparison comparison = StringComparison.CurrentCultureIgnoreCase;
+		private const RegexOptions regexOptions = RegexOptions.IgnoreCase | RegexOptions.Compiled;
 
-		private int h_type;
-		private int h_regx;
-		private int h_text;
+		private Regex r;
 
-		private MuteType _type;
-		private bool _useRegex;
-		private string _text;
+		[JsonIgnore]
+		public bool IsInvalidItem { get; private set; } = true;
 
 		[JsonProperty("type")]
-		public MuteType Type
-		{
-			get { return _type; }
-			set
-			{
-				_type = value;
-				h_type = _type.GetHashCode();
-			}
-		}
+		public MuteType Type { get; private set; }
 
-		[JsonProperty("use_regex")]
-		public bool UseRegex
-		{
-			get { return _useRegex; }
-			set
-			{
-				_useRegex = value;
-				h_regx = _useRegex.GetHashCode();
-			}
-		}
+		[JsonProperty("search")]
+		public SearchMode Search { get; private set; }
 
 		[JsonProperty("text")]
-		public string Text
-		{
-			get { return _text; }
-			set
-			{
-				_text = value;
-				h_text = _text?.ToLower().GetHashCode() ?? 0;
-			}
-		}
+		public string Text { get; private set; }
 
 		public void Apply()
 		{
-			if (UseRegex)
+			if(IsAvailable(Type, Search, Text))
 			{
-				customRegex = new Regex(Text, RegexOptions.Multiline | RegexOptions.IgnoreCase);
+				IsInvalidItem = false;
+
+				if (Search == SearchMode.Regex)
+				{
+					r = new Regex(Text, regexOptions);
+				}
 			}
-			else
+		}
+
+		private bool MatchText(string baseText)
+		{
+			if (IsInvalidItem)
+				return false;
+
+			switch(Search)
 			{
-				customRegex = null;
+				case SearchMode.Partial:
+					return baseText.IndexOf(Text, comparison) > 0;
+
+				case SearchMode.Forward:
+					return baseText.StartsWith(Text, comparison);
+
+				case SearchMode.Backward:
+					return baseText.EndsWith(Text, comparison);
+
+				case SearchMode.Perfect:
+					return baseText.Equals(Text, comparison);
+
+				case SearchMode.Regex:
+					return r.IsMatch(baseText);
 			}
+
+			return false;
 		}
 
-		public bool IsMatchText(string text)
+		public static bool IsAvailable(MuteType type, SearchMode search, string text)
 		{
-			return UseRegex
-				? text.IndexOf(Text, StringComparison.InvariantCultureIgnoreCase) >= 0
-				: customRegex.IsMatch(text);
+			return Enum.IsDefined(typeof(MuteType), type)
+				&& Enum.IsDefined(typeof(SearchMode), search)
+				&& !string.IsNullOrWhiteSpace(text)
+				&& (search != SearchMode.Regex || IsEnableRegex(text));
 		}
 
-		public object Clone() => new Mute
+		public static bool IsAvailable(Mute mute)
 		{
-			Type = Type,
-			Text = Text,
-			UseRegex = UseRegex,
-		};
-
-		public void Dispose()
-		{
-			customRegex = null;
+			return IsAvailable(mute.Type, mute.Search, mute.Text);
 		}
 
-		public override int GetHashCode()
+		private static bool IsEnableRegex(string text)
 		{
-			return h_type | h_regx | h_text;
+			Regex regex;
+			try
+			{
+				regex = new Regex(text, RegexOptions.IgnoreCase);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+			finally
+			{
+				regex = null;
+			}
 		}
 	}
 
-	enum MuteType
+	enum MuteType : uint
 	{
-		TextContent,
-		User,
-		Source,
+		Content = 0,
+		UserId = 1,
+		ScreenName = 2,
+		ViewName = 3,
+		Client = 4,
+	}
+
+	enum SearchMode : uint
+	{
+		Partial = 0,
+		Forward = 1,
+		Backward = 2,
+		Perfect = 3,
+		Regex = 4,
 	}
 }

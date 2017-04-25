@@ -9,91 +9,90 @@ using Newtonsoft.Json.Converters;
 using System.Windows;
 using System.IO;
 using System.Runtime.Serialization;
+using static Liberfy.Defines;
 
 namespace Liberfy
 {
-	[JsonObject]
-	internal partial class Setting : NotificationObject
+	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
+	internal partial class Setting : SettingBase
 	{
-		internal void NormalizeSettings()
-		{
-			if (DefaultColumns == null)
-			{
-				DefaultColumns = new FluidCollection<ColumnSetting>
-				{
-					new ColumnSetting(ColumnType.Home, Account.Dummy),
-					new ColumnSetting(ColumnType.Notification, Account.Dummy),
-					new ColumnSetting(ColumnType.Messages, Account.Dummy),
-				};
-			}
-
-			if (_timelineFont == null || _timelineFont.Length == 0)
-			{
-				_timelineFont = DefaultTimelineFont;
-			}
-			else
-			{
-				for (int i = 0, l = _timelineFont.Length; i < l; i++)
-				{
-					_timelineFont[i] = _timelineFont[i].Trim();
-				}
-			}
-		}
-
-		#region
-
-		[JsonIgnore]
-		public Application app = Application.Current;
-
-		private void SetValue(string key, object value)
-		{
-			app.Resources[key] = value;
-		}
-
-		private T GetValue<T>(string key)
-		{
-			return (T)app.TryFindResource(key);
-		}
-
-		#endregion
-
 		#region Generic
 
+		[JsonProperty("startup_check_update")]
 		private bool _checkUpdate = true;
-
-		[JsonProperty("startup_minimized")]
-		public bool MinimizeStartup { get; set; } = true;
-
-		[JsonProperty("tasktray_show")]
-		public bool ShowInTaskTray { get; set; } = false;
-
-		[JsonProperty("tasktray_show_at_minimized")]
-		public bool ShowInTaskTrayAtMinimzied { get; set; } = true;
-
-		[JsonProperty("tasktray_balloon_at_minimized")]
-		public bool ShowBalloonAtMinized { get; set; } = false;
-
-		[JsonProperty("minimize_click_close_button")]
-		public bool MinimizeAtCloseButtonClick { get; set; } = false;
-
-		private BackgroundType _backgroundType = BackgroundType.None;
-		private AlignmentX _imageAlignmentX = AlignmentX.Left;
-		private AlignmentY _imageAlignmentY = AlignmentY.Top;
-		private Stretch _imageStretch = Stretch.UniformToFill;
-		private double _imageOpacity = 1.0d;
-		private string _imagePath = string.Empty;
-
-		[JsonProperty("supress_shutdown")]
-		public bool SupressShutdown { get; set; } = false;
-
-		[JsonProperty("check_update")]
 		public bool CheckUpdate
 		{
 			get { return _checkUpdate; }
 			set { SetProperty(ref _checkUpdate, value); }
 		}
 
+		[JsonProperty("startup_minimized")]
+		private bool _minimizeStartup;
+		public bool MinimizeStartup
+		{
+			get { return _minimizeStartup; }
+			set { SetProperty(ref _minimizeStartup, value); }
+		}
+
+		[JsonProperty("tasktray_show")]
+		private bool _showInTaskTray;
+		public bool ShowInTaskTray
+		{
+			get { return _showInTaskTray; }
+			set { SetProperty(ref _showInTaskTray, value); }
+		}
+
+		[JsonProperty("tasktray_show_at_minimized")]
+		private bool _showInTaskTrayAtMinimized = true;
+		public bool ShowInTaskTrayAtMinimzied
+		{
+			get { return _showInTaskTrayAtMinimized; }
+			set { SetProperty(ref _showInTaskTrayAtMinimized, value); }
+		}
+
+		[JsonProperty("tasktray_balloon_at_minimized")]
+		private bool _showBalloonAtMinimized = true;
+		public bool ShowBalloonAtMinimized
+		{
+			get { return _showBalloonAtMinimized; }
+			set { SetProperty(ref _showBalloonAtMinimized, value); }
+		}
+
+		[JsonProperty("minimize_click_close_button")]
+		private bool _minimizeAtCloseButtonClick;
+		public bool MinimizeAtCloseButtonClick
+		{
+			get { return _minimizeAtCloseButtonClick; }
+			set { SetProperty(ref _minimizeAtCloseButtonClick, value); }
+		}
+
+
+		private bool _suppressShutdown;
+		[JsonProperty("system_suppress_shutdown")]
+		public bool SuppressShutdown
+		{
+			get { return _suppressShutdown; }
+			set { SetProperty(ref _suppressShutdown, value); }
+		}
+
+		[JsonProperty("system_suppress_suspend")]
+		private bool _suppressSuspend;
+		public bool SuppressSuspend
+		{
+			get { return _suppressSuspend; }
+			set { SetProperty(ref _suppressSuspend, value); }
+		}
+
+		[JsonProperty("system_suppress_screensaver")]
+		private bool _suppressScreenSaver;
+		public bool SuppressScreenSaver
+		{
+			get { return _suppressScreenSaver; }
+			set { SetProperty(ref _suppressScreenSaver, value); }
+		}
+
 		[JsonProperty("background_type")]
+		private BackgroundType _backgroundType = BackgroundType.None;
 		public BackgroundType BackgroundType
 		{
 			get { return _backgroundType; }
@@ -101,6 +100,7 @@ namespace Liberfy
 		}
 
 		[JsonProperty("background_alignment_x")]
+		private AlignmentX _imageAlignmentX;
 		public AlignmentX ImageAlignmentX
 		{
 			get { return _imageAlignmentX; }
@@ -108,6 +108,7 @@ namespace Liberfy
 		}
 
 		[JsonProperty("background_alignment_y")]
+		private AlignmentY _imageAlignmentY = AlignmentY.Top;
 		public AlignmentY ImageAlignmentY
 		{
 			get { return _imageAlignmentY; }
@@ -115,119 +116,191 @@ namespace Liberfy
 		}
 
 		[JsonProperty("background_image_stretch")]
+		private Stretch _backgroundImageStretch = Stretch.UniformToFill;
 		public Stretch BackgroundImageStretch
 		{
-			get { return _imageStretch; }
-			set { SetProperty(ref _imageStretch, value); }
+			get { return _backgroundImageStretch; }
+			set { SetProperty(ref _backgroundImageStretch, value); }
 		}
 
 		[JsonProperty("background_image_opacity")]
+		private double _backgroundOpacity = 1.0d;
 		public double BackgroundImageOpacity
 		{
-			get { return _imageOpacity; }
-			set { SetProperty(ref _imageOpacity, value); }
+			get { return _backgroundOpacity; }
+			set { SetProperty(ref _backgroundOpacity, value); }
 		}
 
 		[JsonProperty("background_image_path")]
+		private string _backgroundImagePath;
 		public string BackgroundImagePath
 		{
-			get { return _imagePath; }
-			set { SetProperty(ref _imagePath, value); }
+			get { return _backgroundImagePath; }
+			set { SetProperty(ref _backgroundImagePath, value); }
 		}
 
 		#endregion
 
 		#region Account
 
-		[JsonProperty("columns_default")]
-		public FluidCollection<ColumnSetting> DefaultColumns { get; private set; }
+		[JsonProperty("column_defaults")]
+		private FluidCollection<ColumnSetting> _defaultColumns;
+		public FluidCollection<ColumnSetting> DefaultColumns
+		{
+			get
+			{
+				if (_defaultColumns != null)
+				{
+					return _defaultColumns;
+				}
+				else
+				{
+					var account = Account.Dummy;
+
+					return _defaultColumns =
+						new FluidCollection<ColumnSetting>(new[] {
+							new ColumnSetting(ColumnType.Home, account),
+							new ColumnSetting(ColumnType.Notification, account),
+							new ColumnSetting(ColumnType.Messages, account)
+						});
+				}
+			}
+		}
 
 		#endregion
 
-		#region View settings
-
-		public static readonly string[] DefaultTimelineFont = { "Meiryo", "Segoe UI Symbol" };
-		public const double DefaultTimelineFontSize = 12;
-
-		private string[] _timelineFont = DefaultTimelineFont;
-		private double _timelineFontSize = DefaultTimelineFontSize;
+		#region View
 
 		[JsonProperty("timeline_fonts")]
+		private string[] _timelineFont;
 		public string[] TimelineFont
 		{
-			get { return _timelineFont; }
+			get { return _timelineFont ?? (_timelineFont = DefaultTimelineFont); }
 			set { SetProperty(ref _timelineFont, value); }
 		}
 
 		[JsonProperty("timeline_font_size")]
+		private double _timelineFontSize;
 		public double TimelineFontSize
 		{
 			get { return _timelineFontSize; }
 			set { SetProperty(ref _timelineFontSize, value); }
 		}
 
-		[JsonProperty("timeline_show_images")]
-		public bool ShowImageInTimeline
+
+		[JsonProperty("timeline_tweet_show_media")]
+		private bool _timelineStatusShowMedia = true;
+		public bool TimelineStatusShowMedia
 		{
-			get { return GetValue<bool>("ShowImageInTimeline"); }
-			set
-			{
-				SetValue("ShowImageInTimeline", value);
-				RaisePropertyChanged(nameof(ShowImageInTimeline));
-			}
+			get { return _timelineStatusShowMedia; }
+			set { SetProperty(ref _timelineStatusShowMedia, value); }
 		}
 
-		[JsonProperty("timeline_show_images_detail")]
-		public bool ShowImageInDetail
+		[JsonProperty("timeline_tweet_show_media_detail")]
+		private bool _timelineStatusDetailShowMedia = true;
+		public bool TimelineStatusDetailShowMedia
 		{
-			get { return GetValue<bool>("ShowImageInDetail"); }
-			set
-			{
-				SetValue("ShowImageInDetail", value);
-				RaisePropertyChanged("ShowImageInDetail");
-			}
+			get { return _timelineStatusDetailShowMedia; }
+			set { SetProperty(ref _timelineStatusDetailShowMedia, value); }
 		}
 
-		[JsonProperty("timeline_show_relative_time")]
-		public bool RelativeTime
+		[JsonProperty("timeline_tweet_show_quoted_tweet")]
+		private bool _timelineStatusShowQuotedTweet = true;
+		public bool TimelineStatusShowQuotedTweet
 		{
-			get { return GetValue<bool>("RelativeTime"); }
-			set { SetValue("RelativeTime", value); }
+			get { return _timelineStatusDetailShowMedia; }
+			set { SetProperty(ref _timelineStatusDetailShowMedia, value); }
+		}
+
+		[JsonProperty("timeline_tweet_show_quoted_tweet_detail")]
+		private bool _timelineStatusDetailShowQuotedTweet = true;
+		public bool TimelineStatusDetailShowQuotedTweet
+		{
+			get { return _timelineStatusDetailShowQuotedTweet; }
+			set { SetProperty(ref _timelineStatusShowQuotedTweet, value); }
+		}
+
+		[JsonProperty("timeline_tweet_show_relative_time")]
+		private bool _timelineStatusShowRelativeTime = true;
+		public bool TimelineStatusShowRelativeTime
+		{
+			get { return _timelineStatusShowRelativeTime; }
+			set { SetProperty(ref _timelineStatusShowRelativeTime, value); }
+		}
+
+		[JsonProperty("timeline_tweet_show_relatvie_time_detail")]
+		private bool _timelineStatusDetailShowRelativeTime;
+		public bool TimelineStatusDetailShowRelativeTime
+		{
+			get { return _timelineStatusDetailShowRelativeTime; }
+			set { SetProperty(ref _timelineStatusDetailShowRelativeTime, value); }
 		}
 
 		[JsonProperty("timeline_font_text_rendering")]
-		public TextFormattingMode TimelineFontRendering { get; set; }
+		private TextFormattingMode _timelineFontRendering = TextFormattingMode.Display;
+		public TextFormattingMode TimelineFontRendering
+		{
+			get { return _timelineFontRendering; }
+			set { SetProperty(ref _timelineFontRendering, value); }
+		}
 
 		[JsonProperty("timeline_enable_item_animation")]
-		public bool EnableTimelineAnimation { get; set; } = true;
+		private bool _enableTimelineAnimation = true;
+		public bool EnableTimelineAnimation
+		{
+			get { return _enableTimelineAnimation; }
+			set { SetProperty(ref _enableTimelineAnimation, value); }
+		}
 
 		[JsonProperty("timeline_disable_animation_at_rdp")]
-		public bool DisableAnimationAtTerminalConnection { get; set; } = false;
-
-		[JsonProperty("timeline_items_show_action_button")]
-		public bool ShowActionButtonInTimeline
+		private bool _disableAnimationAtTerminalConnection;
+		public bool DisableAnimationAtTerminalConnection
 		{
-			get { return GetValue<bool>("ShowActionButtonInTimeline"); }
-			set { SetValue("ShowActionButtonInTimeline", value); }
+			get { return _disableAnimationAtTerminalConnection; }
+			set { SetProperty(ref _disableAnimationAtTerminalConnection, value); }
 		}
+
+		[JsonProperty("timeline_status_show_action_button")]
+		private bool _timelineStatusActionButtonVisible = true;
+		public bool TimelineStatusActionButtonVsiible
+		{
+			get { return _timelineStatusActionButtonVisible; }
+			set { SetProperty(ref _timelineStatusActionButtonVisible, value); }
+		}
+
+		[JsonProperty("timeline_status_detail_show_action_button")]
+		private bool _timelineStatusDetailActionButtonVisible = true;
+		public bool TimelineStatusDetailActionButtonVsiible
+		{
+			get { return _timelineStatusDetailActionButtonVisible; }
+			set { SetProperty(ref _timelineStatusDetailActionButtonVisible, value); }
+		}
+
 
 		#endregion
 
-		#region Format settings
+		#region NowPlaying
 
+
+		[JsonProperty("now_playing_default_player")]
+		private string _nowPlayingDefaultPlayer;
+		public string NowPlayingDefaultPlayer
+		{
+			get => _nowPlayingDefaultPlayer ?? (_nowPlayingDefaultPlayer = DefaultNowPlayingPlayer);
+			set => SetProperty(ref _nowPlayingDefaultPlayer, value);
+		}
+
+		[JsonProperty("now_playing_format")]
 		private string _nowPlayingFormat;
-
-		[JsonProperty("format_now_playing")]
 		public string NowPlayingFormat
 		{
-			get { return _nowPlayingFormat ?? (_nowPlayingFormat = Defines.DefaultNowPlayingFormat); }
-			set { SetProperty(ref _nowPlayingFormat, value ?? Defines.DefaultNowPlayingFormat); }
+			get { return _nowPlayingFormat ?? (_nowPlayingFormat = DefaultNowPlayingFormat); }
+			set { SetProperty(ref _nowPlayingFormat, value ?? DefaultNowPlayingFormat); }
 		}
 
 
-		private bool _insertThumbnailAtNowPlaying;
-
 		[JsonProperty("now_playing_set_thumbnails")]
+		private bool _insertThumbnailAtNowPlaying;
 		public bool InsertThumbnailAtNowPlayying
 		{
 			get { return _insertThumbnailAtNowPlaying; }
@@ -236,36 +309,36 @@ namespace Liberfy
 
 		#endregion
 
-		#region Notification settings
+		#region Notification
 
 		private DictionaryEx<NotifyCode, bool> _ne = App.NotificationEvents;
 
-		private bool _enableNotification = true;
 		[JsonProperty("notification_enable")]
+		private bool _enableNotification = true;
 		public bool EnableNotification
 		{
 			get { return _enableNotification; }
 			set { SetProperty(ref _enableNotification, value); }
 		}
 
-		private string _notificationSoundFile;
 		[JsonProperty("notification_sound_path")]
+		private string _notificationSoundFile;
 		public string NotificationSoundFile
 		{
 			get { return _notificationSoundFile ?? (_notificationSoundFile = Defines.DefaultSoundFile); }
 			set { SetProperty(ref _notificationSoundFile, value); }
 		}
 
-		private bool _enableSoundNotification;
 		[JsonProperty("notification_sound_enable")]
+		private bool _enableSoundNotification;
 		public bool EnableSoundNotification
 		{
 			get { return _enableSoundNotification; }
 			set { SetProperty(ref _enableSoundNotification, value); }
 		}
 
-		private bool _enablePopupNotification;
 		[JsonProperty("EnablePopupNotification")]
+		private bool _enablePopupNotification;
 		public bool EnablePopupNotification
 		{
 			get { return _enablePopupNotification; }
@@ -337,25 +410,35 @@ namespace Liberfy
 
 		#endregion
 
-		#region Mute settings
+		#region Mute
 
-		private FluidCollection<Mute> _mute;
 		[JsonProperty("mute")]
+		private FluidCollection<Mute> _mute;
 		public FluidCollection<Mute> Mute => _mute ?? (_mute = new FluidCollection<Mute>());
 
 		#endregion
 
-		#region Post settings
+		#region Post
 
 		[JsonProperty("post_close_window")]
-		public bool CloseWindowAfterPostComplated { get; set; }
+		private bool _closeWindowAfterPostComplated;
+		public bool CloseWindowAfterPostComplated
+		{
+			get { return _closeWindowAfterPostComplated; }
+			set { SetProperty(ref _closeWindowAfterPostComplated, value); }
+		}
 
 		#endregion
 
-		#region Network settings
+		#region Network
 
 		[JsonProperty("network_system_proxy")]
-		public bool UseSystemProxy { get; set; }
+		private bool _useSystemProxy;
+		public bool UseSystemProxy
+		{
+			get { return _useSystemProxy; }
+			set { SetProperty(ref _useSystemProxy, value); }
+		}
 
 		#endregion
 	}

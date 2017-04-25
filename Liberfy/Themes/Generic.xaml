@@ -1,8 +1,7 @@
 ﻿<ResourceDictionary 
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:local="clr-namespace:Liberfy"
-	xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero">
+	xmlns:local="clr-namespace:Liberfy">
 
 	<SolidColorBrush x:Key="ToolBarForeground" Color="#444" />
 	<SolidColorBrush x:Key="ToolBarBorderBrush" Color="#DADADA" />
@@ -12,6 +11,15 @@
 	<SolidColorBrush x:Key="SettingTabItemForeground" Color="#444" />
 	<SolidColorBrush x:Key="SettingTabItemNormalBorderBrush" Color="#BBB" />
 	<SolidColorBrush x:Key="SettingTabItemSelectedBorderBrush" Color="#DDD" />
+
+	<SolidColorBrush x:Key="TabControlBackground" Color="#fff" />
+	<SolidColorBrush x:Key="TabControlBorderBrush" Color="#777" />
+	<SolidColorBrush x:Key="TabItemBackground" Color="#f4f4f4" />
+	<SolidColorBrush x:Key="TabItemForeground" Color="#000" />
+	<SolidColorBrush x:Key="TabItemHoverBackground" Color="#fafafa" />
+	<SolidColorBrush x:Key="TabItemSelectedBackground" Color="#fff" />
+	<SolidColorBrush x:Key="TabItemBorderBrush" Color="#ccc" />
+	<SolidColorBrush x:Key="TabItemSelectedForeground" Color="#666" />
 
 	<Color x:Key="AccentColor">#07c</Color>
 	<SolidColorBrush x:Key="AccentColorBrush" Color="#07c" />

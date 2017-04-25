@@ -24,16 +24,17 @@ namespace Liberfy
 			InitializeComponent();
 		}
 
-		public SettingWindow(int? page) : this()
+		public SettingWindow(int? page) : base()
 		{
 			if (page.HasValue)
-				TabPage = page.Value;
+			{
+				MoveTabPage(page.Value);
+			}
 		}
 
-		public int TabPage
+		public void MoveTabPage(int index)
 		{
-			get { return tabControl.SelectedIndex; }
-			set { tabControl.SelectedIndex = value; }
+			tabControl.SelectedIndex = index;
 		}
 	}
 }

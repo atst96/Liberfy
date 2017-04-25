@@ -1,4 +1,5 @@
 ﻿using Liberfy.ViewModel;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,13 +12,13 @@ using System.Windows.Shell;
 
 namespace Liberfy
 {
-	class DialogService
+	class DialogService : IDisposable
 	{
 		private Application app = Application.Current;
 
-		private Window view;
-		private IntPtr hWnd;
-		private ViewModelBase viewModel;
+		private Window _view;
+		private IntPtr _hWnd;
+		private ViewModelBase _viewModel;
 		private static Window mainView;
 		private MessageBox msgBox = new MessageBox();
 
@@ -26,134 +27,184 @@ namespace Liberfy
 
 		public DialogService(ViewModelBase viewModel) : this()
 		{
-			this.viewModel = viewModel;
+			this._viewModel = viewModel;
 		}
 
-		private static void SetMainView(Window view)
+		internal void RegisterView(Window view, bool isMainView = false)
 		{
-			mainView = view;
-		}
-
-		public void RegisterView(Window view)
-		{
-			if (this.view != view)
+			if (this._view != view)
 			{
-				UnregisterEvents();
+				UnregisterView(view);
 
-				this.view = view;
+				this._view = view;
 			}
 
 			if (view != null)
 			{
-				hWnd = new WindowInteropHelper(view).Handle;
-				msgBox.SetWindowHandle(hWnd);
+				_hWnd = new WindowInteropHelper(view).Handle;
+				msgBox.SetWindowHandle(_hWnd);
 
 				RegisterEvents();
+
+				if (isMainView)
+				{
+					mainView = view;
+				}
 			}
 		}
 
-		public void UnregisterView(Window view)
+		internal void UnregisterView(Window view)
 		{
-			if (Equals(this.view, view))
+			if (Equals(this._view, view))
 			{
 				UnregisterEvents();
 				msgBox.SetWindowHandle(IntPtr.Zero);
-				this.view = null;
+				this._view = null;
 			}
 		}
 
-		private void viewLoaded(object sender, RoutedEventArgs e)
+		void ViewLoaded(object sender, RoutedEventArgs e)
 		{
-			hWnd = new WindowInteropHelper(view).Handle;
-			msgBox.SetWindowHandle(hWnd);
+			_hWnd = new WindowInteropHelper(_view).Handle;
+			msgBox.SetWindowHandle(_hWnd);
 		}
 
-		private void viewClosed(object sender, EventArgs e)
+		private void ViewClosed(object sender, EventArgs e)
 		{
-			UnregisterEvents();
+			UnregisterView(_view);
 		}
 
-		void RegisterEvents()
+		private void RegisterEvents()
 		{
-			if (view != null)
+			if (_view != null)
 			{
-				view.Loaded += viewLoaded;
-				view.Closed += viewClosed;
+				_view.Loaded += ViewLoaded;
+				_view.Closed += ViewClosed;
 			}
 		}
 
-		void UnregisterEvents()
+		private void UnregisterEvents()
 		{
-			if (view != null)
+			if (_view != null)
 			{
-				view.Loaded -= viewLoaded;
-				view.Closed -= viewClosed;
+				_view.Loaded -= ViewLoaded;
+				_view.Closed -= ViewClosed;
 			}
 		}
 
 		public void Close(bool dialogResult)
 		{
-			view.DialogResult = dialogResult;
+			_view.DialogResult = dialogResult;
+		}
+
+		public void Open(ViewType viewType, object parameter = null)
+		{
+			ShowView(viewType, _view, false, parameter);
+		}
+
+		public bool OpenModal(ViewType viewType, object parameter = null)
+		{
+			return ShowView(viewType, _view, true, parameter);
+		}
+
+		public static void OpenWithMainView(ViewType viewType, object parameter = null)
+		{
+			ShowView(viewType, mainView, false, parameter);
+		}
+
+		public static bool OpenWithMainViewModal(ViewType viewType, object parameter = null)
+		{
+			return ShowView(viewType, mainView, true, parameter);
+		}
+
+		private static bool ShowView(ViewType viewType, Window owner, bool isModal, object parameter = null)
+		{
+			var w = WindowFromViewType(viewType, parameter);
+			w.Owner = owner;
+
+			if (isModal)
+			{
+				return w.ShowDialog() ?? false;
+			}
+			else
+			{
+				w.Show();
+				return false;
+			}
+		}
+
+		private static Window WindowFromViewType(ViewType viewType, object parameter = null)
+		{
+			switch (viewType)
+			{
+				case ViewType.TweetWindow:
+					return new View.TweetWindow();
+
+				default:
+					throw new NotSupportedException();
+			}
 		}
 
 		public void Invoke(ViewState viewState)
 		{
-			if (view == null) return;
+			if (_view == null) return;
 
 			switch (viewState)
 			{
 				case ViewState.Close:
-					view.Close();
+					_view.Close();
 					return;
 
 				case ViewState.Minimize:
-					view.WindowState = WindowState.Minimized;
+					_view.WindowState = WindowState.Minimized;
 					return;
 
 				case ViewState.Maximize:
-					view.WindowState = WindowState.Maximized;
+					_view.WindowState = WindowState.Maximized;
 					return;
 
 				case ViewState.Normal:
-					view.WindowState = WindowState.Normal;
+					_view.WindowState = WindowState.Normal;
 					return;
 			}
 		}
 
 		public bool OpenSetting(int? page = null, bool modal = false)
 		{
-			var settingWindow = app.Windows
-				.OfType<SettingWindow>().SingleOrDefault();
+			var stgWnd = app.Windows
+				.OfType<SettingWindow>()
+				.SingleOrDefault() ?? new SettingWindow();
 
-			if (settingWindow == null)
+			if (page.HasValue)
 			{
-				var owner = app.MainWindow;
+				stgWnd.MoveTabPage(page.Value);
+			}
 
-				settingWindow = new SettingWindow(page);
-
-				if (owner.IsVisible)
-				{
-					settingWindow.Owner = owner;
-				}
-
-				if (modal) settingWindow.ShowDialog();
-				else settingWindow.Show();
+			if (stgWnd.IsVisible)
+			{
+				stgWnd.Activate();
 			}
 			else
 			{
-				if (page.HasValue)
-					settingWindow.TabPage = page.Value;
+				stgWnd.Owner = app.MainWindow;
 
-				if (settingWindow.IsVisible) settingWindow.Activate();
-				else settingWindow.Show();
+				if (modal)
+				{
+					stgWnd.ShowDialog();
+				}
+				else
+				{
+					stgWnd.Show();
+				}
 			}
 
-			if(App.Accounts.Count == 0)
+			if (App.AccountSetting.Accounts.Count == 0)
 			{
 				App.ForceExit();
 				return false;
 			}
-			else return true;
+			else
+				return true;
 		}
 
 		public MsgBoxResult MessageBox(string text, MsgBoxButtons buttons = 0, MsgBoxIcon icon = 0, MsgBoxFlags flags = 0)
@@ -166,63 +217,11 @@ namespace Liberfy
 			return msgBox.Show(text, caption ?? App.ApplicationName, buttons, icon, flags);
 		}
 
-		public static DialogService GetViewModel(DependencyObject obj)
-		{
-			return (DialogService)obj.GetValue(ViewModelProperty);
-		}
-
-		public static void SetViewModel(DependencyObject obj, DialogService value)
-		{
-			obj.SetValue(ViewModelProperty, value);
-		}
-
-		public static bool GetIsMain(DependencyObject obj)
-		{
-			return (bool)obj.GetValue(IsMainProperty);
-		}
-
-		public static void SetIsMain(DependencyObject obj, bool value)
-		{
-			obj.SetValue(IsMainProperty, value);
-		}
-
-		public static readonly DependencyProperty ViewModelProperty =
-			DependencyProperty.RegisterAttached("ViewModel",
-				typeof(ViewModelBase), typeof(DialogService),
-				new FrameworkPropertyMetadata(null, ViewModelChanged));
-
-		public static readonly DependencyProperty IsMainProperty =
-			DependencyProperty.RegisterAttached("IsMain",
-				typeof(bool), typeof(ViewModelBase),
-				new FrameworkPropertyMetadata(false, IsMainChanged));
-
-		private static void ViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		{
-			var window = d as Window;
-			if (window != null)
-			{
-				var vm = e.NewValue as ViewModelBase;
-				if (vm != null)
-				{
-					vm.DialogService.RegisterView(window);
-				}
-			}
-		}
-
-		private static void IsMainChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		{
-			var window = d as Window;
-			if (window != null)
-			{
-				SetMainView((bool)e.NewValue ? window : null);
-			}
-		}
-
 		public void Open(ContentWindowViewModel viewModel)
-		{ 
+		{
 			new ContentWindow(viewModel)
 			{
-				Owner = view,
+				Owner = _view,
 			}.Show();
 		}
 
@@ -230,7 +229,7 @@ namespace Liberfy
 		{
 			new ContentWindow(viewModel, option)
 			{
-				Owner = view,
+				Owner = _view,
 			}.Show();
 		}
 
@@ -238,7 +237,7 @@ namespace Liberfy
 		{
 			new ContentWindow(viewModel, option, app.TryFindResource(templateKey) as DataTemplate)
 			{
-				Owner = view,
+				Owner = _view,
 			}.Show();
 		}
 
@@ -246,7 +245,7 @@ namespace Liberfy
 		{
 			return new ContentWindow(content)
 			{
-				Owner = view,
+				Owner = _view,
 			}.ShowDialog() ?? false;
 		}
 
@@ -254,7 +253,7 @@ namespace Liberfy
 		{
 			return new ContentWindow(viewModel, option)
 			{
-				Owner = view,
+				Owner = _view,
 			}.ShowDialog() ?? false;
 		}
 
@@ -262,9 +261,46 @@ namespace Liberfy
 		{
 			return new ContentWindow(viewModel, option, app.TryFindResource(templateKey) as DataTemplate)
 			{
-				Owner = view,
+				Owner = _view,
 			}.ShowDialog() ?? false;
 		}
+
+		public bool Open(OpenFileDialog ofd)
+		{
+			return ofd?.ShowDialog() ?? false;
+		}
+
+		public bool OpenModal(OpenFileDialog ofd)
+		{
+			return ofd?.ShowDialog(_view) ?? false;
+		}
+
+		public bool ShowQuestion(string content)
+		{
+			var result = MessageBox(
+				content, App.ApplicationName,
+				MsgBoxButtons.YesNo, MsgBoxIcon.Question);
+
+			return result == MsgBoxResult.Yes;
+		}
+
+		public void Dispose()
+		{
+			if(mainView == _view)
+			{
+				mainView = null;
+			}
+
+			_hWnd = IntPtr.Zero;
+			_view = null;
+			_viewModel = null;
+			msgBox = null;
+		}
+	}
+
+	public enum ViewType
+	{
+		TweetWindow,
 	}
 
 	public struct ViewOption

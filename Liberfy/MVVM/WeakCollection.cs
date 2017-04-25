@@ -47,14 +47,13 @@ namespace Liberfy
 
 		public bool Remove(T item)
 		{
-			T _item;
 			bool result = false;
 
 			for (int i = _weakItems.Count - 1; i >= 0; --i)
 			{
-				if (_weakItems[i].TryGetTarget(out _item))
+				if (_weakItems[i].TryGetTarget(out var tItem))
 				{
-					if (_item == item)
+					if (tItem.Equals(item))
 					{
 						_weakItems.RemoveAt(i);
 						result = true;
@@ -71,9 +70,7 @@ namespace Liberfy
 
 		public bool Remove(WeakReference<T> item)
 		{
-			T _rItem;
-
-			return item.TryGetTarget(out _rItem) ? Remove(_rItem) : false;
+			return item.TryGetTarget(out var tItem) ? Remove(tItem) : false;
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

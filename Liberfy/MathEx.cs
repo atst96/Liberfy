@@ -13,9 +13,9 @@ namespace Liberfy
 			return min <= value && value <= max;
 		}
 
-		public static int RoundRange(int value, int min, int max)
+		public static int WithIn(int value, int min, int max)
 		{
-			return Math.Min(Math.Max(value, min), max);
+			return min > value ? min : (value > max ? max : value);
 		}
 	}
 }

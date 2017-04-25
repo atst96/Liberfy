@@ -79,107 +79,148 @@ namespace Liberfy.ViewModel
 		}
 
 		public OAuthSession Session { get; private set; }
+
 		public Tokens Tokens { get; private set; }
 
 		private CancellationTokenSource _tokenSource;
 
+		#region Command: NextCommand
+
 		private Command _nextCommand;
 		public Command NextCommand => _nextCommand
-			?? (_nextCommand = new DelegateCommand(async () =>
+			?? (_nextCommand = new DelegateCommand(MoveNextPage, CanMoveNextPage));
+
+		private async void MoveNextPage()
+		{
+			Error = string.Empty;
+
+			if (_pageIndex == 0)
 			{
-				Error = string.Empty;
+				// page-0: 認証URLの取得
 
-				if (_pageIndex == 0)
+				string cKey, cSec;
+
+				if (_overrideKey)
 				{
-					string cKey, cSec;
+					cKey = ConsumerKey;
+					cSec = ConsumerSecret;
+				}
+				else
+				{
+					cKey = Defines.ConsumerKey;
+					cSec = Defines.ConsumerSecret;
+				}
 
+				try
+				{
+					_tokenSource = new CancellationTokenSource();
+
+					IsRunning = true;
+
+					Session = await AuthorizeAsync(cKey, cSec, cancellationToken: _tokenSource.Token);
+
+					App.Open(Session.AuthorizeUri);
+					PageIndex++;
+				}
+				catch (Exception ex)
+				{
+					Error = ex.Message;
+				}
+				finally
+				{
+					IsRunning = false;
+				}
+			}
+			else if (_pageIndex == 1)
+			{
+				// page-1: PINコードを用いて認証
+
+				try
+				{
+					_tokenSource = new CancellationTokenSource();
+
+					IsRunning = true;
+
+					Tokens = await Session.GetTokensAsync(_pinCode, _tokenSource.Token);
+
+					DialogService.Close(true);
+				}
+				catch (Exception ex)
+				{
+					Error = ex.Message;
+					PageIndex++;
+				}
+				finally
+				{
+					IsRunning = false;
+				}
+			}
+		}
+
+		private bool CanMoveNextPage(object p)
+		{
+			if (IsRunning)
+				return false;
+
+			switch (_pageIndex)
+			{
+				case 0:
 					if (_overrideKey)
 					{
-						cKey = ConsumerKey;
-						cSec = ConsumerSecret;
+						bool isEmptyConsumerKey = string.IsNullOrWhiteSpace(ConsumerKey);
+						bool isEmptyConsumerSecret = string.IsNullOrWhiteSpace(ConsumerSecret);
+
+						return !(isEmptyConsumerKey || isEmptyConsumerSecret);
 					}
 					else
 					{
-						cKey = Defines.ConsumerKey;
-						cSec = Defines.ConsumerSecret;
+						return false;
 					}
 
-					try
-					{
-						_tokenSource = new CancellationTokenSource();
+				case 1:
+					return _pinCode?.Length == 7
+						&& Regex.IsMatch(_pinCode, @"^\d+$");
 
-						IsRunning = true;
-
-						Session = await AuthorizeAsync(cKey, cSec, cancellationToken: _tokenSource.Token);
-
-						App.Open(Session.AuthorizeUri);
-						PageIndex++;
-					}
-					catch (Exception ex)
-					{
-						Error = ex.Message;
-					}
-					finally
-					{
-						IsRunning = false;
-					}
-				}
-				else if (_pageIndex == 1)
-				{
-					try
-					{
-						_tokenSource = new CancellationTokenSource();
-
-						IsRunning = true;
-
-						Tokens = await Session.GetTokensAsync(_pinCode, _tokenSource.Token);
-
-						DialogService.Close(true);
-					}
-					catch (Exception ex)
-					{
-						Error = ex.Message;
-						PageIndex++;
-					}
-					finally
-					{
-						IsRunning = false;
-					}
-				}
-
-			}, _ =>
-			{
-				if (IsRunning)
+				default:
 					return false;
+			}
+		}
 
-				switch (PageIndex)
-				{
-					case 0: return !(_overrideKey && (string.IsNullOrWhiteSpace(ConsumerKey) || string.IsNullOrWhiteSpace(ConsumerSecret)));
-					case 1: return _pinCode?.Length == 7 && Regex.IsMatch(_pinCode, @"^\d+$");
-					default: return false;
-				}
-			}));
+		#endregion
+
+		#region Command: CancelCommand
 
 		private Command _cancelCommand;
 		public Command CancelCommand => _cancelCommand
-			?? (_cancelCommand = new DelegateCommand(() =>
-			{
-				if (_tokenSource != null)
-				{
-					_tokenSource.Cancel();
-				}
+			?? (_cancelCommand = new DelegateCommand(CancelAll));
 
-				DialogService.Close(false);
-			}));
+		private void CancelAll()
+		{
+			if (_tokenSource != null
+				&& !_tokenSource.IsCancellationRequested)
+			{
+				_tokenSource.Cancel();
+			}
+
+			DialogService.Close(false);
+		}
+
+		#endregion
+
+		#region Command: CopyClipboardCommand
 
 		private Command _copyClipboardCommand;
 		public Command CopyClipboardCommand => _copyClipboardCommand
-			?? (_copyClipboardCommand = new DelegateCommand(() =>
+			?? (_copyClipboardCommand = new DelegateCommand(CopyAuthorizeUrlToClipboard));
+
+		private void CopyAuthorizeUrlToClipboard()
+		{
+			if (Session.AuthorizeUri != null)
 			{
-				if (Session?.AuthorizeUri != null)
-				{
-					System.Windows.Clipboard.SetText(Session.AuthorizeUri.AbsoluteUri);
-				}
-			}));
+				System.Windows.Clipboard.SetText(Session.AuthorizeUri.AbsoluteUri);
+			}
+		}
+
+		#endregion
 	}
 }

@@ -2,13 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Liberfy
+namespace Liberfy.ViewModel
 {
-	class MainWindowViewModel : ViewModelBase
+	class MainWindow : ViewModelBase
 	{
-		public AccountCollection Accounts { get; } = App.Accounts;
+		public AccountSetting AccountSetting => App.AccountSetting;
+		public FluidCollection<Account> Accounts => AccountSetting.Accounts;
+
+		private bool _isAccountsLoaded;
+		public bool IsAccountsLoaded
+		{
+			get => _isAccountsLoaded;
+			set => SetProperty(ref _isAccountsLoaded, value);
+		}
 
 		private bool _initialized;
 		internal override async void OnInitialized()
@@ -25,6 +34,8 @@ namespace Liberfy
 				}
 			}
 
+			System.Diagnostics.Debug.WriteLine("Account load start");
+
 			await Task.WhenAll(
 				Accounts.Select(a => Task.Run(() =>
 				{
@@ -32,14 +43,29 @@ namespace Liberfy
 					{
 						a.IsLoading = true;
 
-						a.Timeline.LoadAccount();
+						if (a.Login())
+						{
+							a.LoadMetadata();
+						}
 
 						a.IsLoading = false;
 					}
 				})));
+
+			IsAccountsLoaded = true;
+			System.Diagnostics.Debug.WriteLine("Account loaded");
 		}
 
 		public ClientContent Client { get; } = App.Client;
+
+		private Command _tweetCommand;
+		public Command TweetCommand => _tweetCommand ??
+			(_tweetCommand = new DelegateCommand(tweet));
+
+		private void tweet()
+		{
+			DialogService.Open(ViewType.TweetWindow);
+		}
 
 		private Command _showSettingDialog;
 		public Command ShowSettingDialog => _showSettingDialog
@@ -48,7 +74,7 @@ namespace Liberfy
 				DialogService.OpenSetting();
 			}));
 
-		public override bool CanClose()
+		internal override bool CanClose()
 		{
 			App.Shutdown(true);
 

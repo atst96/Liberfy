@@ -11,6 +11,22 @@ using System.Windows.Media;
 
 namespace Liberfy.Converter
 {
+	[ValueConversion(typeof(object), typeof(string))]
+	public class LocalizeNameConverter : IValueConverter
+	{
+		public IReadOnlyDictionary<object, string> LocalizeDictionary { get; set; }
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return LocalizeDictionary[value];
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
 	[ValueConversion(typeof(FontFamily), typeof(string))]
 	class LocalFontNameConverter : IValueConverter
 	{
@@ -54,6 +70,20 @@ namespace Liberfy.Converter
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			throw new NotImplementedException();
+		}
+	}
+
+	[ValueConversion(typeof(bool), typeof(bool))]
+	class BoolenInverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return !(bool)value;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return !(bool)value;
 		}
 	}
 

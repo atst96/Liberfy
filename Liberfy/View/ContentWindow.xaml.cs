@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using Liberfy.ViewModel;
 using System.Windows.Shell;
 using System.ComponentModel;
+using System.Windows.Markup;
 
 namespace Liberfy
 {
@@ -27,30 +28,36 @@ namespace Liberfy
 			InitializeComponent();
 		}
 
+		private void setDataContext(ContentWindowViewModel viewModel)
+		{
+			DataContext = new ViewModelConnector(viewModel).
+				ProvideValue(new DummyServiceProvider(this, DataContextProperty));
+		}
+
 		internal ContentWindow(ContentWindowViewModel dataContext)
 		{
 			InitializeComponent();
-			DataContext = dataContext;
+			setDataContext(dataContext);
 		}
 
 		internal ContentWindow(ContentWindowViewModel dataContext, DataTemplate dataTemplate)
 		{
 			InitializeComponent();
-			DataContext = dataContext;
+			setDataContext(dataContext);
 			ContentTemplate = dataTemplate;
 		}
 
 		internal ContentWindow(ContentWindowViewModel dataContext, DataTemplateSelector templateSelector)
 		{
 			InitializeComponent();
-			DataContext = dataContext;
+			setDataContext(dataContext);
 			ContentTemplateSelector = templateSelector;
 		}
 
 		internal ContentWindow(ContentWindowViewModel dataContext, ViewOption option)
 		{
 			InitializeComponent();
-			DataContext = dataContext;
+			setDataContext(dataContext);
 
 			if (option.Width.HasValue)
 				Width = option.Width.Value;
@@ -97,6 +104,27 @@ namespace Liberfy
 			e.Cancel = !(GetValue(DataContextProperty) as ContentWindowViewModel)?.CanClose() ?? false;
 
 			base.OnClosing(e);
+		}
+
+		public class DummyServiceProvider : IProvideValueTarget, IServiceProvider
+		{
+			private readonly DependencyObject _targetObject;
+			private readonly DependencyProperty _targetProperty;
+
+			public DummyServiceProvider(DependencyObject targetObj, DependencyProperty targetProp)
+			{
+				_targetObject = targetObj;
+				_targetProperty = targetProp;
+			}
+
+			object IProvideValueTarget.TargetObject => _targetObject;
+
+			object IProvideValueTarget.TargetProperty => _targetProperty;
+
+			public object GetService(Type serviceType)
+			{
+				return serviceType == typeof(IProvideValueTarget) ? this : null;
+			}
 		}
 	}
 }

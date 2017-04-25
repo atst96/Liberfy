@@ -4,17 +4,12 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="clr-namespace:Liberfy.ViewModel"
 	xmlns:local="clr-namespace:Liberfy"
 	mc:Ignorable="d"
-	local:DialogService.IsMain="True"
-	local:DialogService.ViewModel="{Binding}"
-	Title="MainWindow" Height="350" Width="525">
-	<Window.Resources>
-		<local:MainWindowViewModel x:Key="ViewModel" />
-	</Window.Resources>
-	<Window.DataContext>
-		<local:ViewModelInstance ViewModel="{StaticResource ViewModel}" />
-	</Window.DataContext>
+	Title="MainWindow" Height="350" Width="525"
+	DataContext="{local:ViewModelConnector {x:Type vm:MainWindow}, IsMainView=True}">
+	
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto" />
@@ -32,7 +27,7 @@
 					<ColumnDefinition Width="auto" />
 				</Grid.ColumnDefinitions>
 
-				<ToolBar
+				<!--<ToolBar
 					ItemsSource="{Binding Client.Pages, Mode=OneTime}">
 					<ToolBar.ItemTemplate>
 						<DataTemplate DataType="{x:Type local:PageItem}">
@@ -41,33 +36,28 @@
 							</Button>
 						</DataTemplate>
 					</ToolBar.ItemTemplate>
-				</ToolBar>
+				</ToolBar>-->
 				
 				<ToolBar Grid.Column="1">
+					<Button
+						Content="ツイート"
+						Command="{Binding TweetCommand, Mode=OneTime}" />
+					
 					<Button 
-					Content="設定を開く"
-					Command="{Binding ShowSettingDialog, Mode=OneTime}" />
+						Content="設定を開く"
+						Command="{Binding ShowSettingDialog, Mode=OneTime}" />
 				</ToolBar>
 			</Grid>
 		</Border>
 
-		<TabControl
-			Grid.Row="1"
-			Padding="0"
-			Background="Transparent"
-			BorderThickness="0">
-			<TabControl.ItemContainerStyle>
-				<Style TargetType="{x:Type TabItem}">
-					<Setter Property="Visibility" Value="Collapsed" />
-				</Style>
-			</TabControl.ItemContainerStyle>
-
-			<TabControl.ItemTemplate>
-				<DataTemplate DataType="{x:Type local:PageItem}">
-					
-				</DataTemplate>
-			</TabControl.ItemTemplate>
-		</TabControl>
+		<Border Grid.Row="1">
+			<Button
+				Style="{StaticResource SimpleButtonStyle}"
+				Content="test"
+				IsEnabled="False"
+				VerticalAlignment="Center"
+				HorizontalAlignment="Center" />
+		</Border>
 
 		<!--#endregion-->
 		
