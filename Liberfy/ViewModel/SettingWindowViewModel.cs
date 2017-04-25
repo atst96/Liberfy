@@ -71,7 +71,6 @@ namespace Liberfy.ViewModel
 
 		public bool AutoStartup
 		{
-
 			get => GetAutoStartupEnabled();
 			set
 			{
