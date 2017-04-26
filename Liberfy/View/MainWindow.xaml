@@ -50,14 +50,7 @@
 			</Grid>
 		</Border>
 
-		<Border Grid.Row="1">
-			<Button
-				Style="{StaticResource SimpleButtonStyle}"
-				Content="test"
-				IsEnabled="False"
-				VerticalAlignment="Center"
-				HorizontalAlignment="Center" />
-		</Border>
+		<Border Grid.Row="1"/>
 
 		<!--#endregion-->
 		
