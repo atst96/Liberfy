@@ -78,6 +78,7 @@
 > The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. 
 >  
 > THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+---
 
 ### WPF NotifyIcon
 > The Code Project Open License (CPOL) 1.02  
@@ -85,6 +86,7 @@
 > Copyright (c) 2009-2013 Philipp Sumi  
 > 
 > https://www.codeproject.com/info/cpol10.aspx
+---
 
 ### Extended WPF Toolkit™ Community Edition
 > Microsoft Public License (Ms-PL)
@@ -118,6 +120,7 @@
 > (D) If you distribute any portion of the software in source code form, you may do so only under this license by including a complete copy of this license with your distribution. If you distribute any portion of the software in compiled or object code form, you may only do so under a license that complies with this license.
 > 
 > (E) The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and non-infringement.
+---
 
 ### Font Awesome
 > SIL OFL 1.1

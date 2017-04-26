@@ -1177,19 +1177,28 @@
 									RenderOptions.ClearTypeHint="Auto"
 									TextOptions.TextFormattingMode="Display"
 									IsOpen="{Binding IsChecked, ElementName=PART_DropDownButton}">
-									<theme:SystemDropShadowChrome
+									<!--<theme:SystemDropShadowChrome
 										Color="#71000000"
 										Margin="0 0 5 5"
-										SnapsToDevicePixels="True">
-										<Border
-											BorderThickness="1"
-											Background="{DynamicResource ToolBarBackground}"
-											BorderBrush="{DynamicResource ToolBarBorderBrush}">
-											<ContentPresenter
+										SnapsToDevicePixels="True">-->
+									<Border
+										Margin="14"
+										BorderThickness="1"
+										Background="{DynamicResource PopupBackgroundBrush}"
+										BorderBrush="{DynamicResource PopupBorderBrush}">
+										<Border.Effect>
+											<DropShadowEffect
+												ShadowDepth="0"
+												BlurRadius="14" 
+												Color="#FF3C3C3C" 
+												Direction="0"
+												Opacity="0.3" />
+										</Border.Effect>
+										<ContentPresenter
 												x:Name="PART_ContentPresenter"
 												Content="{TemplateBinding DropDownContent}"/>
-										</Border>
-									</theme:SystemDropShadowChrome>
+									</Border>
+									<!--</theme:SystemDropShadowChrome>-->
 								</Popup>
 							</Grid>
 						</ControlTemplate>
@@ -1501,11 +1510,11 @@
 								Orientation="Horizontal"
 								HorizontalAlignment="Right">
 								<Button
-									Margin="4" Padding="18 2"
+									Margin="4" Padding="18 4"
 									Content="次へ(_N)"
 									Command="{Binding NextCommand, Mode=OneTime}"/>
 								<Button
-									Margin="4" Padding="18 2"
+									Margin="4" Padding="18 4"
 									Content="閉じる(_C)"
 									Command="{Binding CancelCommand, Mode=OneTime}"/>
 							</StackPanel>
@@ -1549,8 +1558,8 @@
 									<CheckBox 
 										Margin="0 0 0 6"
 										Grid.Row="2" Grid.ColumnSpan="2"
-										IsChecked="{Binding OverrideKey}"
-										Content="Liberfy以外のAPIキーを使用する"/>
+										IsChecked="{Binding OverrideKey,Mode=TwoWay}"
+										Content="Liberfy以外のAPIキーを使用する" />
 
 									<TextBlock
 										Grid.Row="3"

@@ -8,16 +8,20 @@ namespace Liberfy
 {
 	internal static partial class Defines
 	{
-		// public const string @ConsumerKey = "";
-		// public const string @ConsumerSecret = "";
+		#region Keys
+		public const string @ConsumerKey = "*** ConsumerKey ***";
+		public const string @ConsumerSecret = "*** ConsumerSecret ***";
+		public const string @Official_ConsumerKey = "*** ConsumerKey ***";
+		public const string @Official_ConsumerSecret = "*** ConsumerSecret ***";
+		#endregion
 
-		// public const string @Official_ConsumerKey = "";
-		// public const string @Official_ConsumerSecret = "";
-
+		#region Setting files
 		public const string @SettingFile = "settings.json";
 		public const string @WindowFile = "winconf.json";
 		public const string @AccountsFile = "accounts.json";
+		#endregion
 
+		#region Default settings
 		public const string @DefaultNowPlayingPlayer = "wmplayer";
 		public const string @DefaultNowPlayingFormat = @"%artist% - %name% / %album% #NowPlaying";
 
@@ -26,6 +30,7 @@ namespace Liberfy
 
 		public static readonly string[] DefaultTimelineFont = { "Meiryo", "Segoe UI Symbol" };
 		public const double DefaultTimelineFontSize = 12;
+		#endregion
 
 		public readonly static string[] ImageExtensions =
 		{

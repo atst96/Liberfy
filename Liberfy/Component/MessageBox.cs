@@ -7,7 +7,7 @@ using static Liberfy.NativeMethods;
 
 namespace Liberfy
 {
-	internal class MessageBox
+	internal class MessageBox : IDisposable
 	{
 		public MessageBox() { }
 
@@ -68,7 +68,7 @@ namespace Liberfy
 			}
 		}
 
-		~MessageBox()
+		public void Dispose()
 		{
 			hook = IntPtr.Zero;
 			hWnd = IntPtr.Zero;

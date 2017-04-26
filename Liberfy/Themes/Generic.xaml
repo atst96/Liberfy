@@ -42,4 +42,7 @@
 	<SolidColorBrush x:Key="CheckBoxPressedBorderBrush" Color="#888" />
 	<SolidColorBrush x:Key="CheckBoxBulletDisabledBrush" Color="#AAA" />
 
+	<SolidColorBrush x:Key="PopupBorderBrush" Color="#aaa" />
+	<SolidColorBrush x:Key="PopupBackgroundBrush" Color="#f8f8f8" />
+
 </ResourceDictionary>
