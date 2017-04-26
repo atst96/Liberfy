@@ -58,7 +58,7 @@ namespace Liberfy
 			if (Equals(this._view, view))
 			{
 				UnregisterEvents();
-				msgBox.SetWindowHandle(IntPtr.Zero);
+				msgBox.Dispose();
 				this._view = null;
 			}
 		}
@@ -294,7 +294,6 @@ namespace Liberfy
 			_hWnd = IntPtr.Zero;
 			_view = null;
 			_viewModel = null;
-			msgBox = null;
 		}
 	}
 

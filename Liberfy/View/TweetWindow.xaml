@@ -12,6 +12,7 @@
 	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 	mc:Ignorable="d" AllowDrop="True"
 	Title="ツイート" Height="300" Width="300"
+	FontFamily="Meiryo"
 	DataContext="{app:ViewModelConnector vm:TweetWindow}"
 	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
 	xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions">

@@ -20,28 +20,28 @@ namespace Liberfy.ViewModel
 		private string _consumerKey;
 		public string ConsumerKey
 		{
-			get { return _consumerKey; }
-			set { SetProperty(ref _consumerKey, value, _nextCommand); }
+			get => _consumerKey;
+			set => SetProperty(ref _consumerKey, value, _nextCommand);
 		}
 
 		private string _consumerSecret;
 		public string ConsumerSecret
 		{
-			get { return _consumerSecret; }
-			set { SetProperty(ref _consumerSecret, value, _nextCommand); }
+			get => _consumerSecret;
+			set => SetProperty(ref _consumerSecret, value, _nextCommand);
 		}
 
 		private bool _overrideKey;
 		public bool OverrideKey
 		{
-			get { return _overrideKey; }
-			set { SetProperty(ref _overrideKey, value, _nextCommand); }
+			get => _overrideKey;
+			set => SetProperty(ref _overrideKey, value, _nextCommand);
 		}
 
 		private string _error;
 		public string Error
 		{
-			get { return _error; }
+			get => _error;
 			set
 			{
 				if (SetProperty(ref _error, value))
@@ -57,8 +57,8 @@ namespace Liberfy.ViewModel
 		private string _pinCode;
 		public string PinCode
 		{
-			get { return _pinCode; }
-			set { SetProperty(ref _pinCode, value, _nextCommand); }
+			get => _pinCode;
+			set => SetProperty(ref _pinCode, value, _nextCommand);
 		}
 
 		// page-0: CK/CSの入力
@@ -87,8 +87,10 @@ namespace Liberfy.ViewModel
 		#region Command: NextCommand
 
 		private Command _nextCommand;
-		public Command NextCommand => _nextCommand
-			?? (_nextCommand = new DelegateCommand(MoveNextPage, CanMoveNextPage));
+		public Command NextCommand
+		{
+			get => _nextCommand ?? (_nextCommand = new DelegateCommand(MoveNextPage, CanMoveNextPage));
+		}
 
 		private async void MoveNextPage()
 		{
@@ -167,18 +169,18 @@ namespace Liberfy.ViewModel
 				case 0:
 					if (_overrideKey)
 					{
-						bool isEmptyConsumerKey = string.IsNullOrWhiteSpace(ConsumerKey);
-						bool isEmptyConsumerSecret = string.IsNullOrWhiteSpace(ConsumerSecret);
+						bool isInvalidConsumerKey = !string.IsNullOrWhiteSpace(ConsumerKey);
+						bool isInvalidConsumerSecret = !string.IsNullOrWhiteSpace(ConsumerSecret);
 
-						return !(isEmptyConsumerKey || isEmptyConsumerSecret);
+						return isInvalidConsumerKey && isInvalidConsumerSecret;
 					}
 					else
 					{
-						return false;
+						return true;
 					}
 
 				case 1:
-					return _pinCode?.Length == 7
+					return _pinCode?.Length == 7 
 						&& Regex.IsMatch(_pinCode, @"^\d+$");
 
 				default:

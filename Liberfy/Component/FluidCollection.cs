@@ -103,9 +103,9 @@ namespace Liberfy
 			ItemIndexDecrement(IndexOf(item), count);
 		}
 
-		public bool CanItemIndexDecrement(int currentIndex, int upCount)
+		public bool CanItemIndexDecrement(int currentIndex, int count)
 		{
-			return MathEx.IsWithin(currentIndex, upCount, Count - 1);
+			return MathEx.IsWithin(currentIndex, count, Count - 1);
 		}
 
 		public bool CanItemIndexDecrement(T item, int upCount = 1)
@@ -113,7 +113,7 @@ namespace Liberfy
 			return CanItemIndexDecrement(IndexOf(item), upCount);
 		}
 
-		#endregion Functions for ItemIndexDecrement
+		#endregion
 
 		#region Functions for ItemIndexIncrement
 

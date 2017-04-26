@@ -17,6 +17,7 @@
 	UseLayoutRounding="True"
 	TextOptions.TextFormattingMode="Display"
 	Title="設定" Height="494" Width="712"
+	FontFamily="Meiryo"
 	DataContext="{local:ViewModelConnector {x:Type vm:SettingWindow}}">
 	<Window.Resources>
 		<sys:Double x:Key="tabItemWidth">120</sys:Double>
@@ -351,8 +352,7 @@
 								Style="{StaticResource ToolBarStyle}">
 								<Button 
 									Content="アカウントの追加"
-									CommandParameter="add"
-									Command="{Binding AccountCommand, Mode=OneTime}"/>
+									Command="{Binding AccountAddCommand, Mode=OneTime}"/>
 							</ToolBar>
 
 							<ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -362,14 +362,36 @@
 							</ScrollViewer>
 						</DockPanel>
 					</TabItem>
-					<TabItem Header="デフォルトのカラム">
-						<DockPanel Background="{DynamicResource ToolBarBackground}">
+					<TabItem Header="アカウントの初期設定">
+						<DockPanel>
+							<StackPanel
+								DockPanel.Dock="Top"
+								Orientation="Vertical"/>
+
 							<Label 
 								DockPanel.Dock="Top"
 								Padding="8 8 8 4"
-								Background="{DynamicResource ToolBarBackground}"
 								Content="アカウント追加時にタイムラインに追加するカラム"
-								Style="{StaticResource HeaderLabel}" />
+								Style="{StaticResource HeaderLabel}"
+								BorderThickness="0 0 0 1"
+								BorderBrush="{DynamicResource ToolBarBorderBrush}"/>
+
+							<ListBox
+								Margin="0"
+								DockPanel.Dock="Left"
+								Width="260"
+								BorderThickness="0 0 1 0"
+								BorderBrush="#ccc"
+								ItemsSource="{Binding DefaultColumns, Mode=OneTime}"
+								SelectedItem="{Binding SelectedColumnSetting, Mode=TwoWay}">
+								<ListBox.ItemTemplate>
+									<DataTemplate DataType="{x:Type local:ColumnSetting}">
+										<TextBlock
+											Margin="8"
+											Text="{Binding Type, Mode=OneTime, Converter={StaticResource ColumnNameConverter}}" />
+									</DataTemplate>
+								</ListBox.ItemTemplate>
+							</ListBox>
 
 							<ToolBar
 								DockPanel.Dock="Top"
@@ -397,49 +419,27 @@
 									</xctk:DropDownButton.DropDownContent>
 								</xctk:DropDownButton>
 
-								<Button 
-									Content="追加(_D)" 
-									CommandParameter="add"
-									Command="{Binding ColumnAddCommand, Mode=OneTime}" />
+								<Separator />
+
+								<Button
+									Content="削除"
+									Command="{Binding ColumnRemoveCommand, Mode=OneTime}"
+									CommandParameter="{Binding SelectedColumnSetting, Mode=OneWay}" />
 
 								<Separator />
 
 								<Label Content="並べ替え：" />
 
 								<Button
-									Content="◀"
-									CommandParameter="left"
-									Command="{Binding ColumnCommand, Mode=OneTime}"/>
+									Content="▲"
+									Command="{Binding ColumnMoveUpCommand, Mode=OneTime}"
+									CommandParameter="{Binding SelectedColumnSetting, Mode=OneWay}" />
 
 								<Button
-									Content="▶"
-									CommandParameter="right"
-									Command="{Binding ColumnCommand, Mode=OneTime}"/>
-
-								<Separator />
-
-								<Button
-									Content="削除"
-									CommandParameter="del"
-									Command="{Binding ColumnCommand, Mode=OneTime}" />
+									Content="▼"
+									Command="{Binding ColumnMoveDownCommand, Mode=OneTime}"
+									CommandParameter="{Binding SelectedColumnSetting, Mode=OneWay}" />
 							</ToolBar>
-
-							<ListBox
-								Margin="0"
-								DockPanel.Dock="Left"
-								Width="260"
-								BorderThickness="0 0 1 0"
-								BorderBrush="#ccc"
-								ItemsSource="{Binding DefaultColumns, Mode=OneTime}"
-								SelectedItem="{Binding SelectedColumnSetting, Mode=TwoWay}">
-								<ListBox.ItemTemplate>
-									<DataTemplate DataType="{x:Type local:ColumnSetting}">
-										<TextBlock
-											Margin="8"
-											Text="{Binding Type, Mode=OneTime, Converter={StaticResource ColumnNameConverter}}" />
-									</DataTemplate>
-								</ListBox.ItemTemplate>
-							</ListBox>
 
 							<TextBlock
 								Margin="12 8"
@@ -456,63 +456,6 @@
 									Content="{Binding SelectedColumnSetting, Converter={StaticResource ColumnSettingToColumnConverter}, Mode=OneWay}"
 									ContentTemplateSelector="{StaticResource ColumnOptionTemplateSelector}"/>
 							</ScrollViewer>
-
-							<!--<local:ListBoxEx
-								Grid.Row="2"
-								Grid.ColumnSpan="3"
-								BorderThickness="0"
-								ScrollViewer.CanContentScroll="False"
-								ItemsSource="{Binding DefaultColumns, Mode=OneTime}"
-								SelectedValue="{Binding SelectedColumn, Mode=TwoWay}"
-								SelectedIndex="{Binding SelectedColumnIndex, Mode=TwoWay}">
-								<ListBox.ItemsPanel>
-									<ItemsPanelTemplate>
-										<StackPanel Orientation="Horizontal" />
-									</ItemsPanelTemplate>
-								</ListBox.ItemsPanel>
-								<ListBox.ItemContainerStyle>
-									<Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-										<Setter Property="BorderThickness" Value="2" />
-										<Setter Property="Margin" Value="2" />
-										<Setter Property="Width" Value="NaN" />
-									</Style>
-								</ListBox.ItemContainerStyle>
-								<ListBox.ItemTemplate>
-									<DataTemplate DataType="{x:Type local:ColumnSetting}">
-										<Grid Background="White" Width="240">
-											<Grid.RowDefinitions>
-												<RowDefinition Height="auto" />
-												<RowDefinition Height="*" />
-											</Grid.RowDefinitions>
-
-											<Border
-												Margin="1"
-												Padding="10 4"
-												Background="#eee"
-												BorderThickness="0 0 0 1"
-												BorderBrush="#ddd">
-												<TextBlock
-													FontSize="14"
-													FontWeight="Bold">
-													<Run Text="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Converter={StaticResource ListBoxIndexConverter}, Mode=OneWay, StringFormat='{}{0}.'}" />
-													<Run Text="{Binding Type, Mode=OneTime, Converter={StaticResource ColumnNameConverter}}" />
-												</TextBlock>
-											</Border>
-
-											<ScrollViewer
-												Grid.Row="1"
-												ScrollViewer.VerticalScrollBarVisibility="Auto"
-												ScrollViewer.HorizontalScrollBarVisibility="Hidden">
-												<ContentPresenter
-													Margin="10 6"
-													VerticalAlignment="Top"
-													Content="{Binding Converter={StaticResource ColumnSettingToColumnConverter}, Mode=OneTime}"
-													ContentTemplateSelector="{StaticResource ColumnOptionTemplateSelector}" />
-											</ScrollViewer>
-										</Grid>
-									</DataTemplate>
-								</ListBox.ItemTemplate>
-							</local:ListBoxEx>-->
 						</DockPanel>
 					</TabItem>
 				</TabControl>
@@ -1352,7 +1295,7 @@
 
 			<TabItem Header="ミュート">
 				<TabControl>
-					<TabItem Header="test">
+					<TabItem Header="ミュート項目一覧">
 						<DockPanel>
 							<Border
 								DockPanel.Dock="Top"
@@ -1473,7 +1416,8 @@
 
 					<TabItem Header="その他の設定">
 						<StackPanel Style="{StaticResource ElementsContainerStyle}">
-							<CheckBox />
+							<CheckBox Content="Twitterのミュート設定を使用する" />
+							<CheckBox Content="Twitterのブロック設定を使用する" />
 						</StackPanel>
 					</TabItem>
 				</TabControl>

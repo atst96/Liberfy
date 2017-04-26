@@ -418,8 +418,10 @@ namespace Liberfy.ViewModel
 		#region Command: AccountAddCommand
 
 		private Command _accountAddCommand;
-		public Command AccountAddCommand => _accountAddCommand
-			?? (_accountAddCommand = RegisterReleasableCommand(AccountAdd));
+		public Command AccountAddCommand
+		{
+			get => _accountAddCommand ?? (_accountAddCommand = RegisterReleasableCommand(AccountAdd));
+		}
 
 		private async void AccountAdd()
 		{
@@ -476,12 +478,13 @@ namespace Liberfy.ViewModel
 
 		#endregion
 
-
 		#region Command: AccountDeleteCommand
 
 		private Command _accountDeleteCommand;
-		public Command AccountDeleteCommand => _accountDeleteCommand
-			?? (_accountDeleteCommand = RegisterReleasableCommand<Account>(AccountDelete, Accounts.Contains));
+		public Command AccountDeleteCommand
+		{
+			get => _accountDeleteCommand ?? (_accountDeleteCommand = RegisterReleasableCommand<Account>(AccountDelete, Accounts.Contains));
+		}
 
 		void AccountDelete(Account account)
 		{
@@ -494,7 +497,6 @@ namespace Liberfy.ViewModel
 		}
 
 		#endregion
-
 
 		#region Command: AccountMoveUpCommand
 
@@ -534,80 +536,88 @@ namespace Liberfy.ViewModel
 		public ColumnSetting SelectedColumnSetting
 		{
 			get => _selectedColumnSetting;
-			set => SetProperty(ref _selectedColumnSetting, value);
+			set
+			{
+				if(SetProperty(ref _selectedColumnSetting, value))
+				{
+					ColumnMoveUpCommand.RaiseCanExecute();
+					ColumnMoveDownCommand.RaiseCanExecute();
+					ColumnRemoveCommand.RaiseCanExecute();
+				}
+			}
 		}
 
 		#region Command: ColumnAddCommand
 
-		private Command _columnAddCommand;
-		public Command ColumnAddCommand
+		private Command<ColumnType> _columnAddCommand;
+		public Command<ColumnType> ColumnAddCommand
 		{
-			get => _columnAddCommand ?? (_columnAddCommand = RegisterReleasableCommand(ColumnAdd));
+			get => _columnAddCommand ?? (_columnAddCommand = RegisterReleasableCommand<ColumnType>(ColumnAdd));
 		}
 
-		private void ColumnAdd() => DefaultColumns.Add(new ColumnSetting(_tempColumnType, Account.Dummy));
+		private void ColumnAdd(ColumnType type) => DefaultColumns.Add(new ColumnSetting(type, Account.Dummy));
 
 		#endregion
 
-		#region Command: ColumnDeleteCommand
+		#region Command: ColumnRemoveCommand
 
-		private Command _columnDeleteCommand;
-		public Command ColumnDeleteCommand
+		private Command _columnRemoveCommand;
+		public Command ColumnRemoveCommand
 		{
-			get => _columnDeleteCommand ?? (_columnDeleteCommand = RegisterReleasableCommand<ColumnSetting>(ColumnDelete));
+			get => _columnRemoveCommand ?? (_columnRemoveCommand = RegisterReleasableCommand<ColumnSetting>(ColumnRemove, CanColumnRemove));
 		}
 
-		private void ColumnDelete(ColumnSetting column) => DefaultColumns.Remove(column);
+		private static bool CanColumnRemove(ColumnSetting column) => column != null;
+
+		private void ColumnRemove(ColumnSetting column) => DefaultColumns.Remove(column);
 
 		#endregion
 
-		#region Command: ColumnMoveLeftCommand
+		#region Command: ColumnMoveUpCommand
 
-		private Command _columnMoveLeftCommand;
-		public Command ColumnMoveLeftCommand
+		private Command _columnMoveUpCommand;
+		public Command ColumnMoveUpCommand
 		{
-			get => _columnMoveLeftCommand ?? (_columnMoveLeftCommand = RegisterReleasableCommand<ColumnSetting>(ColumnMoveLeft, CanColumnMoveLeft));
+			get => _columnMoveUpCommand ?? (_columnMoveUpCommand = RegisterReleasableCommand<ColumnSetting>(ColumnMoveUp, CanColumnMoveUp));
 		}
 
-		private bool CanColumnMoveLeft(ColumnSetting column) => DefaultColumns.CanItemIndexDecrement(column);
+		private bool CanColumnMoveUp(ColumnSetting column)
+		{
+			return column != null && DefaultColumns.CanItemIndexDecrement(column);
+		}
 
-		private void ColumnMoveLeft(ColumnSetting column)
+		private void ColumnMoveUp(ColumnSetting column)
 		{
 			DefaultColumns.ItemIndexDecrement(column);
-			_columnMoveLeftCommand.RaiseCanExecute();
+			ColumnMoveUpCommand.RaiseCanExecute();
+			ColumnMoveDownCommand.RaiseCanExecute();
 		}
 
 		#endregion
 
-		#region Command: ColumnMoveCommand
+		#region Command: ColumnMoveDownCommand
 
-		private Command _columnMoveRightCommand;
-		public Command ColumnMoveRightCommand
+		private Command _columnMoveDownCommand;
+		public Command ColumnMoveDownCommand
 		{
-			get => _columnMoveRightCommand ?? (_columnMoveRightCommand = RegisterReleasableCommand<ColumnSetting>(ColumnMoveRight, CanColumnMoveRight));
+			get => _columnMoveDownCommand ?? (_columnMoveDownCommand = RegisterReleasableCommand<ColumnSetting>(ColumnMoveRight, CanColumnMoveRight));
 		}
 
 		private bool CanColumnMoveRight(ColumnSetting column)
 		{
-			return DefaultColumns.CanItemIndexIncrement(column);
+			return column != null && DefaultColumns.CanItemIndexIncrement(column);
 		}
 
 		private void ColumnMoveRight(ColumnSetting column)
 		{
 			DefaultColumns.ItemIndexIncrement(column);
-			_columnMoveRightCommand?.RaiseCanExecute();
+			ColumnMoveDownCommand?.RaiseCanExecute();
+			ColumnMoveUpCommand.RaiseCanExecute();
 		}
 
 		#endregion
 
 		#endregion Commands for columns
-
-		private ColumnType _addColumnType = ColumnType.Home;
-		public ColumnType AddColumnType
-		{
-			get => _addColumnType;
-			set => SetProperty(ref _addColumnType, value);
-		}
 
 		#endregion Accounts
 

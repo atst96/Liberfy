@@ -143,7 +143,7 @@ namespace Liberfy
 
 		#region Account
 
-		[JsonProperty("column_defaults")]
+		[JsonProperty("account_column_defaults")]
 		private FluidCollection<ColumnSetting> _defaultColumns;
 		public FluidCollection<ColumnSetting> DefaultColumns
 		{
