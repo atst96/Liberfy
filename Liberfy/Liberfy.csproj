@@ -117,6 +117,7 @@
     <Compile Include="Component\ListBoxItemFocusBehavior.cs" />
     <Compile Include="Behaviors\DragDropBehavior.cs" />
     <Compile Include="DragDropHelper.cs" />
+    <Compile Include="Extensions\CoreTweetExtensions.cs" />
     <Compile Include="Extensions\WpfBehavior.cs" />
     <Compile Include="Info\AppInfo.cs" />
     <Compile Include="ColumnOptionTemplateSelector.cs" />
@@ -139,7 +140,6 @@
     <Compile Include="Info\OSInfo.cs" />
     <Compile Include="ListBoxEx.cs" />
     <Compile Include="MathEx.cs" />
-    <Compile Include="Model\Setting\SettingBase.cs" />
     <Compile Include="MVVM\CommandHelper.cs" />
     <Compile Include="Behaviors\TextBoxBehavior.cs" />
     <Compile Include="Behaviors\TextBoxController.cs" />

@@ -14,13 +14,6 @@ namespace Liberfy
 
 		private readonly long _userId;
 
-		private HashSet<long> _following => _account.Following;
-		private HashSet<long> _follower => _account.Follower;
-		private HashSet<long> _blocking => _account.Blocking;
-		private HashSet<long> _muting => _account.Muting;
-		private HashSet<long> _outgoing => _account.Outgoing;
-		private HashSet<long> _incoming => _account.Incoming;
-
 		public Timeline(Account account)
 		{
 			_account = account;
@@ -29,7 +22,6 @@ namespace Liberfy
 
 		public void Unload()
 		{
-			throw new NotImplementedException();
 		}
 	}
 }

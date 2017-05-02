@@ -8,7 +8,7 @@ using static Liberfy.DataStore;
 
 namespace Liberfy
 {
-	class StatusItem : NotificationObject, IItem
+	internal class StatusItem : NotificationObject, IItem
 	{
 		public ItemType Type { get; }
 
@@ -38,14 +38,11 @@ namespace Liberfy
 
 		public bool HasMediaEntities { get; }
 
-
 		public StatusItem(Status status, Account account)
 		{
 			Id = status.Id;
 
-			Reaction = account.Reactions.GetOrAdd(
-				(status.RetweetedStatus ?? status).Id,
-				id => new Reaction());
+			Reaction = account.GetStatusReaction(status.GetSourceId());
 
 			Reaction.IsRetweeted = status.IsRetweeted ?? false;
 			Reaction.IsFavorited = status.IsFavorited ?? false;
@@ -74,8 +71,8 @@ namespace Liberfy
 
 			User = Status.User;
 			CreatedAt = Status.CreatedAt;
-			MediaEntities = Status.ExtendedEntities
-				?.Media.Select(m => new MediaEntityInfo(account, this, m))
+			MediaEntities = Status.ExtendedEntities?
+				.Media.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity))
 				.ToArray();
 
 			IsMe = Status.User.Id == account.Id;

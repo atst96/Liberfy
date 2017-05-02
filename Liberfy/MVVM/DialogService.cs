@@ -171,30 +171,33 @@ namespace Liberfy
 
 		public bool OpenSetting(int? page = null, bool modal = false)
 		{
-			var stgWnd = app.Windows
+			var settingWindow = app.Windows
 				.OfType<SettingWindow>()
 				.SingleOrDefault() ?? new SettingWindow();
 
 			if (page.HasValue)
 			{
-				stgWnd.MoveTabPage(page.Value);
+				settingWindow.MoveTabPage(page.Value);
 			}
 
-			if (stgWnd.IsVisible)
+			if (settingWindow.IsVisible)
 			{
-				stgWnd.Activate();
+				settingWindow.Activate();
 			}
 			else
 			{
-				stgWnd.Owner = app.MainWindow;
+				if (app.MainWindow.IsLoaded)
+				{
+					settingWindow.Owner = app.MainWindow;
+				}
 
 				if (modal)
 				{
-					stgWnd.ShowDialog();
+					settingWindow.ShowDialog();
 				}
 				else
 				{
-					stgWnd.Show();
+					settingWindow.Show();
 				}
 			}
 

@@ -14,7 +14,7 @@ using static Liberfy.Defines;
 namespace Liberfy
 {
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-	internal partial class Setting : SettingBase
+	internal class Setting : NotificationObject
 	{
 		#region Generic
 
@@ -22,48 +22,48 @@ namespace Liberfy
 		private bool _checkUpdate = true;
 		public bool CheckUpdate
 		{
-			get { return _checkUpdate; }
-			set { SetProperty(ref _checkUpdate, value); }
+			get => _checkUpdate;
+			set => SetProperty(ref _checkUpdate, value);
 		}
 
 		[JsonProperty("startup_minimized")]
 		private bool _minimizeStartup;
 		public bool MinimizeStartup
 		{
-			get { return _minimizeStartup; }
-			set { SetProperty(ref _minimizeStartup, value); }
+			get => _minimizeStartup;
+			set => SetProperty(ref _minimizeStartup, value);
 		}
 
 		[JsonProperty("tasktray_show")]
 		private bool _showInTaskTray;
 		public bool ShowInTaskTray
 		{
-			get { return _showInTaskTray; }
-			set { SetProperty(ref _showInTaskTray, value); }
+			get => _showInTaskTray;
+			set => SetProperty(ref _showInTaskTray, value);
 		}
 
 		[JsonProperty("tasktray_show_at_minimized")]
 		private bool _showInTaskTrayAtMinimized = true;
 		public bool ShowInTaskTrayAtMinimzied
 		{
-			get { return _showInTaskTrayAtMinimized; }
-			set { SetProperty(ref _showInTaskTrayAtMinimized, value); }
+			get => _showInTaskTrayAtMinimized;
+			set => SetProperty(ref _showInTaskTrayAtMinimized, value);
 		}
 
 		[JsonProperty("tasktray_balloon_at_minimized")]
 		private bool _showBalloonAtMinimized = true;
 		public bool ShowBalloonAtMinimized
 		{
-			get { return _showBalloonAtMinimized; }
-			set { SetProperty(ref _showBalloonAtMinimized, value); }
+			get => _showBalloonAtMinimized;
+			set => SetProperty(ref _showBalloonAtMinimized, value);
 		}
 
 		[JsonProperty("minimize_click_close_button")]
 		private bool _minimizeAtCloseButtonClick;
 		public bool MinimizeAtCloseButtonClick
 		{
-			get { return _minimizeAtCloseButtonClick; }
-			set { SetProperty(ref _minimizeAtCloseButtonClick, value); }
+			get => _minimizeAtCloseButtonClick;
+			set => SetProperty(ref _minimizeAtCloseButtonClick, value);
 		}
 
 
@@ -71,72 +71,72 @@ namespace Liberfy
 		[JsonProperty("system_suppress_shutdown")]
 		public bool SuppressShutdown
 		{
-			get { return _suppressShutdown; }
-			set { SetProperty(ref _suppressShutdown, value); }
+			get => _suppressShutdown;
+			set => SetProperty(ref _suppressShutdown, value);
 		}
 
 		[JsonProperty("system_suppress_suspend")]
 		private bool _suppressSuspend;
 		public bool SuppressSuspend
 		{
-			get { return _suppressSuspend; }
-			set { SetProperty(ref _suppressSuspend, value); }
+			get => _suppressSuspend;
+			set => SetProperty(ref _suppressSuspend, value);
 		}
 
 		[JsonProperty("system_suppress_screensaver")]
 		private bool _suppressScreenSaver;
 		public bool SuppressScreenSaver
 		{
-			get { return _suppressScreenSaver; }
-			set { SetProperty(ref _suppressScreenSaver, value); }
+			get => _suppressScreenSaver;
+			set => SetProperty(ref _suppressScreenSaver, value);
 		}
 
 		[JsonProperty("background_type")]
 		private BackgroundType _backgroundType = BackgroundType.None;
 		public BackgroundType BackgroundType
 		{
-			get { return _backgroundType; }
-			set { SetProperty(ref _backgroundType, value); }
+			get => _backgroundType;
+			set => SetProperty(ref _backgroundType, value);
 		}
 
 		[JsonProperty("background_alignment_x")]
 		private AlignmentX _imageAlignmentX;
 		public AlignmentX ImageAlignmentX
 		{
-			get { return _imageAlignmentX; }
-			set { SetProperty(ref _imageAlignmentX, value); }
+			get => _imageAlignmentX;
+			set => SetProperty(ref _imageAlignmentX, value);
 		}
 
 		[JsonProperty("background_alignment_y")]
 		private AlignmentY _imageAlignmentY = AlignmentY.Top;
 		public AlignmentY ImageAlignmentY
 		{
-			get { return _imageAlignmentY; }
-			set { SetProperty(ref _imageAlignmentY, value); }
+			get => _imageAlignmentY;
+			set => SetProperty(ref _imageAlignmentY, value);
 		}
 
 		[JsonProperty("background_image_stretch")]
 		private Stretch _backgroundImageStretch = Stretch.UniformToFill;
 		public Stretch BackgroundImageStretch
 		{
-			get { return _backgroundImageStretch; }
-			set { SetProperty(ref _backgroundImageStretch, value); }
+			get => _backgroundImageStretch;
+			set => SetProperty(ref _backgroundImageStretch, value);
 		}
 
 		[JsonProperty("background_image_opacity")]
 		private double _backgroundOpacity = 1.0d;
 		public double BackgroundImageOpacity
 		{
-			get { return _backgroundOpacity; }
-			set { SetProperty(ref _backgroundOpacity, value); }
+			get => _backgroundOpacity;
+			set => SetProperty(ref _backgroundOpacity, value);
 		}
 
 		[JsonProperty("background_image_path")]
 		private string _backgroundImagePath;
 		public string BackgroundImagePath
 		{
-			get { return _backgroundImagePath; }
-			set { SetProperty(ref _backgroundImagePath, value); }
+			get => _backgroundImagePath;
+			set => SetProperty(ref _backgroundImagePath, value);
 		}
 
 		#endregion
@@ -175,16 +175,16 @@ namespace Liberfy
 		private string[] _timelineFont;
 		public string[] TimelineFont
 		{
-			get { return _timelineFont ?? (_timelineFont = DefaultTimelineFont); }
-			set { SetProperty(ref _timelineFont, value); }
+			get => _timelineFont ?? (_timelineFont = DefaultTimelineFont);
+			set => SetProperty(ref _timelineFont, value);
 		}
 
 		[JsonProperty("timeline_font_size")]
 		private double _timelineFontSize;
 		public double TimelineFontSize
 		{
-			get { return _timelineFontSize; }
-			set { SetProperty(ref _timelineFontSize, value); }
+			get => _timelineFontSize;
+			set => SetProperty(ref _timelineFontSize, value);
 		}
 
 
@@ -192,88 +192,88 @@ namespace Liberfy
 		private bool _timelineStatusShowMedia = true;
 		public bool TimelineStatusShowMedia
 		{
-			get { return _timelineStatusShowMedia; }
-			set { SetProperty(ref _timelineStatusShowMedia, value); }
+			get => _timelineStatusShowMedia;
+			set => SetProperty(ref _timelineStatusShowMedia, value);
 		}
 
 		[JsonProperty("timeline_tweet_show_media_detail")]
 		private bool _timelineStatusDetailShowMedia = true;
 		public bool TimelineStatusDetailShowMedia
 		{
-			get { return _timelineStatusDetailShowMedia; }
-			set { SetProperty(ref _timelineStatusDetailShowMedia, value); }
+			get => _timelineStatusDetailShowMedia;
+			set => SetProperty(ref _timelineStatusDetailShowMedia, value);
 		}
 
 		[JsonProperty("timeline_tweet_show_quoted_tweet")]
 		private bool _timelineStatusShowQuotedTweet = true;
 		public bool TimelineStatusShowQuotedTweet
 		{
-			get { return _timelineStatusDetailShowMedia; }
-			set { SetProperty(ref _timelineStatusDetailShowMedia, value); }
+			get => _timelineStatusDetailShowMedia;
+			set => SetProperty(ref _timelineStatusShowQuotedTweet, value);
 		}
 
 		[JsonProperty("timeline_tweet_show_quoted_tweet_detail")]
 		private bool _timelineStatusDetailShowQuotedTweet = true;
 		public bool TimelineStatusDetailShowQuotedTweet
 		{
-			get { return _timelineStatusDetailShowQuotedTweet; }
-			set { SetProperty(ref _timelineStatusShowQuotedTweet, value); }
+			get => _timelineStatusDetailShowQuotedTweet;
+			set => SetProperty(ref _timelineStatusDetailShowQuotedTweet, value);
 		}
 
 		[JsonProperty("timeline_tweet_show_relative_time")]
 		private bool _timelineStatusShowRelativeTime = true;
 		public bool TimelineStatusShowRelativeTime
 		{
-			get { return _timelineStatusShowRelativeTime; }
-			set { SetProperty(ref _timelineStatusShowRelativeTime, value); }
+			get => _timelineStatusShowRelativeTime;
+			set => SetProperty(ref _timelineStatusShowRelativeTime, value);
 		}
 
 		[JsonProperty("timeline_tweet_show_relatvie_time_detail")]
 		private bool _timelineStatusDetailShowRelativeTime;
 		public bool TimelineStatusDetailShowRelativeTime
 		{
-			get { return _timelineStatusDetailShowRelativeTime; }
-			set { SetProperty(ref _timelineStatusDetailShowRelativeTime, value); }
+			get => _timelineStatusDetailShowRelativeTime;
+			set => SetProperty(ref _timelineStatusDetailShowRelativeTime, value);
 		}
 
 		[JsonProperty("timeline_font_text_rendering")]
 		private TextFormattingMode _timelineFontRendering = TextFormattingMode.Display;
 		public TextFormattingMode TimelineFontRendering
 		{
-			get { return _timelineFontRendering; }
-			set { SetProperty(ref _timelineFontRendering, value); }
+			get => _timelineFontRendering;
+			set => SetProperty(ref _timelineFontRendering, value);
 		}
 
 		[JsonProperty("timeline_enable_item_animation")]
 		private bool _enableTimelineAnimation = true;
 		public bool EnableTimelineAnimation
 		{
-			get { return _enableTimelineAnimation; }
-			set { SetProperty(ref _enableTimelineAnimation, value); }
+			get => _enableTimelineAnimation;
+			set => SetProperty(ref _enableTimelineAnimation, value);
 		}
 
 		[JsonProperty("timeline_disable_animation_at_rdp")]
 		private bool _disableAnimationAtTerminalConnection;
 		public bool DisableAnimationAtTerminalConnection
 		{
-			get { return _disableAnimationAtTerminalConnection; }
-			set { SetProperty(ref _disableAnimationAtTerminalConnection, value); }
+			get => _disableAnimationAtTerminalConnection;
+			set => SetProperty(ref _disableAnimationAtTerminalConnection, value);
 		}
 
 		[JsonProperty("timeline_status_show_action_button")]
 		private bool _timelineStatusActionButtonVisible = true;
 		public bool TimelineStatusActionButtonVsiible
 		{
-			get { return _timelineStatusActionButtonVisible; }
-			set { SetProperty(ref _timelineStatusActionButtonVisible, value); }
+			get => _timelineStatusActionButtonVisible;
+			set => SetProperty(ref _timelineStatusActionButtonVisible, value);
 		}
 
 		[JsonProperty("timeline_status_detail_show_action_button")]
 		private bool _timelineStatusDetailActionButtonVisible = true;
 		public bool TimelineStatusDetailActionButtonVsiible
 		{
-			get { return _timelineStatusDetailActionButtonVisible; }
-			set { SetProperty(ref _timelineStatusDetailActionButtonVisible, value); }
+			get => _timelineStatusDetailActionButtonVisible;
+			set => SetProperty(ref _timelineStatusDetailActionButtonVisible, value);
 		}
 
 
@@ -294,8 +294,8 @@ namespace Liberfy
 		private string _nowPlayingFormat;
 		public string NowPlayingFormat
 		{
-			get { return _nowPlayingFormat ?? (_nowPlayingFormat = DefaultNowPlayingFormat); }
-			set { SetProperty(ref _nowPlayingFormat, value ?? DefaultNowPlayingFormat); }
+			get => _nowPlayingFormat ?? (_nowPlayingFormat = DefaultNowPlayingFormat);
+			set => SetProperty(ref _nowPlayingFormat, value ?? DefaultNowPlayingFormat);
 		}
 
 
@@ -303,109 +303,109 @@ namespace Liberfy
 		private bool _insertThumbnailAtNowPlaying;
 		public bool InsertThumbnailAtNowPlayying
 		{
-			get { return _insertThumbnailAtNowPlaying; }
-			set { SetProperty(ref _insertThumbnailAtNowPlaying, value); }
+			get => _insertThumbnailAtNowPlaying;
+			set => SetProperty(ref _insertThumbnailAtNowPlaying, value);
 		}
 
 		#endregion
 
 		#region Notification
 
-		private DictionaryEx<NotifyCode, bool> _ne = App.NotificationEvents;
+		private DictionaryEx<NotifyCode, bool> _ne => App.NotificationEvents;
 
 		[JsonProperty("notification_enable")]
 		private bool _enableNotification = true;
 		public bool EnableNotification
 		{
-			get { return _enableNotification; }
-			set { SetProperty(ref _enableNotification, value); }
+			get => _enableNotification;
+			set => SetProperty(ref _enableNotification, value);
 		}
 
 		[JsonProperty("notification_sound_path")]
 		private string _notificationSoundFile;
 		public string NotificationSoundFile
 		{
-			get { return _notificationSoundFile ?? (_notificationSoundFile = Defines.DefaultSoundFile); }
-			set { SetProperty(ref _notificationSoundFile, value); }
+			get => _notificationSoundFile ?? (_notificationSoundFile = Defines.DefaultSoundFile);
+			set => SetProperty(ref _notificationSoundFile, value);
 		}
 
 		[JsonProperty("notification_sound_enable")]
 		private bool _enableSoundNotification;
 		public bool EnableSoundNotification
 		{
-			get { return _enableSoundNotification; }
-			set { SetProperty(ref _enableSoundNotification, value); }
+			get => _enableSoundNotification;
+			set => SetProperty(ref _enableSoundNotification, value);
 		}
 
 		[JsonProperty("EnablePopupNotification")]
 		private bool _enablePopupNotification;
 		public bool EnablePopupNotification
 		{
-			get { return _enablePopupNotification; }
-			set { SetProperty(ref _enablePopupNotification, value); }
+			get => _enablePopupNotification;
+			set => SetProperty(ref _enablePopupNotification, value);
 		}
 
 		[JsonProperty("notification_reply")]
 		public bool Notification_Reply
 		{
-			get { return _ne.GetOrAdd(NotifyCode.Reply, true); }
-			set { _ne[NotifyCode.Reply] = value; }
+			get => _ne.GetOrAdd(NotifyCode.Reply, true);
+			set => _ne[NotifyCode.Reply] = value;
 		}
 
 		[JsonProperty("notification_favorite")]
 		public bool Notification_Favorite
 		{
-			get { return _ne.GetOrAdd(NotifyCode.Favorite, true); }
-			set { _ne[NotifyCode.Favorite] = value; }
+			get => _ne.GetOrAdd(NotifyCode.Favorite, true);
+			set => _ne[NotifyCode.Favorite] = value;
 		}
 
 		[JsonProperty("notification_quoted_tweet")]
 		public bool Notification_QuotedTweet
 		{
-			get { return _ne.GetOrAdd(NotifyCode.QuotedTweet, true); }
-			set { _ne[NotifyCode.QuotedTweet] = value; }
+			get => _ne.GetOrAdd(NotifyCode.QuotedTweet, true);
+			set => _ne[NotifyCode.QuotedTweet] = value;
 		}
 
 		[JsonProperty("notification_retweet")]
 		public bool Notification_Retweet
 		{
-			get { return _ne.GetOrAdd(NotifyCode.Retweet, true); }
-			set { _ne[NotifyCode.Retweet] = value; }
+			get => _ne.GetOrAdd(NotifyCode.Retweet, true);
+			set => _ne[NotifyCode.Retweet] = value;
 		}
 
 		[JsonProperty("notification_retweeted_retweet")]
 		public bool Notification_RetweetedRetweet
 		{
-			get { return _ne.GetOrAdd(NotifyCode.RetweetedRetweet, true); }
-			set { _ne[NotifyCode.RetweetedRetweet] = value; }
+			get => _ne.GetOrAdd(NotifyCode.RetweetedRetweet, true);
+			set => _ne[NotifyCode.RetweetedRetweet] = value;
 		}
 
 		[JsonProperty("notification_favorited_retweet")]
 		public bool Notification_FavoritedRetweet
 		{
-			get { return _ne.GetOrAdd(NotifyCode.FavoritedRetweet, true); }
-			set { _ne[NotifyCode.FavoritedRetweet] = value; }
+			get => _ne.GetOrAdd(NotifyCode.FavoritedRetweet, true);
+			set => _ne[NotifyCode.FavoritedRetweet] = value;
 		}
 
 		[JsonProperty("notification_list_member_added")]
 		public bool Notification_ListMemberAdded
 		{
-			get { return _ne.GetOrAdd(NotifyCode.ListMemberAdded, true); }
-			set { _ne[NotifyCode.ListMemberAdded] = value; }
+			get => _ne.GetOrAdd(NotifyCode.ListMemberAdded, true);
+			set => _ne[NotifyCode.ListMemberAdded] = value;
 		}
 
 		[JsonProperty("notification_follow")]
 		public bool Notification_Follow
 		{
-			get { return _ne.GetOrAdd(NotifyCode.Follow, true); }
-			set { _ne[NotifyCode.Follow] = value; }
+			get => _ne.GetOrAdd(NotifyCode.Follow, true);
+			set => _ne[NotifyCode.Follow] = value;
 		}
 
 		[JsonProperty("notification_dm_received")]
 		public bool Notification_DirectMessageReceived
 		{
-			get { return _ne.GetOrAdd(NotifyCode.DirectMessageCreated, true); }
-			set { _ne[NotifyCode.DirectMessageCreated] = value; }
+			get => _ne.GetOrAdd(NotifyCode.DirectMessageCreated, true);
+			set => _ne[NotifyCode.DirectMessageCreated] = value;
 		}
 
 		#endregion
@@ -424,8 +424,8 @@ namespace Liberfy
 		private bool _closeWindowAfterPostComplated;
 		public bool CloseWindowAfterPostComplated
 		{
-			get { return _closeWindowAfterPostComplated; }
-			set { SetProperty(ref _closeWindowAfterPostComplated, value); }
+			get => _closeWindowAfterPostComplated;
+			set => SetProperty(ref _closeWindowAfterPostComplated, value);
 		}
 
 		#endregion
@@ -436,14 +436,14 @@ namespace Liberfy
 		private bool _useSystemProxy;
 		public bool UseSystemProxy
 		{
-			get { return _useSystemProxy; }
-			set { SetProperty(ref _useSystemProxy, value); }
+			get => _useSystemProxy;
+			set => SetProperty(ref _useSystemProxy, value);
 		}
 
 		#endregion
 	}
 
-	enum BackgroundType
+	internal enum BackgroundType
 	{
 		[EnumMember(Value = "none")]
 		None,
@@ -455,7 +455,7 @@ namespace Liberfy
 		Picture,
 	}
 
-	enum NotifyCode
+	internal enum NotifyCode
 	{
 		[EnumMember(Value = "reply")]
 		Reply,

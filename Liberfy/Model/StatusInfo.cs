@@ -8,120 +8,102 @@ using static Liberfy.DataStore;
 
 namespace Liberfy
 {
-	class StatusInfo :
-		NotificationObject,
-		IObjectInfo<Status>,
-		IEquatable<StatusInfo>,
-		IEquatable<Status>
+	internal class StatusInfo : NotificationObject, IObjectInfo<Status>, IEquatable<StatusInfo>, IEquatable<Status>
 	{
-		public long Id { get; }
+		private readonly Status _status;
 
-		public Contributors[] Contributors { get; }
+		private readonly long _id;
+		public long Id => _id;
 
-		public Coordinates Coordinates { get; }
+		public Contributors[] Contributors => _status.Contributors;
 
-		public DateTimeOffset CreatedAt { get; }
+		public Coordinates Coordinates => _status.Coordinates;
 
-		public int[] DisplayTextRange { get; }
+		public DateTimeOffset CreatedAt => _status.CreatedAt;
 
-		public Entities Entities { get; }
+		public int[] DisplayTextRange => _status.DisplayTextRange;
 
-		public Entities ExtendedEntities { get; }
+		public Entities Entities => _status.Entities;
 
-		public CompatExtendedTweet ExtendedTweet { get; }
+		public Entities ExtendedEntities => _status.ExtendedEntities;
 
-		public FilterLevel FilterLevel { get; }
+		public CompatExtendedTweet ExtendedTweet => _status.ExtendedTweet;
 
-		public string FullText { get; }
+		public FilterLevel FilterLevel => _status.FilterLevel ?? FilterLevel.None;
 
-		public string InReplyToScreenName { get; }
+		public string FullText => _status.FullText;
 
-		public long InReplyToStatusId { get; }
+		public string InReplyToScreenName => _status.InReplyToScreenName;
 
-		public long InReplyToUserId { get; }
+		public long InReplyToStatusId => _status.InReplyToStatusId ?? -1;
 
-		public bool IsQuotedStatus { get; }
+		public long InReplyToUserId => _status.InReplyToUserId ?? -1;
 
-		public string Language { get; }
+		public bool IsQuotedStatus => _status.IsQuotedStatus ?? false;
 
-		public Place Place { get; }
+		public string Language => _status.Language;
 
-		public bool PossiblySensitive { get; }
+		public Place Place => _status.Place;
 
-		public bool PossiblySensitiveAppealable { get; }
+		public bool PossiblySensitive => _status.PossiblySensitive ?? false;
 
-		public long QuotedStatusId { get; }
+		public bool PossiblySensitiveAppealable => _status.PossiblySensitiveAppealable ?? false;
 
-		public StatusInfo QuotedStatus { get; }
+		public long QuotedStatusId => _status.QuotedStatusId ?? -1;
 
-		public Dictionary<string, object> Scopes { get; }
+		private StatusInfo _quotedStatus;
+		public StatusInfo QuotedStatus
+		{
+			get => IsQuotedStatus ? (_quotedStatus ?? (_quotedStatus = StatusAddOrUpdate(_status.QuotedStatus))) : null;
+		}
 
-		public string Source { get; }
+		public Dictionary<string, object> Scopes => _status.Scopes;
 
-		public string Text { get; }
+		public string Source => _status.Source;
 
-		public UserInfo User { get; }
+		public string Text => _status.Text;
 
-		public bool WithheldCopyright { get; }
+		private UserInfo _user;
+		public UserInfo User
+		{
+			get => _user ?? (_user = UserAddOrUpdate(_status.User));
+		}
 
-		public string WithheldInCountries { get; }
+		public bool WithheldCopyright => _status.WithheldCopyright ?? false;
 
-		public string WithheldScope { get; }
+		public string WithheldInCountries => _status.WithheldInCountries;
+
+		public string WithheldScope => _status.WithheldScope;
 
 		private int _favoriteCount;
 		public int FavoriteCount
 		{
-			get { return _favoriteCount; }
-			set { SetProperty(ref _favoriteCount, value); }
+			get => _favoriteCount;
+			private set => SetProperty(ref _favoriteCount, value);
 		}
 
 		private int _retweetCount;
 		public int RetweetCount
 		{
-			get { return _retweetCount; }
-			set { SetProperty(ref _retweetCount, value); }
+			get => _retweetCount;
+			private set => SetProperty(ref _retweetCount, value);
 		}
 
 
 		public StatusInfo(Status status)
 		{
-			if(status.RetweetedStatus != null)
+			if (status.RetweetedStatus != null)
 			{
-				throw new ArgumentException("StatusInfo はリツート情報を保持しません");
+				throw new NotSupportedException();
 			}
 
-			Id = status.Id;
-			Contributors = status.Contributors;
-			Coordinates = status.Coordinates;
-			CreatedAt = status.CreatedAt;
-			DisplayTextRange = status.DisplayTextRange;
-			Entities = status.Entities;
-			ExtendedEntities = status.ExtendedEntities;
-			ExtendedTweet = status.ExtendedTweet;
-			FilterLevel = status.FilterLevel ?? FilterLevel.None;
-			FullText = status.FullText;
-			InReplyToScreenName = status.InReplyToScreenName;
-			InReplyToStatusId = status.InReplyToStatusId ?? -1;
-			InReplyToUserId = status.InReplyToUserId ?? -1;
-			IsQuotedStatus = status.IsQuotedStatus ?? false;
-			Language = status.Language;
-			Place = status.Place;
-			PossiblySensitive = status.PossiblySensitive ?? PossiblySensitive;
-			PossiblySensitiveAppealable = status.PossiblySensitiveAppealable ?? PossiblySensitiveAppealable;
-			QuotedStatusId = status.QuotedStatusId ?? -1;
-			QuotedStatus = StatusAddOrUpdate(status.QuotedStatus);
-			Scopes = status.Scopes;
-			Source = status.Source;
-			Text = status.Text;
-			User = UserAddOrUpdate(status.User);
-			WithheldCopyright = status.WithheldCopyright ?? WithheldCopyright;
-			WithheldInCountries = status.WithheldInCountries;
-			WithheldScope = status.WithheldScope;
+			_id = status.Id;
+			_status = status;
 		}
 
 		public void Update(Status item)
 		{
-			if((item.RetweetedStatus??item).Id != Id)
+			if ((item.RetweetedStatus ?? item).Id != _id)
 			{
 				throw new ArgumentException();
 			}
@@ -130,25 +112,16 @@ namespace Liberfy
 			RetweetCount = item.RetweetCount ?? RetweetCount;
 		}
 
-		public bool Equals(StatusInfo user)
-		{
-			return Equals(Id, user?.Id);
-		}
+		public bool Equals(StatusInfo other) => Equals(_id, other?.Id);
 
-		public bool Equals(Status user)
-		{
-			return Equals(Id, user?.Id);
-		}
+		public bool Equals(Status other) => Equals(_id, other?.Id);
 
 		public override bool Equals(object obj)
 		{
-			return obj is StatusInfo && Equals((StatusInfo)obj)
-				|| obj is Status && Equals((Status)obj);
+			return (obj is StatusInfo statusInfo && Equals(statusInfo))
+				|| (obj is Status status && Equals(status));
 		}
 
-		public override int GetHashCode()
-		{
-			return Id.GetHashCode();
-		}
+		public override int GetHashCode() => _id.GetHashCode();
 	}
 }

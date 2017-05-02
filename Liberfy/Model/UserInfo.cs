@@ -4,26 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CoreTweet;
+using System.Windows.Media;
 
 namespace Liberfy
 {
-	class UserInfo :
-		NotificationObject,
-		IObjectInfo<User>,
-		IEquatable<UserInfo>,
-		IEquatable<User>
+	internal class UserInfo : NotificationObject, IObjectInfo<User>, IEquatable<UserInfo>, IEquatable<User>
 	{
 		public bool IsContributorsEnabled { get; private set; }
 
-		public DateTimeOffset CreatedAt { get; private set; }
+		public DateTimeOffset CreatedAt { get; }
 
 		public bool IsDefaultProfile { get; private set; }
 
 		public bool IsDefaultProfileImage { get; private set; }
 
 		public string Description { get; private set; }
-
-		public string Email { get; private set; }
 
 		public UserEntities Entities { get; private set; }
 
@@ -39,7 +34,7 @@ namespace Liberfy
 
 		public bool IsGeoEnabled { get; private set; }
 
-		public long Id { get; private set; }
+		public long Id { get; }
 
 		public bool IsTranslator { get; private set; }
 
@@ -57,29 +52,27 @@ namespace Liberfy
 
 		public bool NeedsPhoneVerification { get; private set; }
 
-		public string ProfileBackgroundColor { get; private set; }
+		public Color ProfileBackgroundColor { get; private set; }
 
-		public string ProfileBackgroundImageUrl { get; private set; }
+		public Uri ProfileBackgroundImageUrl { get; private set; }
 
-		public string ProfileBackgroundImageUrlHttps { get; private set; }
+		public Uri ProfileBackgroundImageUrlHttps { get; private set; }
 
 		public bool IsProfileBackgroundTile { get; private set; }
 
-		public string ProfileBannerUrl { get; private set; }
+		public Uri ProfileBannerUrl { get; private set; }
 
-		public string ProfileImageUrl { get; private set; }
+		public Uri ProfileImageUrl { get; private set; }
 
-		public string ProfileImageUrlHttps { get; private set; }
-
-		public string ProfileLinkColor { get; private set; }
+		public Color ProfileLinkColor { get; private set; }
 
 		public Place ProfileLocation { get; private set; }
 
-		public string ProfileSidebarBorderColor { get; private set; }
+		public Color ProfileSidebarBorderColor { get; private set; }
 
-		public string ProfileSidebarFillColor { get; private set; }
+		public Color ProfileSidebarFillColor { get; private set; }
 
-		public string ProfileTextColor { get; private set; }
+		public Color ProfileTextColor { get; private set; }
 
 		public bool IsProfileUseBackgroundImage { get; private set; }
 
@@ -99,7 +92,7 @@ namespace Liberfy
 
 		public string TranslatorType { get; private set; }
 
-		public string Url { get; private set; }
+		public Uri Url { get; private set; }
 
 		public int UtcOffset { get; private set; }
 
@@ -122,12 +115,32 @@ namespace Liberfy
 		public UserInfo(Account ac) : base()
 		{
 			Id = ac.Id;
-			Name = ac.Name;
-			ScreenName = ac.ScreenName;
+			Name = CopyStr(ac.Name);
+			ScreenName = CopyStr(ac.ScreenName);
 			IsProtected = ac.IsProtected;
-			ProfileImageUrl = ac.ProfileImageUrl;
+			ProfileImageUrl = ToUri(ac.ProfileImageUrl);
 
 			UpdatedAt = DateTime.Now;
+		}
+
+		private static Color ToColor(string name)
+		{
+			return string.IsNullOrWhiteSpace(name)
+				? Colors.Transparent
+				: (Color)ColorConverter.ConvertFromString("#" + name);
+		}
+
+		private static string CopyStr(string from)
+		{
+			return from == null ? null : String.Copy(from);
+		}
+
+		private static Uri ToUri(string url)
+		{
+			if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
+				return new Uri(url);
+			else
+				return null;
 		}
 
 		public void Update(User item)
@@ -135,74 +148,63 @@ namespace Liberfy
 			IsContributorsEnabled = item.IsContributorsEnabled;
 			IsDefaultProfile = item.IsDefaultProfile;
 			IsDefaultProfileImage = item.IsDefaultProfileImage;
-			Description = item.Description;
-			Email = item.Email;
+			Description = CopyStr(item.Description);
 			Entities = item.Entities;
 			FavouritesCount = item.FavouritesCount;
 			IsFollowRequestSent = item.IsFollowRequestSent ?? IsFollowRequestSent;
 			FollowersCount = item.FollowersCount;
 			FriendsCount = item.FriendsCount;
-			HasExtendedProfile = item.HasExtendedProfile ?? HasExtendedProfile;
+			//HasExtendedProfile = item.HasExtendedProfile ?? HasExtendedProfile;
 			IsGeoEnabled = item.IsGeoEnabled;
 			IsTranslator = item.IsTranslator;
 			IsTranslationEnabled = item.IsTranslationEnabled;
-			Language = item.Language;
+			Language = CopyStr(item.Language);
 			ListedCount = item.ListedCount ?? ListedCount;
-			Location = item.Location;
+			Location = CopyStr(item.Location);
 			IsMuting = item.IsMuting ?? IsMuting;
-			Name = item.Name;
+			Name = CopyStr(item.Name);
 			NeedsPhoneVerification = item.NeedsPhoneVerification ?? NeedsPhoneVerification;
-			ProfileBackgroundColor = item.ProfileBackgroundColor;
-			ProfileBackgroundImageUrl = item.ProfileBackgroundImageUrl;
-			ProfileBackgroundImageUrlHttps = item.ProfileBackgroundImageUrlHttps;
+			ProfileBackgroundColor = ToColor(item.ProfileBackgroundColor);
+			ProfileBackgroundImageUrl = ToUri(item.ProfileBackgroundImageUrl);
+			ProfileBackgroundImageUrlHttps = ToUri(item.ProfileBackgroundImageUrlHttps);
 			IsProfileBackgroundTile = item.IsProfileBackgroundTile;
-			ProfileBannerUrl = item.ProfileBannerUrl;
-			ProfileImageUrl = item.ProfileImageUrl;
-			ProfileImageUrlHttps = item.ProfileImageUrlHttps;
-			ProfileLinkColor = item.ProfileLinkColor;
+			ProfileBannerUrl = ToUri(item.ProfileBannerUrl);
+			ProfileImageUrl = ToUri(item.ProfileImageUrl);
+			ProfileLinkColor = ToColor(item.ProfileLinkColor);
 			ProfileLocation = item.ProfileLocation;
-			ProfileSidebarBorderColor = item.ProfileSidebarBorderColor;
-			ProfileSidebarFillColor = item.ProfileSidebarFillColor;
-			ProfileTextColor = item.ProfileTextColor;
+			ProfileSidebarBorderColor = ToColor(item.ProfileSidebarBorderColor);
+			ProfileSidebarFillColor = ToColor(item.ProfileSidebarFillColor);
+			ProfileTextColor = ToColor(item.ProfileTextColor);
 			IsProfileUseBackgroundImage = item.IsProfileUseBackgroundImage;
 			IsProtected = item.IsProtected;
-			ScreenName = item.ScreenName;
+			ScreenName = CopyStr(item.ScreenName);
 			IsShowAllInlineMedia = item.IsShowAllInlineMedia ?? IsShowAllInlineMedia;
 			Status = item.Status;
 			StatusesCount = item.StatusesCount;
 			IsSuspended = item.IsSuspended ?? IsSuspended;
-			TimeZone = item.TimeZone;
-			TranslatorType = item.TranslatorType;
-			Url = item.Url;
+			TimeZone = CopyStr(item.TimeZone);
+			//TranslatorType = CopyStr(item.TranslatorType);
+			Url = ToUri(item.Url);
 			UtcOffset = item.UtcOffset ?? UtcOffset;
 			IsVerified = item.IsVerified;
-			WithheldInCountries = item.WithheldInCountries;
-			WithheldScope = item.WithheldScope;
+			WithheldInCountries = CopyStr(item.WithheldInCountries);
+			WithheldScope = CopyStr(item.WithheldScope);
 
 			UpdatedAt = DateTime.Now;
 
 			RaisePropertyChanged("");
 		}
 
-		public bool Equals(UserInfo other)
-		{
-			return Equals(Id, other?.Id);
-		}
+		public bool Equals(UserInfo other) => Equals(Id, other?.Id);
 
-		public bool Equals(User other)
-		{
-			return Equals(Id, other?.Id);
-		}
+		public bool Equals(User other) => Equals(Id, other?.Id);
 
 		public override bool Equals(object obj)
 		{
-			return obj is UserInfo && Equals((UserInfo)obj)
-				|| obj is User && Equals((User)obj);
+			return (obj is UserInfo userInfo && Equals(userInfo))
+				|| (obj is User user && Equals(user));
 		}
 
-		public override int GetHashCode()
-		{
-			return Id.GetHashCode();
-		}
+		public override int GetHashCode() => Id.GetHashCode();
 	}
 }

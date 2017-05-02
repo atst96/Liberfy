@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 namespace Liberfy
 {
 	// Jsonデータにシリアライズする変数にはJsonProperty属性が必要
-	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-	class Account : NotificationObject, IEquatable<Account>, IEquatable<User>
+	[JsonObject(memberSerialization: MemberSerialization.OptIn)]
+	internal class Account : NotificationObject, IEquatable<Account>, IEquatable<User>
 	{
 		private string _screenName;
 		private string _name;
@@ -19,47 +19,47 @@ namespace Liberfy
 		private bool _isProtected;
 
 
-		[JsonProperty]
+		[JsonProperty("user_id")]
 		public long Id { get; private set; }
 
-		[JsonProperty]
+		[JsonProperty("screen_name")]
 		public string ScreenName
 		{
-			get { return _isValidUserInfo ? Info.ScreenName : _screenName; }
-			set { _screenName = value; }
+			get => _isValidUserInfo ? Info.ScreenName : _screenName;
+			set => _screenName = value;
 		}
 
-		[JsonProperty]
+		[JsonProperty("name")]
 		public string Name
 		{
-			get { return _isValidUserInfo ? Info.Name : _name; }
-			set { _name = value; }
+			get => _isValidUserInfo ? Info.Name : _name;
+			set => _name = value;
 		}
 
-		[JsonProperty]
+		[JsonProperty("profile_image_url")]
 		public string ProfileImageUrl
 		{
-			get { return _isValidUserInfo ? Info.ProfileImageUrl : _profileImageUrl; }
-			set { _profileImageUrl = value; }
+			get => _isValidUserInfo ? Info.ProfileImageUrl.AbsolutePath : _profileImageUrl;
+			set => _profileImageUrl = value;
 		}
 
-		[JsonProperty]
+		[JsonProperty("is_protected")]
 		public bool IsProtected
 		{
-			get { return _isValidUserInfo ? Info.IsProtected : _isProtected; }
-			set { _isProtected = value; }
+			get => _isValidUserInfo ? Info.IsProtected : _isProtected;
+			set => _isProtected = value;
 		}
 
-		[JsonProperty]
+		[JsonProperty("consumer_key")]
 		public string ConsumerKey { get; private set; }
 
-		[JsonProperty]
+		[JsonProperty("consumer_secret")]
 		public string ConsumerSecret { get; private set; }
 
-		[JsonProperty]
+		[JsonProperty("access_token")]
 		public string AccessToken { get; private set; }
 
-		[JsonProperty]
+		[JsonProperty("access_token_secret")]
 		public string AccessTokenSecret { get; private set; }
 
 
@@ -68,8 +68,8 @@ namespace Liberfy
 
 		public bool IsLoading
 		{
-			get { return _isLoading; }
-			set { SetProperty(ref _isLoading, value); }
+			get => _isLoading;
+			set => SetProperty(ref _isLoading, value);
 		}
 
 		public UserInfo Info { get; private set; }
@@ -77,36 +77,35 @@ namespace Liberfy
 		private Tokens _tokens;
 		public Tokens Tokens
 		{
-			get
-			{
-				return _tokens ?? (_tokens = Tokens.Create(
-				  ConsumerKey, ConsumerSecret,
-				  AccessToken, AccessTokenSecret));
-			}
+			get => _tokens ?? (_tokens = Tokens.Create(ConsumerKey, ConsumerSecret, AccessToken, AccessTokenSecret));
 		}
 
-		private HashSet<long> _following = new HashSet<long>();
-		public HashSet<long> Following => _following;
+		private SortedSet<long> _following = new SortedSet<long>();
 
-		private HashSet<long> _follower = new HashSet<long>();
-		public HashSet<long> Follower => _follower;
+		private SortedSet<long> _follower = new SortedSet<long>();
 
-		private HashSet<long> _blocking = new HashSet<long>();
-		public HashSet<long> Blocking => _blocking;
+		private SortedSet<long> _blocking = new SortedSet<long>();
 
-		private HashSet<long> _muting = new HashSet<long>();
-		public HashSet<long> Muting => _muting;
+		private SortedSet<long> _muting = new SortedSet<long>();
 
-		private HashSet<long> _incoming = new HashSet<long>();
-		public HashSet<long> Incoming => _incoming;
+		private SortedSet<long> _incoming = new SortedSet<long>();
 
-		private HashSet<long> _outgoing = new HashSet<long>();
-		public HashSet<long> Outgoing => _outgoing;
+		private SortedSet<long> _outgoing = new SortedSet<long>();
 
-		private IdBaseCollection<Reaction> _reactions = new IdBaseCollection<Reaction>();
-		public IdBaseCollection<Reaction> Reactions => _reactions;
+		private SortedDictionary<long, Reaction> _statusReactions = new SortedDictionary<long, Reaction>();
 
-		public Timeline Timeline { get; private set; }
+		public Reaction GetStatusReaction(long user_id)
+		{
+			if (!_statusReactions.TryGetValue(user_id, out Reaction r))
+			{
+				r = new Reaction();
+				_statusReactions.Add(user_id, r);
+			}
+
+			return r;
+		}
+
+		public Timeline Timeline { get; }
 
 		[JsonConstructor]
 		private Account()
@@ -195,7 +194,7 @@ namespace Liberfy
 			}
 			catch (TwitterException tex)
 			{
-				switch(tex.Status)
+				switch (tex.Status)
 				{
 					case System.Net.HttpStatusCode.OK:
 						break;
@@ -213,27 +212,13 @@ namespace Liberfy
 
 		public override bool Equals(object obj)
 		{
-			switch (obj)
-			{
-				case Account account:
-					return Equals(account);
-
-				case User user:
-					return Equals(user);
-			}
-
-			return base.Equals(obj);
+			return (obj is Account account && Equals(account))
+				|| (obj is User user && Equals(user));
 		}
 
-		public bool Equals(Account other)
-		{
-			return other?.Id == Id;
-		}
+		public bool Equals(Account other) => other?.Id == Id;
 
-		public bool Equals(User other)
-		{
-			return other?.Id == Id;
-		}
+		public bool Equals(User other) => other?.Id == Id;
 
 		public override int GetHashCode()
 		{
@@ -267,8 +252,8 @@ namespace Liberfy
 		private string _loadError;
 		public string LoadErorr
 		{
-			get { return _loadError; }
-			private set { SetProperty(ref _loadError, value); }
+			get => _loadError;
+			private set => SetProperty(ref _loadError, value);
 		}
 
 		private void SetLoadError(string name, string message)
@@ -290,11 +275,11 @@ namespace Liberfy
 
 		public object _lockSharedObject = new object();
 
-		private void LoadIds<T>(Func<EnumerateMode, long, long?, int?, IEnumerable<T>> getMethod, HashSet<T> hashSet, string name)
+		private void LoadIds<T>(Func<EnumerateMode, long, long?, int?, IEnumerable<T>> getMethod, SortedSet<T> set, string name)
 		{
 			try
 			{
-				hashSet.UnionWith(getMethod(EnumerateMode.Next, Id, null, null));
+				set.UnionWith(getMethod(EnumerateMode.Next, Id, null, null));
 			}
 			catch (Exception ex)
 			{
@@ -302,11 +287,11 @@ namespace Liberfy
 			}
 		}
 
-		private void LoadIds2<T>(Func<EnumerateMode, long?, IEnumerable<T>> getMethod, HashSet<T> hashSet, string name)
+		private void LoadIds2<T>(Func<EnumerateMode, long?, IEnumerable<T>> getMethod, SortedSet<T> set, string name)
 		{
 			try
 			{
-				hashSet.UnionWith(getMethod.Invoke(EnumerateMode.Next, null));
+				set.UnionWith(getMethod.Invoke(EnumerateMode.Next, null));
 			}
 			catch (Exception ex)
 			{
@@ -367,8 +352,8 @@ namespace Liberfy
 			_outgoing.Clear();
 			_outgoing = null;
 
-			_reactions.Clear();
-			_reactions = null;
+			_statusReactions.Clear();
+			_statusReactions = null;
 
 			_lockSharedObject = null;
 		}

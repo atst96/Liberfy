@@ -240,8 +240,6 @@ namespace Liberfy
 
 		public void Reset() => Clear();
 
-		public void Reset(params T[] arry) => Reset(arry);
-
 		public void Reset(IEnumerable<T> collection)
 		{
 			list.Clear();

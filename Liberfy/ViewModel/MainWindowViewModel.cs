@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy.ViewModel
 {
-	class MainWindow : ViewModelBase
+	internal class MainWindow : ViewModelBase
 	{
 		public AccountSetting AccountSetting => App.AccountSetting;
 		public FluidCollection<Account> Accounts => AccountSetting.Accounts;
@@ -27,7 +27,7 @@ namespace Liberfy.ViewModel
 
 			if (Accounts.Count == 0)
 			{
-				if (!DialogService.OpenSetting(1, true))
+				if (!DialogService.OpenSetting(page: 0, modal: true))
 				{
 					DialogService.Invoke(ViewState.Close);
 					return;
@@ -59,20 +59,21 @@ namespace Liberfy.ViewModel
 		public ClientContent Client { get; } = App.Client;
 
 		private Command _tweetCommand;
-		public Command TweetCommand => _tweetCommand ??
-			(_tweetCommand = new DelegateCommand(tweet));
+		public Command TweetCommand
+		{
+			get => _tweetCommand ?? (_tweetCommand = new DelegateCommand(Tweet));
+		}
 
-		private void tweet()
+		private void Tweet()
 		{
 			DialogService.Open(ViewType.TweetWindow);
 		}
 
 		private Command _showSettingDialog;
-		public Command ShowSettingDialog => _showSettingDialog
-			?? (_showSettingDialog = new DelegateCommand(() =>
-			{
-				DialogService.OpenSetting();
-			}));
+		public Command ShowSettingDialog
+		{
+			get => _showSettingDialog ?? (_showSettingDialog = new DelegateCommand(() => DialogService.OpenSetting()));
+		}
 
 		internal override bool CanClose()
 		{

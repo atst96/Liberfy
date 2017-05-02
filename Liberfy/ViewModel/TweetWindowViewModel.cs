@@ -16,7 +16,7 @@ using static Liberfy.Defines;
 
 namespace Liberfy.ViewModel
 {
-	class TweetWindow : ViewModelBase
+	internal class TweetWindow : ViewModelBase
 	{
 		private static readonly Validator tweetValidator = new Validator();
 		protected static Setting Setting => App.Setting;
@@ -58,12 +58,9 @@ namespace Liberfy.ViewModel
 		private void UpdateCanPost()
 		{
 			// ツイート可能な残り文字数の算出
-			int tweetLength = tweetValidator.GetTweetLength(_tweet);
-			int actualTweetLength = tweetLength;
+			int actualTweetLength = tweetValidator.GetTweetLength(_tweet);
 			if (Media.Count > 0)
-			{
 				actualTweetLength += MediaUrlLength;
-			}
 
 			_remainingTweetLength = MaxTweetLength - actualTweetLength;
 
@@ -123,10 +120,12 @@ namespace Liberfy.ViewModel
 		#region AddImageCommand
 
 		private Command _addImageCommand;
-		public Command AddImageCommand => _addImageCommand
-			?? (_addImageCommand = RegisterReleasableCommand(AddImage, CanEditContent));
+		public Command AddImageCommand
+		{
+			get => _addImageCommand ?? (_addImageCommand = RegisterReleasableCommand(AddImage, CanEditContent));
+		}
 
-		void AddImage()
+		private void AddImage()
 		{
 			var ofd = new Microsoft.Win32.OpenFileDialog
 			{
@@ -150,12 +149,12 @@ namespace Liberfy.ViewModel
 			ofd.Reset();
 		}
 
-		bool IsUploadableExtension(string ext)
+		private bool IsUploadableExtension(string ext)
 		{
 			return UploadableMediaExtensions.Contains(ext.ToLower());
 		}
 
-		bool CanEditContent(object o) => !_isPosting;
+		private bool CanEditContent(object o) => !_isPosting;
 
 
 
@@ -180,8 +179,10 @@ namespace Liberfy.ViewModel
 		#region RemoveImageCommand
 
 		private Command<UploadMedia> _removeMediaCommand;
-		public Command<UploadMedia> RemoveMediaCommand => _removeMediaCommand
-			?? (_removeMediaCommand = RegisterReleasableCommand<UploadMedia>(RemoveMedia, CanRemoveMedia));
+		public Command<UploadMedia> RemoveMediaCommand
+		{
+			get => _removeMediaCommand ?? (_removeMediaCommand = RegisterReleasableCommand<UploadMedia>(RemoveMedia, CanRemoveMedia));
+		}
 
 		private bool CanRemoveMedia(UploadMedia media)
 		{
@@ -205,8 +206,10 @@ namespace Liberfy.ViewModel
 		#region DragDropCommand
 
 		private Command<IDataObject> _dragDropCommand;
-		public Command<IDataObject> DragDropCommand => _dragDropCommand
-			?? (_dragDropCommand = RegisterReleasableCommand<IDataObject>(Dropped, CanDrop));
+		public Command<IDataObject> DragDropCommand
+		{
+			get => _dragDropCommand ?? (_dragDropCommand = RegisterReleasableCommand<IDataObject>(Dropped, CanDrop));
+		}
 
 		private DragDropEffects _dragDropEffects = DragDropEffects.None;
 		public DragDropEffects DragDropEffects
@@ -278,8 +281,6 @@ namespace Liberfy.ViewModel
 
 		private void Dropped(IDataObject data)
 		{
-			System.Diagnostics.Debug.WriteLine(string.Join(", ", data.GetFormats()));
-
 			if (data.GetDataPresent(DataFormats.FileDrop))
 			{
 				var droppedFiles = (string[])data.GetData(DataFormats.FileDrop);
@@ -335,8 +336,10 @@ namespace Liberfy.ViewModel
 		#region Command: GetNowPlayingTextCommand
 
 		private Command _getNowPlayingTextCommand;
-		public Command GetNowPlayingTextCommand => _getNowPlayingTextCommand
-			?? (_getNowPlayingTextCommand = RegisterReleasableCommand(GetNowPlayingText, IsSupportedPlayer));
+		public Command GetNowPlayingTextCommand
+		{
+			get => _getNowPlayingTextCommand ?? (_getNowPlayingTextCommand = RegisterReleasableCommand(GetNowPlayingText, IsSupportedPlayer));
+		}
 
 		private bool IsSupportedPlayer(object o)
 		{
@@ -453,8 +456,10 @@ namespace Liberfy.ViewModel
 		#region Command: InsertNowPlayingTextCommand
 
 		private Command _insertNowPlayingTextCommand;
-		public Command InsertNowPlayingTextCommand => _insertNowPlayingTextCommand
-			?? (_insertNowPlayingTextCommand = new DelegateCommand(InsertNowPlaying));
+		public Command InsertNowPlayingTextCommand
+		{
+			get => _insertNowPlayingTextCommand ?? (_insertNowPlayingTextCommand = new DelegateCommand(InsertNowPlaying));
+		}
 
 		private void InsertNowPlaying()
 		{

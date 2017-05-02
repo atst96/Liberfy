@@ -366,16 +366,14 @@
 						<DockPanel>
 							<StackPanel
 								DockPanel.Dock="Top"
-								Orientation="Vertical"/>
+								Orientation="Vertical"
+								Style="{StaticResource ElementsContainerStyle}"/>
 
-							<Label 
+							<Separator
 								DockPanel.Dock="Top"
-								Padding="8 8 8 4"
-								Content="アカウント追加時にタイムラインに追加するカラム"
-								Style="{StaticResource HeaderLabel}"
-								BorderThickness="0 0 0 1"
-								BorderBrush="{DynamicResource ToolBarBorderBrush}"/>
-
+								Background="#ccc"
+								Margin="0"/>
+							
 							<ListBox
 								Margin="0"
 								DockPanel.Dock="Left"
@@ -466,7 +464,7 @@
 			</TabItem>
 
 			<TabItem Header="基本設定">
-				<TabControl>
+				<TabControl Style="{StaticResource TabControlStyle1}">
 					<TabItem Header="全般">
 						<StackPanel Style="{StaticResource ElementsContainerStyle}">
 							<CheckBox Content="起動時にアップデートを確認する"
@@ -689,7 +687,7 @@
 			</TabItem>
 
 			<TabItem Header="通知">
-				<TabControl>
+				<TabControl Style="{StaticResource TabControlStyle1}">
 					<TabItem Header="全般">
 						<StackPanel Style="{StaticResource ElementsContainerStyle}">
 							<CheckBox
@@ -785,7 +783,7 @@
 			</TabItem>
 
 			<TabItem Header="タイムライン">
-				<TabControl>
+				<TabControl Style="{StaticResource TabControlStyle1}">
 					<TabItem Header="ツイート">
 						<DockPanel Background="White" TextBlock.Foreground="Black">
 							<Border
@@ -1304,7 +1302,7 @@
 			</TabItem>
 
 			<TabItem Header="ミュート">
-				<TabControl>
+				<TabControl Style="{StaticResource TabControlStyle1}">
 					<TabItem Header="ミュート項目一覧">
 						<DockPanel>
 							<Border

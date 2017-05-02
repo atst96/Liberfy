@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	class AccountSetting : SettingBase
+	[JsonObject(memberSerialization: MemberSerialization.OptIn)]
+	internal class AccountSetting : NotificationObject
 	{
 		public bool ContainsId(double id)
 		{
@@ -19,20 +20,19 @@ namespace Liberfy
 			return Accounts.FirstOrDefault((a) => a.Id == id);
 		}
 
-		private FluidCollection<Account> _accounts =
-			new FluidCollection<Account>();
-
 		[JsonProperty("accounts")]
-		public FluidCollection<Account> Accounts
+		private Account[] _jAccounts
 		{
-			get { return _accounts; }
+			get => Accounts.ToArray();
 			set
 			{
 				if (value != null)
-					_accounts.Reset(value);
+					Accounts.Reset(value);
 				else
-					_accounts.Reset();
+					Accounts.Reset();
 			}
 		}
+
+		public FluidCollection<Account> Accounts { get; } = new FluidCollection<Account>();
 	}
 }

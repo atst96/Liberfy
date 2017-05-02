@@ -42,13 +42,13 @@ namespace Liberfy
 		{
 			// 設定を読み込む
 			// InitializeSettings();
-			if (!loadSettingWithErrorDialog(Defines.SettingFile, ref _setting))
+			if (!LoadSettingWithErrorDialog(Defines.SettingFile, ref _setting))
 			{
 				App.Shutdown(false);
 				return;
 			}
 
-			if (!loadSettingWithErrorDialog(Defines.AccountsFile, ref _accounts))
+			if (!LoadSettingWithErrorDialog(Defines.AccountsFile, ref _accounts))
 			{
 				App.Shutdown(false);
 				return;
@@ -59,41 +59,55 @@ namespace Liberfy
 			base.OnStartup(e);
 		}
 
-		private static bool loadSettingWithErrorDialog<T>(string fileName, ref T setting) where T : SettingBase
+		private static bool LoadSettingWithErrorDialog<T>(string filename, ref T setting) where T : new()
 		{
-			var response = SettingBase.FromFile<T>(fileName);
-
-			switch (response.Status)
+			try
 			{
-				case FileProcessStatus.Success:
-					setting = response.Result;
-					return true;
 
-				case FileProcessStatus.FileNotFound:
-					setting = Activator.CreateInstance<T>();
-					return true;
+				setting = File.Exists(filename)
+					? SettingFromFile<T>(filename)
+					: new T();
 
-				default:
-					string instruction = response.Status == FileProcessStatus.ParseError ? "保存形式が誤っています" : "読み込みに失敗しました";
-					MessageBox.Show(IntPtr.Zero, $"設定ファイルの{instruction}：\n{response.ErrorMessage}\n\nアプリケーションを終了します。", caption: "エラー", icon: MsgBoxIcon.Error);
-					return false;
+				return true;
+			}
+			catch (Exception e)
+			{
+				MessageBox.Show(IntPtr.Zero,
+					$"設定ファイルの{(e is JsonException ? "保存形式が誤っています" : "読み込みに失敗しました")}：\n"
+					+ "{e.Message}\n\nアプリケーションを終了します。",
+					caption: "エラー", icon: MsgBoxIcon.Error);
+				return true;
 			}
 		}
 
-		private static void saveSettings()
+		private static T SettingFromFile<T>(string filename)
 		{
-			saveSettingWithErrorDialog(Defines.SettingFile, Setting);
-			saveSettingWithErrorDialog(Defines.AccountsFile, AccountSetting);
+			return JsonConvert.DeserializeObject<T>(
+				File.ReadAllText(filename));
 		}
 
-		private static void saveSettingWithErrorDialog<T>(string fileName, T setting) where T : SettingBase
+		private static void SaveSettingFile<T>(string filename, T TObj)
 		{
-			var response = SettingBase.SaveFile(fileName, setting);
+			File.WriteAllText(filename,
+				JsonConvert.SerializeObject(TObj, Formatting.Indented));
+		}
 
-			if(response.Status != FileProcessStatus.Success)
+		private static void SaveSettings()
+		{
+			SaveSettingWithErrorDialog(Defines.SettingFile, Setting);
+			SaveSettingWithErrorDialog(Defines.AccountsFile, AccountSetting);
+		}
+
+		private static void SaveSettingWithErrorDialog<T>(string filename, T setting) where T : class
+		{
+			try
+			{
+				SaveSettingFile(filename, setting);
+			}
+			catch (Exception e)
 			{
 				MessageBox.Show(IntPtr.Zero,
-					$"設定ファイルの保存に失敗しました。：\n{response.ErrorMessage}",
+					$"設定ファイルの保存に失敗しました。：\n{e.Message}",
 					caption: "エラー", icon: MsgBoxIcon.Error);
 			}
 		}
@@ -106,7 +120,7 @@ namespace Liberfy
 			_appClsoing = true;
 
 			if (saveSettings)
-				App.saveSettings();
+				App.SaveSettings();
 
 			Current.Shutdown();
 
