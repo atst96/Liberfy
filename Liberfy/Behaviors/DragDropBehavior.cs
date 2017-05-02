@@ -12,7 +12,7 @@ using ComTypes = System.Runtime.InteropServices.ComTypes;
 
 namespace Liberfy.Behaviors
 {
-	class DragDropBehavior : Behavior<FrameworkElement>, ICommandSource
+	public class DragDropBehavior : Behavior<FrameworkElement>, ICommandSource
 	{
 		private DragDropHelper _dragDropHelper;
 
@@ -173,10 +173,10 @@ namespace Liberfy.Behaviors
 		{
 			var formats = eventArgs.Data.GetFormats();
 
-			return formats.Length != 3
-				|| !formats.Contains("Text")
-				|| !formats.Contains("UnicodeText")
-				|| !formats.Contains("System.String");
+			return formats.Length == 3
+				&& formats.Contains("Text")
+				&& formats.Contains("UnicodeText")
+				&& formats.Contains("System.String");
 		}
 
 		public ICommand Command

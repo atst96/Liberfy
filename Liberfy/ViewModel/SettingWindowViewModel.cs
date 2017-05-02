@@ -538,7 +538,7 @@ namespace Liberfy.ViewModel
 			get => _selectedColumnSetting;
 			set
 			{
-				if(SetProperty(ref _selectedColumnSetting, value))
+				if (SetProperty(ref _selectedColumnSetting, value))
 				{
 					ColumnMoveUpCommand.RaiseCanExecute();
 					ColumnMoveDownCommand.RaiseCanExecute();
@@ -673,39 +673,45 @@ namespace Liberfy.ViewModel
 		public MuteType TempMuteType
 		{
 			get => _tempMuteType;
-			set => SetProperty(ref _tempMuteType, value, _addMuteCommand);
+			set => SetProperty(ref _tempMuteType, value, _muteAddCommand);
 		}
 
 		private SearchMode _tempMuteSearch;
 		public SearchMode TempMuteSearch
 		{
 			get => _tempMuteSearch;
-			set => SetProperty(ref _tempMuteSearch, value, _addMuteCommand);
+			set => SetProperty(ref _tempMuteSearch, value, _muteAddCommand);
 		}
 
 		private string _tempMuteText;
 		public string TempMuteText
 		{
 			get => _tempMuteText;
-			set => SetProperty(ref _tempMuteText, value, _addMuteCommand);
+			set => SetProperty(ref _tempMuteText, value, _muteAddCommand);
 		}
 
 		private Mute _selectedMute;
 		public Mute SelectedMute
 		{
 			get => _selectedMute;
-			set => SetProperty(ref _selectedMute, value);
+			set
+			{
+				if(SetProperty(ref _selectedMute, value))
+				{
+					MuteRemoveCommand.RaiseCanExecute();
+				}
+			}
 		}
 
 		#region Command: AddMuteCommand
 
-		private Command _addMuteCommand;
-		public Command AddMuteCommand
+		private Command _muteAddCommand;
+		public Command MuteAddCommand
 		{
-			get => _addMuteCommand ?? (_addMuteCommand = RegisterReleasableCommand(AddMute, CanAddMute));
+			get => _muteAddCommand ?? (_muteAddCommand = RegisterReleasableCommand(MuteAdd, CanAddMute));
 		}
 
-		private void AddMute()
+		private void MuteAdd()
 		{
 			var mute = new Mute(_tempMuteType, _tempMuteSearch, _tempMuteText);
 			MuteList.Add(mute);
@@ -729,6 +735,20 @@ namespace Liberfy.ViewModel
 		private static bool IsAvailableMuteItem(Mute mute) => mute != null;
 
 		#endregion Command: RemoveMuteCommand
+
+		#region MuteRemoveCommand
+
+		private Command<Mute> _muteRemoveCommand;
+		public Command<Mute> MuteRemoveCommand
+		{
+			get => _muteRemoveCommand ?? (_muteRemoveCommand = RegisterReleasableCommand<Mute>(MuteRemove, CanMuteRemove));
+		}
+
+		private void MuteRemove(Mute item) => MuteList.Remove(item);
+
+		private bool CanMuteRemove(Mute item) => MuteList.Contains(item);
+
+		#endregion
 
 		#endregion
 

@@ -184,14 +184,14 @@ namespace Liberfy
 			RaisePropertyChanged("");
 		}
 
-		public bool Equals(UserInfo user)
+		public bool Equals(UserInfo other)
 		{
-			return Equals(Id, user?.Id);
+			return Equals(Id, other?.Id);
 		}
 
-		public bool Equals(User user)
+		public bool Equals(User other)
 		{
-			return Equals(Id, user?.Id);
+			return Equals(Id, other?.Id);
 		}
 
 		public override bool Equals(object obj)

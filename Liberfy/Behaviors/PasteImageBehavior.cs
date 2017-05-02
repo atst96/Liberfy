@@ -15,7 +15,7 @@ namespace Liberfy.Behaviors
 
 		public IInputElement CommandTarget => throw new NotImplementedException();
 
-		CommandBinding commandBinding;
+		private CommandBinding commandBinding;
 
 		protected override void OnAttached()
 		{

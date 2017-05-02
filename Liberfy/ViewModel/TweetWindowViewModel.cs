@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -228,13 +229,29 @@ namespace Liberfy.ViewModel
 			set => SetProperty(ref _dropDescriptionIcon, value);
 		}
 
+		private bool IsEnableMediaFiles(StringCollection strCollection)
+		{
+			foreach (var str in strCollection)
+			{
+				if (!IsUploadableExtension(Path.GetExtension(str)))
+					return false;
+			}
+
+			return true;
+		}
+
+		private bool IsEnableMediaFiles(IEnumerable<string> files)
+		{
+			return !files.Any(f => !IsUploadableExtension(Path.GetExtension(f)));
+		}
+
 		private bool CanDrop(IDataObject data)
 		{
 			if (!IsEditable) return false;
 
 			if (data.GetDataPresent(DataFormats.FileDrop)
-				&& data.GetData(DataFormats.FileDrop) is string[] dropppedFiles
-				&& !dropppedFiles.Any(f => !IsUploadableExtension(Path.GetExtension(f))))
+				&& data.GetData(DataFormats.FileDrop) is string[] dropFiles
+				&& IsEnableMediaFiles(dropFiles))
 			{
 				DropDescriptionMessage = "添付";
 				DragDropEffects = DragDropEffects.Copy;
@@ -469,12 +486,15 @@ namespace Liberfy.ViewModel
 		#region ImagePasting
 
 		private Command _pasteImageCommand;
-		public Command PasteImageCommand => _pasteImageCommand
-			?? (_pasteImageCommand = new DelegateCommand(OnImagePasted, CanImagePaste));
+		public Command PasteImageCommand
+		{
+			get => _pasteImageCommand ?? (_pasteImageCommand = new DelegateCommand(OnImagePasted, CanImagePaste));
+		}
 
 		private bool CanImagePaste(object obj)
 		{
-			return Clipboard.ContainsImage();
+			return Clipboard.ContainsImage()
+				|| (Clipboard.ContainsFileDropList() && IsEnableMediaFiles(Clipboard.GetFileDropList()));
 		}
 
 		private void OnImagePasted()
@@ -482,6 +502,13 @@ namespace Liberfy.ViewModel
 			if (Clipboard.ContainsImage())
 			{
 				Media.Add(new UploadMedia(Clipboard.GetImage()));
+			}
+			else if (Clipboard.ContainsFileDropList())
+			{
+				foreach (var str in Clipboard.GetFileDropList())
+				{
+					Media.Add(new UploadMedia(str));
+				}
 			}
 		}
 

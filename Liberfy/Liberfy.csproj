@@ -259,26 +259,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="lib\Xceed.Wpf.Toolkit.dll" />
     <Resource Include="Icons\app.ico" />
     <Resource Include="Icons\app_tasktray.ico" />
-    <Content Include="lib\Hardcodet.Wpf.TaskbarNotification.dll" />
-    <Content Include="lib\Hardcodet.Wpf.TaskbarNotification.pdb" />
-    <Resource Include="lib\Hardcodet.Wpf.TaskbarNotification.xml" />
-    <Content Include="lib\Newtonsoft.Json.dll" />
-    <Content Include="lib\Newtonsoft.Json.pdb" />
-    <Content Include="lib\Twitter.Text.dll" />
-    <Content Include="lib\Twitter.Text.pdb" />
-    <Resource Include="lib\Newtonsoft.Json.xml" />
-    <Content Include="lib\NowPlayingLib.dll" />
-    <Content Include="lib\NowPlayingLib.pdb" />
-    <Resource Include="lib\NowPlayingLib.XML" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CoreTweet.UnOfficialApi\CoreTweet.net45\CoreTweet.net45.csproj">
-      <Project>{5ae5a341-5e2b-42af-946a-7043bad12817}</Project>
-      <Name>CoreTweet.net45</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -295,7 +277,12 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\CoreTweet\CoreTweet.net45\CoreTweet.net45.csproj">
+      <Project>{5ae5a341-5e2b-42af-946a-7043bad12817}</Project>
+      <Name>CoreTweet.net45</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

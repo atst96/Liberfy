@@ -410,8 +410,12 @@
 													<DataTemplate>
 														<Button
 															Padding="12 4"
-															Content="{Binding Value}"
-															CommandParameter="{Binding Key}" />
+															BorderThickness="0"
+															HorizontalContentAlignment="Left"
+															Content="{Binding Value, Mode=OneTime}"
+															CommandParameter="{Binding Key, Mode=OneTime}"
+															Style="{DynamicResource {x:Static ToolBar.ButtonStyleKey}}"
+															Command="{Binding DataContext.ColumnAddCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
 													</DataTemplate>
 												</ItemsControl.ItemTemplate>
 											</ItemsControl>
@@ -676,6 +680,12 @@
 						</Grid>
 					</TabItem>
 				</TabControl>
+			</TabItem>
+
+			<TabItem Header="投稿">
+				<StackPanel Style="{StaticResource ElementsContainerStyle}">
+					<CheckBox Content="ツイートの投稿が完了したらウィンドウを閉じる" />
+				</StackPanel>
 			</TabItem>
 
 			<TabItem Header="通知">
@@ -1369,44 +1379,58 @@
 										Grid.Column="4"
 										Content="追加"
 										CommandParameter="add"
-										Command="{Binding MuteCommand, Mode=OneTime}"/>
+										Command="{Binding MuteAddCommand, Mode=OneTime}"/>
 								</Grid>
 							</Border>
 
 							<ListBox
 								BorderThickness="0"
 								ItemsSource="{Binding MuteList, Mode=OneTime}"
-								SelectedValue="{Binding SelectedMute, Mode=TwoWay}">
+								SelectedItem="{Binding SelectedMute, Mode=TwoWay}">
 								<ListBox.ItemTemplate>
 									<DataTemplate DataType="{x:Type local:Mute}">
 										<Grid Margin="8">
 											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="auto" />
 												<ColumnDefinition Width="120" />
 												<ColumnDefinition Width="120" />
 												<ColumnDefinition />
 											</Grid.ColumnDefinitions>
 
-											<TextBlock
-												Margin="4 0"
-												FontWeight="Bold"
-												VerticalAlignment="Center"
-												Text="{Binding Type, Mode=OneTime, Converter={StaticResource MuteTypeNameConverter}}"/>
+											<StackPanel
+												VerticalAlignment="Center">
+												<Button 
+													Content="&#xf00d;"
+													Padding="4 3"
+													Margin="0 0 6 0"
+													Background="Red"
+													FontFamily="{StaticResource FontAwesome}"
+													CommandParameter="{Binding}"
+													Command="{Binding DataContext.MuteRemoveCommand, Mode=OneTime,
+														RelativeSource={RelativeSource AncestorType={x:Type ListBox}, AncestorLevel=1}}"
+													Style="{StaticResource SimpleButtonStyle}" />
+											</StackPanel>
 
 											<TextBlock
 												Margin="4 0"
 												Grid.Column="1"
 												FontWeight="Bold"
 												VerticalAlignment="Center"
+												Text="{Binding Type, Mode=OneTime, Converter={StaticResource MuteTypeNameConverter}}"/>
+
+											<TextBlock
+												Margin="4 0"
+												Grid.Column="2"
+												FontWeight="Bold"
+												VerticalAlignment="Center"
 												Text="{Binding Search, Mode=OneTime, Converter={StaticResource MuteSearchTypeNameConverter}}"/>
 
 											<TextBlock
-												Grid.Column="2"
+												Grid.Column="3"
 												VerticalAlignment="Center"
 												Margin="0 0"
 												TextWrapping="Wrap"
 												Text="{Binding Text, Mode=OneTime}" />
-
-											<TextBlock />
 										</Grid>
 									</DataTemplate>
 								</ListBox.ItemTemplate>
