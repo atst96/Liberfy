@@ -92,13 +92,13 @@ namespace Liberfy
 
 		private SortedSet<long> _outgoing = new SortedSet<long>();
 
-		private SortedDictionary<long, Reaction> _statusReactions = new SortedDictionary<long, Reaction>();
+		private SortedDictionary<long, StatusReaction> _statusReactions = new SortedDictionary<long, StatusReaction>();
 
-		public Reaction GetStatusReaction(long user_id)
+		public StatusReaction GetStatusReaction(long user_id)
 		{
-			if (!_statusReactions.TryGetValue(user_id, out Reaction r))
+			if (!_statusReactions.TryGetValue(user_id, out StatusReaction r))
 			{
-				r = new Reaction();
+				r = new StatusReaction();
 				_statusReactions.Add(user_id, r);
 			}
 

@@ -32,7 +32,7 @@ namespace Liberfy
 
 		public bool IsMe { get; }
 
-		public Reaction Reaction { get; }
+		public StatusReaction Reaction { get; }
 
 		public MediaEntityInfo[] MediaEntities { get; }
 

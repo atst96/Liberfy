@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	class Reaction : NotificationObject
+	class StatusReaction : NotificationObject
 	{
 		private bool _isFavorited;
 		public bool IsFavorited
