@@ -72,11 +72,14 @@
 			<Border
 				x:Name="border"
 				Padding="12"
+				ClipToBounds="True"
 				BorderThickness="0 0 0 1"
 				Background="Transparent"
-				BorderBrush="#ddd">
+				BorderBrush="#ddd"
+				d:DesignWidth="360">
 				<Grid>
 					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="auto" />
 						<ColumnDefinition Width="auto" />
 						<ColumnDefinition />
 						<ColumnDefinition Width="auto" />
@@ -86,15 +89,22 @@
 						Margin="0 0 8 0" Width="36" Height="36"
 						Source="{Binding Info.ProfileImageUrl, IsAsync=True}" />
 
+					<TextBlock
+						Grid.Column="1"
+						Margin="0 4 4 4"
+						Text="&#xf023;" FontSize="18"
+						Style="{StaticResource ToolBarIconText}"
+						local:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=OneWay}" />
+					
 					<StackPanel 
-						Grid.Column="1" 
+						Grid.Column="2" 
 						VerticalAlignment="Center">
 						<TextBlock Text="{Binding Info.Name, Mode=OneWay}" FontWeight="Bold" />
 						<TextBlock Text="{Binding Info.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
 					</StackPanel>
 
 					<StackPanel
-						Grid.Column="2"
+						Grid.Column="3"
 						Opacity="0.6"
 						x:Name="accountFuncPanel"
 						Orientation="Horizontal"
@@ -364,10 +374,15 @@
 					</TabItem>
 					<TabItem Header="アカウントの初期設定">
 						<DockPanel>
-							<StackPanel
+							<UniformGrid
+								Columns="2" Margin="4"
 								DockPanel.Dock="Top"
-								Orientation="Vertical"
-								Style="{StaticResource ElementsContainerStyle}"/>
+								Style="{StaticResource ElementsContainerStyle}">
+
+								<CheckBox
+									Content="起動時に自動的にログインする"
+									IsChecked="{Binding Setting.AccountDefaultAutomaticallyLogin, Mode=TwoWay}" />
+							</UniformGrid>
 
 							<Separator
 								DockPanel.Dock="Top"

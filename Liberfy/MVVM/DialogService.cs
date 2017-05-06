@@ -32,7 +32,7 @@ namespace Liberfy
 
 		internal void RegisterView(Window view, bool isMainView = false)
 		{
-			if (this._view != view)
+			if (!Equals(this._view, view))
 			{
 				UnregisterView(view);
 
@@ -169,7 +169,7 @@ namespace Liberfy
 			}
 		}
 
-		public bool OpenSetting(int? page = null, bool modal = false)
+		public bool OpenSetting(int? page = null, bool isModal = false)
 		{
 			var settingWindow = app.Windows
 				.OfType<SettingWindow>()
@@ -187,18 +187,12 @@ namespace Liberfy
 			else
 			{
 				if (app.MainWindow.IsLoaded)
-				{
 					settingWindow.Owner = app.MainWindow;
-				}
 
-				if (modal)
-				{
+				if (isModal)
 					settingWindow.ShowDialog();
-				}
 				else
-				{
 					settingWindow.Show();
-				}
 			}
 
 			if (App.AccountSetting.Accounts.Count == 0)
@@ -289,7 +283,7 @@ namespace Liberfy
 
 		public void Dispose()
 		{
-			if(mainView == _view)
+			if (mainView == _view)
 			{
 				mainView = null;
 			}

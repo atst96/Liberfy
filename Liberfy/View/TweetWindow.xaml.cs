@@ -23,10 +23,5 @@ namespace Liberfy.View
 		{
 			InitializeComponent();
 		}
-
-		private void ListBox_TargetUpdated(object sender, DataTransferEventArgs e)
-		{
-			Title = "Media.HasItem property changed.";
-		}
 	}
 }

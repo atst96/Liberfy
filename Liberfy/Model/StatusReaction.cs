@@ -8,6 +8,12 @@ namespace Liberfy
 {
 	class StatusReaction : NotificationObject
 	{
+		public void SetAll(bool isFavorited, bool isRetweeted)
+		{
+			this.IsFavorited = isFavorited;
+			this.IsRetweeted = isRetweeted;
+		}
+
 		private bool _isFavorited;
 		public bool IsFavorited
 		{

@@ -446,32 +446,44 @@ namespace Liberfy.ViewModel
 			{
 				var tokens = auth.Tokens;
 
-				var acc = Accounts.FirstOrDefault((a) => a.Id == tokens.UserId);
+				var account = Accounts.FirstOrDefault((a) => a.Id == tokens.UserId);
 
-				if (acc != null)
+				if (account != null)
 				{
-					acc.SetTokens(tokens);
+					account.SetTokens(tokens);
 				}
 				else
 				{
-					acc = new Account(tokens);
-					Accounts.Add(acc);
+					account = new Account(tokens)
+					{
+						AutomaticallyLogin = Setting.AccountDefaultAutomaticallyLogin,
+					};
 
-					acc.IsLoading = true;
+					Accounts.Add(account);
+
+					if(account.AutomaticallyLogin)
+					{
+						foreach(var cols in DefaultColumns)
+						{
+							App.Columns.Add(cols.ToColumn(account));
+						}
+					}
+
+					account.IsLoading = true;
 
 					await Task.Run(() =>
 					{
-						if (!acc.Login())
+						if (!account.Login())
 						{
 							DialogService.MessageBox(
 								$"アカウント情報の取得に失敗しました:\n",
 								MsgBoxButtons.Ok, MsgBoxIcon.Information);
 
-							Accounts.Remove(acc);
+							Accounts.Remove(account);
 						}
 					});
 
-					acc.IsLoading = false;
+					account.IsLoading = false;
 				}
 			}
 		}

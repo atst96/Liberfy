@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Markup;
 using System.Windows.Media;
 
 namespace Liberfy.Converter
@@ -32,17 +33,12 @@ namespace Liberfy.Converter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			var ff = value as FontFamily;
+			var fontFamily = value as FontFamily;
 
-			if(ff != null)
+			if(fontFamily != null)
 			{
-				if (ff.FamilyNames.ContainsKey(OSInfo.XmlLanguage))
-				{
-					return ff.FamilyNames[OSInfo.XmlLanguage];
-				}
-				{
-					return ff.ToString();
-				}
+				return fontFamily.FamilyNames.TryGetValue(OSInfo.XmlLanguage, out var xmlLang)
+					? xmlLang : fontFamily.ToString();
 			}
 			else
 			{

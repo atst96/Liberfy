@@ -67,9 +67,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\WPF NotifyIcon\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommonServiceLocator.1.2\lib\portable-windows8+net40+sl5+windowsphone8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Expression.Blend.Sdk.WPF.1.0.1\lib\net45\Microsoft.Expression.Interactions.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -86,7 +85,9 @@
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Expression.Blend.Sdk.WPF.1.0.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -135,7 +136,6 @@
     <Compile Include="Extensions\ElementBehavior.cs" />
     <Compile Include="Extensions\WindowExtension.cs" />
     <Compile Include="Defines.cs" />
-    <Compile Include="ClientContent.cs" />
     <Compile Include="Info\Info.cs" />
     <Compile Include="Info\OSInfo.cs" />
     <Compile Include="ListBoxEx.cs" />
@@ -143,6 +143,7 @@
     <Compile Include="MVVM\CommandHelper.cs" />
     <Compile Include="Behaviors\TextBoxBehavior.cs" />
     <Compile Include="Behaviors\TextBoxController.cs" />
+    <Compile Include="TimelineView.cs" />
     <Compile Include="ViewModel\UploadMedia.cs" />
     <Compile Include="UILocalize.cs" />
     <Compile Include="ViewModel\Column\Base\ColumnBase.cs" />
@@ -170,7 +171,6 @@
     <Compile Include="NativeMethods\Values.cs" />
     <Compile Include="Model\StatusInfo.cs" />
     <Compile Include="Model\UserInfo.cs" />
-    <Compile Include="PageItem.cs" />
     <Compile Include="PlaceHolderTextBox.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="Timeline.cs" />
@@ -218,6 +218,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\TweetWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="XAML\ControlStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="XAML\DataTemplates.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

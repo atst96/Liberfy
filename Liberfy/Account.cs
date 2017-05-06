@@ -17,7 +17,7 @@ namespace Liberfy
 		private string _name;
 		private string _profileImageUrl;
 		private bool _isProtected;
-
+		private FluidCollection<ColumnBase> Columns => App.Columns;
 
 		[JsonProperty("user_id")]
 		public long Id { get; private set; }
@@ -26,28 +26,24 @@ namespace Liberfy
 		public string ScreenName
 		{
 			get => _isValidUserInfo ? Info.ScreenName : _screenName;
-			set => _screenName = value;
 		}
 
 		[JsonProperty("name")]
 		public string Name
 		{
 			get => _isValidUserInfo ? Info.Name : _name;
-			set => _name = value;
 		}
 
 		[JsonProperty("profile_image_url")]
 		public string ProfileImageUrl
 		{
-			get => _isValidUserInfo ? Info.ProfileImageUrl.AbsolutePath : _profileImageUrl;
-			set => _profileImageUrl = value;
+			get => _isValidUserInfo ? Info.ProfileImageUrl : _profileImageUrl;
 		}
 
 		[JsonProperty("is_protected")]
 		public bool IsProtected
 		{
 			get => _isValidUserInfo ? Info.IsProtected : _isProtected;
-			set => _isProtected = value;
 		}
 
 		[JsonProperty("consumer_key")]
@@ -62,6 +58,13 @@ namespace Liberfy
 		[JsonProperty("access_token_secret")]
 		public string AccessTokenSecret { get; private set; }
 
+		[JsonProperty("automatically_login")]
+		private bool _automaticallyLogin;
+		public bool AutomaticallyLogin
+		{
+			get => _automaticallyLogin;
+			set => SetProperty(ref _automaticallyLogin, value);
+		}
 
 		private bool _isValidUserInfo;
 		private bool _isLoading;
@@ -107,18 +110,18 @@ namespace Liberfy
 
 		public Timeline Timeline { get; }
 
-		[JsonConstructor]
+		[JsonConstructor, Obsolete]
 		private Account()
 		{
 			Info = new UserInfo(this);
 			Timeline = new Timeline(this);
 		}
 
-		private Account(long id, string name, string screen_name)
+		private Account(long id, string name, string screenname)
 		{
 			Id = id;
-			Name = name;
-			ScreenName = screen_name;
+			_name = name;
+			_screenName = screenname;
 		}
 
 		public Account(Tokens tokens) : this(tokens, null) { }
@@ -128,8 +131,8 @@ namespace Liberfy
 			if (user == null)
 			{
 				Id = tokens.UserId;
-				ScreenName = tokens.ScreenName;
-				Name = tokens.ScreenName;
+				_screenName = tokens.ScreenName;
+				_name = tokens.ScreenName;
 				Info = new UserInfo(this);
 				_isValidUserInfo = false;
 			}
@@ -331,7 +334,7 @@ namespace Liberfy
 
 		public void Unload()
 		{
-			Timeline?.Unload();
+			Timeline.Unload();
 			_tokens = null;
 
 			_following.Clear();

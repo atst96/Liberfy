@@ -11,6 +11,7 @@ namespace Liberfy
 	{
 		private Account _account;
 		private Tokens _tokens => _account.Tokens;
+		private FluidCollection<ColumnBase> Columns => App.Columns;
 
 		private readonly long _userId;
 
@@ -22,6 +23,13 @@ namespace Liberfy
 
 		public void Unload()
 		{
+			var columns = Columns;
+
+			foreach (var column in columns
+				.Where(c => c.Account.Id == _userId).ToArray())
+			{
+				columns.Remove(column);
+			}
 		}
 	}
 }

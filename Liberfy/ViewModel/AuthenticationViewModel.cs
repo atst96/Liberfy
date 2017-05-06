@@ -89,7 +89,7 @@ namespace Liberfy.ViewModel
 		private Command _nextCommand;
 		public Command NextCommand
 		{
-			get => _nextCommand ?? (_nextCommand = new DelegateCommand(MoveNextPage, CanMoveNextPage));
+			get => _nextCommand ?? (_nextCommand = RegisterReleasableCommand(MoveNextPage, CanMoveNextPage));
 		}
 
 		private async void MoveNextPage()
@@ -180,7 +180,7 @@ namespace Liberfy.ViewModel
 					}
 
 				case 1:
-					return _pinCode?.Length == 7 
+					return _pinCode?.Length == 7
 						&& Regex.IsMatch(_pinCode, @"^\d+$");
 
 				default:
@@ -193,8 +193,10 @@ namespace Liberfy.ViewModel
 		#region Command: CancelCommand
 
 		private Command _cancelCommand;
-		public Command CancelCommand => _cancelCommand
-			?? (_cancelCommand = new DelegateCommand(CancelAll));
+		public Command CancelCommand
+		{
+			get => _cancelCommand ?? (_cancelCommand = RegisterReleasableCommand(CancelAll));
+		}
 
 		private void CancelAll()
 		{
@@ -212,8 +214,10 @@ namespace Liberfy.ViewModel
 		#region Command: CopyClipboardCommand
 
 		private Command _copyClipboardCommand;
-		public Command CopyClipboardCommand => _copyClipboardCommand
-			?? (_copyClipboardCommand = new DelegateCommand(CopyAuthorizeUrlToClipboard));
+		public Command CopyClipboardCommand
+		{
+			get => _copyClipboardCommand ?? (_copyClipboardCommand = RegisterReleasableCommand(CopyAuthorizeUrlToClipboard));
+		}
 
 		private void CopyAuthorizeUrlToClipboard()
 		{

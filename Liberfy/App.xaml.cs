@@ -42,13 +42,29 @@ namespace Liberfy
 		{
 			// 設定を読み込む
 			// InitializeSettings();
-			if (!LoadSettingWithErrorDialog(Defines.SettingFile, ref _setting))
+			if (LoadSettingWithErrorDialog(Defines.AccountsFile, ref _accounts))
+			{
+				if(_accounts.Columns != null)
+				{
+					foreach(var s in _accounts.Columns)
+					{
+						try
+						{
+							Columns.Add(s.ToColumn());
+						}
+						catch (Exception ex)
+						{
+						}
+					}
+				}
+			}
+			else
 			{
 				App.Shutdown(false);
 				return;
 			}
 
-			if (!LoadSettingWithErrorDialog(Defines.AccountsFile, ref _accounts))
+			if (!LoadSettingWithErrorDialog(Defines.SettingFile, ref _setting))
 			{
 				App.Shutdown(false);
 				return;
@@ -59,11 +75,12 @@ namespace Liberfy
 			base.OnStartup(e);
 		}
 
+		internal static FluidCollection<ColumnBase> Columns { get; } = new FluidCollection<ColumnBase>();
+
 		private static bool LoadSettingWithErrorDialog<T>(string filename, ref T setting) where T : new()
 		{
 			try
 			{
-
 				setting = File.Exists(filename)
 					? SettingFromFile<T>(filename)
 					: new T();
@@ -74,7 +91,7 @@ namespace Liberfy
 			{
 				MessageBox.Show(IntPtr.Zero,
 					$"設定ファイルの{(e is JsonException ? "保存形式が誤っています" : "読み込みに失敗しました")}：\n"
-					+ "{e.Message}\n\nアプリケーションを終了します。",
+					+ $"{e.Message}\n\nアプリケーションを終了します。",
 					caption: "エラー", icon: MsgBoxIcon.Error);
 				return true;
 			}
@@ -94,6 +111,11 @@ namespace Liberfy
 
 		private static void SaveSettings()
 		{
+			// 各設定の保存
+			AccountSetting.Columns
+				= Columns.Select(c => c.ToSetting()).ToArray();
+
+			// 設定をファイルに保存
 			SaveSettingWithErrorDialog(Defines.SettingFile, Setting);
 			SaveSettingWithErrorDialog(Defines.AccountsFile, AccountSetting);
 		}
@@ -114,17 +136,17 @@ namespace Liberfy
 
 		private static bool _appClsoing;
 
-		public static bool Shutdown(bool saveSettings = true)
+		public static void Shutdown(bool saveSettings = true)
 		{
-			if (_appClsoing) return false;
+			if (_appClsoing) return;
 			_appClsoing = true;
 
 			if (saveSettings)
+			{
 				App.SaveSettings();
+			}
 
 			Current.Shutdown();
-
-			return true;
 		}
 
 		public static void LoadUISettingsFromSetting()

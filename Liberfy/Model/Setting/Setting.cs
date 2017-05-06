@@ -13,7 +13,7 @@ using static Liberfy.Defines;
 
 namespace Liberfy
 {
-	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
+	[JsonObject(memberSerialization: MemberSerialization.OptIn)]
 	internal class Setting : NotificationObject
 	{
 		#region Generic
@@ -165,6 +165,14 @@ namespace Liberfy
 						});
 				}
 			}
+		}
+
+		[JsonProperty("account_default_automatically_login")]
+		private bool _accountDefaultAutomaticallyLogin = true;
+		public bool AccountDefaultAutomaticallyLogin
+		{
+			get => _accountDefaultAutomaticallyLogin;
+			set => SetProperty(ref _accountDefaultAutomaticallyLogin, value);
 		}
 
 		#endregion

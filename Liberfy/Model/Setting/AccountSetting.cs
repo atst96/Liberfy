@@ -20,7 +20,7 @@ namespace Liberfy
 			return Accounts.FirstOrDefault((a) => a.Id == id);
 		}
 
-		[JsonProperty("accounts")]
+		[JsonProperty("accounts", Order = 1)]
 		private Account[] _jAccounts
 		{
 			get => Accounts.ToArray();
@@ -34,5 +34,8 @@ namespace Liberfy
 		}
 
 		public FluidCollection<Account> Accounts { get; } = new FluidCollection<Account>();
+
+		[JsonProperty("columns")]
+		public ColumnSetting[] Columns { get; set; }
 	}
 }

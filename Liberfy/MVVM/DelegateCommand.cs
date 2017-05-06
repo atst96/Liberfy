@@ -26,12 +26,12 @@ namespace Liberfy
 
 		public override bool CanExecute(object parameter)
 		{
-			return _canExecute(parameter);
+			return _canExecute?.Invoke(parameter) ?? true;
 		}
 
 		public override void Execute(object parameter)
 		{
-			_execute();
+			_execute?.Invoke();
 		}
 
 		public override void Dispose()
@@ -68,12 +68,12 @@ namespace Liberfy
 
 		public override bool CanExecute(T parameter)
 		{
-			return _canExecute(parameter);
+			return _canExecute?.Invoke(parameter) ?? true;
 		}
 
 		public override void Execute(T parameter)
 		{
-			_execute(parameter);
+			_execute?.Invoke(parameter);
 		}
 
 		public override void Dispose()

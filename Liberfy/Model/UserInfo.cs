@@ -54,15 +54,15 @@ namespace Liberfy
 
 		public Color ProfileBackgroundColor { get; private set; }
 
-		public Uri ProfileBackgroundImageUrl { get; private set; }
+		public string ProfileBackgroundImageUrl { get; private set; }
 
-		public Uri ProfileBackgroundImageUrlHttps { get; private set; }
+		public string ProfileBackgroundImageUrlHttps { get; private set; }
 
 		public bool IsProfileBackgroundTile { get; private set; }
 
-		public Uri ProfileBannerUrl { get; private set; }
+		public string ProfileBannerUrl { get; private set; }
 
-		public Uri ProfileImageUrl { get; private set; }
+		public string ProfileImageUrl { get; private set; }
 
 		public Color ProfileLinkColor { get; private set; }
 
@@ -92,7 +92,7 @@ namespace Liberfy
 
 		public string TranslatorType { get; private set; }
 
-		public Uri Url { get; private set; }
+		public string Url { get; private set; }
 
 		public int UtcOffset { get; private set; }
 
@@ -118,7 +118,7 @@ namespace Liberfy
 			Name = CopyStr(ac.Name);
 			ScreenName = CopyStr(ac.ScreenName);
 			IsProtected = ac.IsProtected;
-			ProfileImageUrl = ToUri(ac.ProfileImageUrl);
+			ProfileImageUrl = CopyStr(ac.ProfileImageUrl);
 
 			UpdatedAt = DateTime.Now;
 		}
@@ -133,14 +133,6 @@ namespace Liberfy
 		private static string CopyStr(string from)
 		{
 			return from == null ? null : String.Copy(from);
-		}
-
-		private static Uri ToUri(string url)
-		{
-			if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
-				return new Uri(url);
-			else
-				return null;
 		}
 
 		public void Update(User item)
@@ -165,11 +157,11 @@ namespace Liberfy
 			Name = CopyStr(item.Name);
 			NeedsPhoneVerification = item.NeedsPhoneVerification ?? NeedsPhoneVerification;
 			ProfileBackgroundColor = ToColor(item.ProfileBackgroundColor);
-			ProfileBackgroundImageUrl = ToUri(item.ProfileBackgroundImageUrl);
-			ProfileBackgroundImageUrlHttps = ToUri(item.ProfileBackgroundImageUrlHttps);
+			ProfileBackgroundImageUrl = CopyStr(item.ProfileBackgroundImageUrl);
+			ProfileBackgroundImageUrlHttps = CopyStr(item.ProfileBackgroundImageUrlHttps);
 			IsProfileBackgroundTile = item.IsProfileBackgroundTile;
-			ProfileBannerUrl = ToUri(item.ProfileBannerUrl);
-			ProfileImageUrl = ToUri(item.ProfileImageUrl);
+			ProfileBannerUrl = CopyStr(item.ProfileBannerUrl);
+			ProfileImageUrl = CopyStr(item.ProfileImageUrl);
 			ProfileLinkColor = ToColor(item.ProfileLinkColor);
 			ProfileLocation = item.ProfileLocation;
 			ProfileSidebarBorderColor = ToColor(item.ProfileSidebarBorderColor);
@@ -184,7 +176,7 @@ namespace Liberfy
 			IsSuspended = item.IsSuspended ?? IsSuspended;
 			TimeZone = CopyStr(item.TimeZone);
 			//TranslatorType = CopyStr(item.TranslatorType);
-			Url = ToUri(item.Url);
+			Url = CopyStr(item.Url);
 			UtcOffset = item.UtcOffset ?? UtcOffset;
 			IsVerified = item.IsVerified;
 			WithheldInCountries = CopyStr(item.WithheldInCountries);

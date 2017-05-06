@@ -7,3 +7,6 @@ obj/
 /Liberfy.VC.db
 /Liberfy/Defines_secret.cs
 /Liberfy/obj
+/CoreTweet/Release
+/CoreTweet/Debug
+/packages/Expression.Blend.Sdk.WPF.1.0.1/lib

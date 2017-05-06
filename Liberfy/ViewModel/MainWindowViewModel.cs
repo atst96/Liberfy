@@ -10,7 +10,10 @@ namespace Liberfy.ViewModel
 	internal class MainWindow : ViewModelBase
 	{
 		public AccountSetting AccountSetting => App.AccountSetting;
+
 		public FluidCollection<Account> Accounts => AccountSetting.Accounts;
+
+		public FluidCollection<ColumnBase> Columns => App.Columns;
 
 		private bool _isAccountsLoaded;
 		public bool IsAccountsLoaded
@@ -27,19 +30,17 @@ namespace Liberfy.ViewModel
 
 			if (Accounts.Count == 0)
 			{
-				if (!DialogService.OpenSetting(page: 0, modal: true))
+				if (!DialogService.OpenSetting(page: 0, isModal: true))
 				{
 					DialogService.Invoke(ViewState.Close);
 					return;
 				}
 			}
 
-			System.Diagnostics.Debug.WriteLine("Account load start");
-
 			await Task.WhenAll(
 				Accounts.Select(a => Task.Run(() =>
 				{
-					if (true)
+					if (a.AutomaticallyLogin)
 					{
 						a.IsLoading = true;
 
@@ -53,15 +54,12 @@ namespace Liberfy.ViewModel
 				})));
 
 			IsAccountsLoaded = true;
-			System.Diagnostics.Debug.WriteLine("Account loaded");
 		}
-
-		public ClientContent Client { get; } = App.Client;
 
 		private Command _tweetCommand;
 		public Command TweetCommand
 		{
-			get => _tweetCommand ?? (_tweetCommand = new DelegateCommand(Tweet));
+			get => _tweetCommand ?? (_tweetCommand = RegisterReleasableCommand(Tweet));
 		}
 
 		private void Tweet()
@@ -72,7 +70,7 @@ namespace Liberfy.ViewModel
 		private Command _showSettingDialog;
 		public Command ShowSettingDialog
 		{
-			get => _showSettingDialog ?? (_showSettingDialog = new DelegateCommand(() => DialogService.OpenSetting()));
+			get => _showSettingDialog ?? (_showSettingDialog = RegisterReleasableCommand(() => DialogService.OpenSetting()));
 		}
 
 		internal override bool CanClose()

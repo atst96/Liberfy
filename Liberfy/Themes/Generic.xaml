@@ -45,4 +45,10 @@
 	<SolidColorBrush x:Key="PopupBorderBrush" Color="#aaa" />
 	<SolidColorBrush x:Key="PopupBackgroundBrush" Color="#f8f8f8" />
 
+	<SolidColorBrush x:Key="ColumnBackground" Color="#AFFF" />
+	<SolidColorBrush x:Key="ColumnBorderBrush" Color="#FFE5EBF0" />
+	<SolidColorBrush x:Key="ColumnHeaderForeground" Color="#222" />
+	<SolidColorBrush x:Key="ColumnHeaderBackground" Color="#1555" />
+	<SolidColorBrush x:Key="ColumnHeaderBorderBrush" Color="#2333" />
+
 </ResourceDictionary>

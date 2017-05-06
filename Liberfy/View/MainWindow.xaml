@@ -5,54 +5,223 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="clr-namespace:Liberfy.ViewModel"
+	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 	xmlns:local="clr-namespace:Liberfy"
 	mc:Ignorable="d" FontFamily="Meiryo"
 	Title="MainWindow" Height="350" Width="525"
+	xmlns:app="clr-namespace:Liberfy"
 	DataContext="{local:ViewModelConnector {x:Type vm:MainWindow}, IsMainView=True}">
-	
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="auto" />
-			<RowDefinition />
-		</Grid.RowDefinitions>
-		
-		<!--#region Toolbar -->
-		
+	<Window.Resources>
+		<DataTemplate x:Key="AccountTemplate" DataType="{x:Type local:Account}">
+			<Border
+				x:Name="border"
+				Padding="12"
+				ClipToBounds="True"
+				BorderThickness="0 0 0 1"
+				Background="Transparent"
+				BorderBrush="#ddd"
+				d:DesignWidth="360">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="auto" />
+						<ColumnDefinition Width="auto" />
+						<ColumnDefinition />
+						<ColumnDefinition Width="auto" />
+					</Grid.ColumnDefinitions>
+
+					<Image
+						Margin="0 0 8 0" Width="36" Height="36"
+						Source="{Binding Info.ProfileImageUrl, IsAsync=True}" />
+
+					<TextBlock
+						Grid.Column="1"
+						Margin="0 4 4 4"
+						Text="&#xf023;" FontSize="18"
+						Style="{StaticResource ToolBarIconText}"
+						local:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=OneWay}" />
+
+					<StackPanel 
+						Grid.Column="2" 
+						VerticalAlignment="Center">
+						<TextBlock Text="{Binding Info.Name, Mode=OneWay}" FontWeight="Bold" />
+						<TextBlock Text="{Binding Info.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+					</StackPanel>
+
+					<StackPanel
+						Grid.Column="3"
+						Opacity="0.6"
+						x:Name="accountFuncPanel"
+						Orientation="Horizontal"
+						VerticalAlignment="Center">
+						<Button
+							Background="#F333"
+							CommandParameter="{Binding}"
+							Command="{Binding DataContext.AccountTweetCommand, Mode=OneTime,
+								RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, AncestorLevel=1}}"
+							Style="{StaticResource SimpleButtonStyle}">
+							<TextBlock Text="&#xf1d8;" Style="{StaticResource ToolBarIconText}" />
+						</Button>
+					</StackPanel>
+				</Grid>
+			</Border>
+		</DataTemplate>
+
+		<DataTemplate x:Key="ColumnTemplate" DataType="{x:Type app:ColumnBase}">
+			<Border
+				ClipToBounds="True"
+				x:Name="mainBorder"
+				BorderThickness="1"
+				Background="{DynamicResource ColumnBackground}"
+				BorderBrush="{DynamicResource ColumnBorderBrush}">
+				<DockPanel>
+					<Border
+						MinHeight="34"
+						DockPanel.Dock="Top"
+						BorderThickness="0 0 0 1"
+						Background="{DynamicResource ColumnHeaderBackground}"
+						BorderBrush="{DynamicResource ColumnHeaderBorderBrush}">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="auto" />
+								<RowDefinition Height="auto" />
+							</Grid.RowDefinitions>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="auto" />
+								<ColumnDefinition Width="auto" />
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="auto" />
+								<ColumnDefinition Width="auto" />
+							</Grid.ColumnDefinitions>
+
+							<Path
+								x:Name="PART_Icon"
+								Grid.Column="1"
+								Margin="6 0"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"
+								Width="16" Height="16"
+								Fill="#444" Stretch="Fill" />
+
+							<!-- Column title -->
+							<TextBlock
+								Grid.Column="2"
+								TextWrapping="NoWrap"
+								TextTrimming="CharacterEllipsis"
+								VerticalAlignment="Center"
+								Margin="6" FontSize="16"
+								Text="{Binding Title, Mode=TwoWay}"
+								Foreground="{DynamicResource ColumnHeaderForeground}" />
+
+							<Image
+								Grid.Column="3"
+								Margin="0 0 6 0"
+								Width="28" Height="28"
+								Source="{Binding Account.Info.ProfileImageUrl, Mode=OneWay}" />
+							
+							<ToggleButton
+								x:Name="paneToggle"
+								Grid.Column="4" Padding="6 4"
+								IsChecked="{Binding IsDetailOpen, Mode=TwoWay}">
+							</ToggleButton>
+
+							<Grid
+								Grid.Row="1" Grid.ColumnSpan="5"
+								app:ElementBehavior.Visible="{Binding IsChecked, ElementName=paneToggle}">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="auto" />
+									<RowDefinition Height="auto" />
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition />
+									<ColumnDefinition Width="auto" />
+								</Grid.ColumnDefinitions>
+							</Grid>
+						</Grid>
+					</Border>
+
+					<Label
+						DockPanel.Dock="Top"
+						BorderThickness="0 0 0 1"
+						Content="test"/>
+
+					<ScrollViewer
+						VerticalScrollBarVisibility="Auto">
+						<app:TimelineView
+							ItemsSource="{Binding Items, Mode=OneTime}"/>
+					</ScrollViewer>
+				</DockPanel>
+			</Border>
+		</DataTemplate>
+	</Window.Resources>
+
+	<DockPanel LastChildFill="True">
+
 		<Border
+			DockPanel.Dock="Top"
 			Height="32" ToolBarTray.IsLocked="True"
 			Style="{StaticResource ToolBarBorderStyle}">
 			<Grid>
 				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="auto" />
 					<ColumnDefinition />
 					<ColumnDefinition Width="auto" />
 				</Grid.ColumnDefinitions>
 
-				<!--<ToolBar
-					ItemsSource="{Binding Client.Pages, Mode=OneTime}">
-					<ToolBar.ItemTemplate>
-						<DataTemplate DataType="{x:Type local:PageItem}">
-							<Button Style="{DynamicResource {x:Static ToolBar.ButtonStyleKey}}">
-								<TextBlock Text="{Binding Title, Mode=OneWay}" />
-							</Button>
-						</DataTemplate>
-					</ToolBar.ItemTemplate>
-				</ToolBar>-->
-				
-				<ToolBar Grid.Column="1">
+				<xctk:DropDownButton
+					Style="{StaticResource ToolBarDropDownButton}">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="&#xf2bd;" FontSize="16" FontFamily="{StaticResource FontAwesome}" />
+						<TextBlock Text="アカウント" Margin="4 0 0 0" />
+					</StackPanel>
+					<xctk:DropDownButton.DropDownContent>
+						<ScrollViewer
+							VerticalScrollBarVisibility="Auto">
+							<ItemsControl
+								Width="260"
+								ItemsSource="{Binding Accounts, Mode=OneTime}"
+								ItemTemplate="{StaticResource AccountTemplate}" />
+						</ScrollViewer>
+					</xctk:DropDownButton.DropDownContent>
+				</xctk:DropDownButton>
+
+				<ToolBar Grid.Column="2">
 					<Button
-						Content="ツイート"
-						Command="{Binding TweetCommand, Mode=OneTime}" />
-					
+						ToolTip="ツイートする"
+						Command="{Binding TweetCommand, Mode=OneTime}">
+						<TextBlock Text="&#xf1d8;" Style="{StaticResource ToolBarIconText}" />
+					</Button>
+
 					<Button 
-						Content="設定を開く"
-						Command="{Binding ShowSettingDialog, Mode=OneTime}" />
+						ToolTip="設定を開く"
+						Command="{Binding ShowSettingDialog, Mode=OneTime}">
+						<TextBlock FontSize="19" Text="&#xf013;" Style="{StaticResource ToolBarIconText}" />
+					</Button>
 				</ToolBar>
 			</Grid>
 		</Border>
 
-		<Border Grid.Row="1"/>
+		<ScrollViewer
+			x:Name="scrollViewer"
+			VerticalScrollBarVisibility="Hidden"
+			HorizontalScrollBarVisibility="Auto">
+			<ItemsControl
+				Height="{Binding ViewportHeight, ElementName=scrollViewer}"
+				ItemsSource="{Binding Columns, Mode=OneTime}"
+				ItemTemplate="{StaticResource ColumnTemplate}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Horizontal" Margin="3" />
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemContainerStyle>
+					<Style TargetType="{x:Type ContentPresenter}">
+						<Setter Property="Width" Value="350" />
+						<Setter Property="Margin" Value="2" />
+						<Setter Property="Focusable" Value="True" />
+					</Style>
+				</ItemsControl.ItemContainerStyle>
+			</ItemsControl>
+		</ScrollViewer>
 
-		<!--#endregion-->
-		
-	</Grid>
+	</DockPanel>
 </Window>

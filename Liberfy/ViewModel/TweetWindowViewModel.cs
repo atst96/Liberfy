@@ -21,12 +21,23 @@ namespace Liberfy.ViewModel
 		private static readonly Validator tweetValidator = new Validator();
 		protected static Setting Setting => App.Setting;
 
+		public FluidCollection<Account> Accounts => App.AccountSetting.Accounts;
+
+		private Account _selectedAccount;
+		public Account SelectedAccount
+		{
+			get => _selectedAccount;
+			set => SetProperty(ref _selectedAccount, value);
+		}
+
 		private const int MaxTweetLength = 140;
 		private const int MediaUrlLength = 23;
 
 		public TweetWindow()
 		{
 			Media = new FluidCollection<UploadMedia>();
+
+			SelectedAccount = Accounts.First();
 
 			UpdateCanPost();
 		}
@@ -458,7 +469,7 @@ namespace Liberfy.ViewModel
 		private Command _insertNowPlayingTextCommand;
 		public Command InsertNowPlayingTextCommand
 		{
-			get => _insertNowPlayingTextCommand ?? (_insertNowPlayingTextCommand = new DelegateCommand(InsertNowPlaying));
+			get => _insertNowPlayingTextCommand ?? (_insertNowPlayingTextCommand = RegisterReleasableCommand(InsertNowPlaying));
 		}
 
 		private void InsertNowPlaying()
@@ -493,7 +504,7 @@ namespace Liberfy.ViewModel
 		private Command _pasteImageCommand;
 		public Command PasteImageCommand
 		{
-			get => _pasteImageCommand ?? (_pasteImageCommand = new DelegateCommand(OnImagePasted, CanImagePaste));
+			get => _pasteImageCommand ?? (_pasteImageCommand = RegisterReleasableCommand(OnImagePasted, CanImagePaste));
 		}
 
 		private bool CanImagePaste(object obj)

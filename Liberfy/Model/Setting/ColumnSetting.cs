@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Liberfy
 {
 	[JsonObject]
-	class ColumnSetting
+	internal class ColumnSetting
 	{
 		[JsonProperty("type")]
 		public ColumnType Type { get; set; }
@@ -41,5 +41,14 @@ namespace Liberfy
 			UserId = account.Id;
 			Properties = properties;
 		}
+
+		private ColumnSetting Clone(Account account)
+		{
+			return new ColumnSetting(Type, account, _properties);
+		}
+
+		public ColumnBase ToColumn() => ColumnBase.FromSettings(this);
+
+		public ColumnBase ToColumn(Account account) => ColumnBase.FromSettings(this.Clone(account));
 	}
 }

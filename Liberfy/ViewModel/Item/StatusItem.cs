@@ -30,7 +30,7 @@ namespace Liberfy
 
 		public UserInfo RetweetUser { get; }
 
-		public bool IsMe { get; }
+		public bool IsCurrentAccount { get; }
 
 		public StatusReaction Reaction { get; }
 
@@ -43,9 +43,9 @@ namespace Liberfy
 			Id = status.Id;
 
 			Reaction = account.GetStatusReaction(status.GetSourceId());
-
-			Reaction.IsRetweeted = status.IsRetweeted ?? false;
-			Reaction.IsFavorited = status.IsFavorited ?? false;
+			Reaction.SetAll(
+				status.IsFavorited ?? false,
+				status.IsRetweeted ?? false);
 
 			if(IsRetweet = status.RetweetedStatus != null)
 			{
@@ -75,7 +75,7 @@ namespace Liberfy
 				.Media.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity))
 				.ToArray();
 
-			IsMe = Status.User.Id == account.Id;
+			IsCurrentAccount = Status.User.Id == account.Id;
 		}
 
 		public void RaiseCreatedAtProeprtyChanged()

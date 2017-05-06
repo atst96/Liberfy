@@ -65,12 +65,12 @@ namespace Liberfy
 			if (valueTarget?.TargetObject is Window view)
 			{
 				_view = view;
-				RegisterEvents();
-
 				if (RegisterDialogService)
 				{
 					dialogService.RegisterView(view, IsMainView);
 				}
+
+				RegisterEvents();
 			}
 
 			return _viewModel;
@@ -106,11 +106,6 @@ namespace Liberfy
 
 			if (_viewModel != null)
 			{
-				if (RegisterDialogService)
-				{
-					dialogService.UnregisterView(_view);
-				}
-
 				_viewModel.OnClosed();
 				_viewModel.Dispose();
 			}
