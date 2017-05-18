@@ -25,5 +25,16 @@ namespace Liberfy
 				item.Dispose();
 			}
 		}
+
+		public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+		{
+			if (action == null)
+				return;
+
+			foreach(var item in collection)
+			{
+				action(item);
+			}
+		}
 	}
 }

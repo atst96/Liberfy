@@ -22,40 +22,6 @@
 		<Duration x:Key="AnimationDuration">0:0:0.5</Duration>
 		<CubicEase x:Key="AnimationEase" />
 
-		<Storyboard
-			x:Key="MediaPanelOpenStoryboard"
-			Storyboard.TargetName="MediaPanel">
-			<DoubleAnimation
-				Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
-				To="0" Duration="0:0:0.6" EasingFunction="{StaticResource AnimationEase}" />
-			<DoubleAnimation
-				Storyboard.TargetProperty="Opacity"
-				To="1.0" Duration="0:0:0.6" EasingFunction="{StaticResource AnimationEase}" />
-			<ObjectAnimationUsingKeyFrames
-				Storyboard.TargetProperty="Visibility">
-				<DiscreteObjectKeyFrame
-					KeyTime="0:0:0"
-					Value="{x:Static Visibility.Visible}" />
-			</ObjectAnimationUsingKeyFrames>
-		</Storyboard>
-
-		<Storyboard
-			x:Key="MediaPanelCloseStoryboard"
-			Storyboard.TargetName="MediaPanel">
-			<DoubleAnimation
-				Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
-				To="-40" Duration="0:0:0.6" EasingFunction="{StaticResource AnimationEase}" />
-			<DoubleAnimation
-				Storyboard.TargetProperty="Opacity"
-				To="0.0" Duration="0:0:0.6" EasingFunction="{StaticResource AnimationEase}" />
-			<ObjectAnimationUsingKeyFrames
-				Storyboard.TargetProperty="Visibility">
-				<DiscreteObjectKeyFrame
-					KeyTime="0:0:0.6"
-					Value="{x:Static Visibility.Collapsed}" />
-			</ObjectAnimationUsingKeyFrames>
-		</Storyboard>
-
 		<Style x:Key="MediaFunctionButtonStyle" TargetType="{x:Type Button}">
 			<Setter Property="OverridesDefaultStyle" Value="False" />
 			<Setter Property="SnapsToDevicePixels" Value="True" />
@@ -99,9 +65,10 @@
 				ClipToBounds="True"
 				Background="Transparent"
 				BorderThickness="0 0 0 1"
-				DataContext="{Binding Info, Mode=OneTime}"
-				HorizontalContentAlignment="Left">
-				<Grid>
+				HorizontalContentAlignment="Left"
+				CommandParameter="{Binding Mode=OneTime}"
+				Command="{Binding DataContext.SelectAccountCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
+				<Grid DataContext="{Binding Info, Mode=OneTime}">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="auto" />
 						<ColumnDefinition Width="auto" />
@@ -141,12 +108,16 @@
 			DescriptionMessage="{Binding DropDescriptionMessage, Mode=OneWay}"/>
 	</i:Interaction.Behaviors>
 
-	<DockPanel>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="auto" />
+			<RowDefinition Height="auto" />
+			<RowDefinition />
+		</Grid.RowDefinitions>
 		<Border 
 			Panel.ZIndex="100"
 			DockPanel.Dock="Top" Style="{StaticResource ToolBarBorderStyle}">
 			<DockPanel>
-				
 				<StackPanel
 					DockPanel.Dock="Right"
 					Orientation="Horizontal">
@@ -292,24 +263,24 @@
 
 					<StackPanel 
 						Orientation="Horizontal"
-						DataContext="{Binding SelectedAccount.Info, Mode=TwoWay}">
+						DataContext="{Binding SelectedAccount, Mode=TwoWay}">
 						<Image
 							Width="18" Height="18"
-							Source="{Binding ProfileImageUrl, IsAsync=True, Mode=TwoWay}" />
+							Source="{Binding Info.ProfileImageUrl, IsAsync=True, Mode=TwoWay}" />
 
 						<TextBlock
 							Margin="2 2 0 -2"
 							VerticalAlignment="Center"
 							Text="&#xf023;" FontSize="18"
 							Style="{StaticResource ToolBarIconText}"
-							app:ElementBehavior.Visible="{Binding IsProtected, Mode=TwoWay}"/>
+							app:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=TwoWay}"/>
 
 						<TextBlock
 							Margin="4 2 0 -2"
 							TextWrapping="NoWrap"
 							VerticalAlignment="Center"
 							TextTrimming="CharacterEllipsis"
-							Text="{Binding ScreenName, Mode=TwoWay, StringFormat='{}@{0}'}" />
+							Text="{Binding Info.ScreenName, Mode=TwoWay, StringFormat='{}@{0}'}" />
 					</StackPanel>
 				</xctk:DropDownButton>
 				
@@ -320,163 +291,151 @@
 		<Border 
 			Panel.ZIndex="1"
 			x:Name="MediaPanel"
-			Height="107"
-			DockPanel.Dock="Top"
+			Height="122"
+			Grid.Row="1"
 			Background="#eee"
 			BorderBrush="#ccc"
 			BorderThickness="0 0 0 1"
-			Opacity="0.0"
-			Visibility="Collapsed"
-			RenderTransformOrigin="0.5 0.5">
-			<Border.RenderTransform>
-				<TranslateTransform Y="-40" />
-			</Border.RenderTransform>
-			<i:Interaction.Triggers>
-				<ei:DataTrigger Binding="{Binding Media.HasItems, Mode=OneWay}" Value="true">
-					<ei:ControlStoryboardAction
-						ControlStoryboardOption="Play" 
-						Storyboard="{StaticResource MediaPanelOpenStoryboard}"/>
+			app:ElementBehavior.Visible="{Binding Media.HasItems, Mode=OneWay}">
+			<DockPanel>
+				<CheckBox
+					DockPanel.Dock="Top" Margin="4"
+					IsChecked="{Binding IsSensitiveMedia, Mode=TwoWay}"
+					Content="不適切な表現を含む画像であることを告示する"/>
+				
+				<ListBox
+					Padding="0"
+					BorderThickness="0"
+					Background="Transparent"
+					VerticalAlignment="Center"
+					HorizontalAlignment="Stretch"
+					VirtualizingPanel.ScrollUnit="Pixel"
+					ScrollViewer.CanContentScroll="False"
+					ItemsSource="{Binding Media, Mode=OneTime}">
+					<ListBox.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal" />
+						</ItemsPanelTemplate>
+					</ListBox.ItemsPanel>
+					<ListBox.ItemTemplate>
+						<DataTemplate DataType="{x:Type vm:UploadMedia}">
+							<Grid Background="White">
+								<Grid.RowDefinitions>
+									<RowDefinition />
+									<RowDefinition />
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition />
+									<ColumnDefinition />
+								</Grid.ColumnDefinitions>
 
-				</ei:DataTrigger>
+								<Image 
+									Grid.RowSpan="2"
+									Grid.ColumnSpan="2"
+									Stretch="UniformToFill"
+									RenderOptions.BitmapScalingMode="HighQuality"
+									Source="{Binding PreviewImage, Mode=OneTime}" />
 
-				<ei:DataTrigger Binding="{Binding Media.HasItems, Mode=OneWay}" Value="false">
-					<ei:ControlStoryboardAction
-						ControlStoryboardOption="Play"
-						Storyboard="{StaticResource MediaPanelCloseStoryboard}" />
-				</ei:DataTrigger>
-			</i:Interaction.Triggers>
+								<Label
+									Grid.Row="1"
+									Grid.Column="1"
+									Foreground="#fff"
+									Background="#8aaa"
+									HorizontalAlignment="Right"
+									VerticalAlignment="Bottom"
+									Padding="4 2" FontWeight="Bold"
+									Content="{Binding ViewExtension, Mode=OneTime}"/>
 
-			<ListBox
-				Padding="0"
-				BorderThickness="0"
-				Background="Transparent"
-				VerticalAlignment="Center"
-				HorizontalAlignment="Stretch"
-				VirtualizingPanel.ScrollUnit="Pixel"
-				ScrollViewer.CanContentScroll="False"
-				ItemsSource="{Binding Media, Mode=OneTime}">
-				<ListBox.ItemsPanel>
-					<ItemsPanelTemplate>
-						<StackPanel Orientation="Horizontal" />
-					</ItemsPanelTemplate>
-				</ListBox.ItemsPanel>
-				<ListBox.ItemTemplate>
-					<DataTemplate DataType="{x:Type vm:UploadMedia}">
-						<Grid Background="White">
-							<Grid.RowDefinitions>
-								<RowDefinition />
-								<RowDefinition />
-							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition />
-								<ColumnDefinition />
-							</Grid.ColumnDefinitions>
+								<ProgressBar
+									x:Name="progressBar"
+									Visibility="Collapsed"
+									Height="7"
+									Minimum="0.0"
+									Maximum="1.0"
+									Value="{Binding UploadProgress, Mode=OneWay}"
+									Grid.ColumnSpan="2"
+									HorizontalAlignment="Stretch"
+									VerticalAlignment="Top"
+									app:ElementBehavior.Visible="{Binding UseChunkedUpload, Mode=OneWay}"/>
 
-							<Image 
-								Grid.RowSpan="2"
-								Grid.ColumnSpan="2"
-								Stretch="UniformToFill"
-								RenderOptions.BitmapScalingMode="HighQuality"
-								Source="{Binding PreviewImage, Mode=OneTime}" />
+								<Button
+									x:Name="removeButton"
+									Grid.Row="1"
+									Padding="4 2"
+									Content="削除"
+									HorizontalAlignment="Stretch"
+									VerticalAlignment="Bottom"
+									Command="{Binding DataContext.RemoveMediaCommand, Mode=OneTime, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
+									CommandParameter="{Binding}"
+									Style="{StaticResource MediaFunctionButtonStyle}"/>
 
-							<Label
-								Grid.Row="1"
-								Grid.Column="1"
-								Foreground="#fff"
-								Background="#8aaa"
-								HorizontalAlignment="Right"
-								VerticalAlignment="Bottom"
-								Padding="4 2" FontWeight="Bold"
-								Content="{Binding ViewExtension, Mode=OneTime}"/>
+								<Border
+									Grid.RowSpan="2"
+									Grid.ColumnSpan="2"
+									Background="#B000"
+									app:ElementBehavior.Visible="{Binding IsUploading, Mode=OneWay}">
+									<TextBlock
+										Margin="4"
+										FontSize="12"
+										Foreground="#fff"
+										TextWrapping="Wrap"
+										TextTrimming="None"
+										VerticalAlignment="Center"
+										HorizontalAlignment="Center"
+										Text="アップロード中..." />
+								</Border>
+							</Grid>
 
-							<ProgressBar
-								x:Name="progressBar"
-								Visibility="Collapsed"
-								Height="7"
-								Minimum="0.0"
-								Maximum="1.0"
-								Value="{Binding UploadProgress, Mode=OneWay}"
-								Grid.ColumnSpan="2"
-								HorizontalAlignment="Stretch"
-								VerticalAlignment="Top" />
+							<DataTemplate.Triggers>
+								<DataTrigger Binding="{Binding IsTweetPosting, Mode=OneWay}" Value="true">
+									<Setter TargetName="removeButton" Property="Visibility" Value="{x:Static Visibility.Collapsed}" />
+									<Setter TargetName="progressBar" Property="Visibility" Value="{x:Static Visibility.Visible}" />
+								</DataTrigger>
+							</DataTemplate.Triggers>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+					<ListBox.ItemContainerStyle>
+						<Style TargetType="{x:Type ListBoxItem}">
+							<Setter Property="Margin" Value="0" />
+							<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+							<Setter Property="VerticalContentAlignment" Value="Stretch" />
+							<Setter Property="Template">
+								<Setter.Value>
+									<ControlTemplate TargetType="{x:Type ListBoxItem}">
+										<Border
+											x:Name="border"
+											Margin="6"
+											Width="100" Height="75"
+											BorderThickness="1"
+											BorderBrush="#bbb">
+											<Border.Effect>
+												<DropShadowEffect
+													BlurRadius="5"
+													Direction="315" 
+													ShadowDepth="1"
+													Opacity="0.5" />
+											</Border.Effect>
+											<ContentPresenter
+												HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+												VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+										</Border>
 
-							<Button
-								x:Name="removeButton"
-								Grid.Row="1"
-								Padding="4 2"
-								Content="削除"
-								HorizontalAlignment="Stretch"
-								VerticalAlignment="Bottom"
-								Command="{Binding DataContext.RemoveMediaCommand, Mode=OneTime, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
-								CommandParameter="{Binding}"
-								Style="{StaticResource MediaFunctionButtonStyle}"/>
+										<ControlTemplate.Triggers>
+											<Trigger Property="IsMouseOver" Value="true">
+												<Setter TargetName="border" Property="BorderBrush" Value="#aaa" />
+											</Trigger>
 
-							<Button
-								x:Name="retryUploadButton"
-								Grid.Row="1"
-								Padding="4 2"
-								Content="再試行"
-								HorizontalAlignment="Center"
-								VerticalAlignment="Center"
-								Visibility="Collapsed"
-								Command="{Binding DataContext.RemoveMediaCommand, Mode=OneTime, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
-								CommandParameter="{Binding}"
-								Style="{StaticResource MediaFunctionButtonStyle}"/>
-						</Grid>
-
-						<DataTemplate.Triggers>
-							<DataTrigger Binding="{Binding IsUploading}" Value="true">
-								<Setter TargetName="removeButton" Property="Visibility" Value="{x:Static Visibility.Collapsed}" />
-								<Setter TargetName="progressBar" Property="Visibility" Value="{x:Static Visibility.Visible}" />
-							</DataTrigger>
-
-							<DataTrigger Binding="{Binding IsUploadFailed}" Value="true">
-								<Setter TargetName="retryUploadButton" Property="Visibility" Value="{x:Static Visibility.Visible}" />
-							</DataTrigger>
-						</DataTemplate.Triggers>
-					</DataTemplate>
-				</ListBox.ItemTemplate>
-				<ListBox.ItemContainerStyle>
-					<Style TargetType="{x:Type ListBoxItem}">
-						<Setter Property="Margin" Value="0" />
-						<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-						<Setter Property="VerticalContentAlignment" Value="Stretch" />
-						<Setter Property="Template">
-							<Setter.Value>
-								<ControlTemplate TargetType="{x:Type ListBoxItem}">
-									<Border
-										x:Name="border"
-										Margin="6"
-										Width="100" Height="75"
-										BorderThickness="1"
-										BorderBrush="#bbb">
-										<Border.Effect>
-											<DropShadowEffect
-												BlurRadius="5"
-												Direction="315" 
-												ShadowDepth="1"
-												Opacity="0.5" />
-										</Border.Effect>
-										<ContentPresenter
-											HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-											VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-									</Border>
-
-									<ControlTemplate.Triggers>
-										<Trigger Property="IsMouseOver" Value="true">
-											<Setter TargetName="border" Property="BorderBrush" Value="#aaa" />
-										</Trigger>
-
-										<Trigger Property="IsSelected" Value="true">
-											<Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
-										</Trigger>
-									</ControlTemplate.Triggers>
-								</ControlTemplate>
-							</Setter.Value>
-						</Setter>
-					</Style>
-				</ListBox.ItemContainerStyle>
-			</ListBox>
+											<Trigger Property="IsSelected" Value="true">
+												<Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+											</Trigger>
+										</ControlTemplate.Triggers>
+									</ControlTemplate>
+								</Setter.Value>
+							</Setter>
+						</Style>
+					</ListBox.ItemContainerStyle>
+				</ListBox>
+			</DockPanel>
 		</Border>
 
 		<TextBox
@@ -488,6 +447,7 @@
 			BorderThickness="0"
 			TextWrapping="Wrap"
 			AcceptsReturn="True"
+			Grid.Row="2"
 			Text="{Binding Tweet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 			IsReadOnly="{Binding IsEditable, Mode=OneWay, Converter={StaticResource BoolInverter}}">
 			<i:Interaction.Behaviors>
@@ -502,5 +462,27 @@
 					DescriptionMessage="{Binding DropDescriptionMessage, Mode=OneWay}"/>
 			</i:Interaction.Behaviors>
 		</TextBox>
-	</DockPanel>
+
+		<Border
+			Grid.Row="2"
+			Background="#A000"
+			app:ElementBehavior.Visible="{Binding IsTweetPosting, Mode=OneWay}">
+			<TextBlock 
+				VerticalAlignment="Center"
+				HorizontalAlignment="Center"
+				FontSize="18"
+				Foreground="White"
+				TextTrimming="None"
+				TextWrapping="Wrap"
+				TextAlignment="Center"
+				Text="{Binding UploadStatusText, Mode=OneWay}">
+				<TextBlock.Effect>
+					<DropShadowEffect
+						BlurRadius="5"
+						ShadowDepth="1"
+						Direction="270" />
+				</TextBlock.Effect>
+			</TextBlock>
+		</Border>
+	</Grid>
 </Window>

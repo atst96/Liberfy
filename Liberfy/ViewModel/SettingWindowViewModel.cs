@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 
 namespace Liberfy.ViewModel
 {
-	class SettingWindow : ViewModelBase
+	internal class SettingWindow : ViewModelBase
 	{
 		public SettingWindow() : base()
 		{

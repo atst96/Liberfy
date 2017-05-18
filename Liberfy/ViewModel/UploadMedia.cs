@@ -8,39 +8,35 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using static Liberfy.Defines;
+using System.Drawing;
 
 namespace Liberfy.ViewModel
 {
 	internal class UploadMedia : NotificationObject, IProgress<UploadChunkedProgressInfo>, IDisposable
 	{
-		public UploadMedia(BitmapSource bmpSource)
+		private UploadMedia(BitmapSource bmpSource, MediaType mediaType, string ext)
 		{
-			var encoder = new PngBitmapEncoder();
-			SourceStream = new MemoryStream();
+			var pngEnc = new PngBitmapEncoder();
+			var memStr = new MemoryStream();
+
+			// 画像データをストリームに保存
 			PreviewImage = new BitmapImage();
+			pngEnc.Frames.Add(BitmapFrame.Create(bmpSource));
+			pngEnc.Save(memStr);
+			pngEnc = null;
 
-			encoder.Frames.Add(BitmapFrame.Create(bmpSource));
-			encoder.Save(SourceStream);
-			encoder = null;
-
-			SourceStream.Position = 0;
+			// ストリームからプレビュー画像の生成
+			memStr.Position = 0;
+			SourceStream = memStr;
 			PreviewImage.BeginInit();
-			PreviewImage.StreamSource = SourceStream;
+			PreviewImage.StreamSource = memStr;
 			PreviewImage.EndInit();
 
-			MediaType = MediaType.Image;
-			ViewExtension = "CLIP";
+			MediaType = mediaType;
+			ViewExtension = ext;
 		}
 
-		public UploadMedia(ArtworkItem artwork)
-		{
-			ViewExtension = "ARTW";
-			MediaType = MediaType.Image;
-			PreviewImage = artwork.Image;
-			SourceStream = artwork.Image.StreamSource;
-		}
-
-		public UploadMedia(string filePath)
+		private UploadMedia(string filePath)
 		{
 			var ext = Path.GetExtension(filePath).ToLower();
 
@@ -52,6 +48,7 @@ namespace Liberfy.ViewModel
 			else if (VideoExtensions.Contains(ext))
 			{
 				MediaType = MediaType.VideoFile;
+				UseChunkedUpload = true;
 			}
 			else if (ImageExtensions.Contains(ext))
 			{
@@ -78,11 +75,22 @@ namespace Liberfy.ViewModel
 			}
 		}
 
-		private static bool IsAnimatedGif(string filename)
+		public static UploadMedia FromBitmapSource(BitmapSource bmpSource, string ext = "CLIP")
 		{
-			return System.Drawing.ImageAnimator.CanAnimate(
-				System.Drawing.Image.FromFile(filename));
+			return new UploadMedia(bmpSource, MediaType.Image, ext);
 		}
+
+		public static UploadMedia FromArtwork(ArtworkItem artwork)
+		{
+			return new UploadMedia(artwork.Image, MediaType.Image, "ARTW");
+		}
+
+		public static UploadMedia FromFile(string filepath)
+		{
+			return new UploadMedia(filepath);
+		}
+
+		private static bool IsAnimatedGif(string filename) => ImageAnimator.CanAnimate(Image.FromFile(filename));
 
 		public string FileName { get; private set; }
 
@@ -94,88 +102,105 @@ namespace Liberfy.ViewModel
 
 		public BitmapImage PreviewImage { get; private set; }
 
+		public long? UploadId { get; private set; }
+
 		private string _description;
 		public string Description
 		{
 			get => _description;
-			set => SetProperty(ref _description, value);
+			private set => SetProperty(ref _description, value);
 		}
 
 		private double _uploadProgress;
 		public double UploadProgress
 		{
 			get => _uploadProgress;
-			set => SetProperty(ref _uploadProgress, value);
+			private set => SetProperty(ref _uploadProgress, value);
 		}
 
 		private bool _isUploadFailed;
 		public bool IsUploadFailed
 		{
 			get => _isUploadFailed;
-			set => SetProperty(ref _isUploadFailed, value);
+			private set => SetProperty(ref _isUploadFailed, value);
 		}
 
-		private void ClearState()
+		private bool _isUploading;
+		public bool IsUploading
+		{
+			get => _isUploading;
+			private set => SetProperty(ref _isUploading, value);
+		}
+
+		private bool _isTweetPosting;
+		public bool IsTweetPosting => _isTweetPosting;
+
+		public bool UseChunkedUpload { get; }
+
+		public Stream SourceStream { get; private set; }
+
+		private void CleanUploadState()
 		{
 			IsUploading = false;
 			UploadProgress = 0.0d;
 			IsUploadFailed = false;
 		}
 
-		public Stream SourceStream { get; private set; }
-
-		private bool _isUploading;
-		public bool IsUploading
+		public void SetIsTweetPosting(bool value)
 		{
-			get => _isUploading;
-			set => SetProperty(ref _isUploading, value);
+			SetProperty(ref _isTweetPosting, value, nameof(IsTweetPosting));
 		}
 
-		public Task<MediaUploadResult> Upload(Account account)
+		public async Task Upload(Tokens tokens)
 		{
-			UploadMediaType uploadType;
+			bool isVideoUpload = (MediaType & MediaType.Video) != 0;
 
-			if(MediaType.HasFlag(MediaType.Video))
-			{
-				uploadType = UploadMediaType.Image;
-			}
-			else
-			{
-				uploadType = UploadMediaType.Image;
-			}
+			var uploadType = isVideoUpload
+				? UploadMediaType.Video
+				: UploadMediaType.Image;
 
-			ClearState();
-			_cancellationTokenSource = new CancellationTokenSource();
+			CleanUploadState();
 
 			IsUploading = true;
 
-			return account.Tokens.Media
-				.UploadChunkedAsync(SourceStream, uploadType, null, _cancellationTokenSource.Token, this)
-				.ContinueWith(OnUploadCompalted, TaskScheduler.FromCurrentSynchronizationContext());
-		}
+			SourceStream.Position = 0;
 
-		public void Report(UploadChunkedProgressInfo report)
-		{
-			UploadProgress = report.ProcessingProgressPercent;
-		}
-
-		public MediaUploadResult OnUploadCompalted(Task<MediaUploadResult> task)
-		{
-			var result = task.Result;
-
-			IsUploading = false;
-
-			return result;
-		}
-
-		CancellationTokenSource _cancellationTokenSource;
-
-		public void CancelUpload()
-		{
-			if (!_cancellationTokenSource?.IsCancellationRequested ?? true)
+			try
 			{
-				_cancellationTokenSource.Cancel();
+				Task<MediaUploadResult> task;
+
+				if (isVideoUpload)
+				{
+					task = tokens.Media.UploadChunkedAsync(
+						media: SourceStream,
+						mediaType: uploadType,
+						progress: this);
+				}
+				else
+				{
+					task = Task.Run(() => tokens.Media.Upload(SourceStream));
+				}
+
+				var result = await task.ConfigureAwait(true);
+
+				UploadId = result.MediaId;
 			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex);
+				IsUploadFailed = true;
+			}
+			finally
+			{
+				IsUploading = false;
+			}
+		}
+
+		public bool IsAvailableUploadId() => UploadId.HasValue && UploadId > 0;
+
+		public void Report(UploadChunkedProgressInfo info)
+		{
+			UploadProgress = (double)info.BytesSent / info.TotalBytesToSend;
 		}
 
 		public void Dispose()

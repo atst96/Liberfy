@@ -37,6 +37,8 @@ namespace Liberfy
 		[DefaultValue(false)]
 		public bool IsMainView { get; set; } = false;
 
+		private static Type _providerType = typeof(IProvideValueTarget);
+
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
 			if (_instanceType != null)
@@ -60,9 +62,9 @@ namespace Liberfy
 			}
 
 			var dialogService = _viewModel.DialogService;
-			var valueTarget = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
 
-			if (valueTarget?.TargetObject is Window view)
+			if(serviceProvider.GetService(_providerType) is IProvideValueTarget valueTarget
+				&& valueTarget.TargetObject is Window view)
 			{
 				_view = view;
 				if (RegisterDialogService)

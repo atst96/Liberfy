@@ -63,7 +63,7 @@ namespace Liberfy
 			}
 		}
 
-		void ViewLoaded(object sender, RoutedEventArgs e)
+		private void ViewLoaded(object sender, RoutedEventArgs e)
 		{
 			_hWnd = new WindowInteropHelper(_view).Handle;
 			msgBox.SetWindowHandle(_hWnd);

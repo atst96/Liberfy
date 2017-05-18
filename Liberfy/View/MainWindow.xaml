@@ -141,11 +141,14 @@
 
 					<Label
 						DockPanel.Dock="Top"
-						BorderThickness="0 0 0 1"
-						Content="test"/>
+						VerticalAlignment="Top"
+						Background="#FFD1F5CD"
+						BorderBrush="#FF77D47C"
+						BorderThickness="0 0 0 1" Padding="7 10" 
+						Content="{Binding Status, Mode=TwoWay}"
+						app:ElementBehavior.Visible="{Binding HasStatus, Mode=OneWay}" />
 
-					<ScrollViewer
-						VerticalScrollBarVisibility="Auto">
+					<ScrollViewer VerticalScrollBarVisibility="Auto">
 						<app:TimelineView
 							ItemsSource="{Binding Items, Mode=OneTime}"/>
 					</ScrollViewer>

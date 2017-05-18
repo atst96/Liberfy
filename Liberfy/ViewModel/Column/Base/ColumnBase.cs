@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	enum ColumnType
+	internal enum ColumnType
 	{
-		Status = 0x01,
-		Home = Status | 0x02,
+		Status       = 0x01,
+		Home         = Status | 0x02,
 		Notification = Status | 0x04,
-		Messages = 0x08,
-		Search = Status | 0x10,
-		List = Status | 0x20,
-		Stream = Status | 0x40,
+		Messages     = 0x08,
+		Search       = Status | 0x10,
+		List         = Status | 0x20,
+		Stream       = Status | 0x40,
 	}
 
-	abstract class ColumnBase : NotificationObject
+	internal abstract class ColumnBase : NotificationObject
 	{
 		protected ColumnBase(Account account, ColumnType type, string title = null)
 		{
@@ -33,7 +33,7 @@ namespace Liberfy
 		public ColumnType Type { get; }
 
 		protected long userId;
-		
+
 		public Account Account { get; }
 
 		protected ColumnSetting Setting { get; private set; }
@@ -45,22 +45,39 @@ namespace Liberfy
 
 		protected void SetProp<T>(string propertyName, T value)
 		{
-
+			Setting.Properties[propertyName] = value;
 		}
 
 		private string _title;
 		public string Title
 		{
-			get { return _title; }
-			set { SetProperty(ref _title, value); }
+			get => _title;
+			set => SetProperty(ref _title, value);
 		}
 
 		private bool _isLoading;
 		public bool IsLoading
 		{
-			get { return _isLoading; }
-			set { SetProperty(ref _isLoading, value); }
+			get => _isLoading;
+			set => SetProperty(ref _isLoading, value);
 		}
+
+		private string _status;
+		public string Status
+		{
+			get => _status ?? string.Empty;
+			set
+			{
+				if(SetProperty(ref _status, value))
+				{
+					_hasStatus = !string.IsNullOrWhiteSpace(_status);
+					RaisePropertyChanged(nameof(_hasStatus));
+				}
+			}
+		}
+
+		private bool _hasStatus;
+		public bool HasStatus => _hasStatus;
 
 		public virtual bool IsStatusColumn { get; } = false;
 
@@ -70,7 +87,7 @@ namespace Liberfy
 
 		protected T GetPropValue<T>(ref T refValue, string propertyName, T defaultValue = null) where T : class
 		{
-			return refValue ?? (refValue = (Setting.Properties?.TryGetValue<T>(propertyName) ?? defaultValue));
+			return refValue ?? (refValue = Setting.Properties?.TryGetValue<T>(propertyName) ?? defaultValue);
 		}
 
 		protected T? GetPropValue<T>(ref T? refValue, string propertyName) where T : struct
@@ -80,7 +97,7 @@ namespace Liberfy
 
 		protected T GetPropValue<T>(ref T? refValue, string propertyName, T defaultValue) where T : struct
 		{
-			return refValue ?? (refValue = (Setting.Properties?.TryGetValue<T?>(propertyName) ?? defaultValue)).Value;
+			return refValue ?? (refValue = Setting.Properties?.TryGetValue<T?>(propertyName) ?? defaultValue).Value;
 		}
 
 		protected bool SetValueWithProp<T>(ref T refValue, T newValue, string settingPropName, [CallerMemberName] string propertyName = "")

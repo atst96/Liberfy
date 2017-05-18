@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	class DelegateCommand : Command
+	internal class DelegateCommand : Command
 	{
 		Action _execute;
 		Predicate<object> _canExecute;
 
-		public DelegateCommand(Action action)
-			: this(action, null, false) { }
+		public DelegateCommand(Action action) : this(action, null, false)
+		{
+		}
 
 		public DelegateCommand(Action action, bool hookRequerySuggested = false)
-			: this(action, null, hookRequerySuggested) { }
+			: this(action, null, hookRequerySuggested)
+		{
+		}
 
 		public DelegateCommand(Action action, Predicate<object> predicate = null, bool hookRequerySuggested = false)
 			: base(hookRequerySuggested)
@@ -45,7 +48,7 @@ namespace Liberfy
 		static bool DefaultCanExecute(object p) => true;
 	}
 
-	class DelegateCommand<T> : Command<T>
+	internal class DelegateCommand<T> : Command<T>
 	{
 		Action<T> _execute;
 		Predicate<T> _canExecute;

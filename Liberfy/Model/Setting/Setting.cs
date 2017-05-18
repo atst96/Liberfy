@@ -436,6 +436,22 @@ namespace Liberfy
 			set => SetProperty(ref _closeWindowAfterPostComplated, value);
 		}
 
+		[JsonProperty("post_reply_include_others")]
+		private bool _includeOthersAtReply;
+		public bool IncludeOtherAtReply
+		{
+			get => _includeOthersAtReply;
+			set => SetProperty(ref _includeOthersAtReply, value);
+		}
+
+		[JsonProperty("post_default_notice_sensitive_media")]
+		private bool _noticePostSensitiveMedia;
+		public bool NoticePostSensitiveMedia
+		{
+			get => _noticePostSensitiveMedia;
+			set => SetProperty(ref _noticePostSensitiveMedia, value);
+		}
+
 		#endregion
 
 		#region Network

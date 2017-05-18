@@ -697,7 +697,19 @@
 
 			<TabItem Header="投稿">
 				<StackPanel Style="{StaticResource ElementsContainerStyle}">
-					<CheckBox Content="ツイートの投稿が完了したらウィンドウを閉じる" />
+					<CheckBox
+						IsChecked="{Binding Setting.IncludeOtherAtReply, Mode=TwoWay}"
+						Content="リプライに他の会話中のアカウントを含める" />
+					
+					<CheckBox
+						IsChecked="{Binding Setting.CloseWindowAfterPostComplated, Mode=TwoWay}"
+						Content="ツイートの投稿が完了したらウィンドウを閉じる" />
+
+					<Label Content="デフォルト設定" Style="{StaticResource HeaderLabelStyle2}"/>
+
+					<CheckBox
+						IsChecked="{Binding Setting.NoticePostSensitiveMedia, Mode=TwoWay}"
+						Content="不適切な表現を含む画像および動画であることを告示する" />
 				</StackPanel>
 			</TabItem>
 
