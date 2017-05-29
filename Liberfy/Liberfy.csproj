@@ -114,6 +114,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="dev_*.cs" />
     <Compile Include="Behaviors\PasteImageBehavior.cs" />
     <Compile Include="Component\ListBoxItemFocusBehavior.cs" />
     <Compile Include="Behaviors\DragDropBehavior.cs" />
@@ -132,7 +133,6 @@
     <Compile Include="Converters\NameConverters.cs" />
     <Compile Include="DataStore.cs" />
     <Compile Include="Component\DictionaryEx.cs" />
-    <Compile Include="Defines_secret.cs" />
     <Compile Include="Extensions\ElementBehavior.cs" />
     <Compile Include="Extensions\WindowExtension.cs" />
     <Compile Include="Defines.cs" />
@@ -290,6 +290,9 @@
       <Project>{5ae5a341-5e2b-42af-946a-7043bad12817}</Project>
       <Name>CoreTweet.net45</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Develop\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

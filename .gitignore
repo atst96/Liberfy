@@ -6,6 +6,7 @@ obj/
 /Liberfy.VC.db
 /Liberfy/Defines_secret.cs
 /Liberfy/obj
+/Liberfy/dev_*.cs
 /CoreTweet/Release
 /CoreTweet/Debug
 /packages

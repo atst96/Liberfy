@@ -9,10 +9,12 @@ namespace Liberfy
 	internal static partial class Defines
 	{
 		#region Keys
+		/*
 		public const string @ConsumerKey = "*** ConsumerKey ***";
 		public const string @ConsumerSecret = "*** ConsumerSecret ***";
 		public const string @Official_ConsumerKey = "*** ConsumerKey ***";
 		public const string @Official_ConsumerSecret = "*** ConsumerSecret ***";
+		*/
 		#endregion
 
 		#region Setting files
@@ -35,12 +37,7 @@ namespace Liberfy
 		public readonly static string[] ImageExtensions =
 		{
 			// JPEG
-			".jpeg",
-			".jpg",
-			".jpe",
-			".jfif",
-			".jfi",
-			".jif",
+			".jpeg", ".jpg", ".jpe", ".jfif", ".jfi", ".jif",
 
 			// PNG
 			".png",
