@@ -291,7 +291,6 @@
 		<Border 
 			Panel.ZIndex="1"
 			x:Name="MediaPanel"
-			Height="122"
 			Grid.Row="1"
 			Background="#eee"
 			BorderBrush="#ccc"

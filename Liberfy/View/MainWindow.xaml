@@ -171,6 +171,7 @@
 				</Grid.ColumnDefinitions>
 
 				<xctk:DropDownButton
+					IsOpen="{Binding IsAccountMenuOpen, Mode=TwoWay}"
 					Style="{StaticResource ToolBarDropDownButton}">
 					<StackPanel Orientation="Horizontal">
 						<TextBlock Text="&#xf2bd;" FontSize="16" FontFamily="{StaticResource FontAwesome}" />

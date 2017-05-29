@@ -11,6 +11,51 @@
 
 	<!--#region Data templates -->
 
+	<Style x:Key="ListViewGroupItemStyle" TargetType="{x:Type GroupItem}">
+		<Setter Property="Background">
+			<Setter.Value>
+				<LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+					<GradientStop Color="#FFE6E6E6"/>
+					<GradientStop Color="#FFF1F1F1" Offset="1"/>
+				</LinearGradientBrush>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="Padding" Value="4 2" />
+		<Setter Property="BorderBrush" Value="Gainsboro" />
+		<Setter Property="BorderThickness" Value="0 0 0 1" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type GroupItem}">
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="auto" />
+							<RowDefinition />
+						</Grid.RowDefinitions>
+
+						<Border
+							TextBlock.FontWeight="Bold"
+							TextBlock.Foreground="#444"
+							Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}">
+							<ContentControl
+								TabIndex="0"
+								IsTabStop="False"
+								Margin="{TemplateBinding Padding}"
+								Content="{TemplateBinding Content}"
+								ContentTemplate="{TemplateBinding ContentTemplate}"
+								ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
+						</Border>
+
+						<ItemsPresenter
+							Grid.Row="1"
+							KeyboardNavigation.TabNavigation="Once" />
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
 	<DataTemplate DataType="{x:Type vm:AuthenticationViewModel}">
 		<Border
 			BorderThickness="2"

@@ -138,7 +138,7 @@ namespace Liberfy
 			switch (viewType)
 			{
 				case ViewType.TweetWindow:
-					return new View.TweetWindow();
+					return new View.TweetWindow(parameter);
 
 				default:
 					throw new NotSupportedException();

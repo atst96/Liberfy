@@ -13,7 +13,7 @@ using static Liberfy.Defines;
 
 namespace Liberfy
 {
-	[JsonObject(memberSerialization: MemberSerialization.OptIn)]
+	[JsonObject(MemberSerialization.OptIn)]
 	internal class Setting : NotificationObject
 	{
 		#region Generic
@@ -173,6 +173,14 @@ namespace Liberfy
 		{
 			get => _accountDefaultAutomaticallyLogin;
 			set => SetProperty(ref _accountDefaultAutomaticallyLogin, value);
+		}
+
+		[JsonProperty("account_default_automatically_load_timeline")]
+		private bool _accountDefaultAutomaticallyLoadTimeline = true;
+		public bool AccountDefaultAutomaticallyLoadTimeline
+		{
+			get => _accountDefaultAutomaticallyLoadTimeline;
+			set => SetProperty(ref _accountDefaultAutomaticallyLoadTimeline, value);
 		}
 
 		#endregion

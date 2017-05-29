@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	[JsonObject(memberSerialization: MemberSerialization.OptIn)]
+	[JsonObject(MemberSerialization.OptIn)]
 	internal class AccountSetting : NotificationObject
 	{
 		public bool ContainsId(double id)

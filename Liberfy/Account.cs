@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Liberfy
 {
 	// Jsonデータにシリアライズする変数にはJsonProperty属性が必要
-	[JsonObject(memberSerialization: MemberSerialization.OptIn)]
+	[JsonObject(MemberSerialization.OptIn)]
 	internal class Account : NotificationObject, IEquatable<Account>, IEquatable<User>
 	{
 		private string _screenName;
@@ -25,25 +25,29 @@ namespace Liberfy
 		[JsonProperty("screen_name")]
 		public string ScreenName
 		{
-			get => _isValidUserInfo ? Info.ScreenName : _screenName;
+			get => _isUserInfoUpdated ? Info.ScreenName : _screenName;
+			private set => _screenName = value;
 		}
 
 		[JsonProperty("name")]
 		public string Name
 		{
-			get => _isValidUserInfo ? Info.Name : _name;
+			get => _isUserInfoUpdated ? Info.Name : _name;
+			private set => _name = value;
 		}
 
 		[JsonProperty("profile_image_url")]
 		public string ProfileImageUrl
 		{
-			get => _isValidUserInfo ? Info.ProfileImageUrl : _profileImageUrl;
+			get => _isUserInfoUpdated ? Info.ProfileImageUrl : _profileImageUrl;
+			private set => _profileImageUrl = value;
 		}
 
 		[JsonProperty("is_protected")]
 		public bool IsProtected
 		{
-			get => _isValidUserInfo ? Info.IsProtected : _isProtected;
+			get => _isUserInfoUpdated ? Info.IsProtected : _isProtected;
+			private set => _isProtected = value;
 		}
 
 		[JsonProperty("consumer_key")]
@@ -59,14 +63,22 @@ namespace Liberfy
 		public string AccessTokenSecret { get; private set; }
 
 		[JsonProperty("automatically_login")]
-		private bool _automaticallyLogin;
+		private bool _automaticallyLogin = true;
 		public bool AutomaticallyLogin
 		{
 			get => _automaticallyLogin;
 			set => SetProperty(ref _automaticallyLogin, value);
 		}
 
-		private bool _isValidUserInfo;
+		[JsonProperty("automatically_load_timeline")]
+		private bool _automaticallyLoadTimeline = true;
+		public bool AutomaticallyLoadTimeline
+		{
+			get => _automaticallyLoadTimeline;
+			set => SetProperty(ref _automaticallyLoadTimeline, value);
+		}
+
+		private bool _isUserInfoUpdated;
 		private bool _isLoading;
 
 		public bool IsLoading
@@ -134,13 +146,13 @@ namespace Liberfy
 				_screenName = tokens.ScreenName;
 				_name = tokens.ScreenName;
 				Info = new UserInfo(this);
-				_isValidUserInfo = false;
+				_isUserInfoUpdated = false;
 			}
 			else
 			{
 				Id = (long)user.Id;
 				Info = new UserInfo(user);
-				_isValidUserInfo = true;
+				_isUserInfoUpdated = true;
 			}
 
 			SetTokens(tokens);
@@ -189,6 +201,7 @@ namespace Liberfy
 				Id = user.Id.Value;
 
 				Info.Update(user);
+				_isUserInfoUpdated = true;
 
 				IsLoggedIn = true;
 				LoginStatus = AccountLoginStatus.Success;

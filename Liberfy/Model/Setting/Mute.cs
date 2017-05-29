@@ -8,11 +8,16 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	[JsonObject]
-	sealed class Mute
+	[JsonObject(MemberSerialization.OptIn)]
+	internal sealed class Mute
 	{
+		private const StringComparison comparison = StringComparison.CurrentCultureIgnoreCase;
+		private const RegexOptions regexOptions = RegexOptions.IgnoreCase | RegexOptions.Compiled;
+
 		[JsonConstructor]
-		private Mute() { }
+		private Mute()
+		{
+		}
 
 		public Mute(MuteType type, SearchMode search, string text)
 		{
@@ -21,13 +26,14 @@ namespace Liberfy
 			Text = text;
 		}
 
-		private static readonly StringComparison comparison = StringComparison.CurrentCultureIgnoreCase;
-		private const RegexOptions regexOptions = RegexOptions.IgnoreCase | RegexOptions.Compiled;
+		public static bool Create(MuteType type, SearchMode search, string text, out Mute mute)
+		{
+			return (mute = new Mute(type, search, text)).Apply();
+		}
 
 		private Regex r;
 
-		[JsonIgnore]
-		public bool IsInvalidItem { get; private set; } = true;
+		public bool IsValidItem { get; set; }
 
 		[JsonProperty("type")]
 		public MuteType Type { get; private set; }
@@ -38,25 +44,31 @@ namespace Liberfy
 		[JsonProperty("text")]
 		public string Text { get; private set; }
 
-		public void Apply()
-		{
-			if(IsAvailable(Type, Search, Text))
-			{
-				IsInvalidItem = false;
+		[JsonProperty("enabled")]
+		public bool IsEnabled { get; set; } = true;
 
+		public bool Apply()
+		{
+			if (IsAvailable(Type, Search, Text))
+			{
 				if (Search == SearchMode.Regex)
 				{
 					r = new Regex(Text, regexOptions);
 				}
+
+				IsValidItem = true;
+
+				return true;
 			}
+			return false;
 		}
 
 		private bool MatchText(string baseText)
 		{
-			if (IsInvalidItem)
+			if (!IsValidItem)
 				return false;
 
-			switch(Search)
+			switch (Search)
 			{
 				case SearchMode.Partial:
 					return baseText.IndexOf(Text, comparison) > 0;
@@ -85,17 +97,13 @@ namespace Liberfy
 				&& (search != SearchMode.Regex || IsEnableRegex(text));
 		}
 
-		public static bool IsAvailable(Mute mute)
-		{
-			return IsAvailable(mute.Type, mute.Search, mute.Text);
-		}
-
 		private static bool IsEnableRegex(string text)
 		{
 			Regex regex;
+
 			try
 			{
-				regex = new Regex(text, RegexOptions.IgnoreCase);
+				regex = new Regex(text, regexOptions ^ RegexOptions.Compiled);
 				return true;
 			}
 			catch
@@ -109,7 +117,7 @@ namespace Liberfy
 		}
 	}
 
-	enum MuteType : uint
+	internal enum MuteType : uint
 	{
 		Content = 0,
 		UserId = 1,
@@ -118,7 +126,7 @@ namespace Liberfy
 		Client = 4,
 	}
 
-	enum SearchMode : uint
+	internal enum SearchMode : uint
 	{
 		Partial = 0,
 		Forward = 1,

@@ -32,6 +32,11 @@ namespace Liberfy.ViewModel
 			set => SetProperty(ref _selectedAccount, value, _postCommand);
 		}
 
+		public void SetPostAccount(Account account)
+		{
+			SelectedAccount = account;
+		}
+
 		private const int MaxTweetLength = 140;
 		private const int MediaUrlLength = 23;
 
@@ -601,9 +606,8 @@ namespace Liberfy.ViewModel
 			atwks.DisposeAll();
 
 			MediaPlayerBase player = null;
-			bool isProcessRunning = Process.GetProcessesByName(_nowPlayingPlayer).Length > 0;
 
-			if (!isProcessRunning)
+			if (!IsProcessRunning(_nowPlayingPlayer))
 			{
 				DialogService.MessageBox(
 					$"再生情報の取得に失敗しました。プレーヤが起動しているか確認してください。",
@@ -669,7 +673,7 @@ namespace Liberfy.ViewModel
 
 		private static bool IsProcessRunning(string processName)
 		{
-			return System.Diagnostics.Process.GetProcessesByName(processName).Any();
+			return Process.GetProcessesByName(processName).Length > 0;
 		}
 
 		private string ReplaceMediaAlias(MediaItem media, string format)

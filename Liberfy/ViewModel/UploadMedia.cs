@@ -222,7 +222,7 @@ namespace Liberfy.ViewModel
 	}
 
 	[Flags]
-	enum MediaType : uint
+	internal enum MediaType : uint
 	{
 		None = 0,
 		File = 0x01,

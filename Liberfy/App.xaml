@@ -16,6 +16,8 @@
 	<Application.Resources>
 		<ResourceDictionary>
 
+			<conv:DummyConverter x:Key="DummyConverter" />
+
 			<tb:TaskbarIcon
 				x:Key="taskbarIcon"
 				Visibility="Collapsed"

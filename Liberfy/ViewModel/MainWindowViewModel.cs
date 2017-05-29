@@ -37,23 +37,50 @@ namespace Liberfy.ViewModel
 				}
 			}
 
-			await Task.WhenAll(
-				Accounts.Select(a => Task.Run(() =>
+			foreach(var a in Accounts.AsParallel())
+			{
+				await Task.Factory.StartNew(obj =>
 				{
-					if (a.AutomaticallyLogin)
+					var account = (Account)obj;
+
+					if(account.AutomaticallyLogin)
 					{
 						a.IsLoading = true;
 
-						if (a.Login())
+						if(a.Login())
 						{
 							a.LoadMetadata();
 						}
 
 						a.IsLoading = false;
 					}
-				})));
+				}, a);
+			}
 
 			IsAccountsLoaded = true;
+		}
+
+		private bool _isAccountMenuOpen;
+		public bool IsAccountMenuOpen
+		{
+			get => _isAccountMenuOpen;
+			private set => SetProperty(ref _isAccountMenuOpen, value);
+		}
+
+		private void CloseAccountMenu()
+		{
+			IsAccountMenuOpen = false;
+		}
+
+		private Command<Account> _accountTweetCommand;
+		public Command<Account> AccountTweetCommand
+		{
+			get => _accountTweetCommand ?? (_accountTweetCommand = RegisterReleasableCommand<Account>(AccountTweet));
+		}
+
+		private void AccountTweet(Account account)
+		{
+			DialogService.Open(ViewType.TweetWindow, account);
 		}
 
 		private Command _tweetCommand;

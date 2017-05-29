@@ -40,13 +40,14 @@ namespace Liberfy
 
 		protected override void OnStartup(StartupEventArgs e)
 		{
+			base.OnStartup(e);
+
 			// 設定を読み込む
-			// InitializeSettings();
 			if (LoadSettingWithErrorDialog(Defines.AccountsFile, ref _accounts))
 			{
-				if(_accounts.Columns != null)
+				if (_accounts.Columns?.Length > 0)
 				{
-					foreach(var s in _accounts.Columns)
+					foreach (var s in _accounts.Columns)
 					{
 						try
 						{
@@ -60,19 +61,19 @@ namespace Liberfy
 			}
 			else
 			{
-				App.Shutdown(false);
+				Shutdown(false);
 				return;
 			}
 
 			if (!LoadSettingWithErrorDialog(Defines.SettingFile, ref _setting))
 			{
-				App.Shutdown(false);
+				Shutdown(false);
 				return;
 			}
+			_setting.Mute.ForEach(m => m.Apply());
 
 			TaskbarIcon = (TaskbarIcon)FindResource("taskbarIcon");
 
-			base.OnStartup(e);
 		}
 
 		internal static FluidCollection<ColumnBase> Columns { get; } = new FluidCollection<ColumnBase>();

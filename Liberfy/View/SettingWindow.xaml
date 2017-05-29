@@ -5,6 +5,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:Liberfy"
+	xmlns:app="clr-namespace:Liberfy"
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
 	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
 	xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
@@ -21,6 +22,24 @@
 	DataContext="{local:ViewModelConnector {x:Type vm:SettingWindow}}">
 	<Window.Resources>
 		<sys:Double x:Key="tabItemWidth">120</sys:Double>
+
+		<conv:LocalizeNameConverter
+			x:Key="MuteTypeLocalizer"
+			LocalizeDictionary="{x:Static local:UILocalize.MuteTypes}" />
+
+		<conv:LocalizeNameConverter
+			x:Key="SearchModeLocalizer"
+			LocalizeDictionary="{x:Static app:UILocalize.MuteMatchTypes}" />
+
+		<CollectionViewSource
+			x:Key="MuteViewSource"
+			Source="{Binding MuteList, Mode=OneTime}">
+			<CollectionViewSource.GroupDescriptions>
+				<PropertyGroupDescription
+					PropertyName="Type"
+					Converter="{StaticResource MuteTypeLocalizer}" />
+			</CollectionViewSource.GroupDescriptions>
+		</CollectionViewSource>
 
 		<conv:ColumnNameConverter x:Key="ColumnNameConverter" />
 		<conv:ListBoxIndexConverter x:Key="ListBoxIndexConverter" />
@@ -382,6 +401,10 @@
 								<CheckBox
 									Content="起動時に自動的にログインする"
 									IsChecked="{Binding Setting.AccountDefaultAutomaticallyLogin, Mode=TwoWay}" />
+
+								<CheckBox
+									Content="タイムラインを自動的に読み込む"
+									IsChecked="{Binding Setting.AccountDefaultAutomaticallyLoadTimeline, Mode=TwoWay}" />
 							</UniformGrid>
 
 							<Separator
@@ -1319,8 +1342,6 @@
 											</Button>
 										</DockPanel>
 									</Border>
-
-
 								</DockPanel>
 							</ScrollViewer>
 						</DockPanel>
@@ -1378,25 +1399,26 @@
 										Margin="4 4 0 4"
 										Grid.Column="1"
 										SelectedIndex="0"
-										SelectedValuePath="Key"
 										DisplayMemberPath="Value"
-										SelectedValue="{Binding TempMuteType}"
-										ItemsSource="{x:Static local:UILocalize.MuteTypes}" />
+										SelectedValuePath="Key"
+										SelectedValue="{Binding TempMuteType, Mode=TwoWay}"
+										ItemsSource="{x:Static app:UILocalize.MuteTypes}" />
 
 									<ComboBox
 										Margin="4"
 										Grid.Column="3"
 										SelectedIndex="0"
-										SelectedValuePath="Key"
 										DisplayMemberPath="Value"
-										SelectedValue="{Binding TempMuteSearch}"
-										ItemsSource="{x:Static local:UILocalize.MuteMatchTypes}" />
+										SelectedValuePath="Key"
+										SelectedValue="{Binding TempMuteSearch, Mode=TwoWay}"
+										ItemsSource="{x:Static app:UILocalize.MuteMatchTypes}" />
 
 									<TextBox
 										Margin="4 0"
 										Grid.Row="1"
 										Grid.Column="1"
 										Grid.ColumnSpan="4"
+										TextWrapping="WrapWithOverflow"
 										Text="{Binding TempMuteText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
 									<Button
@@ -1408,40 +1430,38 @@
 								</Grid>
 							</Border>
 
-							<ListBox
+							<ListView
 								BorderThickness="0"
-								ItemsSource="{Binding MuteList, Mode=OneTime}"
-								SelectedItem="{Binding SelectedMute, Mode=TwoWay}">
-								<ListBox.ItemTemplate>
+								SelectedItem="{Binding SelectedMute, Mode=TwoWay}"
+								ItemsSource="{Binding Source={StaticResource MuteViewSource}}">
+								<ListView.ItemTemplate>
 									<DataTemplate DataType="{x:Type local:Mute}">
 										<Grid Margin="8">
 											<Grid.ColumnDefinitions>
 												<ColumnDefinition Width="auto" />
-												<ColumnDefinition Width="120" />
+												<ColumnDefinition Width="auto" />
 												<ColumnDefinition Width="120" />
 												<ColumnDefinition />
 											</Grid.ColumnDefinitions>
 
-											<StackPanel
-												VerticalAlignment="Center">
-												<Button 
-													Content="&#xf00d;"
-													Padding="4 3"
-													Margin="0 0 6 0"
-													Background="Red"
-													FontFamily="{StaticResource FontAwesome}"
-													CommandParameter="{Binding}"
-													Command="{Binding DataContext.MuteRemoveCommand, Mode=OneTime,
-														RelativeSource={RelativeSource AncestorType={x:Type ListBox}, AncestorLevel=1}}"
-													Style="{StaticResource SimpleButtonStyle}" />
-											</StackPanel>
-
-											<TextBlock
-												Margin="4 0"
-												Grid.Column="1"
+											<Button
+												Content="削除"
+												Padding="6 3"
+												Margin="0 0 6 0"
+												Background="#FFCB0000"
 												FontWeight="Bold"
 												VerticalAlignment="Center"
-												Text="{Binding Type, Mode=OneTime, Converter={StaticResource MuteTypeNameConverter}}"/>
+												CommandParameter="{Binding}"
+												Command="{Binding DataContext.MuteRemoveCommand, Mode=OneTime,
+													RelativeSource={RelativeSource AncestorType={x:Type ListBox}, AncestorLevel=1}}"
+												Style="{StaticResource SimpleButtonStyle}" />
+
+											<CheckBox
+												Margin="4 0"
+												Grid.Column="1"
+												VerticalAlignment="Center"
+												Content="有効"
+												IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
 
 											<TextBlock
 												Margin="4 0"
@@ -1458,8 +1478,13 @@
 												Text="{Binding Text, Mode=OneTime}" />
 										</Grid>
 									</DataTemplate>
-								</ListBox.ItemTemplate>
-							</ListBox>
+								</ListView.ItemTemplate>
+								<ListView.GroupStyle>
+									<GroupStyle
+										HidesIfEmpty="False"
+										ContainerStyle="{StaticResource ListViewGroupItemStyle}" />
+								</ListView.GroupStyle>
+							</ListView>
 						</DockPanel>
 					</TabItem>
 
@@ -1467,6 +1492,13 @@
 						<StackPanel Style="{StaticResource ElementsContainerStyle}">
 							<CheckBox Content="Twitterのミュート設定を使用する" />
 							<CheckBox Content="Twitterのブロック設定を使用する" />
+
+							<Label
+								Content="ミュートリスト"
+								Style="{StaticResource HeaderLabelStyle2}"/>
+
+							<RadioButton
+								Content="ミュートしたアカウント一覧を起動時に読み込む" />
 						</StackPanel>
 					</TabItem>
 				</TabControl>

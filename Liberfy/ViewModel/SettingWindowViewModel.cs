@@ -725,9 +725,11 @@ namespace Liberfy.ViewModel
 
 		private void MuteAdd()
 		{
-			var mute = new Mute(_tempMuteType, _tempMuteSearch, _tempMuteText);
-			MuteList.Add(mute);
-			SelectedMute = mute;
+			if(Mute.Create(_tempMuteType, _tempMuteSearch, _tempMuteText, out var m))
+			{
+				MuteList.Add(m);
+				SelectedMute = m;
+			}
 		}
 
 		private bool CanAddMute(object _) => Mute.IsAvailable(_tempMuteType, _tempMuteSearch, _tempMuteText);

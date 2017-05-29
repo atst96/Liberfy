@@ -23,5 +23,15 @@ namespace Liberfy.View
 		{
 			InitializeComponent();
 		}
+
+		public TweetWindow(object parameter) : this()
+		{
+			var viewModel = DataContext as ViewModel.TweetWindow;
+
+			if (parameter is Account account)
+			{
+				viewModel?.SetPostAccount(account);
+			}
+		}
 	}
 }

@@ -36,5 +36,20 @@ namespace Liberfy
 				action(item);
 			}
 		}
+
+		public static IEnumerable<T> Distinct<T>(this IEnumerable<T> collection)
+		{
+			var list = new List<T>(collection.Count());
+
+			foreach(var item in collection)
+			{
+				if(!list.Contains(item))
+				{
+					list.Add(item);
+				}
+			}
+
+			return list;
+		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,23 @@ using System.Windows.Media;
 
 namespace Liberfy.Converter
 {
+	public class DummyConverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			Debug.WriteLine($"Converted: {value}");
+			Debugger.Break();
+			return value;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			Debug.WriteLine($"Reconverted: {value}");
+			Debugger.Break();
+			return value;
+		}
+	}
+
 	[ValueConversion(typeof(object), typeof(string))]
 	public class LocalizeNameConverter : IValueConverter
 	{
@@ -19,7 +37,8 @@ namespace Liberfy.Converter
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			return LocalizeDictionary[value];
+			return LocalizeDictionary.TryGetValue(value, out var strVal)
+				? strVal : DependencyProperty.UnsetValue;
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -60,6 +60,8 @@ namespace Liberfy.Behaviors
 		}
 
 		public static readonly DependencyProperty CommandProperty =
-			DependencyProperty.Register("Command", typeof(ICommand), typeof(PasteImageBehavior), new PropertyMetadata(null));
+			DependencyProperty.Register("Command",
+				typeof(ICommand), typeof(PasteImageBehavior),
+				new PropertyMetadata(null));
 	}
 }
