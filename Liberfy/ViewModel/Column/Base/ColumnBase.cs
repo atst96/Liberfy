@@ -62,6 +62,13 @@ namespace Liberfy
 			set => SetProperty(ref _isLoading, value);
 		}
 
+		private bool _isDetailOpen;
+		public bool IsDetailOpen
+		{
+			get => _isDetailOpen;
+			set => SetProperty(ref _isDetailOpen, value);
+		}
+
 		private string _status;
 		public string Status
 		{
@@ -173,23 +180,23 @@ namespace Liberfy
 		public static Dictionary<ColumnType, string> ColumnTypes { get; }
 			= new Dictionary<ColumnType, string>
 			{
-				[ColumnType.Home] = "ホーム",
+				[ColumnType.Home]         = "ホーム",
 				[ColumnType.Notification] = "通知",
-				[ColumnType.Messages] = "ダイレクトメッセージ",
-				[ColumnType.Search] = "検索",
-				[ColumnType.List] = "リスト",
-				[ColumnType.Stream] = "リアルタイム検索",
+				[ColumnType.Messages]     = "ダイレクトメッセージ",
+				[ColumnType.Search]       = "検索",
+				[ColumnType.List]         = "リスト",
+				[ColumnType.Stream]       = "リアルタイム検索",
 			};
 
 		public static Dictionary<ColumnType, string> ColumnNames { get; }
 			= new Dictionary<ColumnType, string>
 			{
-				[ColumnType.Home] = "Home",
+				[ColumnType.Home]         = "Home",
 				[ColumnType.Notification] = "Notification",
-				[ColumnType.Messages] = "Message",
-				[ColumnType.Search] = "Search",
-				[ColumnType.List] = "List",
-				[ColumnType.Stream] = "Stream",
+				[ColumnType.Messages]     = "Message",
+				[ColumnType.Search]       = "Search",
+				[ColumnType.List]         = "List",
+				[ColumnType.Stream]       = "Stream",
 			};
 	}
 }

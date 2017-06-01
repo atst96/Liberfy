@@ -29,7 +29,7 @@ namespace Liberfy
 		internal static AccountSetting AccountSetting => _accounts;
 		internal static Setting Setting => _setting;
 
-		private static Assembly _assembly = Assembly.GetExecutingAssembly();
+		private static readonly Assembly _assembly = Assembly.GetExecutingAssembly();
 		internal static Assembly Assembly => _assembly;
 
 		public static string ApplicationName { get; } = "Liberfy";
@@ -82,10 +82,7 @@ namespace Liberfy
 		{
 			try
 			{
-				setting = File.Exists(filename)
-					? SettingFromFile<T>(filename)
-					: new T();
-
+				setting = File.Exists(filename) ? SettingFromFile<T>(filename) : new T();
 				return true;
 			}
 			catch (Exception e)
@@ -113,8 +110,7 @@ namespace Liberfy
 		private static void SaveSettings()
 		{
 			// 各設定の保存
-			AccountSetting.Columns
-				= Columns.Select(c => c.ToSetting()).ToArray();
+			AccountSetting.Columns = Columns.Select(c => c.ToSetting()).ToArray();
 
 			// 設定をファイルに保存
 			SaveSettingWithErrorDialog(Defines.SettingFile, Setting);

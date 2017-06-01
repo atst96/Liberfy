@@ -13,42 +13,57 @@ namespace Liberfy
 	[JsonObject(MemberSerialization.OptIn)]
 	internal class Account : NotificationObject, IEquatable<Account>, IEquatable<User>
 	{
-		private string _screenName;
-		private string _name;
-		private string _profileImageUrl;
-		private bool _isProtected;
-		private FluidCollection<ColumnBase> Columns => App.Columns;
+		private static FluidCollection<ColumnBase> Columns => App.Columns;
+		private bool _isUserInfoUpdated;
+		private bool _isLoading;
+
+
+		#region JsonSettings
+
+		#region Account info
 
 		[JsonProperty("user_id")]
 		public long Id { get; private set; }
 
 		[JsonProperty("screen_name")]
+		private string _screenName;
+
+		[JsonProperty("name")]
+		private string _name;
+
+		[JsonProperty("profile_image_url")]
+		private string _profileImageUrl;
+
+		[JsonProperty("is_protected")]
+		private bool _isProtected;
+
 		public string ScreenName
 		{
 			get => _isUserInfoUpdated ? Info.ScreenName : _screenName;
 			private set => _screenName = value;
 		}
 
-		[JsonProperty("name")]
 		public string Name
 		{
 			get => _isUserInfoUpdated ? Info.Name : _name;
 			private set => _name = value;
 		}
 
-		[JsonProperty("profile_image_url")]
 		public string ProfileImageUrl
 		{
 			get => _isUserInfoUpdated ? Info.ProfileImageUrl : _profileImageUrl;
 			private set => _profileImageUrl = value;
 		}
 
-		[JsonProperty("is_protected")]
 		public bool IsProtected
 		{
 			get => _isUserInfoUpdated ? Info.IsProtected : _isProtected;
 			private set => _isProtected = value;
 		}
+
+		#endregion
+
+		#region Tokens info
 
 		[JsonProperty("consumer_key")]
 		public string ConsumerKey { get; private set; }
@@ -61,6 +76,10 @@ namespace Liberfy
 
 		[JsonProperty("access_token_secret")]
 		public string AccessTokenSecret { get; private set; }
+
+		#endregion
+
+		#region Account settings
 
 		[JsonProperty("automatically_login")]
 		private bool _automaticallyLogin = true;
@@ -78,8 +97,10 @@ namespace Liberfy
 			set => SetProperty(ref _automaticallyLoadTimeline, value);
 		}
 
-		private bool _isUserInfoUpdated;
-		private bool _isLoading;
+		#endregion
+
+		#endregion
+
 
 		public bool IsLoading
 		{
@@ -188,7 +209,7 @@ namespace Liberfy
 
 		public bool Login()
 		{
-			if (IsLoggedIn) return true;
+			if (_isLoggedIn) return true;
 
 			try
 			{
@@ -238,32 +259,17 @@ namespace Liberfy
 
 		public override int GetHashCode()
 		{
-			return Id.GetHashCode() + "Liberfy.Account".GetHashCode();
+			return Id.GetHashCode() ^ "Liberfy.Account".GetHashCode();
 		}
 
-		public void LoadMetadata(CancellationToken? cancellationToken = null)
-		{
-			var tasks = new[]
-			{
-				Task.Run((Action)LoadFollower),
-				Task.Run((Action)LoadFollowing),
-				Task.Run((Action)LoadBlock),
-				Task.Run((Action)LoadMuting),
-				Task.Run((Action)LoadOutgoing),
-				Task.Run((Action)LoadIncoming)
-			};
-
-			if (cancellationToken.HasValue)
-			{
-				Task.WaitAll(tasks, cancellationToken.Value);
-			}
-			else
-			{
-				Task.WaitAll(tasks);
-			}
-
-			tasks = null;
-		}
+		public Task LoadDetails() => Task.WhenAll(
+			Task.Run((Action)LoadFollower),
+			Task.Run((Action)LoadFollowing),
+			Task.Run((Action)LoadBlock),
+			Task.Run((Action)LoadMuting),
+			Task.Run((Action)LoadOutgoing),
+			Task.Run((Action)LoadIncoming)
+		);
 
 		private string _loadError;
 		public string LoadErorr
@@ -291,11 +297,14 @@ namespace Liberfy
 
 		public object _lockSharedObject = new object();
 
-		private void LoadIds<T>(Func<EnumerateMode, long, long?, int?, IEnumerable<T>> getMethod, SortedSet<T> set, string name)
+		private delegate IEnumerable<T> DelgEnumIds2<T>(EnumerateMode mode, long? cursor = null);
+		private delegate IEnumerable<T> DelgEnumIds4<T>(EnumerateMode mode, long user_id, long? cursor = null, int? count = null);
+
+		private void GetIds<T>(DelgEnumIds4<T> enumerateIds, SortedSet<T> set, string name)
 		{
 			try
 			{
-				set.UnionWith(getMethod(EnumerateMode.Next, Id, null, null));
+				set.UnionWith(enumerateIds(EnumerateMode.Next, Id));
 			}
 			catch (Exception ex)
 			{
@@ -303,11 +312,11 @@ namespace Liberfy
 			}
 		}
 
-		private void LoadIds2<T>(Func<EnumerateMode, long?, IEnumerable<T>> getMethod, SortedSet<T> set, string name)
+		private void GetIds<T>(DelgEnumIds2<T> enumerateIds, SortedSet<T> set, string name)
 		{
 			try
 			{
-				set.UnionWith(getMethod.Invoke(EnumerateMode.Next, null));
+				set.UnionWith(enumerateIds(EnumerateMode.Next));
 			}
 			catch (Exception ex)
 			{
@@ -317,32 +326,32 @@ namespace Liberfy
 
 		private void LoadFollowing()
 		{
-			LoadIds(_tokens.Friends.EnumerateIds, _following, "フォロー中一覧");
+			GetIds((DelgEnumIds4<long>)_tokens.Friends.EnumerateIds, _following, "フォロー中一覧");
 		}
 
 		private void LoadFollower()
 		{
-			LoadIds(_tokens.Followers.EnumerateIds, _follower, "フォロワー一覧");
+			GetIds((DelgEnumIds4<long>)_tokens.Followers.EnumerateIds, _follower, "フォロワー一覧");
 		}
 
 		private void LoadBlock()
 		{
-			LoadIds2(_tokens.Blocks.EnumerateIds, _blocking, "ブロック中一覧");
+			GetIds(_tokens.Blocks.EnumerateIds, _blocking, "ブロック中一覧");
 		}
 
 		private void LoadMuting()
 		{
-			LoadIds2(_tokens.Mutes.Users.EnumerateIds, _muting, "ミュート中一覧");
+			GetIds(_tokens.Mutes.Users.EnumerateIds, _muting, "ミュート中一覧");
 		}
 
 		private void LoadIncoming()
 		{
-			LoadIds2(_tokens.Friendships.EnumerateIncoming, _incoming, "フォロー申請一覧");
+			GetIds(_tokens.Friendships.EnumerateIncoming, _incoming, "フォロー申請一覧");
 		}
 
 		private void LoadOutgoing()
 		{
-			LoadIds2(_tokens.Friendships.EnumerateOutgoing, _outgoing, "フォロー申請中一覧");
+			GetIds(_tokens.Friendships.EnumerateOutgoing, _outgoing, "フォロー申請中一覧");
 		}
 
 		public void Unload()

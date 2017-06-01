@@ -130,7 +130,6 @@
     <Compile Include="Component\MessageBox.cs" />
     <Compile Include="Component\Regexes.cs" />
     <Compile Include="Converters\Converters.cs" />
-    <Compile Include="Converters\NameConverters.cs" />
     <Compile Include="DataStore.cs" />
     <Compile Include="Component\DictionaryEx.cs" />
     <Compile Include="Extensions\ElementBehavior.cs" />

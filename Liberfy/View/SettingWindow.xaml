@@ -41,7 +41,9 @@
 			</CollectionViewSource.GroupDescriptions>
 		</CollectionViewSource>
 
-		<conv:ColumnNameConverter x:Key="ColumnNameConverter" />
+		<conv:LocalizeNameConverter
+			x:Key="ColumnNameConverter"
+			LocalizeDictionary="{x:Static app:ColumnBase.ColumnTypes}" />
 		<conv:ListBoxIndexConverter x:Key="ListBoxIndexConverter" />
 		<conv:ColumnSettingToColumnConverter x:Key="ColumnSettingToColumnConverter" />
 
@@ -49,17 +51,6 @@
 			<Setter Property="FontWeight" Value="Bold" />
 			<Setter Property="Foreground" Value="#333" />
 		</Style>
-
-		<conv:LocalizeNameConverter
-			x:Key="MuteTypeNameConverter"
-			LocalizeDictionary="{x:Static local:UILocalize.MuteTypes}" />
-
-		<conv:LocalizeNameConverter
-			x:Key="MuteSearchTypeNameConverter"
-			LocalizeDictionary="{x:Static local:UILocalize.MuteMatchTypes}" />
-
-		<!--<conv:LocalizeNameConverter
-			x:Key=""-->
 
 		<Style x:Key="HeaderLabelStyle2" TargetType="{x:Type Label}" BasedOn="{StaticResource HeaderLabel}">
 			<Setter Property="Margin" Value="0 8 0 0" />
@@ -483,7 +474,7 @@
 								Margin="12 8"
 								DockPanel.Dock="Top">
 								<Run Text="オプション：" />
-								<Run Text="{Binding SelectedColumnSetting.Type, Mode=OneWay, Converter={StaticResource ColumnNameConverter}}" />
+								<Run Text="{Binding SelectedColumnSetting.Type, Mode=OneWay, Converter={StaticResource app:}}" />
 							</TextBlock>
 
 							<ScrollViewer
@@ -1466,7 +1457,7 @@
 												Grid.Column="2"
 												FontWeight="Bold"
 												VerticalAlignment="Center"
-												Text="{Binding Search, Mode=OneTime, Converter={StaticResource MuteSearchTypeNameConverter}}"/>
+												Text="{Binding Search, Mode=OneTime, Converter={StaticResource SearchModeLocalizer}}"/>
 
 											<TextBlock
 												Grid.Column="3"

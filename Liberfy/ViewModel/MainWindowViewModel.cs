@@ -49,7 +49,7 @@ namespace Liberfy.ViewModel
 
 						if(a.Login())
 						{
-							a.LoadMetadata();
+							a.LoadDetails();
 						}
 
 						a.IsLoading = false;

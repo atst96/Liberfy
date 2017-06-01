@@ -117,12 +117,11 @@
 								Margin="0 0 6 0"
 								Width="28" Height="28"
 								Source="{Binding Account.Info.ProfileImageUrl, Mode=OneWay}" />
-							
+
 							<ToggleButton
 								x:Name="paneToggle"
 								Grid.Column="4" Padding="6 4"
-								IsChecked="{Binding IsDetailOpen, Mode=TwoWay}">
-							</ToggleButton>
+								IsChecked="{Binding IsDetailOpen, Mode=TwoWay}" />
 
 							<Grid
 								Grid.Row="1" Grid.ColumnSpan="5"

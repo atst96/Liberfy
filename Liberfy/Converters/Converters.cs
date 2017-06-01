@@ -48,7 +48,7 @@ namespace Liberfy.Converter
 	}
 
 	[ValueConversion(typeof(FontFamily), typeof(string))]
-	class LocalFontNameConverter : IValueConverter
+	internal class LocalFontNameConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
@@ -72,7 +72,7 @@ namespace Liberfy.Converter
 	}
 
 	[ValueConversion(typeof(ListBoxItem), typeof(int))]
-	class ListBoxIndexConverter : IValueConverter
+	internal class ListBoxIndexConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
@@ -89,7 +89,7 @@ namespace Liberfy.Converter
 	}
 
 	[ValueConversion(typeof(bool), typeof(bool))]
-	class BoolenInverter : IValueConverter
+	internal class BoolenInverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
@@ -103,7 +103,7 @@ namespace Liberfy.Converter
 	}
 
 	[ValueConversion(typeof(ColumnSetting), typeof(ColumnBase))]
-	class ColumnSettingToColumnConverter : IValueConverter
+	internal class ColumnSettingToColumnConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
