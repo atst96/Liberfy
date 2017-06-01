@@ -1,92 +1,131 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Liberfy
 {
+	/// <summary>
+	/// 動的に生成可能なコマンド。
+	/// </summary>
 	internal class DelegateCommand : Command
 	{
-		Action _execute;
-		Predicate<object> _canExecute;
+		private Action _execute;
+		private Func<bool> _canExecute;
 
-		public DelegateCommand(Action action) : this(action, null, false)
-		{
-		}
+		/// <summary>
+		/// <see cref="DelegateCommand" />クラスのインスタンスを生成します。
+		/// </summary>
+		/// <param name="execute">コマンドが起動する際に呼び出すメソッド</param>
+		public DelegateCommand(Action execute)
+			: this(execute, DefaultCanExecute, false) { }
 
-		public DelegateCommand(Action action, bool hookRequerySuggested = false)
-			: this(action, null, hookRequerySuggested)
-		{
-		}
+		/// <summary>
+		/// <see cref="DelegateCommand" />クラスのインスタンスを生成します。
+		/// </summary>
+		/// <param name="execute">コマンドが起動する際に呼び出すメソッド</param>
+		/// <param name="hookRequerySuggested">
+		/// <seealso cref="CanExecuteChanged"/>へイベントが購読された際に、<seealso cref="CommandManager.RequerySuggested"/>への購読を行うかの設定
+		/// </param>
+		public DelegateCommand(Action execute, bool hookRequerySuggested)
+			: this(execute, DefaultCanExecute, hookRequerySuggested) { }
 
-		public DelegateCommand(Action action, Predicate<object> predicate = null, bool hookRequerySuggested = false)
+		/// <summary>
+		/// <see cref="DelegateCommand" />クラスのインスタンスを生成します。
+		/// </summary>
+		/// <param name="execute">コマンドが起動する際に呼び出すメソッド</param>
+		/// <param name="canExecute">コマンドが実行可能かどうかを決定するメソッド</param>
+		public DelegateCommand(Action execute, Func<bool> canExecute)
+			: this(execute, canExecute, false) { }
+
+		/// <summary>
+		/// <see cref="DelegateCommand" />クラスのインスタンスを生成します。
+		/// </summary>
+		/// <param name="execute">コマンドが起動する際に呼び出すメソッド</param>
+		/// <param name="canExecute">コマンドが実行可能かどうかを決定するメソッド</param>
+		/// <param name="hookRequerySuggested">
+		/// <seealso cref="CanExecuteChanged"/>へイベントが購読された際に、<seealso cref="CommandManager.RequerySuggested"/>への購読を行うかの設定
+		/// </param>
+		public DelegateCommand(Action execute, Func<bool> canExecute, bool hookRequerySuggested)
 			: base(hookRequerySuggested)
 		{
-			_execute = action;
-			_canExecute = predicate ?? DefaultCanExecute;
+			_execute = execute ?? throw new ArgumentNullException(nameof(execute));
+			_canExecute = canExecute ?? throw new ArgumentNullException(nameof(canExecute));
 		}
 
-		public override bool CanExecute(object parameter)
-		{
-			return _canExecute?.Invoke(parameter) ?? true;
-		}
+		protected override bool CanExecute(object parameter) => _canExecute.Invoke();
 
-		public override void Execute(object parameter)
-		{
-			_execute?.Invoke();
-		}
+		protected override void Execute(object parameter) => _execute.Invoke();
 
 		public override void Dispose()
 		{
+			base.Dispose();
+
 			_execute = null;
 			_canExecute = null;
-
-			base.Dispose();
 		}
 
-		static bool DefaultCanExecute(object p) => true;
+		private static readonly Func<bool> DefaultCanExecute = () => true;
 	}
 
+	/// <summary>
+	/// 動的に生成可能なコマンド。
+	/// </summary>
+	/// <typeparam name="T">コマンドのパラメータの型</typeparam>
 	internal class DelegateCommand<T> : Command<T>
 	{
-		Action<T> _execute;
-		Predicate<T> _canExecute;
+		private Action<T> _execute;
+		private Predicate<T> _canExecute;
 
-		public DelegateCommand(Action<T> action)
-			: this(action, null, false) { }
+		/// <summary>
+		/// <see cref="DelegateCommand{T}"/>クラスのインスタンスを生成します。
+		/// </summary>
+		/// <param name="execute">コマンドが起動する際に呼び出すメソッド</param>
+		public DelegateCommand(Action<T> execute)
+			: this(execute, DefaultCanExecute, false) { }
 
-		public DelegateCommand(Action<T> action, bool hookRequerySuggested = false)
-			: this(action, null, hookRequerySuggested) { }
+		/// <summary>
+		/// <see cref="DelegateCommand{T}"/>クラスのインスタンスを生成します。
+		/// </summary>
+		/// <param name="execute">コマンドが起動する際に呼び出すメソッド</param>
+		/// <param name="hookRequerySuggested">
+		/// <seealso cref="CanExecuteChanged"/>へイベントが購読された際に、<seealso cref="CommandManager.RequerySuggested"/>への購読を行うかの設定
+		/// </param>
+		public DelegateCommand(Action<T> execute, bool hookRequerySuggested)
+			: this(execute, DefaultCanExecute, hookRequerySuggested) { }
 
-		public DelegateCommand(Action<T> action, Predicate<T> predicate = null, bool hookRequerySuggested = false)
+		/// <summary>
+		/// <see cref="DelegateCommand{T}"/>クラスのインスタンスを生成します。
+		/// </summary>
+		/// <param name="execute">コマンドが起動する際に呼び出すメソッド</param>
+		/// <param name="canExecute">コマンドが実行可能かどうかを決定するメソッド</param>
+		public DelegateCommand(Action<T> execute, Predicate<T> canExecute)
+			: this(execute, canExecute, false) { }
+
+		/// <summary>
+		/// <see cref="DelegateCommand{T}"/>クラスのインスタンスを生成します。
+		/// </summary>
+		/// <param name="execute">コマンドが起動する際に呼び出すメソッド</param>
+		/// <param name="canExecute">コマンドが実行可能かどうかを決定するメソッド</param>
+		/// <param name="hookRequerySuggested">
+		/// <seealso cref="CanExecuteChanged"/>へイベントが購読された際に、<seealso cref="CommandManager.RequerySuggested"/>への購読を行うかの設定
+		/// </param>
+		public DelegateCommand(Action<T> execute, Predicate<T> canExecute, bool hookRequerySuggested)
 			: base(hookRequerySuggested)
 		{
-			_execute = action;
-			_canExecute = predicate ?? DefaultCanExecute;
-
-			new WeakReference(_execute);
-			new WeakReference(_canExecute);
+			_execute = execute ?? throw new ArgumentNullException(nameof(execute));
+			_canExecute = canExecute ?? throw new ArgumentNullException(nameof(canExecute));
 		}
 
-		public override bool CanExecute(T parameter)
-		{
-			return _canExecute?.Invoke(parameter) ?? true;
-		}
+		protected override bool CanExecute(T parameter) => _canExecute.Invoke(parameter);
 
-		public override void Execute(T parameter)
-		{
-			_execute?.Invoke(parameter);
-		}
+		protected override void Execute(T parameter) => _execute.Invoke(parameter);
 
 		public override void Dispose()
 		{
+			base.Dispose();
+
 			_execute = null;
 			_canExecute = null;
-
-			base.Dispose();
 		}
 
-		static bool DefaultCanExecute(T parameter) => true;
+		private static readonly Predicate<T> DefaultCanExecute = (_) => true;
 	}
 }

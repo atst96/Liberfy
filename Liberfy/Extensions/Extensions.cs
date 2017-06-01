@@ -15,7 +15,7 @@ namespace Liberfy
 
 		public static T CastOrDefault<T>(this object obj)
 		{
-			return obj is T ? (T)obj : default(T);
+			return obj is T tObj ? tObj : default(T);
 		}
 
 		public static void DisposeAll<T>(this IEnumerable<T> collection) where T: IDisposable

@@ -159,7 +159,7 @@ namespace Liberfy.ViewModel
 			}
 		}
 
-		private bool CanMoveNextPage(object p)
+		private bool CanMoveNextPage()
 		{
 			if (IsRunning)
 				return false;

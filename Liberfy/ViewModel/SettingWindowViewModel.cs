@@ -732,7 +732,7 @@ namespace Liberfy.ViewModel
 			}
 		}
 
-		private bool CanAddMute(object _) => Mute.IsAvailable(_tempMuteType, _tempMuteSearch, _tempMuteText);
+		private bool CanAddMute() => Mute.IsAvailable(_tempMuteType, _tempMuteSearch, _tempMuteText);
 
 		#endregion Command: AddMuteCommand
 

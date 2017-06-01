@@ -1,27 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Liberfy
 {
-	abstract class Command : ICommand, IDisposable
+	/// <summary>
+	/// コマンドを定義する際に基となるクラス。
+	/// </summary>
+	internal abstract class Command : ICommand, IDisposable
 	{
-		readonly bool hookRequerySuggested;
-		WeakCollection<EventHandler> _events = new WeakCollection<EventHandler>();
+		private readonly bool hookRequerySuggested;
+		private EventHandler dummyCanExecuteChanged;
+		private readonly WeakCollection<EventHandler> _events = new WeakCollection<EventHandler>();
 
+		/// <summary>
+		/// <see cref="Command" />クラスの新しいインスタンスを生成します。
+		/// </summary>
 		protected Command() { }
 
+		/// <summary>
+		/// <see cref="Command"/>クラスの新しいインスタンスを生成します。
+		/// </summary>
+		/// <param name="hookRequerySuggested">
+		/// <seealso cref="CanExecuteChanged"/>へイベントが購読された際に、<see cref="CommandManager"/>.<seealso cref="RequerySuggested"/>への購読も行うかの設定
+		/// </param>
 		protected Command(bool hookRequerySuggested) : this()
 		{
 			this.hookRequerySuggested = hookRequerySuggested;
 		}
 
-		private EventHandler dummyCanExecuteChanged;
-
-		public event EventHandler CanExecuteChanged
+		event EventHandler ICommand.CanExecuteChanged
 		{
 			add
 			{
@@ -43,40 +50,91 @@ namespace Liberfy
 			}
 		}
 
-		public abstract bool CanExecute(object parameter);
+		bool ICommand.CanExecute(object parameter)
+		{
+			return this.CanExecute(parameter);
+		}
 
-		public abstract void Execute(object parameter);
+		void ICommand.Execute(object parameter)
+		{
+			this.Execute(parameter);
+		}
 
+		/// <summary>
+		/// <seealso cref="ICommand.CanExecute(object)"/>が呼び出された際に実行されます。
+		/// </summary>
+		/// <param name="parameter">コマンドのパラメータ。</param>
+		/// <returns></returns>
+		protected abstract bool CanExecute(object parameter);
+
+		/// <summary>
+		/// <seealso cref="ICommand.Execute(object)"/>が呼び出された際に実行されます。
+		/// </summary>
+		/// <param name="parameter">コマンドのパラメータ。</param>
+		protected abstract void Execute(object parameter);
+
+		/// <summary>
+		/// CanExecuteが変化したことを通知します。
+		/// </summary>
 		public void RaiseCanExecute()
 		{
 			dummyCanExecuteChanged?.Invoke(this, EventArgs.Empty);
 		}
 
+		/// <summary>
+		/// コマンドを破棄します。
+		/// </summary>
 		public virtual void Dispose()
 		{
 			_events.Clear();
 		}
 	}
 
-	abstract class Command<T> : Command
+	/// <summary>
+	/// コマンドを定義する際に基となるクラス。
+	/// </summary>
+	/// <typeparam name="T">コマンドのパラメータの型</typeparam>
+	internal abstract class Command<T> : Command
 	{
-		protected Command() : base() { }
+		/// <summary>
+		/// <see cref="Command{T}"/>クラスのインスタンスを生成します。
+		/// </summary>
+		protected Command() { }
 
+		/// <summary>
+		/// <see cref="Command{T}"/>クラスのインスタンスを生成します。
+		/// </summary>
+		/// <param name="hookRequerySuggested">
+		/// <seealso cref="CanExecuteChanged"/>へイベントが購読された際に、<see cref="CommandManager"/>.<seealso cref="RequerySuggested"/>への購読も行うかの設定
+		/// </param>
 		protected Command(bool hookRequerySuggested)
 			: base(hookRequerySuggested) { }
 
-		public override bool CanExecute(object parameter)
+		protected override bool CanExecute(object parameter)
 		{
 			return CanExecute(parameter.CastOrDefault<T>());
 		}
 
-		public override void Execute(object parameter)
+		protected override void Execute(object parameter)
 		{
 			Execute(parameter.CastOrDefault<T>());
 		}
 
-		public abstract bool CanExecute(T parameter);
+		/// <summary>
+		/// <seealso cref="ICommand.CanExecute(object)"/>が呼び出された際に実行されます。
+		/// </summary>
+		/// <param name="parameter">
+		/// コマンドのパラメータ。型が<seealso cref="T"/>とは異なる場合は既定値。
+		/// </param>
+		/// <returns>コマンドが実行可能ならtrue、不可ならfalse</returns>
+		protected abstract bool CanExecute(T parameter);
 
-		public abstract void Execute(T parameter);
+		/// <summary>
+		/// <seealso cref="ICommand.Execute(object)"/>が呼び出された際に実行されます。
+		/// </summary>
+		/// <param name="parameter">
+		/// コマンドのパラメータ。型が<seealso cref="T"/>とは異なる場合は既定値。
+		/// </param>
+		protected abstract void Execute(T parameter);
 	}
 }

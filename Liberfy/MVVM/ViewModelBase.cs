@@ -142,7 +142,7 @@ namespace Liberfy.ViewModel
 		/// <param name="canExecute">コマンドのCanExecute処理</param>
 		/// <param name="hookRequerysuggested">RequerySuggestedイベントに登録するかを設定します</param>
 		/// <returns>Command</returns>
-		public Command RegisterCommand(Action execute, Predicate<object> canExecute, bool hookRequerysuggested = false)
+		public Command RegisterCommand(Action execute, Func<bool> canExecute, bool hookRequerysuggested = false)
 		{
 			var command = new DelegateCommand(execute, canExecute, hookRequerysuggested);
 			_registeredCommands.Add(command);

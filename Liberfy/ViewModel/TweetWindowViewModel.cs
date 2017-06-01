@@ -305,7 +305,7 @@ namespace Liberfy.ViewModel
 			return true;
 		}
 
-		public bool CanPostTweet(object _)
+		public bool CanPostTweet()
 		{
 			return _selectedAccount != null && !_isTweetPosting && IsEditable && _canUpdateContent;
 		}
@@ -390,7 +390,7 @@ namespace Liberfy.ViewModel
 			return UploadableMediaExtensions.Contains(ext.ToLower());
 		}
 
-		private bool CanEditContent(object o) => !_isTweetPosting;
+		private bool CanEditContent() => !_isTweetPosting;
 
 
 
@@ -593,7 +593,7 @@ namespace Liberfy.ViewModel
 			get => _getNowPlayingTextCommand ?? (_getNowPlayingTextCommand = RegisterCommand(GetNowPlayingText, IsSupportedPlayer));
 		}
 
-		private bool IsSupportedPlayer(object o)
+		private bool IsSupportedPlayer()
 		{
 			return !string.IsNullOrEmpty(_nowPlayingPlayer)
 				&& NowPlayingPlayerList.ContainsKey(_nowPlayingPlayer);
@@ -747,7 +747,7 @@ namespace Liberfy.ViewModel
 			get => _pasteImageCommand ?? (_pasteImageCommand = RegisterCommand(OnImagePasted, CanImagePaste));
 		}
 
-		private bool CanImagePaste(object obj)
+		private bool CanImagePaste()
 		{
 			return Clipboard.ContainsImage()
 				|| (Clipboard.ContainsFileDropList() && HasEnableMediaFiles(Clipboard.GetFileDropList()));
