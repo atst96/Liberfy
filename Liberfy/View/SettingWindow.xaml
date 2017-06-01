@@ -474,7 +474,7 @@
 								Margin="12 8"
 								DockPanel.Dock="Top">
 								<Run Text="オプション：" />
-								<Run Text="{Binding SelectedColumnSetting.Type, Mode=OneWay, Converter={StaticResource app:}}" />
+								<Run Text="{Binding SelectedColumnSetting.Type, Mode=OneWay, Converter={StaticResource ColumnNameConverter}}" />
 							</TextBlock>
 
 							<ScrollViewer
