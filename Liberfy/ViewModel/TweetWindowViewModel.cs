@@ -183,7 +183,7 @@ namespace Liberfy.ViewModel
 		private Command _postCommand;
 		public Command PostCommand
 		{
-			get => _postCommand ?? (_postCommand = RegisterReleasableCommand(PostTweet, CanPostTweet));
+			get => _postCommand ?? (_postCommand = RegisterCommand(PostTweet, CanPostTweet));
 		}
 
 		private Tokens Tokens => SelectedAccount.Tokens;
@@ -342,7 +342,7 @@ namespace Liberfy.ViewModel
 		private Command<Account> _selectAccountCommand;
 		public Command<Account> SelectAccountCommand
 		{
-			get => _selectAccountCommand ?? (_selectAccountCommand = RegisterReleasableCommand<Account>(SelectAccount, IsAvailableAccount));
+			get => _selectAccountCommand ?? (_selectAccountCommand = RegisterCommand<Account>(SelectAccount, IsAvailableAccount));
 		}
 
 		private void SelectAccount(Account account)
@@ -362,7 +362,7 @@ namespace Liberfy.ViewModel
 		private Command _addImageCommand;
 		public Command AddImageCommand
 		{
-			get => _addImageCommand ?? (_addImageCommand = RegisterReleasableCommand(AddImage, CanEditContent));
+			get => _addImageCommand ?? (_addImageCommand = RegisterCommand(AddImage, CanEditContent));
 		}
 
 		private void AddImage()
@@ -417,7 +417,7 @@ namespace Liberfy.ViewModel
 		private Command<UploadMedia> _removeMediaCommand;
 		public Command<UploadMedia> RemoveMediaCommand
 		{
-			get => _removeMediaCommand ?? (_removeMediaCommand = RegisterReleasableCommand<UploadMedia>(RemoveMedia, CanRemoveMedia));
+			get => _removeMediaCommand ?? (_removeMediaCommand = RegisterCommand<UploadMedia>(RemoveMedia, CanRemoveMedia));
 		}
 
 		private bool CanRemoveMedia(UploadMedia media)
@@ -441,7 +441,7 @@ namespace Liberfy.ViewModel
 		private Command<IDataObject> _dragDropCommand;
 		public Command<IDataObject> DragDropCommand
 		{
-			get => _dragDropCommand ?? (_dragDropCommand = RegisterReleasableCommand<IDataObject>(OnDrop, CanDrop));
+			get => _dragDropCommand ?? (_dragDropCommand = RegisterCommand<IDataObject>(OnDrop, CanDrop));
 		}
 
 		private DragDropEffects _dragDropEffects = DragDropEffects.None;
@@ -590,7 +590,7 @@ namespace Liberfy.ViewModel
 		private Command _getNowPlayingTextCommand;
 		public Command GetNowPlayingTextCommand
 		{
-			get => _getNowPlayingTextCommand ?? (_getNowPlayingTextCommand = RegisterReleasableCommand(GetNowPlayingText, IsSupportedPlayer));
+			get => _getNowPlayingTextCommand ?? (_getNowPlayingTextCommand = RegisterCommand(GetNowPlayingText, IsSupportedPlayer));
 		}
 
 		private bool IsSupportedPlayer(object o)
@@ -709,7 +709,7 @@ namespace Liberfy.ViewModel
 		private Command _insertNowPlayingTextCommand;
 		public Command InsertNowPlayingTextCommand
 		{
-			get => _insertNowPlayingTextCommand ?? (_insertNowPlayingTextCommand = RegisterReleasableCommand(InsertNowPlaying));
+			get => _insertNowPlayingTextCommand ?? (_insertNowPlayingTextCommand = RegisterCommand(InsertNowPlaying));
 		}
 
 		private void InsertNowPlaying()
@@ -744,7 +744,7 @@ namespace Liberfy.ViewModel
 		private Command _pasteImageCommand;
 		public Command PasteImageCommand
 		{
-			get => _pasteImageCommand ?? (_pasteImageCommand = RegisterReleasableCommand(OnImagePasted, CanImagePaste));
+			get => _pasteImageCommand ?? (_pasteImageCommand = RegisterCommand(OnImagePasted, CanImagePaste));
 		}
 
 		private bool CanImagePaste(object obj)

@@ -89,7 +89,7 @@ namespace Liberfy.ViewModel
 		private Command _nextCommand;
 		public Command NextCommand
 		{
-			get => _nextCommand ?? (_nextCommand = RegisterReleasableCommand(MoveNextPage, CanMoveNextPage));
+			get => _nextCommand ?? (_nextCommand = RegisterCommand(MoveNextPage, CanMoveNextPage));
 		}
 
 		private async void MoveNextPage()
@@ -195,7 +195,7 @@ namespace Liberfy.ViewModel
 		private Command _cancelCommand;
 		public Command CancelCommand
 		{
-			get => _cancelCommand ?? (_cancelCommand = RegisterReleasableCommand(CancelAll));
+			get => _cancelCommand ?? (_cancelCommand = RegisterCommand(CancelAll));
 		}
 
 		private void CancelAll()
@@ -216,7 +216,7 @@ namespace Liberfy.ViewModel
 		private Command _copyClipboardCommand;
 		public Command CopyClipboardCommand
 		{
-			get => _copyClipboardCommand ?? (_copyClipboardCommand = RegisterReleasableCommand(CopyAuthorizeUrlToClipboard));
+			get => _copyClipboardCommand ?? (_copyClipboardCommand = RegisterCommand(CopyAuthorizeUrlToClipboard));
 		}
 
 		private void CopyAuthorizeUrlToClipboard()

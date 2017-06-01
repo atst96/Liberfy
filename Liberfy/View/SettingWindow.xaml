@@ -175,9 +175,7 @@
 						<Border
 							x:Name="border"
 							Padding="{TemplateBinding Padding}"
-							Background="{TemplateBinding Background}"
-							BorderThickness="0 0 0 1"
-							BorderBrush="{DynamicResource SettingTabItemNormalBorderBrush}">
+							Background="{TemplateBinding Background}">
 							<ContentPresenter 
 								ContentSource="Header"
 								TextBlock.Foreground="{DynamicResource SettingTabItemForeground}"/>

@@ -267,7 +267,7 @@ namespace Liberfy.ViewModel
 		private Command<FontFamily> _addFontCommand;
 		public Command AddFontCommand
 		{
-			get => _addFontCommand ?? (_addFontCommand = RegisterReleasableCommand<FontFamily>(AddNewFont, CanAddFont));
+			get => _addFontCommand ?? (_addFontCommand = RegisterCommand<FontFamily>(AddNewFont, CanAddFont));
 		}
 
 		private void AddNewFont(FontFamily fontFamily)
@@ -285,7 +285,7 @@ namespace Liberfy.ViewModel
 		private Command _fontSeelectCommand;
 		public Command FontSelectCommand
 		{
-			get => _fontSeelectCommand ?? (_fontSeelectCommand = RegisterReleasableCommand(SelectFontFile));
+			get => _fontSeelectCommand ?? (_fontSeelectCommand = RegisterCommand(SelectFontFile));
 		}
 
 		private static bool SupportedFont(FontFamily font)
@@ -327,7 +327,7 @@ namespace Liberfy.ViewModel
 		private Command<FontFamily> _removeFontCommand;
 		public Command<FontFamily> RemoveFontCommand
 		{
-			get => _removeFontCommand ?? (_removeFontCommand = RegisterReleasableCommand<FontFamily>(RemoveFont, IsAvailableFont));
+			get => _removeFontCommand ?? (_removeFontCommand = RegisterCommand<FontFamily>(RemoveFont, IsAvailableFont));
 		}
 
 		public void RemoveFont(FontFamily fontFamily)
@@ -345,7 +345,7 @@ namespace Liberfy.ViewModel
 		private Command<FontFamily> _increaseFontPriorityCommand;
 		public Command<FontFamily> IncreaseFontPriorityCommand
 		{
-			get => _increaseFontPriorityCommand ?? (_increaseFontPriorityCommand = RegisterReleasableCommand<FontFamily>(IncreaseFontPriority, CanIncreaseFontPriority));
+			get => _increaseFontPriorityCommand ?? (_increaseFontPriorityCommand = RegisterCommand<FontFamily>(IncreaseFontPriority, CanIncreaseFontPriority));
 		}
 
 		private void IncreaseFontPriority(FontFamily obj)
@@ -366,7 +366,7 @@ namespace Liberfy.ViewModel
 		private Command<FontFamily> _decreaseFontPriorityCommand;
 		public Command<FontFamily> DecreaseFontPriorityCommand
 		{
-			get => _decreaseFontPriorityCommand ?? (_decreaseFontPriorityCommand = RegisterReleasableCommand<FontFamily>(DecreaseFontPriority, CanDecreaseFontPriority));
+			get => _decreaseFontPriorityCommand ?? (_decreaseFontPriorityCommand = RegisterCommand<FontFamily>(DecreaseFontPriority, CanDecreaseFontPriority));
 		}
 
 		private void DecreaseFontPriority(FontFamily obj)
@@ -387,7 +387,7 @@ namespace Liberfy.ViewModel
 		private Command _resetFontSettingsCommand;
 		public Command ResetFontSettingsCommand
 		{
-			get => _resetFontSettingsCommand ?? (_resetFontSettingsCommand = RegisterReleasableCommand(ResetFontSettings));
+			get => _resetFontSettingsCommand ?? (_resetFontSettingsCommand = RegisterCommand(ResetFontSettings));
 		}
 
 		private void ResetFontSettings()
@@ -420,7 +420,7 @@ namespace Liberfy.ViewModel
 		private Command _accountAddCommand;
 		public Command AccountAddCommand
 		{
-			get => _accountAddCommand ?? (_accountAddCommand = RegisterReleasableCommand(AccountAdd));
+			get => _accountAddCommand ?? (_accountAddCommand = RegisterCommand(AccountAdd));
 		}
 
 		private async void AccountAdd()
@@ -495,7 +495,7 @@ namespace Liberfy.ViewModel
 		private Command _accountDeleteCommand;
 		public Command AccountDeleteCommand
 		{
-			get => _accountDeleteCommand ?? (_accountDeleteCommand = RegisterReleasableCommand<Account>(AccountDelete, Accounts.Contains));
+			get => _accountDeleteCommand ?? (_accountDeleteCommand = RegisterCommand<Account>(AccountDelete, Accounts.Contains));
 		}
 
 		void AccountDelete(Account account)
@@ -515,7 +515,7 @@ namespace Liberfy.ViewModel
 		private Command _accountMoveUpCommand;
 		public Command AccountMoveUpCommand
 		{
-			get => _accountMoveUpCommand ?? (_accountMoveUpCommand = RegisterReleasableCommand<Account>(AccountMoveUp, CanAccountMoveUp));
+			get => _accountMoveUpCommand ?? (_accountMoveUpCommand = RegisterCommand<Account>(AccountMoveUp, CanAccountMoveUp));
 		}
 
 		private bool CanAccountMoveUp(Account account) => Accounts.CanItemIndexDecrement(account);
@@ -529,7 +529,7 @@ namespace Liberfy.ViewModel
 		private Command _accountMoveDownCommand;
 		public Command AccountMoveDownCommand
 		{
-			get => _accountMoveDownCommand ?? (_accountMoveDownCommand = RegisterReleasableCommand<Account>(AccountMoveDown, CanAccountMoveDown));
+			get => _accountMoveDownCommand ?? (_accountMoveDownCommand = RegisterCommand<Account>(AccountMoveDown, CanAccountMoveDown));
 		}
 
 		private bool CanAccountMoveDown(Account account) => Accounts.CanItemIndexIncrement(account);
@@ -564,7 +564,7 @@ namespace Liberfy.ViewModel
 		private Command<ColumnType> _columnAddCommand;
 		public Command<ColumnType> ColumnAddCommand
 		{
-			get => _columnAddCommand ?? (_columnAddCommand = RegisterReleasableCommand<ColumnType>(ColumnAdd));
+			get => _columnAddCommand ?? (_columnAddCommand = RegisterCommand<ColumnType>(ColumnAdd));
 		}
 
 		private void ColumnAdd(ColumnType type) => DefaultColumns.Add(new ColumnSetting(type, Account.Dummy));
@@ -576,7 +576,7 @@ namespace Liberfy.ViewModel
 		private Command _columnRemoveCommand;
 		public Command ColumnRemoveCommand
 		{
-			get => _columnRemoveCommand ?? (_columnRemoveCommand = RegisterReleasableCommand<ColumnSetting>(ColumnRemove, CanColumnRemove));
+			get => _columnRemoveCommand ?? (_columnRemoveCommand = RegisterCommand<ColumnSetting>(ColumnRemove, CanColumnRemove));
 		}
 
 		private static bool CanColumnRemove(ColumnSetting column) => column != null;
@@ -590,7 +590,7 @@ namespace Liberfy.ViewModel
 		private Command _columnMoveUpCommand;
 		public Command ColumnMoveUpCommand
 		{
-			get => _columnMoveUpCommand ?? (_columnMoveUpCommand = RegisterReleasableCommand<ColumnSetting>(ColumnMoveUp, CanColumnMoveUp));
+			get => _columnMoveUpCommand ?? (_columnMoveUpCommand = RegisterCommand<ColumnSetting>(ColumnMoveUp, CanColumnMoveUp));
 		}
 
 		private bool CanColumnMoveUp(ColumnSetting column)
@@ -612,7 +612,7 @@ namespace Liberfy.ViewModel
 		private Command _columnMoveDownCommand;
 		public Command ColumnMoveDownCommand
 		{
-			get => _columnMoveDownCommand ?? (_columnMoveDownCommand = RegisterReleasableCommand<ColumnSetting>(ColumnMoveRight, CanColumnMoveRight));
+			get => _columnMoveDownCommand ?? (_columnMoveDownCommand = RegisterCommand<ColumnSetting>(ColumnMoveRight, CanColumnMoveRight));
 		}
 
 		private bool CanColumnMoveRight(ColumnSetting column)
@@ -652,7 +652,7 @@ namespace Liberfy.ViewModel
 		private Command _insertNowPlayingCommand;
 		public Command InsertNowPlayingParamCommand
 		{
-			get => _insertNowPlayingCommand ?? (_insertNowPlayingCommand = RegisterReleasableCommand<string>(InsertNowPlaying));
+			get => _insertNowPlayingCommand ?? (_insertNowPlayingCommand = RegisterCommand<string>(InsertNowPlaying));
 		}
 
 		private void InsertNowPlaying(string p)
@@ -668,7 +668,7 @@ namespace Liberfy.ViewModel
 		private Command _resetNowPlayingCommand;
 		public Command ResetNowPlayingCommand
 		{
-			get => _resetNowPlayingCommand ?? (_resetNowPlayingCommand = RegisterReleasableCommand(ResetNowPlaying));
+			get => _resetNowPlayingCommand ?? (_resetNowPlayingCommand = RegisterCommand(ResetNowPlaying));
 		}
 
 		private void ResetNowPlaying() => NowPlayingFormat = Defines.DefaultNowPlayingFormat;
@@ -720,7 +720,7 @@ namespace Liberfy.ViewModel
 		private Command _muteAddCommand;
 		public Command MuteAddCommand
 		{
-			get => _muteAddCommand ?? (_muteAddCommand = RegisterReleasableCommand(MuteAdd, CanAddMute));
+			get => _muteAddCommand ?? (_muteAddCommand = RegisterCommand(MuteAdd, CanAddMute));
 		}
 
 		private void MuteAdd()
@@ -741,7 +741,7 @@ namespace Liberfy.ViewModel
 		private Command _removeMuteCommand;
 		public Command RemoveMuteCommand
 		{
-			get => _removeMuteCommand ?? (_removeMuteCommand = RegisterReleasableCommand<Mute>(RemoveMute, IsAvailableMuteItem));
+			get => _removeMuteCommand ?? (_removeMuteCommand = RegisterCommand<Mute>(RemoveMute, IsAvailableMuteItem));
 		}
 
 		private void RemoveMute(Mute mute) => MuteList.Remove(mute);
@@ -755,7 +755,7 @@ namespace Liberfy.ViewModel
 		private Command<Mute> _muteRemoveCommand;
 		public Command<Mute> MuteRemoveCommand
 		{
-			get => _muteRemoveCommand ?? (_muteRemoveCommand = RegisterReleasableCommand<Mute>(MuteRemove, CanMuteRemove));
+			get => _muteRemoveCommand ?? (_muteRemoveCommand = RegisterCommand<Mute>(MuteRemove, CanMuteRemove));
 		}
 
 		private void MuteRemove(Mute item) => MuteList.Remove(item);

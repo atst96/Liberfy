@@ -75,7 +75,7 @@ namespace Liberfy.ViewModel
 		private Command<Account> _accountTweetCommand;
 		public Command<Account> AccountTweetCommand
 		{
-			get => _accountTweetCommand ?? (_accountTweetCommand = RegisterReleasableCommand<Account>(AccountTweet));
+			get => _accountTweetCommand ?? (_accountTweetCommand = RegisterCommand<Account>(AccountTweet));
 		}
 
 		private void AccountTweet(Account account)
@@ -86,7 +86,7 @@ namespace Liberfy.ViewModel
 		private Command _tweetCommand;
 		public Command TweetCommand
 		{
-			get => _tweetCommand ?? (_tweetCommand = RegisterReleasableCommand(Tweet));
+			get => _tweetCommand ?? (_tweetCommand = RegisterCommand(Tweet));
 		}
 
 		private void Tweet()
@@ -97,7 +97,7 @@ namespace Liberfy.ViewModel
 		private Command _showSettingDialog;
 		public Command ShowSettingDialog
 		{
-			get => _showSettingDialog ?? (_showSettingDialog = RegisterReleasableCommand(() => DialogService.OpenSetting()));
+			get => _showSettingDialog ?? (_showSettingDialog = RegisterCommand(() => DialogService.OpenSetting()));
 		}
 
 		internal override bool CanClose()
