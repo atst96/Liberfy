@@ -663,7 +663,7 @@ namespace Liberfy.ViewModel
 			}
 		}
 
-		public static IReadOnlyDictionary<string, string> NowPlayingPlayerList { get; }
+		public static IDictionary<string, string> NowPlayingPlayerList { get; }
 		= new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
 		{
 			["wmplayer"] = "Windows Media Player",

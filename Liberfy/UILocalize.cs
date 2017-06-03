@@ -9,8 +9,8 @@ namespace Liberfy
 {
 	internal static class UILocalize
 	{
-		public static EnumLocalizeDic<MuteType> MuteTypes { get; }
-			= new EnumLocalizeDic<MuteType>(new Dictionary<object, string>
+		public static LocalizeDictionary<MuteType> MuteTypes { get; }
+			= new LocalizeDictionary<MuteType>(new Dictionary<object, string>
 			{
 				[MuteType.Content]    = "内容",
 				[MuteType.UserId]     = "ユーザID",
@@ -19,8 +19,8 @@ namespace Liberfy
 				[MuteType.Client]     = "クライアント",
 			});
 
-		public static EnumLocalizeDic<SearchMode> MuteMatchTypes { get; }
-			= new EnumLocalizeDic<SearchMode>(new Dictionary<object, string>
+		public static LocalizeDictionary<SearchMode> MuteMatchTypes { get; }
+			= new LocalizeDictionary<SearchMode>(new Dictionary<object, string>
 			{
 				[SearchMode.Partial]  = "部分一致",
 				[SearchMode.Forward]  = "前方一致",
@@ -30,9 +30,9 @@ namespace Liberfy
 			});
 	}
 
-	public class EnumLocalizeDic<T> : ReadOnlyDictionary<object, string> where T: struct
+	public class LocalizeDictionary<T> : ReadOnlyDictionary<object, string>
 	{
-		public EnumLocalizeDic(IDictionary<object, string> dictionary)
+		public LocalizeDictionary(IDictionary<object, string> dictionary)
 			: base(dictionary)
 		{
 		}

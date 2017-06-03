@@ -25,7 +25,7 @@
 
 		<conv:LocalizeNameConverter
 			x:Key="MuteTypeLocalizer"
-			LocalizeDictionary="{x:Static local:UILocalize.MuteTypes}" />
+			LocalizeDictionary="{x:Static app:UILocalize.MuteTypes}" />
 
 		<conv:LocalizeNameConverter
 			x:Key="SearchModeLocalizer"

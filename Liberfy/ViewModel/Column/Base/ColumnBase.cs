@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,13 +11,13 @@ namespace Liberfy
 {
 	internal enum ColumnType
 	{
-		Status       = 0x01,
-		Home         = Status | 0x02,
+		Status = 0x01,
+		Home = Status | 0x02,
 		Notification = Status | 0x04,
-		Messages     = 0x08,
-		Search       = Status | 0x10,
-		List         = Status | 0x20,
-		Stream       = Status | 0x40,
+		Messages = 0x08,
+		Search = Status | 0x10,
+		List = Status | 0x20,
+		Stream = Status | 0x40,
 	}
 
 	internal abstract class ColumnBase : NotificationObject
@@ -75,7 +76,7 @@ namespace Liberfy
 			get => _status ?? string.Empty;
 			set
 			{
-				if(SetProperty(ref _status, value))
+				if (SetProperty(ref _status, value))
 				{
 					_hasStatus = !string.IsNullOrWhiteSpace(_status);
 					RaisePropertyChanged(nameof(_hasStatus));
@@ -130,19 +131,20 @@ namespace Liberfy
 
 			Account ac;
 
-			if(s.UserId == Account.DummyId)
+			if (s.UserId == Account.DummyId)
 			{
 				ac = Account.Dummy;
 			}
 			else
 			{
 				ac = App.AccountSetting.FromId(s.UserId);
-				if (ac == null) {
+				if (ac == null)
+				{
 					throw new ArgumentOutOfRangeException();
 				}
 			}
 
-			switch(s.Type)
+			switch (s.Type)
 			{
 				case ColumnType.Home:
 					column = new StatusColumn(ac, ColumnType.Home, "Home");
@@ -177,8 +179,8 @@ namespace Liberfy
 			return column;
 		}
 
-		public static Dictionary<ColumnType, string> ColumnTypes { get; }
-			= new Dictionary<ColumnType, string>
+		public static LocalizeDictionary<ColumnType> ColumnTypes { get; }
+			= new LocalizeDictionary<ColumnType>(new Dictionary<object, string>
 			{
 				[ColumnType.Home]         = "ホーム",
 				[ColumnType.Notification] = "通知",
@@ -186,10 +188,10 @@ namespace Liberfy
 				[ColumnType.Search]       = "検索",
 				[ColumnType.List]         = "リスト",
 				[ColumnType.Stream]       = "リアルタイム検索",
-			};
+			});
 
-		public static Dictionary<ColumnType, string> ColumnNames { get; }
-			= new Dictionary<ColumnType, string>
+		public static IReadOnlyDictionary<ColumnType, string> ColumnNames { get; }
+			= new ReadOnlyDictionary<ColumnType, string>(new Dictionary<ColumnType, string>
 			{
 				[ColumnType.Home]         = "Home",
 				[ColumnType.Notification] = "Notification",
@@ -197,6 +199,6 @@ namespace Liberfy
 				[ColumnType.Search]       = "Search",
 				[ColumnType.List]         = "List",
 				[ColumnType.Stream]       = "Stream",
-			};
+			});
 	}
 }
