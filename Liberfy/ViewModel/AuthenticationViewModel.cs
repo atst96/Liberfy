@@ -151,9 +151,6 @@ namespace Liberfy.ViewModel
 				{
 					Error = ex.Message;
 					PageIndex++;
-				}
-				finally
-				{
 					IsRunning = false;
 				}
 			}

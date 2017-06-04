@@ -457,15 +457,16 @@ namespace Liberfy.ViewModel
 					account = new Account(tokens)
 					{
 						AutomaticallyLogin = Setting.AccountDefaultAutomaticallyLogin,
-					};
+						AutomaticallyLoadTimeline = Setting.AccountDefaultAutomaticallyLoadTimeline
+					}; 
 
 					Accounts.Add(account);
 
 					if (account.AutomaticallyLogin)
 					{
-						foreach (var cols in DefaultColumns)
+						foreach (var column in DefaultColumns)
 						{
-							App.Columns.Add(ColumnBase.FromSettings(cols.Clone(account)));
+							App.Columns.Add(ColumnBase.FromSettings(ColumnSetting.CreateFromDefault(column, account)));
 						}
 					}
 

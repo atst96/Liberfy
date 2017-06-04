@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	[JsonObject]
+	[JsonObject( MemberSerialization.OptIn)]
 	internal class ColumnSetting
 	{
 		[JsonProperty("type")]
@@ -16,13 +16,13 @@ namespace Liberfy
 		[JsonProperty("user_id")]
 		public long UserId { get; set; }
 
-		private ColumnProperties _properties = new ColumnProperties();
-
 		[JsonProperty("properties", NullValueHandling = NullValueHandling.Ignore)]
+		private ColumnProperties _properties;
+
 		public ColumnProperties Properties
 		{
-			get { return _properties; }
-			set { _properties = value != null ? new ColumnProperties(value) : new ColumnProperties(); }
+			get { return _properties ?? (_properties = new ColumnProperties()); }
+			set { _properties = value; }
 		}
 
 		[JsonConstructor]
@@ -32,19 +32,34 @@ namespace Liberfy
 		{
 			Type = type;
 			UserId = userId;
-			Properties = properties;
+			_properties = properties;
 		}
 
 		public ColumnSetting(ColumnType type, Account account, ColumnProperties properties = null)
 		{
 			Type = type;
 			UserId = account.Id;
-			Properties = properties;
+			_properties = properties;
 		}
 
-		public ColumnSetting Clone(Account account)
+		public static ColumnSetting CreateFromDefault(ColumnSetting def, Account account)
 		{
-			return new ColumnSetting(Type, account, _properties);
+			var clone = new ColumnProperties();
+			foreach (var prop in def.Properties)
+			{
+				if (prop.Value != null)
+				{
+					string key = string.Copy(prop.Key);
+					int valueType = (int)prop.Value.GetTypeCode();
+
+					if (valueType >= 2 && valueType <= 15)
+						clone.Add(key, prop.Value);
+					else if (valueType == 16)
+						clone.Add(key, prop.Value.ToString());
+				}
+			}
+
+			return new ColumnSetting(def.Type, account, clone);
 		}
 	}
 }

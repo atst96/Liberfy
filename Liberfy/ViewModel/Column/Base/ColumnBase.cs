@@ -39,14 +39,14 @@ namespace Liberfy
 
 		protected ColumnSetting Setting { get; private set; }
 
-		protected T TryGetProp<T>(string propertyName)
+		protected T TryGetProp<T>(string propertyName) where T : IConvertible
 		{
 			return Setting.Properties.TryGetValue<T>(propertyName);
 		}
 
-		protected void SetProp<T>(string propertyName, T value)
+		protected void SetProp(string propertyName, IConvertible value)
 		{
-			Setting.Properties[propertyName] = value;
+			Setting.Properties.SetValue(propertyName, value);
 		}
 
 		private string _title;
@@ -112,7 +112,8 @@ namespace Liberfy
 		{
 			bool changed = !Equals(refValue, newValue);
 
-			Setting.Properties[settingPropName] = JToken.FromObject(newValue);
+			if (JToken.FromObject(newValue) is IConvertible ic)
+				Setting.Properties.SetValue(settingPropName, ic);
 
 			if (changed)
 			{
@@ -123,21 +124,27 @@ namespace Liberfy
 			return changed;
 		}
 
-		public static bool TryFromSetting(ColumnSetting s, out ColumnBase column)
+		public static bool TryFromSetting(ColumnSetting setting, out ColumnBase column)
 		{
-			Account account;
-
-			if (s.UserId == Account.DummyId)
-			{
-				account = Account.Dummy;
-			}
-			else if (!App.AccountSetting.TryGetAccount(s.UserId, out account))
+			if(setting == null)
 			{
 				column = null;
 				return false;
 			}
 
-			switch(s.Type)
+			Account account;
+
+			if (setting.UserId == Account.DummyId)
+			{
+				account = Account.Dummy;
+			}
+			else if (!App.AccountSetting.TryGetAccount(setting.UserId, out account))
+			{
+				column = null;
+				return false;
+			}
+
+			switch (setting.Type)
 			{
 				case ColumnType.Home:
 					column = new StatusColumn(account, ColumnType.Home, "Home");
@@ -168,7 +175,7 @@ namespace Liberfy
 					return false;
 			}
 
-			column.Setting = s;
+			column.Setting = setting;
 
 			return true;
 		}

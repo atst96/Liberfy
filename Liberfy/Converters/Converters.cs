@@ -107,7 +107,7 @@ namespace Liberfy.Converter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			return ColumnBase.FromSettings(value as ColumnSetting);
+			return ColumnBase.TryFromSetting(value as ColumnSetting, out var column) ? column : null;
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
