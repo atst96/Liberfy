@@ -10,9 +10,7 @@ namespace Liberfy.ViewModel
 	internal class MainWindow : ViewModelBase
 	{
 		public AccountSetting AccountSetting => App.AccountSetting;
-
-		public FluidCollection<Account> Accounts => AccountSetting.Accounts;
-
+		public FluidCollection<Account> Accounts => App.Accounts;
 		public FluidCollection<ColumnBase> Columns => App.Columns;
 
 		private bool _isAccountsLoaded;
@@ -28,33 +26,22 @@ namespace Liberfy.ViewModel
 			if (_initialized) return;
 			_initialized = true;
 
-			if (Accounts.Count == 0)
+			if (Accounts.Count == 0 && !DialogService.OpenInitSettingView())
 			{
-				if (!DialogService.OpenSetting(page: 0, isModal: true))
-				{
-					DialogService.Invoke(ViewState.Close);
-					return;
-				}
+				DialogService.Invoke(ViewState.Close);
+				return;
 			}
 
-			foreach(var a in Accounts.AsParallel())
+			foreach (var account in Accounts.Where(a => a.AutomaticallyLogin))
 			{
-				await Task.Factory.StartNew(obj =>
+				account.IsLoading = true;
+
+				if (await account.LoginAsync())
 				{
-					var account = (Account)obj;
+					await account.LoadDetails();
+				}
 
-					if(account.AutomaticallyLogin)
-					{
-						a.IsLoading = true;
-
-						if(a.Login())
-						{
-							a.LoadDetails();
-						}
-
-						a.IsLoading = false;
-					}
-				}, a);
+				account.IsLoading = false;
 			}
 
 			IsAccountsLoaded = true;

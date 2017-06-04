@@ -169,7 +169,13 @@ namespace Liberfy
 			}
 		}
 
-		public bool OpenSetting(int? page = null, bool isModal = false)
+		public bool OpenInitSettingView()
+		{
+			OpenSetting(0, true);
+			return App.Accounts.Count > 0;
+		}
+
+		public void OpenSetting(int? page = null, bool isModal = false)
 		{
 			var settingWindow = app.Windows
 				.OfType<SettingWindow>()
@@ -194,24 +200,16 @@ namespace Liberfy
 				else
 					settingWindow.Show();
 			}
-
-			if (App.AccountSetting.Accounts.Count == 0)
-			{
-				App.ForceExit();
-				return false;
-			}
-			else
-				return true;
 		}
 
 		public MsgBoxResult MessageBox(string text, MsgBoxButtons buttons = 0, MsgBoxIcon icon = 0, MsgBoxFlags flags = 0)
 		{
-			return msgBox.Show(text, App.ApplicationName, buttons, icon, flags);
+			return msgBox.Show(text, App.AppName, buttons, icon, flags);
 		}
 
 		public MsgBoxResult MessageBox(string text, string caption = null, MsgBoxButtons buttons = 0, MsgBoxIcon icon = 0, MsgBoxFlags flags = 0)
 		{
-			return msgBox.Show(text, caption ?? App.ApplicationName, buttons, icon, flags);
+			return msgBox.Show(text, caption ?? App.AppName, buttons, icon, flags);
 		}
 
 		public void Open(ContentWindowViewModel viewModel)
@@ -275,7 +273,7 @@ namespace Liberfy
 		public bool ShowQuestion(string content)
 		{
 			var result = MessageBox(
-				content, App.ApplicationName,
+				content, App.AppName,
 				MsgBoxButtons.YesNo, MsgBoxIcon.Question);
 
 			return result == MsgBoxResult.Yes;

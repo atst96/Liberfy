@@ -104,7 +104,7 @@ namespace Liberfy
 
 		public DateTime UpdatedAt { get; private set; }
 
-		public UserInfo(User user) : base()
+		public UserInfo(User user)
 		{
 			Id = user.Id ?? Id;
 			CreatedAt = user.CreatedAt;
@@ -112,13 +112,13 @@ namespace Liberfy
 			Update(user);
 		}
 
-		public UserInfo(Account ac) : base()
+		public UserInfo(long id, string name, string screenName, bool isProtected, string profileImageUrl)
 		{
-			Id = ac.Id;
-			Name = CopyStr(ac.Name);
-			ScreenName = CopyStr(ac.ScreenName);
-			IsProtected = ac.IsProtected;
-			ProfileImageUrl = CopyStr(ac.ProfileImageUrl);
+			Id = id;
+			Name = CopyStr(name);
+			ScreenName = CopyStr(screenName);
+			IsProtected = isProtected;
+			ProfileImageUrl = CopyStr(profileImageUrl);
 
 			UpdatedAt = DateTime.Now;
 		}

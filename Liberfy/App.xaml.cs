@@ -29,10 +29,13 @@ namespace Liberfy
 		internal static AccountSetting AccountSetting => _accounts;
 		internal static Setting Setting => _setting;
 
-		private static readonly Assembly _assembly = Assembly.GetExecutingAssembly();
-		internal static Assembly Assembly => _assembly;
+		internal static FluidCollection<Account> Accounts { get; } = new FluidCollection<Account>();
 
-		public static string ApplicationName { get; } = "Liberfy";
+		internal static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
+
+		public const string AppName = "Liberfy";
+		public const string AppCodeName = "Francium";
+		public const string AppVersion = "0.1.2.0";
 
 		internal static DictionaryEx<NotifyCode, bool> NotificationEvents { get; } = new DictionaryEx<NotifyCode, bool>();
 
@@ -45,16 +48,21 @@ namespace Liberfy
 			// 設定を読み込む
 			if (LoadSettingWithErrorDialog(Defines.AccountsFile, ref _accounts))
 			{
+				if(_accounts.Accounts?.Length > 0)
+				{
+					foreach(var item in _accounts.Accounts.Distinct())
+					{
+						Accounts.Add(new Account(item));
+					}
+				}
+
 				if (_accounts.Columns?.Length > 0)
 				{
 					foreach (var s in _accounts.Columns)
 					{
-						try
+						if (ColumnBase.TryFromSetting(s, out var column))
 						{
-							Columns.Add(s.ToColumn());
-						}
-						catch (Exception ex)
-						{
+							Columns.Add(column);
 						}
 					}
 				}
@@ -109,7 +117,9 @@ namespace Liberfy
 
 		private static void SaveSettings()
 		{
-			// 各設定の保存
+			// アカウント設定の保存
+			AccountSetting.Accounts = Accounts.Select(a => a.ToSetting()).ToArray();
+			// カラム設定の保存
 			AccountSetting.Columns = Columns.Select(c => c.ToSetting()).ToArray();
 
 			// 設定をファイルに保存

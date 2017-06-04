@@ -22,7 +22,7 @@ namespace Liberfy.ViewModel
 		public Setting Setting => App.Setting;
 
 		public AccountSetting AccountSetting => App.AccountSetting;
-		public FluidCollection<Account> Accounts => AccountSetting.Accounts;
+		public FluidCollection<Account> Accounts => App.Accounts;
 
 		private const string AutoStartupRegSubKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
 
@@ -37,7 +37,7 @@ namespace Liberfy.ViewModel
 			{
 				var path = Regex.Escape(App.Assembly.Location);
 
-				return reg.GetValue(App.ApplicationName) is string regKeyValue
+				return reg.GetValue(App.AppName) is string regKeyValue
 					&& !string.IsNullOrEmpty(regKeyValue)
 					&& Regex.IsMatch(regKeyValue, $@"^(""{path}""|{path})(?<params>\s+.*)?$", RegexOptions.IgnoreCase);
 			}
@@ -83,11 +83,11 @@ namespace Liberfy.ViewModel
 					{
 						if (isAutoStartupEnabled)
 						{
-							reg.DeleteValue(App.ApplicationName);
+							reg.DeleteValue(App.AppName);
 						}
 						else
 						{
-							reg.SetValue(App.ApplicationName, $"\"{App.Assembly.Location}\" /startup");
+							reg.SetValue(App.AppName, $"\"{App.Assembly.Location}\" /startup");
 						}
 					}
 
@@ -313,7 +313,7 @@ namespace Liberfy.ViewModel
 						ViewFonts.Insert(0, fontFamily);
 					}
 				}
-				catch (Exception ex)
+				catch (Exception)
 				{
 
 				}
@@ -461,27 +461,24 @@ namespace Liberfy.ViewModel
 
 					Accounts.Add(account);
 
-					if(account.AutomaticallyLogin)
+					if (account.AutomaticallyLogin)
 					{
-						foreach(var cols in DefaultColumns)
+						foreach (var cols in DefaultColumns)
 						{
-							App.Columns.Add(cols.ToColumn(account));
+							App.Columns.Add(ColumnBase.FromSettings(cols.Clone(account)));
 						}
 					}
 
 					account.IsLoading = true;
 
-					await Task.Run(() =>
+					if (!await account.LoginAsync())
 					{
-						if (!account.Login())
-						{
-							DialogService.MessageBox(
-								$"アカウント情報の取得に失敗しました:\n",
-								MsgBoxButtons.Ok, MsgBoxIcon.Information);
+						DialogService.MessageBox(
+							$"アカウント情報の取得に失敗しました:\n",
+							MsgBoxButtons.Ok, MsgBoxIcon.Information);
 
-							Accounts.Remove(account);
-						}
-					});
+						Accounts.Remove(account);
+					}
 
 					account.IsLoading = false;
 				}
@@ -501,7 +498,7 @@ namespace Liberfy.ViewModel
 		void AccountDelete(Account account)
 		{
 			if (DialogService.ShowQuestion(
-				$"本当にアカウントを一覧から削除しますか？\n{account.Name}@{account.ScreenName}"))
+				$"本当にアカウントを一覧から削除しますか？\n{account.Info.Name}@{account.Info.ScreenName}"))
 			{
 				Accounts.Remove(account);
 				account.Unload();
@@ -708,7 +705,7 @@ namespace Liberfy.ViewModel
 			get => _selectedMute;
 			set
 			{
-				if(SetProperty(ref _selectedMute, value))
+				if (SetProperty(ref _selectedMute, value))
 				{
 					MuteRemoveCommand.RaiseCanExecute();
 				}
@@ -725,7 +722,7 @@ namespace Liberfy.ViewModel
 
 		private void MuteAdd()
 		{
-			if(Mute.Create(_tempMuteType, _tempMuteSearch, _tempMuteText, out var m))
+			if (Mute.Create(_tempMuteType, _tempMuteSearch, _tempMuteText, out var m))
 			{
 				MuteList.Add(m);
 				SelectedMute = m;

@@ -23,7 +23,7 @@ namespace Liberfy.ViewModel
 		private static readonly Validator tweetValidator = new Validator();
 		protected static Setting Setting => App.Setting;
 
-		public FluidCollection<Account> Accounts => App.AccountSetting.Accounts;
+		public FluidCollection<Account> Accounts => App.Accounts;
 
 		private Account _selectedAccount;
 		public Account SelectedAccount

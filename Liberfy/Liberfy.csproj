@@ -139,6 +139,8 @@
     <Compile Include="Info\OSInfo.cs" />
     <Compile Include="ListBoxEx.cs" />
     <Compile Include="MathEx.cs" />
+    <Compile Include="Model\Setting\AccountItem.cs" />
+    <Compile Include="Model\Setting\ApiToken.cs" />
     <Compile Include="MVVM\CommandHelper.cs" />
     <Compile Include="Behaviors\TextBoxBehavior.cs" />
     <Compile Include="Behaviors\TextBoxController.cs" />

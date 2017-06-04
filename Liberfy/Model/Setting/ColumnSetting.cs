@@ -18,7 +18,7 @@ namespace Liberfy
 
 		private ColumnProperties _properties = new ColumnProperties();
 
-		[JsonProperty("properties")]
+		[JsonProperty("properties", NullValueHandling = NullValueHandling.Ignore)]
 		public ColumnProperties Properties
 		{
 			get { return _properties; }
@@ -42,13 +42,9 @@ namespace Liberfy
 			Properties = properties;
 		}
 
-		private ColumnSetting Clone(Account account)
+		public ColumnSetting Clone(Account account)
 		{
 			return new ColumnSetting(Type, account, _properties);
 		}
-
-		public ColumnBase ToColumn() => ColumnBase.FromSettings(this);
-
-		public ColumnBase ToColumn(Account account) => ColumnBase.FromSettings(this.Clone(account));
 	}
 }

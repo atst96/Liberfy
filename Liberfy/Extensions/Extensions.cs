@@ -18,9 +18,9 @@ namespace Liberfy
 			return obj is T tObj ? tObj : default(T);
 		}
 
-		public static void DisposeAll<T>(this IEnumerable<T> collection) where T: IDisposable
+		public static void DisposeAll<T>(this IEnumerable<T> collection) where T : IDisposable
 		{
-			foreach(var item in collection)
+			foreach (var item in collection)
 			{
 				item.Dispose();
 			}
@@ -31,7 +31,7 @@ namespace Liberfy
 			if (action == null)
 				return;
 
-			foreach(var item in collection)
+			foreach (var item in collection)
 			{
 				action(item);
 			}
@@ -41,9 +41,9 @@ namespace Liberfy
 		{
 			var list = new List<T>(collection.Count());
 
-			foreach(var item in collection)
+			foreach (var item in collection)
 			{
-				if(!list.Contains(item))
+				if (!list.Contains(item))
 				{
 					list.Add(item);
 				}

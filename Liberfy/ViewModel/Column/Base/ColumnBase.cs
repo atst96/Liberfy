@@ -123,82 +123,81 @@ namespace Liberfy
 			return changed;
 		}
 
-		public static ColumnBase FromSettings(ColumnSetting s)
+		public static bool TryFromSetting(ColumnSetting s, out ColumnBase column)
 		{
-			if (s == null) return null;
-
-			ColumnBase column;
-
-			Account ac;
+			Account account;
 
 			if (s.UserId == Account.DummyId)
 			{
-				ac = Account.Dummy;
+				account = Account.Dummy;
 			}
-			else
+			else if (!App.AccountSetting.TryGetAccount(s.UserId, out account))
 			{
-				ac = App.AccountSetting.FromId(s.UserId);
-				if (ac == null)
-				{
-					throw new ArgumentOutOfRangeException();
-				}
+				column = null;
+				return false;
 			}
 
-			switch (s.Type)
+			switch(s.Type)
 			{
 				case ColumnType.Home:
-					column = new StatusColumn(ac, ColumnType.Home, "Home");
+					column = new StatusColumn(account, ColumnType.Home, "Home");
 					break;
 
 				case ColumnType.Notification:
-					column = new StatusColumn(ac, ColumnType.Notification, "Notification");
+					column = new StatusColumn(account, ColumnType.Notification, "Notification");
 					break;
 
 				case ColumnType.Search:
-					column = new SearchColumn(ac);
+					column = new SearchColumn(account);
 					break;
 
 				case ColumnType.List:
-					column = new ListColumn(ac);
+					column = new ListColumn(account);
 					break;
 
 				case ColumnType.Stream:
-					column = new StreamSearchColumn(ac);
+					column = new StreamSearchColumn(account);
 					break;
 
 				case ColumnType.Messages:
-					column = new MessageColumn(ac);
+					column = new MessageColumn(account);
 					break;
 
 				default:
-					throw new NotImplementedException();
+					column = null;
+					return false;
 			}
 
 			column.Setting = s;
 
-			return column;
+			return true;
+		}
+
+		public static ColumnBase FromSettings(ColumnSetting s)
+		{
+			return TryFromSetting(s, out var c) ? c : throw new NotSupportedException();
 		}
 
 		public static LocalizeDictionary<ColumnType> ColumnTypes { get; }
 			= new LocalizeDictionary<ColumnType>(new Dictionary<object, string>
 			{
-				[ColumnType.Home]         = "ホーム",
+				[ColumnType.Home] = "ホーム",
 				[ColumnType.Notification] = "通知",
-				[ColumnType.Messages]     = "ダイレクトメッセージ",
-				[ColumnType.Search]       = "検索",
-				[ColumnType.List]         = "リスト",
-				[ColumnType.Stream]       = "リアルタイム検索",
+				[ColumnType.Messages] = "ダイレクトメッセージ",
+				[ColumnType.Search] = "検索",
+				[ColumnType.List] = "リスト",
+				[ColumnType.Stream] = "リアルタイム検索",
 			});
 
 		public static IReadOnlyDictionary<ColumnType, string> ColumnNames { get; }
 			= new ReadOnlyDictionary<ColumnType, string>(new Dictionary<ColumnType, string>
 			{
-				[ColumnType.Home]         = "Home",
+				[ColumnType.Home] = "Home",
 				[ColumnType.Notification] = "Notification",
-				[ColumnType.Messages]     = "Message",
-				[ColumnType.Search]       = "Search",
-				[ColumnType.List]         = "List",
-				[ColumnType.Stream]       = "Stream",
+				[ColumnType.Messages] = "Message",
+				[ColumnType.Search] = "Search",
+				[ColumnType.List] = "List",
+				[ColumnType.Stream] = "Stream",
 			});
 	}
 }

@@ -10,30 +10,26 @@ namespace Liberfy
 	[JsonObject(MemberSerialization.OptIn)]
 	internal class AccountSetting : NotificationObject
 	{
+		private static FluidCollection<Account> _accounts => App.Accounts;
+
 		public bool ContainsId(double id)
 		{
-			return Accounts.Any((a) => a.Id == id);
+			return _accounts.Any((a) => a.Id == id);
 		}
 
-		public Account FromId(long id)
+		public bool TryGetAccount(long id, out Account account)
 		{
-			return Accounts.FirstOrDefault((a) => a.Id == id);
+			account = _accounts.FirstOrDefault((a) => a.Id == id);
+			return account != null;
 		}
 
-		[JsonProperty("accounts", Order = 1)]
-		private Account[] _jAccounts
+		public Account GetAccount(long id)
 		{
-			get => Accounts.ToArray();
-			set
-			{
-				if (value != null)
-					Accounts.Reset(value);
-				else
-					Accounts.Reset();
-			}
+			return _accounts.FirstOrDefault((a) => a.Id == id);
 		}
 
-		public FluidCollection<Account> Accounts { get; } = new FluidCollection<Account>();
+		[JsonProperty("accounts")]
+		public AccountItem[] Accounts { get; set; }
 
 		[JsonProperty("columns")]
 		public ColumnSetting[] Columns { get; set; }
