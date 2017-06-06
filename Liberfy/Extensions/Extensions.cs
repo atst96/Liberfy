@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace Liberfy
 {
@@ -35,6 +36,21 @@ namespace Liberfy
 			{
 				action(item);
 			}
+		}
+
+		public static async void ForEach<T>(this IEnumerable<T> collection, Action<T> action, Dispatcher dispatcher)
+		{
+			if (action == null)
+				return;
+
+			Action d = delegate { };
+			await dispatcher.InvokeAsync(() =>
+			{
+				foreach (var item in collection)
+				{
+					action(item);
+				}
+			});
 		}
 
 		public static IEnumerable<T> Distinct<T>(this IEnumerable<T> collection)

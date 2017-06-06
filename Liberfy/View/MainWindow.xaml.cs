@@ -23,6 +23,18 @@ namespace Liberfy
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			switch(RenderCapability.Tier >> 16)
+			{
+				case 0:
+					Title += " [SWレンダリング]"; break;
+
+				case 1:
+					Title += " [HWレンダリング(制限)]"; break;
+
+				case 2:
+					Title += " [HWレンダリング]"; break;
+			}
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace Liberfy
 		Stream = Status | 0x40,
 	}
 
-	internal abstract class ColumnBase : NotificationObject
+	internal class ColumnBase : NotificationObject
 	{
 		protected ColumnBase(Account account, ColumnType type, string title = null)
 		{
@@ -38,6 +38,8 @@ namespace Liberfy
 		public Account Account { get; }
 
 		protected ColumnSetting Setting { get; private set; }
+
+		public FluidCollection<IItem> Items { get; } = new FluidCollection<IItem>();
 
 		protected T TryGetProp<T>(string propertyName) where T : IConvertible
 		{
@@ -89,7 +91,7 @@ namespace Liberfy
 
 		public virtual bool IsStatusColumn { get; } = false;
 
-		public abstract void OnShowDetails(IItem item);
+		public virtual void OnShowDetails(IItem item) { }
 
 		public ColumnSetting ToSetting() => Setting;
 
@@ -126,7 +128,7 @@ namespace Liberfy
 
 		public static bool TryFromSetting(ColumnSetting setting, out ColumnBase column)
 		{
-			if(setting == null)
+			if (setting == null)
 			{
 				column = null;
 				return false;

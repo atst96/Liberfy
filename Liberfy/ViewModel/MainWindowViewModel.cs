@@ -39,6 +39,7 @@ namespace Liberfy.ViewModel
 				if (await account.LoginAsync())
 				{
 					await account.LoadDetails();
+					account.StartTimeline();
 				}
 
 				account.IsLoading = false;
@@ -51,7 +52,7 @@ namespace Liberfy.ViewModel
 		public bool IsAccountMenuOpen
 		{
 			get => _isAccountMenuOpen;
-			private set => SetProperty(ref _isAccountMenuOpen, value);
+			set => SetProperty(ref _isAccountMenuOpen, value);
 		}
 
 		private void CloseAccountMenu()

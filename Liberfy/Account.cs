@@ -216,6 +216,11 @@ namespace Liberfy
 			Task.Run((Action)LoadIncoming)
 		);
 
+		public void StartTimeline()
+		{
+			Timeline.Load();
+		}
+
 		private string _loadError;
 		public string LoadErorr
 		{

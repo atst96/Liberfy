@@ -17,8 +17,8 @@ namespace Liberfy
 			BindingOperations.EnableCollectionSynchronization(Users, App.CommonLockObject);
 		}
 
-		public static IdBaseCollection<StatusInfo> Statuses { get; } = new IdBaseCollection<StatusInfo>();
-		public static IdBaseCollection<UserInfo> Users { get; } = new IdBaseCollection<UserInfo>();
+		public static ConcurrentDictionary<long, StatusInfo> Statuses { get; } = new ConcurrentDictionary<long, StatusInfo>();
+		public static ConcurrentDictionary<long, UserInfo> Users { get; } = new ConcurrentDictionary<long, UserInfo>();
 
 
 		public static UserInfo UserAddOrUpdate(User user)

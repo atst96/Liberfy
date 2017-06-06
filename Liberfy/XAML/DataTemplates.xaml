@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:local="clr-namespace:Liberfy.XAML"
 	xmlns:vm="clr-namespace:Liberfy.ViewModel"
 	xmlns:app="clr-namespace:Liberfy">
 
@@ -383,6 +382,96 @@
 					ItemsSource="{x:Static app:SearchColumn.Languages}" />
 
 			</Grid>
+		</Grid>
+	</DataTemplate>
+
+	<!--#endregion-->
+
+	<!--#region Item templates-->
+
+	<DataTemplate DataType="{x:Type app:StatusItem}">
+		<Grid Background="Transparent">
+			<DockPanel Margin="4">
+				<!--<DockPanel
+					DockPanel.Dock="Bottom"
+					Margin="8 4 8 8">
+
+					<UniformGrid
+						DockPanel.Dock="Right"
+						HorizontalAlignment="Right"
+						Rows="1" Width="160">
+
+					</UniformGrid>
+
+					<TextBlock
+						DockPanel.Dock="Left"
+						VerticalAlignment="Center"
+						TextTrimming="CharacterEllipsis">
+						<Hyperlink Style="{StaticResource MetadataLinkText}">
+							<Run Text="{Binding Source}" />
+						</Hyperlink>
+					</TextBlock>
+				</DockPanel>-->
+
+				<!-- Profile image -->
+				<Button
+					Margin="4"
+					DockPanel.Dock="Left"
+					Width="48" Height="48"
+					VerticalAlignment="Top"
+					Style="{StaticResource ImageButton}">
+					<Image
+						Width="48" Height="48"
+						Source="{Binding User.ProfileImageUrl, Mode=OneWay, IsAsync=True}" />
+				</Button>
+
+				<!-- Right contents -->
+				<DockPanel
+					Margin="4"
+					DockPanel.Dock="Top">
+					<Border
+						Visibility="Collapsed"
+						DockPanel.Dock="Left"
+						Width="16" Height="16" />
+
+					<TextBlock
+						DockPanel.Dock="Right"
+						VerticalAlignment="Top"
+						HorizontalAlignment="Right"
+						FontSize="11">
+						<Hyperlink Style="{StaticResource UserNameLinkText}">
+							<Run Text="Tweet time" />
+						</Hyperlink>
+					</TextBlock>
+
+					<TextBlock
+						DockPanel.Dock="Left"
+						FontWeight="Bold"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left">
+						<Hyperlink Style="{StaticResource UserNameLinkText}">
+							<Run Text="{Binding User.Name, Mode=OneWay}" />
+						</Hyperlink>
+					</TextBlock>
+
+					<TextBlock
+						DockPanel.Dock="Left"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Left">
+						<Hyperlink Style="{StaticResource UserNameLinkText}">
+							<Run Text="{Binding User.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+						</Hyperlink>
+					</TextBlock>
+
+				</DockPanel>
+
+				<TextBlock
+					TextWrapping="Wrap"
+					DockPanel.Dock="Top"
+					HorizontalAlignment="Stretch"
+					Margin="{StaticResource TimelineItemEntityMargin}"
+					Text="{Binding Status.Text, Mode=OneTime}" />
+			</DockPanel>
 		</Grid>
 	</DataTemplate>
 

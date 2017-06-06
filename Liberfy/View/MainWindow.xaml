@@ -102,7 +102,7 @@
 								Width="16" Height="16"
 								Fill="#444" Stretch="Fill" />
 
-							<!-- Column title -->
+							 <!--Column title--> 
 							<TextBlock
 								Grid.Column="2"
 								TextWrapping="NoWrap"
@@ -147,10 +147,10 @@
 						Content="{Binding Status, Mode=TwoWay}"
 						app:ElementBehavior.Visible="{Binding HasStatus, Mode=OneWay}" />
 
-					<!--<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<ScrollViewer VerticalScrollBarVisibility="Auto">
 						<app:TimelineView
 							ItemsSource="{Binding Items, Mode=OneTime}"/>
-					</ScrollViewer>-->
+					</ScrollViewer>
 				</DockPanel>
 			</Border>
 		</DataTemplate>
@@ -204,13 +204,15 @@
 		</Border>
 
 		<ScrollViewer
-			x:Name="scrollViewer"
+			x:Name="timelineViewr"
+			PanningMode="HorizontalOnly"
 			VerticalScrollBarVisibility="Hidden"
-			HorizontalScrollBarVisibility="Auto">
+			HorizontalScrollBarVisibility="Auto"
+			Background="Transparent">
 			<ItemsControl
-				Height="{Binding ViewportHeight, ElementName=scrollViewer}"
 				ItemsSource="{Binding Columns, Mode=OneTime}"
-				ItemTemplate="{StaticResource ColumnTemplate}">
+				ItemTemplate="{StaticResource ColumnTemplate}"
+				Height="{Binding ViewportHeight, ElementName=timelineViewr, Mode=OneWay}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
 						<StackPanel Orientation="Horizontal" Margin="3" />

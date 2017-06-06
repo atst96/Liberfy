@@ -21,6 +21,66 @@ namespace Liberfy
 			_userId = account.Id;
 		}
 
+		public void Load()
+		{
+			Parallel.Invoke(
+				LoadHomeTimeline,
+				LoadNotificationTimeline,
+				LoadMessageTimeline
+			);
+		}
+
+		private void LoadHomeTimeline()
+		{
+			try
+			{
+				var statuses = _tokens.Statuses.HomeTimeline();
+				var items = GetStatusItem(statuses);
+
+				Columns
+					.Where(c => c.Type == ColumnType.Home)
+					.ForEach(c => c.Items.Reset(items), App.Current.Dispatcher);
+			}
+			catch
+			{
+				// TODO: 取得失敗時の処理
+			}
+		}
+
+		private IEnumerable<StatusItem> GetStatusItem(IEnumerable<Status> statuses)
+		{
+			return statuses.Select(s => new StatusItem(s, _account));
+		}
+
+		private void LoadNotificationTimeline()
+		{
+			try
+			{
+				var statuses = _tokens.Statuses.MentionsTimeline();
+				var items = GetStatusItem(statuses);
+
+				Columns
+					.Where(c => c.Type == ColumnType.Notification)
+					.ForEach(c => c.Items.Reset(items), App.Current.Dispatcher);
+			}
+			catch
+			{
+				// TODO: 取得失敗時の処理
+			}
+		}
+
+		private void LoadMessageTimeline()
+		{
+			try
+			{
+
+			}
+			catch
+			{
+				// TODO: 取得失敗時の処理
+			}
+		}
+
 		public void Unload()
 		{
 			var columns = Columns;
