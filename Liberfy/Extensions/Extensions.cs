@@ -67,5 +67,26 @@ namespace Liberfy
 
 			return list;
 		}
+
+		public static LinkedList<T> ToLinkedList<T>(this IEnumerable<T> collection)
+		{
+			return new LinkedList<T>(collection);
+		}
+
+		public static IEnumerable<T> SafeJoin<T>(this IEnumerable<IEnumerable<T>> collection)
+		{
+			foreach (IEnumerable<T> items in collection)
+			{
+				if (items != null)
+				{
+					foreach (T item in items)
+					{
+						yield return item;
+					}
+				}
+			}
+
+			yield break;
+		}
 	}
 }

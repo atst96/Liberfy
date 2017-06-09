@@ -114,6 +114,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Behaviors\TimelineBehavior.cs" />
     <Compile Include="dev_*.cs" />
     <Compile Include="Behaviors\PasteImageBehavior.cs" />
     <Compile Include="Component\ListBoxItemFocusBehavior.cs" />

@@ -2,7 +2,8 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:vm="clr-namespace:Liberfy.ViewModel"
-	xmlns:app="clr-namespace:Liberfy">
+	xmlns:app="clr-namespace:Liberfy"
+	xmlns:b="clr-namespace:Liberfy.Behaviors">
 
 	<!--#region Template selectors-->
 	<app:ColumnOptionTemplateSelector x:Key="ColumnOptionTemplateSelector" />
@@ -470,7 +471,7 @@
 					DockPanel.Dock="Top"
 					HorizontalAlignment="Stretch"
 					Margin="{StaticResource TimelineItemEntityMargin}"
-					Text="{Binding Status.Text, Mode=OneTime}" />
+					b:TimelineBehavior.StatusInfo="{Binding Status, Mode=OneTime}"/>
 			</DockPanel>
 		</Grid>
 	</DataTemplate>

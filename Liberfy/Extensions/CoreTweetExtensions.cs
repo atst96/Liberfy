@@ -13,5 +13,27 @@ namespace Liberfy
 		{
 			return (status.RetweetedStatus ?? status).Id;
 		}
+
+		internal static IEnumerable<Entity> GetEntities(this StatusInfo status)
+		{
+			return new Entity[][]
+			{
+				status.Entities.HashTags,
+				status.Entities.Symbols,
+				status.Entities.Urls,
+				status.Entities.UserMentions,
+				status.Entities.Media
+			}.SafeJoin();
+		}
+
+		public static int GetStartIndex(this Entity entity)
+		{
+			return entity.Indices[0];
+		}
+
+		public static int GetEndIndex(this Entity entity)
+		{
+			return entity.Indices[1];
+		}
 	}
 }
