@@ -73,6 +73,7 @@ namespace Liberfy
 			return new LinkedList<T>(collection);
 		}
 
+		// TODO: もっとスマートに書ける方法
 		public static IEnumerable<T> SafeJoin<T>(this IEnumerable<IEnumerable<T>> collection)
 		{
 			foreach (IEnumerable<T> items in collection)

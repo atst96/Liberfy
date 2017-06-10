@@ -31,7 +31,7 @@ namespace Liberfy.Behaviors
 				typeof(StatusInfo), typeof(TimelineBehavior),
 				new PropertyMetadata(null, StatusInfoChanged));
 
-		private static void StatusInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		private static async void StatusInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var textBlock = d as TextBlock;
 			if (textBlock == null) return;
@@ -56,34 +56,39 @@ namespace Liberfy.Behaviors
 			}
 			else
 			{
-				// リンク付きツイートの作成
-				// ([テキスト])[リンク] [テキスト] [リンク] [テキスト]....[リンク] [テキスト] の順に生成する
-
-				int endIndex;
-				Entity currentEntity = entities[0];
-
-				if (currentEntity.GetStartIndex() != 0)
-					inlines.Add(text.Slice(0, currentEntity.GetStartIndex()));
-
-				for (int i = 0; i < entities.Length; i++)
+				await App.Current.Dispatcher.InvokeAsync(() =>
 				{
-					currentEntity = entities[i];
+					// リンク付きツイートの作成
+					// ([テキスト]) [リンク] [テキスト] [リンク] [テキスト]....[リンク] ([テキスト]) の順に生成する
 
-					inlines.Add(CreateHyperlink(currentEntity, text));
+					int endIndex;
+					Entity currentEntity = entities[0];
 
-					endIndex = currentEntity.GetEndIndex();
-					if (endIndex != textLength)
+					if (currentEntity.GetStartIndex() != 0)
 					{
-						if (entities.Length > i + 1)
+						inlines.Add(text.Slice(0, currentEntity.GetStartIndex()));
+					}
+
+					for (int i = 0; i < entities.Length; i++)
+					{
+						currentEntity = entities[i];
+
+						inlines.Add(CreateHyperlink(currentEntity, text));
+
+						endIndex = currentEntity.GetEndIndex();
+						if (endIndex != textLength)
 						{
-							inlines.Add(text.Slice(endIndex, currentEntity.GetEndIndex()));
-						}
-						else
-						{
-							inlines.Add(text.Slice(endIndex, textLength));
+							if (entities.Length > i + 1)
+							{
+								inlines.Add(text.Slice(endIndex, entities[i + 1].GetStartIndex()));
+							}
+							else
+							{
+								inlines.Add(text.Slice(endIndex, textLength));
+							}
 						}
 					}
-				}
+				});
 			}
 		}
 
