@@ -12,14 +12,14 @@ namespace Liberfy
 		private int[] _surrogatedIndices;
 		private int _surrogateCount;
 
-		private bool _hasSurrogatePairs;
-		public bool HasSurrogateParis => _hasSurrogatePairs;
-
 		private string _string;
 		public string String => _string;
 
 		private int _length;
 		public int Length => _length;
+
+		private bool _hasSurrogatePairs;
+		public bool HasSurrogateParis => _hasSurrogatePairs;
 
 		public TwStringInfo(string text)
 		{
@@ -61,13 +61,12 @@ namespace Liberfy
 		{
 			if (_hasSurrogatePairs)
 			{
-				int i = 0;
-
+				int startSurListIndex = 0;
 				int actualStartIndex = startIndex;
-				while (i < _surrogateCount && _surrogatedIndices[i] < startIndex)
+				while (startSurListIndex < _surrogateCount && _surrogatedIndices[startSurListIndex] < startIndex)
 				{
 					actualStartIndex++;
-					i++;
+					startSurListIndex++;
 				}
 
 				return String.Substring(actualStartIndex);
@@ -84,20 +83,20 @@ namespace Liberfy
 
 			if (_hasSurrogatePairs)
 			{
-				int i = 0;
-
+				int startSurListIndex = 0;
 				int actualStartIndex = startIndex;
-				while (i < _surrogateCount && _surrogatedIndices[i] < actualStartIndex)
+				while (startSurListIndex < _surrogateCount && _surrogatedIndices[startSurListIndex] < actualStartIndex)
 				{
 					actualStartIndex++;
-					i++;
+					startSurListIndex++;
 				}
 
+				int lenSurListIndex = startSurListIndex;
 				int actualEndIndex = actualStartIndex + length;
-				while (i < _surrogateCount && _surrogatedIndices[i] < actualEndIndex)
+				while (lenSurListIndex < _surrogateCount && _surrogatedIndices[lenSurListIndex] < actualEndIndex)
 				{
 					actualEndIndex++;
-					i++;
+					lenSurListIndex++;
 				}
 
 				return String.Substring(actualStartIndex, actualEndIndex - actualStartIndex);
