@@ -146,6 +146,7 @@
     <Compile Include="Behaviors\TextBoxBehavior.cs" />
     <Compile Include="Behaviors\TextBoxController.cs" />
     <Compile Include="TimelineView.cs" />
+    <Compile Include="TwStringInfo.cs" />
     <Compile Include="ViewModel\UploadMedia.cs" />
     <Compile Include="UILocalize.cs" />
     <Compile Include="ViewModel\Column\Base\ColumnBase.cs" />

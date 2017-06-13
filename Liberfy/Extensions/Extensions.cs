@@ -68,22 +68,13 @@ namespace Liberfy
 			return list;
 		}
 
-		public static LinkedList<T> ToLinkedList<T>(this IEnumerable<T> collection)
+		public static IEnumerable<T> Merge<T>(this IEnumerable<IEnumerable<T>> collection)
 		{
-			return new LinkedList<T>(collection);
-		}
-
-		// TODO: もっとスマートに書ける方法
-		public static IEnumerable<T> SafeJoin<T>(this IEnumerable<IEnumerable<T>> collection)
-		{
-			foreach (IEnumerable<T> items in collection)
+			foreach (var items in collection.Where(items => items != null))
 			{
-				if (items != null)
+				foreach (var item in items.Where(item => item != null))
 				{
-					foreach (T item in items)
-					{
-						yield return item;
-					}
+					yield return item;
 				}
 			}
 

@@ -45,14 +45,14 @@ namespace Liberfy.Behaviors
 				.OrderBy(entity => entity.Indices[0])
 				.ToArray();
 
-			var text = status.Text;
-			int textLength = tweetValidator.GetTweetLength(text);
+			var text = new TwStringInfo(status.Text);
+			int textLength = text.Length;
 
 			var inlines = textBlock.Inlines;
 
 			if (entities.Length == 0)
 			{
-				inlines.Add(text);
+				inlines.Add(status.Text);
 			}
 			else
 			{
@@ -62,37 +62,36 @@ namespace Liberfy.Behaviors
 					// ([テキスト]) [リンク] [テキスト] [リンク] [テキスト]....[リンク] ([テキスト]) の順に生成する
 
 					int endIndex;
-					Entity currentEntity = entities[0];
+					var entity = entities[0];
 
-					if (currentEntity.GetStartIndex() != 0)
+					if (entity.StartIndex != 0)
 					{
-						inlines.Add(text.Slice(0, currentEntity.GetStartIndex()));
+						inlines.Add(text.Slice(0, entity.StartIndex));
 					}
 
 					for (int i = 0; i < entities.Length; i++)
 					{
-						currentEntity = entities[i];
+						entity = entities[i];
 
-						inlines.Add(CreateHyperlink(currentEntity, text));
+						inlines.Add(CreateHyperlink(entity, text));
 
-						endIndex = currentEntity.GetEndIndex();
-						if (endIndex != textLength)
+						endIndex = entity.EndIndex;
+						if (endIndex <= textLength)
 						{
-							if (entities.Length > i + 1)
-							{
-								inlines.Add(text.Slice(endIndex, entities[i + 1].GetStartIndex()));
-							}
-							else
-							{
-								inlines.Add(text.Slice(endIndex, textLength));
-							}
+							inlines.Add(text.Slice(endIndex,
+								entities.Length > i + 1 ? entities[i + 1].StartIndex : textLength));
 						}
+						else
+							break;
 					}
 				});
 			}
+
+			text.Dispose();
+			text = null;
 		}
 
-		private static Hyperlink CreateHyperlink(Entity entity, string text)
+		private static Hyperlink CreateHyperlink(Entity entity, TwStringInfo text)
 		{
 			var link = new Hyperlink()
 			{
@@ -100,21 +99,23 @@ namespace Liberfy.Behaviors
 				CommandParameter = entity,
 			};
 
-			if (entity is UserMentionEntity mention)
+			switch (entity)
 			{
-				link.Inlines.Add(text.Slice(mention.Indices[0], mention.Indices[0] + 1) + mention.ScreenName);
-			}
-			else if (entity is UrlEntity url)
-			{
-				link.Inlines.Add(url.DisplayUrl);
-			}
-			else if (entity is SymbolEntity symbol)
-			{
-				link.Inlines.Add(text.Slice(symbol.Indices[0], symbol.Indices[0] + 1) + symbol.Text);
-			}
-			else if (entity is MediaEntity media)
-			{
-				link.Inlines.Add(media.MediaUrl);
+				case UserMentionEntity mention:
+					link.Inlines.Add(text.Slice(mention.StartIndex, mention.EndIndex));
+					break;
+
+				case MediaEntity media:
+					link.Inlines.Add(media.MediaUrl);
+					break;
+
+				case UrlEntity url:
+					link.Inlines.Add(url.DisplayUrl);
+					break;
+
+				case SymbolEntity symbol:
+					link.Inlines.Add(text.Slice(symbol.StartIndex, symbol.EndIndex));
+					break;
 			}
 
 			return link;

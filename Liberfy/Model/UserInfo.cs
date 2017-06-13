@@ -115,10 +115,10 @@ namespace Liberfy
 		public UserInfo(long id, string name, string screenName, bool isProtected, string profileImageUrl)
 		{
 			Id = id;
-			Name = CopyStr(name);
-			ScreenName = CopyStr(screenName);
+			Name = name;
+			ScreenName = screenName;
 			IsProtected = isProtected;
-			ProfileImageUrl = CopyStr(profileImageUrl);
+			ProfileImageUrl = profileImageUrl;
 
 			UpdatedAt = DateTime.Now;
 		}
@@ -130,17 +130,12 @@ namespace Liberfy
 				: (Color)ColorConverter.ConvertFromString("#" + name);
 		}
 
-		private static string CopyStr(string from)
-		{
-			return from == null ? null : String.Copy(from);
-		}
-
 		public void Update(User item)
 		{
 			IsContributorsEnabled = item.IsContributorsEnabled;
 			IsDefaultProfile = item.IsDefaultProfile;
 			IsDefaultProfileImage = item.IsDefaultProfileImage;
-			Description = CopyStr(item.Description);
+			Description = item.Description;
 			Entities = item.Entities;
 			FavouritesCount = item.FavouritesCount;
 			IsFollowRequestSent = item.IsFollowRequestSent ?? IsFollowRequestSent;
@@ -150,18 +145,18 @@ namespace Liberfy
 			IsGeoEnabled = item.IsGeoEnabled;
 			IsTranslator = item.IsTranslator;
 			IsTranslationEnabled = item.IsTranslationEnabled;
-			Language = CopyStr(item.Language);
+			Language = item.Language;
 			ListedCount = item.ListedCount ?? ListedCount;
-			Location = CopyStr(item.Location);
+			Location = item.Location;
 			IsMuting = item.IsMuting ?? IsMuting;
-			Name = CopyStr(item.Name);
+			Name = item.Name;
 			NeedsPhoneVerification = item.NeedsPhoneVerification ?? NeedsPhoneVerification;
 			ProfileBackgroundColor = ToColor(item.ProfileBackgroundColor);
-			ProfileBackgroundImageUrl = CopyStr(item.ProfileBackgroundImageUrl);
-			ProfileBackgroundImageUrlHttps = CopyStr(item.ProfileBackgroundImageUrlHttps);
+			ProfileBackgroundImageUrl = item.ProfileBackgroundImageUrl;
+			ProfileBackgroundImageUrlHttps = item.ProfileBackgroundImageUrlHttps;
 			IsProfileBackgroundTile = item.IsProfileBackgroundTile;
-			ProfileBannerUrl = CopyStr(item.ProfileBannerUrl);
-			ProfileImageUrl = CopyStr(item.ProfileImageUrl);
+			ProfileBannerUrl = item.ProfileBannerUrl;
+			ProfileImageUrl = item.ProfileImageUrl;
 			ProfileLinkColor = ToColor(item.ProfileLinkColor);
 			ProfileLocation = item.ProfileLocation;
 			ProfileSidebarBorderColor = ToColor(item.ProfileSidebarBorderColor);
@@ -169,18 +164,18 @@ namespace Liberfy
 			ProfileTextColor = ToColor(item.ProfileTextColor);
 			IsProfileUseBackgroundImage = item.IsProfileUseBackgroundImage;
 			IsProtected = item.IsProtected;
-			ScreenName = CopyStr(item.ScreenName);
+			ScreenName = item.ScreenName;
 			IsShowAllInlineMedia = item.IsShowAllInlineMedia ?? IsShowAllInlineMedia;
 			Status = item.Status;
 			StatusesCount = item.StatusesCount;
 			IsSuspended = item.IsSuspended ?? IsSuspended;
-			TimeZone = CopyStr(item.TimeZone);
-			//TranslatorType = CopyStr(item.TranslatorType);
-			Url = CopyStr(item.Url);
+			TimeZone = item.TimeZone;
+			//TranslatorType = item.TranslatorType;
+			Url = item.Url;
 			UtcOffset = item.UtcOffset ?? UtcOffset;
 			IsVerified = item.IsVerified;
-			WithheldInCountries = CopyStr(item.WithheldInCountries);
-			WithheldScope = CopyStr(item.WithheldScope);
+			WithheldInCountries = item.WithheldInCountries;
+			WithheldScope = item.WithheldScope;
 
 			UpdatedAt = DateTime.Now;
 

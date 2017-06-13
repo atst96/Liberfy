@@ -23,17 +23,7 @@ namespace Liberfy
 				status.Entities.Urls,
 				status.Entities.UserMentions,
 				status.Entities.Media
-			}.SafeJoin();
-		}
-
-		public static int GetStartIndex(this Entity entity)
-		{
-			return entity.Indices[0];
-		}
-
-		public static int GetEndIndex(this Entity entity)
-		{
-			return entity.Indices[1];
+			}.Merge();
 		}
 	}
 }
