@@ -37,7 +37,7 @@ namespace Liberfy
 
 			for (int charIndex = 0; charIndex < Length; charIndex++)
 			{
-				if (char.IsHighSurrogate(String[charIndex]))
+				if (char.IsHighSurrogate(_string, charIndex))
 				{
 					surrogateIndicesList.AddLast(charIndex);
 					charIndex++;

@@ -51,6 +51,12 @@ namespace Liberfy
 
 		public long QuotedStatusId => _status.QuotedStatusId ?? -1;
 
+		private string _sourceName;
+		public string SourceName => _sourceName;
+
+		private string _sourceUrl;
+		public string SourceUrl => _sourceUrl;
+
 		private StatusInfo _quotedStatus;
 		public StatusInfo QuotedStatus
 		{
@@ -99,6 +105,13 @@ namespace Liberfy
 
 			_id = status.Id;
 			_status = status;
+
+			var regex = Regexes.ATagSource.Match(_status.Source);
+			if (regex.Success)
+			{
+				_sourceName = regex.Groups["name"].Value;
+				_sourceUrl = regex.Groups["url"].Value;
+			}
 		}
 
 		public void Update(Status item)

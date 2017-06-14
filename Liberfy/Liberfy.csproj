@@ -145,6 +145,7 @@
     <Compile Include="MVVM\CommandHelper.cs" />
     <Compile Include="Behaviors\TextBoxBehavior.cs" />
     <Compile Include="Behaviors\TextBoxController.cs" />
+    <Compile Include="TimelineItemTemplateSelector.cs" />
     <Compile Include="TimelineView.cs" />
     <Compile Include="TwStringInfo.cs" />
     <Compile Include="ViewModel\UploadMedia.cs" />

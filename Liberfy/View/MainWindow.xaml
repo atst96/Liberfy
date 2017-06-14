@@ -12,6 +12,8 @@
 	xmlns:app="clr-namespace:Liberfy"
 	DataContext="{local:ViewModelConnector {x:Type vm:MainWindow}, IsMainView=True}">
 	<Window.Resources>
+
+		<app:TimelineItemTemplateSelector x:Key="TimelineItemTemplateSelector" />
 		<DataTemplate x:Key="AccountTemplate" DataType="{x:Type local:Account}">
 			<Border
 				x:Name="border"
@@ -66,6 +68,10 @@
 			</Border>
 		</DataTemplate>
 
+		<ItemsPanelTemplate x:Key="TimelinePanelTemplate">
+			<VirtualizingStackPanel Orientation="Vertical" />
+		</ItemsPanelTemplate>
+
 		<DataTemplate x:Key="ColumnTemplate" DataType="{x:Type app:ColumnBase}">
 			<Border
 				ClipToBounds="True"
@@ -102,7 +108,7 @@
 								Width="16" Height="16"
 								Fill="#444" Stretch="Fill" />
 
-							 <!--Column title--> 
+							<!--Column title-->
 							<TextBlock
 								Grid.Column="2"
 								TextWrapping="NoWrap"
@@ -147,10 +153,33 @@
 						Content="{Binding Status, Mode=TwoWay}"
 						app:ElementBehavior.Visible="{Binding HasStatus, Mode=OneWay}" />
 
-					<ScrollViewer VerticalScrollBarVisibility="Auto">
-						<app:TimelineView
-							ItemsSource="{Binding Items, Mode=OneTime}"/>
-					</ScrollViewer>
+					<app:TimelineView
+						BorderThickness="0"
+						Background="Transparent"
+						VirtualizingPanel.ScrollUnit="Pixel"
+						VirtualizingPanel.IsVirtualizing="True"
+						VirtualizingPanel.VirtualizationMode="Recycling"
+						ItemsSource="{Binding Items, Mode=OneTime}"
+						ItemsPanel="{StaticResource TimelinePanelTemplate}"
+						ItemTemplateSelector="{StaticResource TimelineItemTemplateSelector}">
+						<app:TimelineView.ItemContainerStyle>
+							<Style TargetType="{x:Type TreeViewItem}">
+								<Setter Property="Width" Value="{DynamicResource ItemWidth}" />
+								<Setter Property="Padding" Value="0" />
+								<Setter Property="Margin" Value="0" />
+								<Setter Property="Template">
+									<Setter.Value>
+										<ControlTemplate TargetType="{x:Type TreeViewItem}">
+											<ContentPresenter
+												Content="{TemplateBinding Header}"
+												ContentTemplate="{TemplateBinding HeaderTemplate}"
+												ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"/>
+										</ControlTemplate>
+									</Setter.Value>
+								</Setter>
+							</Style>
+						</app:TimelineView.ItemContainerStyle>
+					</app:TimelineView>
 				</DockPanel>
 			</Border>
 		</DataTemplate>

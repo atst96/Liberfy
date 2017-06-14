@@ -54,7 +54,7 @@ namespace Liberfy.Converter
 		{
 			var fontFamily = value as FontFamily;
 
-			if(fontFamily != null)
+			if (fontFamily != null)
 			{
 				return fontFamily.FamilyNames.TryGetValue(OSInfo.XmlLanguage, out var xmlLang)
 					? xmlLang : fontFamily.ToString();
@@ -113,6 +113,63 @@ namespace Liberfy.Converter
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			return ((ColumnBase)value).ToSetting();
+		}
+	}
+
+	[ValueConversion(typeof(DateTimeOffset), typeof(string))]
+	public class LocalTimeConverter : IValueConverter
+	{
+		private const string FormatFullDateTime = "yyyy年M月d日 H時m分";
+		private const string FormatDateTime = "M月d日 H時mm分";
+		private const string FormatTiem = "H時mm分";
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			if (value is DateTimeOffset offsetTime)
+			{
+				var now = DateTime.Now;
+				var localTime = offsetTime.LocalDateTime;
+				var time = now - offsetTime + TimeSpan.FromSeconds(1);
+
+				//if (App.Setting.TimelineStatusShowRelativeTime)
+				//{
+				//	return
+				//		time.TotalSeconds < 3 ? "現在"
+				//		: time.TotalSeconds < 60 ? $"{time.Seconds}秒"
+				//		: time.TotalMinutes < 60 ? $"{time.Minutes}分"
+				//		: time.TotalHours < 24 ? $"{time.Hours}時間"
+				//		: time.TotalDays > 365 ? $"{time.Days / 365}年"
+				//		: time.TotalDays > 7 ? $"{time.Days / 7}週間"
+				//		: $"{time.Days}日";
+				//}
+				//else
+				//{
+				return offsetTime.LocalDateTime.ToString(GetFormat(ref now, ref localTime));
+				//}
+			}
+			else
+				return DependencyProperty.UnsetValue;
+		}
+
+		private static string GetFormat(ref DateTime now, ref DateTime localTime)
+		{
+			if (now.Year != localTime.Year)
+			{
+				return FormatFullDateTime;
+			}
+			else if (now.Date != localTime.Date)
+			{
+				return FormatDateTime;
+			}
+			else
+			{
+				return FormatTiem;
+			}
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

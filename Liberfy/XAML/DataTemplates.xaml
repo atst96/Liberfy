@@ -3,7 +3,13 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:vm="clr-namespace:Liberfy.ViewModel"
 	xmlns:app="clr-namespace:Liberfy"
+	xmlns:sys="clr-namespace:System;assembly=mscorlib"
+	xmlns:conv="clr-namespace:Liberfy.Converter"
 	xmlns:b="clr-namespace:Liberfy.Behaviors">
+
+	<sys:Double x:Key="ItemWidth">NaN</sys:Double>
+
+	<conv:LocalTimeConverter x:Key="LocalTimeConverter" />
 
 	<!--#region Template selectors-->
 	<app:ColumnOptionTemplateSelector x:Key="ColumnOptionTemplateSelector" />
@@ -390,7 +396,7 @@
 
 	<!--#region Item templates-->
 
-	<DataTemplate DataType="{x:Type app:StatusItem}">
+	<DataTemplate x:Name="StatusItemTemplate" DataType="{x:Type app:StatusItem}">
 		<Grid Background="Transparent">
 			<DockPanel Margin="4">
 				<!--<DockPanel
@@ -408,8 +414,10 @@
 						DockPanel.Dock="Left"
 						VerticalAlignment="Center"
 						TextTrimming="CharacterEllipsis">
-						<Hyperlink Style="{StaticResource MetadataLinkText}">
-							<Run Text="{Binding Source}" />
+						<Hyperlink
+							Style="{StaticResource MetadataLinkText}"
+							CommandParameter="{Binding Mode=OneTime}">
+							<Run Text="{Binding SourceName, Mode=OneTime}" />
 						</Hyperlink>
 					</TextBlock>
 				</DockPanel>-->
@@ -431,17 +439,17 @@
 					Margin="4"
 					DockPanel.Dock="Top">
 					<Border
-						Visibility="Collapsed"
-						DockPanel.Dock="Left"
-						Width="16" Height="16" />
+						app:ElementBehavior.Visible="{Binding User.IsProtected}"
+						DockPanel.Dock="Left" Width="16" Height="16" />
 
 					<TextBlock
 						DockPanel.Dock="Right"
 						VerticalAlignment="Top"
 						HorizontalAlignment="Right"
-						FontSize="11">
+						FontSize="11"
+						TextWrapping="Wrap">
 						<Hyperlink Style="{StaticResource UserNameLinkText}">
-							<Run Text="Tweet time" />
+							<Run Text="{Binding CreatedAt, Mode=OneWay, Converter={StaticResource LocalTimeConverter}}" />
 						</Hyperlink>
 					</TextBlock>
 
@@ -449,7 +457,8 @@
 						DockPanel.Dock="Left"
 						FontWeight="Bold"
 						VerticalAlignment="Center"
-						HorizontalAlignment="Left">
+						HorizontalAlignment="Left"
+						TextWrapping="Wrap">
 						<Hyperlink Style="{StaticResource UserNameLinkText}">
 							<Run Text="{Binding User.Name, Mode=OneWay}" />
 						</Hyperlink>
@@ -469,9 +478,8 @@
 				<TextBlock
 					TextWrapping="Wrap"
 					DockPanel.Dock="Top"
-					HorizontalAlignment="Stretch"
 					Margin="{StaticResource TimelineItemEntityMargin}"
-					b:TimelineBehavior.StatusInfo="{Binding Status, Mode=OneTime}"/>
+					b:TimelineBehavior.StatusInfo="{Binding Status, Mode=OneTime}" />
 			</DockPanel>
 		</Grid>
 	</DataTemplate>

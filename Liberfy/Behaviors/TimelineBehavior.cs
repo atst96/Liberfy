@@ -14,8 +14,6 @@ namespace Liberfy.Behaviors
 {
 	internal static class TimelineBehavior
 	{
-		private static readonly Validator tweetValidator = new Validator();
-
 		public static StatusInfo GetStatusInfo(DependencyObject obj)
 		{
 			return (StatusInfo)obj.GetValue(StatusInfoProperty);
@@ -59,7 +57,7 @@ namespace Liberfy.Behaviors
 				await App.Current.Dispatcher.InvokeAsync(() =>
 				{
 					// リンク付きツイートの作成
-					// ([テキスト]) [リンク] [テキスト] [リンク] [テキスト]....[リンク] ([テキスト]) の順に生成する
+					// ([テキスト])[リンク][テキスト][リンク][テキスト]....[リンク]([テキスト]) の順に生成する
 
 					int endIndex;
 					var entity = entities[0];
@@ -78,8 +76,10 @@ namespace Liberfy.Behaviors
 						endIndex = entity.EndIndex;
 						if (endIndex <= textLength)
 						{
-							inlines.Add(text.Slice(endIndex,
-								entities.Length > i + 1 ? entities[i + 1].StartIndex : textLength));
+							if (entities.Length > i + 1)
+								inlines.Add(text.Slice(endIndex, entities[i + 1].StartIndex));
+							else
+								inlines.Add(text.Slice(endIndex, textLength));
 						}
 						else
 							break;
@@ -87,7 +87,7 @@ namespace Liberfy.Behaviors
 				});
 			}
 
-			text.Dispose();
+			// text.Dispose();
 			text = null;
 		}
 
@@ -106,7 +106,7 @@ namespace Liberfy.Behaviors
 					break;
 
 				case MediaEntity media:
-					link.Inlines.Add(media.MediaUrl);
+					link.Inlines.Add(media.DisplayUrl);
 					break;
 
 				case UrlEntity url:
