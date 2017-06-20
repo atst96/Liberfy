@@ -173,7 +173,7 @@ namespace Liberfy
 			SetResources("ColumnWidth"                , Setting.ColumnWidth                              );
 			SetResources("TweetProfileImageWidth"     , Setting.TweetProfileImageWidth                   );
 			SetResources("TweetProfileImageVisibility", BoolToVisibility(Setting.IsShowTweetProfileImage));
-			SetResources("TweetImagesVIsibility"      , BoolToVisibility(Setting.IsShowTweetImages      ));
+			SetResources("TweetImagesVisibility"      , BoolToVisibility(Setting.IsShowTweetImages      ));
 			SetResources("TweetQuotedTweetVisibility" , BoolToVisibility(Setting.IsShowTweetQuotedTweet ));
 			SetResources("TweetClientNameVisibility"  , BoolToVisibility(Setting.IsShowTweetClientName  ));
 

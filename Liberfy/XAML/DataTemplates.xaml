@@ -508,7 +508,7 @@
 						x:Name="media"
 						ItemsSource="{Binding MediaEntities, Mode=OneTime}"
 						ItemTemplate="{StaticResource MediaItemTemplate}"
-						Visibility="{DynamicResource TweetImagesVIsibility}">
+						Visibility="{DynamicResource TweetImagesVisibility}">
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
 								<app:MediaPanel />

@@ -19,7 +19,7 @@
 			<sys:Double x:Key="ColumnWidth">300</sys:Double>
 			<sys:Double x:Key="TweetProfileImageWidth">40</sys:Double>
 			<Visibility x:Key="TweetProfileImageVisibility">Visible</Visibility>
-			<Visibility x:Key="TweetImagesVIsibility">Visible</Visibility>
+			<Visibility x:Key="TweetImagesVisibility">Visible</Visibility>
 			<Visibility x:Key="TweetQuotedTweetVisibility">Visible</Visibility>
 			<Visibility x:Key="TweetClientNameVisibility">Visible</Visibility>
 			<x:Null x:Key="TweetProfileImageClip"></x:Null>
