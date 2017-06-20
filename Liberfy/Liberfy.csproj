@@ -141,6 +141,7 @@
     <Compile Include="Info\OSInfo.cs" />
     <Compile Include="ListBoxEx.cs" />
     <Compile Include="MathEx.cs" />
+    <Compile Include="MediaPanel.cs" />
     <Compile Include="Model\Setting\AccountItem.cs" />
     <Compile Include="Model\Setting\ApiToken.cs" />
     <Compile Include="MVVM\CommandHelper.cs" />

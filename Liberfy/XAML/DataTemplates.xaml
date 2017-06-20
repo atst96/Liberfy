@@ -400,10 +400,22 @@
 					 Center="24, 24" />
 
 
+	<DataTemplate x:Key="MediaItemTemplate" DataType="{x:Type app:MediaEntityInfo}">
+		<Button
+			Margin="2" Padding="0"
+			VerticalContentAlignment="Stretch"
+			HorizontalContentAlignment="Stretch">
+			<Image
+				Source="{Binding CurrentEntity.MediaUrl}" 
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Stretch="UniformToFill" />
+		</Button>
+	</DataTemplate>
 
 	<!--#region Item templates-->
 
-	<DataTemplate x:Name="StatusItemTemplate" DataType="{x:Type app:StatusItem}">
+	<DataTemplate x:Key="StatusItemTemplate" DataType="{x:Type app:StatusItem}">
 		<Grid Background="Transparent">
 			<DockPanel Margin="4">
 				<!--<DockPanel
@@ -457,7 +469,7 @@
 						VerticalAlignment="Top"
 						HorizontalAlignment="Right"
 						FontSize="11"
-						TextWrapping="Wrap">
+						TextTrimming="CharacterEllipsis">
 						<Hyperlink Style="{StaticResource UserNameLinkText}">
 							<Run Text="{Binding CreatedAt, Mode=OneWay, Converter={StaticResource LocalTimeConverter}}" />
 						</Hyperlink>
@@ -468,7 +480,7 @@
 						FontWeight="Bold"
 						VerticalAlignment="Center"
 						HorizontalAlignment="Left"
-						TextWrapping="Wrap">
+						TextTrimming="CharacterEllipsis">
 						<Hyperlink Style="{StaticResource UserNameLinkText}">
 							<Run Text="{Binding User.Name, Mode=OneWay}" />
 						</Hyperlink>
@@ -485,13 +497,32 @@
 
 				</DockPanel>
 
-				<TextBlock
-					TextWrapping="Wrap"
-					DockPanel.Dock="Top"
-					Margin="{StaticResource TimelineItemEntityMargin}"
-					b:TimelineBehavior.StatusInfo="{Binding Status, Mode=OneTime}" />
+				<StackPanel>
+					<TextBlock
+						TextWrapping="Wrap"
+						DockPanel.Dock="Top"
+						Margin="{StaticResource TimelineItemEntityMargin}"
+						b:TimelineBehavior.StatusInfo="{Binding Status, Mode=OneTime}" />
+
+					<ItemsControl
+						x:Name="media"
+						ItemsSource="{Binding MediaEntities, Mode=OneTime}"
+						ItemTemplate="{StaticResource MediaItemTemplate}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<app:MediaPanel />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+					</ItemsControl>
+				</StackPanel>
 			</DockPanel>
 		</Grid>
+
+		<DataTemplate.Triggers>
+			<DataTrigger Binding="{Binding HasMediaEntities, Mode=OneTime}" Value="false">
+				<Setter TargetName="media" Property="Visibility" Value="Collapsed" />
+			</DataTrigger>
+		</DataTemplate.Triggers>
 	</DataTemplate>
 
 	<!--#endregion-->
