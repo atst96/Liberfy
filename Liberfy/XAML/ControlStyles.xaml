@@ -5,7 +5,6 @@
 	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 	xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
-	xmlns:local="clr-namespace:Liberfy.XAML"
 	xmlns:app="clr-namespace:Liberfy"
 	xmlns:conv="clr-namespace:Liberfy.Converter">
 
@@ -30,11 +29,11 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type Button}">
-					<Border Background="Transparent">
+					<Border	Background="Transparent">
 						<ContentPresenter
-								Margin="{TemplateBinding Padding}"
-								VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+							Margin="{TemplateBinding Padding}"
+							VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
 					</Border>
 				</ControlTemplate>
 			</Setter.Value>

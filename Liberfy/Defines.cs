@@ -34,6 +34,14 @@ namespace Liberfy
 		public const double DefaultTimelineFontSize = 12;
 		#endregion
 
+		public const double MinimumProfileImageWidth = 20;
+		public const double MaximumProfileImageWidth = 60;
+		public const double DefaultProfileImageWidth = 40;
+
+		public const double MinimumColumnWidth = 200;
+		public const double MaximumColumnWidth = 600;
+		public const double DefaultColumnWidth = 300;
+
 		public readonly static string[] ImageExtensions =
 		{
 			// JPEG

@@ -394,6 +394,13 @@
 
 	<!--#endregion-->
 
+	<EllipseGeometry x:Key="EllipseMask"
+					 RadiusX="24"
+					 RadiusY="24" 
+					 Center="24, 24" />
+
+
+
 	<!--#region Item templates-->
 
 	<DataTemplate x:Name="StatusItemTemplate" DataType="{x:Type app:StatusItem}">
@@ -413,7 +420,8 @@
 					<TextBlock
 						DockPanel.Dock="Left"
 						VerticalAlignment="Center"
-						TextTrimming="CharacterEllipsis">
+						TextTrimming="CharacterEllipsis"
+						Visibility="{DynamicResource TweetClientNameVisibility}">
 						<Hyperlink
 							Style="{StaticResource MetadataLinkText}"
 							CommandParameter="{Binding Mode=OneTime}">
@@ -426,11 +434,13 @@
 				<Button
 					Margin="4"
 					DockPanel.Dock="Left"
-					Width="48" Height="48"
 					VerticalAlignment="Top"
-					Style="{StaticResource ImageButton}">
+					Style="{StaticResource ImageButton}"
+					Clip="{DynamicResource TweetProfileImageClip}"
+					Visibility="{DynamicResource TweetProfileImageVisibility}">
 					<Image
-						Width="48" Height="48"
+						Width="{DynamicResource TweetProfileImageWidth}"
+						Height="{DynamicResource TweetProfileImageWidth}"
 						Source="{Binding User.ProfileImageUrl, Mode=OneWay, IsAsync=True}" />
 				</Button>
 

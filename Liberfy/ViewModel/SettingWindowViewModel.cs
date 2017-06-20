@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 
 namespace Liberfy.ViewModel
 {
-	internal class SettingWindow : ViewModelBase
+	internal partial class SettingWindow : ViewModelBase
 	{
 		public SettingWindow() : base()
 		{
@@ -23,6 +23,12 @@ namespace Liberfy.ViewModel
 
 		public AccountSetting AccountSetting => App.AccountSetting;
 		public FluidCollection<Account> Accounts => App.Accounts;
+
+		/*
+		 * [表示]タブ関連 → SettingWindowViewModel.View.cs
+		 * 
+		 * 
+		 */
 
 		private const string AutoStartupRegSubKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
 

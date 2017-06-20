@@ -7,13 +7,13 @@
 	<SolidColorBrush x:Key="ToolBarBorderBrush" Color="#DADADA" />
 	<SolidColorBrush x:Key="ToolBarBackground" Color="#F8F8F8" />
 
-	<SolidColorBrush x:Key="SettingTabPanelBackground" Color="#FFECECEC" />
+	<SolidColorBrush x:Key="SettingTabPanelBackground" Color="#EEE" />
 	<SolidColorBrush x:Key="SettingTabItemForeground" Color="#444" />
-	<SolidColorBrush x:Key="SettingTabItemNormalBorderBrush" Color="#BBB" />
+	<SolidColorBrush x:Key="SettingTabItemNormalBorderBrush" Color="#CCC" />
 	<SolidColorBrush x:Key="SettingTabItemSelectedBorderBrush" Color="#DDD" />
 
 	<SolidColorBrush x:Key="TabControlBackground" Color="#fff" />
-	<SolidColorBrush x:Key="TabControlBorderBrush" Color="#777" />
+	<SolidColorBrush x:Key="TabControlBorderBrush" Color="#ccc" />
 	<SolidColorBrush x:Key="TabItemBackground" Color="#f4f4f4" />
 	<SolidColorBrush x:Key="TabItemForeground" Color="#000" />
 	<SolidColorBrush x:Key="TabItemHoverBackground" Color="#fafafa" />

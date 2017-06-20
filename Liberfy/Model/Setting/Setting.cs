@@ -292,6 +292,69 @@ namespace Liberfy
 			set => SetProperty(ref _timelineStatusDetailActionButtonVisible, value);
 		}
 
+		private double _tweetProfileImageWidth = DefaultProfileImageWidth;
+		[JsonProperty("tweet_profile_image_width")]
+		public double TweetProfileImageWidth
+		{
+			get => _tweetProfileImageWidth;
+			set
+			{
+				double width = Math.Max(MinimumProfileImageWidth, Math.Min(Math.Floor(value), MaximumProfileImageWidth));
+				SetProperty(ref _tweetProfileImageWidth, width);
+			}
+		}
+
+		private double _columnWidth = DefaultColumnWidth;
+		[JsonProperty("column_width")]
+		public double ColumnWidth
+		{
+			get => _columnWidth;
+			set
+			{
+				double width = Math.Max(MinimumColumnWidth, Math.Min(Math.Floor(value), MaximumColumnWidth));
+				SetProperty(ref _columnWidth, width);
+			}
+		}
+
+		[JsonProperty("tweet_show_profile_image")]
+		private bool _isShowTweetProfileImage = true;
+		public bool IsShowTweetProfileImage
+		{
+			get => _isShowTweetProfileImage;
+			set => SetProperty(ref _isShowTweetProfileImage, value);
+		}
+
+		[JsonProperty("tweet_show_images")]
+		private bool _isShowTweetImages = true;
+		public bool IsShowTweetImages
+		{
+			get => _isShowTweetImages;
+			set => SetProperty(ref _isShowTweetImages, value);
+		}
+
+		[JsonProperty("tweet_show_quoted_tweet")]
+		private bool _isShowTweetQuotedTweet = true;
+		public bool IsShowTweetQuotedTweet
+		{
+			get => _isShowTweetQuotedTweet;
+			set => SetProperty(ref _isShowTweetQuotedTweet, value);
+		}
+
+		[JsonProperty("tweet_show_client_name")]
+		private bool _isShowTweetClientName = true;
+		public bool IsShowTweetClientName
+		{
+			get => _isShowTweetClientName;
+			set => SetProperty(ref _isShowTweetClientName, value);
+		}
+
+		[JsonProperty("tweet_profile_image_form")]
+		private ProfileImageForm _profileImageForm = ProfileImageForm.Square;
+		public ProfileImageForm ProfileImageForm
+		{
+			get => _profileImageForm;
+			set => SetProperty(ref _profileImageForm, value);
+		}
 
 		#endregion
 
@@ -557,5 +620,12 @@ namespace Liberfy
 
 		[EnumMember(Value = "quoted_tweet")]
 		QuotedTweet
+	}
+
+	public enum ProfileImageForm
+	{
+		Square,
+		RoundedCorner,
+		Ellipse,
 	}
 }

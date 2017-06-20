@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace Liberfy
 {
@@ -25,6 +26,10 @@ namespace Liberfy
 
 		private static AccountSetting _accounts;
 		private static Setting _setting;
+
+		public static Brush RetweetColor;
+		public static Brush FavoriteColor;
+		public static Brush RetweetFavoriteColor;
 
 		internal static AccountSetting AccountSetting => _accounts;
 		internal static Setting Setting => _setting;
@@ -48,9 +53,9 @@ namespace Liberfy
 			// 設定を読み込む
 			if (LoadSettingWithErrorDialog(Defines.AccountsFile, ref _accounts))
 			{
-				if(_accounts.Accounts?.Length > 0)
+				if (_accounts.Accounts?.Length > 0)
 				{
-					foreach(var item in _accounts.Accounts.Distinct())
+					foreach (var item in _accounts.Accounts.Distinct())
 					{
 						Accounts.Add(new Account(item));
 					}
@@ -78,9 +83,16 @@ namespace Liberfy
 				Shutdown(false);
 				return;
 			}
+
+			LoadUISettingsFromSetting();
+
 			_setting.Mute.ForEach(m => m.Apply());
 
 			TaskbarIcon = (TaskbarIcon)FindResource("taskbarIcon");
+
+			RetweetColor = (Brush)Current.Resources["RetweetColor"];
+			FavoriteColor = (Brush)Current.Resources["FavoriteColor"];
+			RetweetFavoriteColor = (Brush)Current.Resources["RetweetFavoriteColor"];
 
 		}
 
@@ -158,7 +170,62 @@ namespace Liberfy
 
 		public static void LoadUISettingsFromSetting()
 		{
+			SetResources("ColumnWidth"                , Setting.ColumnWidth                              );
+			SetResources("TweetProfileImageWidth"     , Setting.TweetProfileImageWidth                   );
+			SetResources("TweetProfileImageVisibility", BoolToVisibility(Setting.IsShowTweetProfileImage));
+			SetResources("TweetImagesVIsibility"      , BoolToVisibility(Setting.IsShowTweetImages      ));
+			SetResources("TweetQuotedTweetVisibility" , BoolToVisibility(Setting.IsShowTweetQuotedTweet ));
+			SetResources("TweetClientNameVisibility"  , BoolToVisibility(Setting.IsShowTweetClientName  ));
 
+			Geometry clip;
+			switch(Setting.ProfileImageForm)
+			{
+				case ProfileImageForm.RoundedCorner:
+					clip = new RectangleGeometry
+					{
+						RadiusX = 3.0d,
+						RadiusY = 3.0d,
+						Rect = new Rect
+						{
+							Width = Setting.TweetProfileImageWidth,
+							Height = Setting.TweetProfileImageWidth,
+						}
+					};
+					break;
+
+				case ProfileImageForm.Ellipse:
+					double halfWidth = Setting.TweetProfileImageWidth / 2.0d;
+					clip = new EllipseGeometry
+					{
+						RadiusX = halfWidth,
+						RadiusY = halfWidth,
+						Center = new Point(halfWidth, halfWidth)
+					};
+					break;
+
+				default:
+					clip = null;
+					break;
+			}
+
+			SetResources("TweetProfileImageClip", clip);
+		}
+
+		public static Visibility BoolToVisibility(bool isVisible)
+		{
+			return isVisible ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		public static bool SetResources(string key, object value)
+		{
+			if (Current.TryFindResource(key) != value)
+			{
+				Current.Resources[key] = value;
+
+				return true;
+			}
+
+			return false;
 		}
 
 		internal static void ForceExit()
