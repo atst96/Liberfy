@@ -74,6 +74,7 @@ namespace Liberfy
 			MediaEntities = Status.ExtendedEntities?
 				.Media.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity))
 				.ToArray();
+			HasMediaEntities = MediaEntities?.Length > 0;
 
 			IsCurrentAccount = Status.User.Id == account.Id;
 		}

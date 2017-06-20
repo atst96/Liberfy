@@ -926,12 +926,14 @@
 											</TextBlock>
 										</DockPanel>
 
-										<TextBlock
-											TextWrapping="Wrap"
-											DockPanel.Dock="Top"
-											HorizontalAlignment="Stretch"
-											Margin="{StaticResource TimelineItemEntityMargin}"
-											Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
+										<StackPanel>
+											<TextBlock
+												TextWrapping="Wrap"
+												DockPanel.Dock="Top"
+												HorizontalAlignment="Stretch"
+												Margin="{StaticResource TimelineItemEntityMargin}"
+												Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
+										</StackPanel>
 
 									</DockPanel>
 
