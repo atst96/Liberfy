@@ -47,9 +47,9 @@ namespace Liberfy.Behaviors
 		{
 			int startIndex = AssociatedObject.SelectionStart;
 
-			AssociatedObject.SelectedText = text;
+			AssociatedObject.SelectedText = text ?? "";
 
-			AssociatedObject.SelectionStart = startIndex + text.Length;
+			AssociatedObject.SelectionStart = startIndex + (text?.Length ?? 0);
 			AssociatedObject.SelectionLength = 0;
 		}
 

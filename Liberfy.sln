@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.12
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Liberfy", "Liberfy\Liberfy.csproj", "{2BBC1D87-8B7F-46D3-9648-AC2F2C5A3C88}"
 EndProject
@@ -16,10 +16,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreTweet.net45", "CoreTwee
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CoreTweet.Shared", "CoreTweet\CoreTweet.Shared\CoreTweet.Shared.shproj", "{0143F454-1D66-48D0-AA28-7BA7A2502EA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialApis", "SocialApis\SocialApis.csproj", "{033AA2BE-B09C-4442-B283-C4BA1EAD8018}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiTest", "ApiTest\ApiTest.csproj", "{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}"
+EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		CoreTweet\CoreTweet.Shared\CoreTweet.Shared.projitems*{0143f454-1d66-48d0-aa28-7ba7a2502ea5}*SharedItemsImports = 13
 		CoreTweet\CoreTweet.Shared\CoreTweet.Shared.projitems*{5ae5a341-5e2b-42af-946a-7043bad12817}*SharedItemsImports = 4
@@ -57,9 +58,39 @@ Global
 		{5AE5A341-5E2B-42AF-946A-7043BAD12817}.Release|x64.Build.0 = Release|Any CPU
 		{5AE5A341-5E2B-42AF-946A-7043BAD12817}.Release|x86.ActiveCfg = Release|Any CPU
 		{5AE5A341-5E2B-42AF-946A-7043BAD12817}.Release|x86.Build.0 = Release|Any CPU
+		{033AA2BE-B09C-4442-B283-C4BA1EAD8018}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{033AA2BE-B09C-4442-B283-C4BA1EAD8018}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{033AA2BE-B09C-4442-B283-C4BA1EAD8018}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{033AA2BE-B09C-4442-B283-C4BA1EAD8018}.Debug|x64.Build.0 = Debug|Any CPU
+		{033AA2BE-B09C-4442-B283-C4BA1EAD8018}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{033AA2BE-B09C-4442-B283-C4BA1EAD8018}.Debug|x86.Build.0 = Debug|Any CPU
+		{033AA2BE-B09C-4442-B283-C4BA1EAD8018}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{033AA2BE-B09C-4442-B283-C4BA1EAD8018}.Release|Any CPU.Build.0 = Release|Any CPU
+		{033AA2BE-B09C-4442-B283-C4BA1EAD8018}.Release|x64.ActiveCfg = Release|Any CPU
+		{033AA2BE-B09C-4442-B283-C4BA1EAD8018}.Release|x64.Build.0 = Release|Any CPU
+		{033AA2BE-B09C-4442-B283-C4BA1EAD8018}.Release|x86.ActiveCfg = Release|Any CPU
+		{033AA2BE-B09C-4442-B283-C4BA1EAD8018}.Release|x86.Build.0 = Release|Any CPU
+		{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}.Debug|x64.Build.0 = Debug|Any CPU
+		{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}.Debug|x86.Build.0 = Debug|Any CPU
+		{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}.Release|x64.ActiveCfg = Release|Any CPU
+		{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}.Release|x64.Build.0 = Release|Any CPU
+		{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}.Release|x86.ActiveCfg = Release|Any CPU
+		{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {22BDBE23-A968-4146-B5DA-5C2F4A473ECF}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
