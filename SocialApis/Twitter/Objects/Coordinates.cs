@@ -5,7 +5,7 @@ using Utf8Json;
 namespace SocialApis.Twitter
 {
     [DataContract]
-    public struct Coordinates<T>
+    public class Coordinates<T>
     {
         [DataMember(Name = "type")]
         public CoordinateType Type { get; private set; }
