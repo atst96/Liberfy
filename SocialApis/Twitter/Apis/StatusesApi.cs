@@ -82,24 +82,19 @@ namespace SocialApis.Twitter.Apis
             return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/retweets", query);
         }
 
+        public Task<CursorResponse<long>> RetweetersIds(long statusId)
+        {
+            return this.RetweetersIds(new Query { ["id"] = statusId });
+        }
+
+        public Task<CursorResponse<long>> RetweetersIds(Query query)
+        {
+            return this.Tokens.GetRequestRestApiAsync<CursorResponse<long>>("statuses/retweeters/ids", query);
+        }
+
         public Task<ListedResponse<Status>> RetweetsOfMe(Query query = null)
         {
             return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/retweets_of_me", query);
-        }
-
-        public Task<ListedResponse<long>> RetweetersIds(long statusId)
-        {
-            return RetweetersIds(new Query { ["id"] = statusId });
-        }
-
-        public Task<ListedResponse<long>> RetweetersIds(long statusId, int count)
-        {
-            return RetweetersIds(new Query { ["id"] = statusId, ["count"] = count });
-        }
-
-        public Task<ListedResponse<long>> RetweetersIds(Query query)
-        {
-            return this.Tokens.GetRequestRestApiAsync<ListedResponse<long>>("statuses/retweeters_ids", query);
         }
 
         #endregion Post, retrieve and engage with Tweets

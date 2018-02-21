@@ -66,6 +66,7 @@
     <Compile Include="Twitter\Apis\TokenApiBase.cs" />
     <Compile Include="Twitter\Enums\CoordinateType.cs" />
     <Compile Include="Twitter\Objects\Coordinates.cs" />
+    <Compile Include="Twitter\Objects\Cursor.cs" />
     <Compile Include="Twitter\Objects\Entities\Entities.cs" />
     <Compile Include="Twitter\Objects\Entities\EntityBase.cs" />
     <Compile Include="Twitter\Objects\Entities\ExtendedEntities.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="Twitter\Objects\Places.cs" />
     <Compile Include="Twitter\Objects\UploadVideoInfo.cs" />
     <Compile Include="Twitter\Objects\Entities\UserEntities.cs" />
+    <Compile Include="Twitter\Responses\CursorResponse.cs" />
     <Compile Include="Twitter\Responses\ListedResponse.cs" />
     <Compile Include="Twitter\Responses\MediaResponse.cs" />
     <Compile Include="Twitter\Responses\StatusResponse.cs" />
