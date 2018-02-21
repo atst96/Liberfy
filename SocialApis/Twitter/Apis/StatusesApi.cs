@@ -82,7 +82,7 @@ namespace SocialApis.Twitter.Apis
             return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/retweets", query);
         }
 
-        public Task<ListedResponse<Status>> RetweetsOfMe(Query query)
+        public Task<ListedResponse<Status>> RetweetsOfMe(Query query = null)
         {
             return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/retweets_of_me", query);
         }
