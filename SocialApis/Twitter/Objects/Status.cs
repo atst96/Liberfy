@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using Utf8Json;
 
 namespace SocialApis.Twitter
@@ -13,129 +9,99 @@ namespace SocialApis.Twitter
     {
         [DataMember(Name = "created_at")]
         [JsonFormatter(typeof(DateTimeOffsetFormatter))]
-        private DateTimeOffset _createdAt;
-        public DateTimeOffset CreatedAt => _createdAt;
+        public DateTimeOffset CreatedAt { get; private set; }
 
         [DataMember(Name = "id")]
-        private long _id;
-        public long Id => _id;
+        public long Id { get; private set; }
 
         [DataMember(Name = "text")]
-        private string _text;
-        public string Text => _text;
+        public string Text { get; private set; }
 
         [DataMember(Name = "source")]
-        private string _source;
-        public string Source => _source;
+        public string Source { get; private set; }
 
         [DataMember(Name = "truncated")]
-        private bool _truncated;
-        public bool IsTruncated => _truncated;
+        public bool IsTruncated { get; private set; }
 
         [DataMember(Name = "in_reply_to_status_id")]
-        private long? _inReplyToStatusId;
-        public long? InReplyToStatusId => _inReplyToStatusId;
+        public long? InReplyToStatusId { get; private set; }
 
         [DataMember(Name = "in_reply_to_user_id")]
-        private long? _inRelyToUserId;
-        public long? InReplyToUserId => _inRelyToUserId;
+        public long? InReplyToUserId { get; private set; }
 
         [DataMember(Name = "in_reply_to_screen_name")]
-        private string _inReplyToScreenName;
-        public string InReplyToScreenName => _inReplyToScreenName;
+        public string InReplyToScreenName { get; private set; }
 
         [DataMember(Name = "user")]
-        private User _user;
-        public User User => _user;
+        public User User { get; private set; }
 
         [DataMember(Name = "coordinates")]
-        private Coordinates _coordinates;
-        public Coordinates Coordinates => _coordinates;
+        public Coordinates<Point> Coordinates { get; private set; }
 
         [DataMember(Name = "place")]
-        private Places _place;
-        public Places Place => _place;
+        public Places Place { get; private set; }
 
         [DataMember(Name = "quoted_status_id")]
-        private long? _quotedStatusId;
-        public long? QuotedStatusId => _quotedStatusId;
+        public long? QuotedStatusId { get; private set; }
 
         [DataMember(Name = "is_quote_status")]
-        private bool _isQuotedStatus;
-        public bool IsQuotedStatus => _isQuotedStatus;
+        public bool IsQuotedStatus { get; private set; }
 
         [DataMember(Name = "quoted_status")]
-        private Status _quotedStatus;
-        public Status QuotedStatus => _quotedStatus;
+        public Status QuotedStatus { get; private set; }
 
         [DataMember(Name = "retweeted_status")]
-        private Status _retweetedStatus;
-        public Status RetweetedStatus => _retweetedStatus;
+        public Status RetweetedStatus { get; private set; }
 
         [DataMember(Name = "quote_count")]
-        private long? _quoteCount;
-        public long? QuoteCount => _quoteCount;
+        public long? QuoteCount { get; private set; }
 
         [DataMember(Name = "reply_count")]
-        private long _replyCount;
-        public long ReplyCount => _replyCount;
+        public long ReplyCount { get; private set; }
 
         [DataMember(Name = "retweet_count")]
-        private long _retweetCount;
-        public long RetweetCount => _retweetCount;
+        public long RetweetCount { get; private set; }
 
         [DataMember(Name = "favorite_count")]
-        private long _favoriteCount;
-        public long FavoriteCount => _favoriteCount;
+        public long FavoriteCount { get; private set; }
 
         [DataMember(Name = "entities")]
-        private Entities _entities;
-        public Entities Entities => _entities;
+        public Entities Entities { get; private set; }
 
         [DataMember(Name = "extended_entities")]
-        private ExtendedEntities _extendedEntities;
-        public ExtendedEntities ExtendedEntities => _extendedEntities;
+        public ExtendedEntities ExtendedEntities { get; private set; }
 
         [DataMember(Name = "favorited")]
-        private bool _favorited;
-        public bool IsFavorited => _favorited;
+        public bool IsFavorited { get; private set; }
 
         [DataMember(Name = "retweeted")]
-        private bool _retweeted;
-        public bool Retweeted => _retweeted;
+        public bool Retweeted { get; private set; }
 
         [DataMember(Name = "possibly_sensitive")]
-        private bool _possiblySensitive;
-        public bool PossiblySensitive => _possiblySensitive;
+        public bool PossiblySensitive { get; private set; }
 
         [DataMember(Name = "filter_level")]
-        private string _filterLevel;
-        public string FilterLevel => _filterLevel;
+        public string FilterLevel { get; private set; }
 
         [DataMember(Name = "lang")]
-        private string _lang;
-        public string Language => _lang;
+        public string Language { get; private set; }
 
         // [DataMember(Name = "matching_rules")]
 
         // Additional tweet attributes
 
         [DataMember(Name = "current_user_retweet")]
-        private IdObject _currentUserRetweet { get; }
-        public long? CurrentUserRetweet => _currentUserRetweet?.Id;
+        public IdObject? CurrentUserRetweet { get; private set; }
 
         // [DataMember(Name = "scopes")]
 
         [DataMember(Name = "withheld_copyright")]
-        private bool _withheldCopyright;
-        public bool IsWithheldCopyright => _withheldCopyright;
+        public bool IsWithheldCopyright { get; private set; }
 
         [DataMember(Name = "withheld_in_countries")]
-        private string[] _withheldInCountires;
-        public string[] WithheldInCountries => _withheldInCountires;
+        public string[] WithheldInCountries { get; private set; }
 
         [DataMember(Name = "withheld_scope")]
-        private string _withheldScope;
-        public string WithheldScope => _withheldScope;
+        public string WithheldScope { get; private set; }
     }
 }

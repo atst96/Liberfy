@@ -6,11 +6,9 @@ namespace SocialApis.Twitter
     public class TwitterError
     {
         [DataMember(Name = "code")]
-        private int _code;
-        public int Code => _code;
+        public int Code { get; private set; }
 
         [DataMember(Name = "message")]
-        private string _message;
-        public string Message => _message;
+        public string Message { get; private set; }
     }
 }

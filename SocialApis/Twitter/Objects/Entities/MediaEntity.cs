@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace SocialApis.Twitter
 {
@@ -7,23 +6,18 @@ namespace SocialApis.Twitter
     public class MediaEntity : UrlEntity
     {
         [DataMember(Name = "type")]
-        private string _type;
-        public string Type => _type;
+        public string Type { get; private set; }
 
         [DataMember(Name = "sizes")]
-        private MediaSizes _sizes;
-        public MediaSizes Sizes => _sizes;
+        public MediaSizes Sizes { get; private set; }
 
         [DataMember(Name = "media_url")]
-        private string _mediaUrl;
-        public string MediaUrl => _mediaUrl;
+        public string MediaUrl { get; private set; }
 
         [DataMember(Name = "id")]
-        private long _id;
-        public long Id => _id;
+        public long Id { get; private set; }
 
         [DataMember(Name = "media_url_https")]
-        private string _mediaUrlHttps;
-        public string MediaUrlHttps => _mediaUrlHttps;
+        public string MediaUrlHttps { get; private set; }
     }
 }

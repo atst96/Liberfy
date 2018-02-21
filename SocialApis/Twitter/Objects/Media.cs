@@ -11,23 +11,18 @@ namespace SocialApis.Twitter
     public class Media
     {
         [DataMember(Name = "media_id")]
-        private long _mediaId;
-        public long MediaId => _mediaId;
+        public long MediaId { get; private set; }
 
         [DataMember(Name = "size")]
-        private int _size;
-        public int Size => _size;
+        public int Size { get; private set; }
 
         [DataMember(Name = "expires_after_secs")]
-        private int _expiresAfterSecs;
-        public int ExpiresAfterSecs => _expiresAfterSecs;
+        public int ExpiresAfterSecs { get; private set; }
 
         [DataMember(Name = "image")]
-        private UploadMediaInfo _image;
-        public UploadMediaInfo Image => _image;
+        public UploadMediaInfo Image { get; private set; }
 
         [DataMember(Name = "video")]
-        private UploadVideoInfo _video;
-        public UploadVideoInfo Video => _video;
+        public UploadVideoInfo Video { get; private set; }
     }
 }

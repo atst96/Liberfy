@@ -6,7 +6,6 @@ namespace SocialApis.Twitter
     public class TwitterErrorContainer
     {
         [DataMember(Name = "errors")]
-        private TwitterError[] _errors;
-        public TwitterError[] Errors => _errors;
+        public TwitterError[] Errors { get; private set; }
     }
 }

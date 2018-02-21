@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace SocialApis.Twitter
 {
@@ -11,7 +6,6 @@ namespace SocialApis.Twitter
     public class ExtendedEntities
     {
         [DataMember(Name = "media")]
-        private MediaEntity[] _media;
-        public MediaEntity[] Media => _media;
+        public MediaEntity[] Media { get; private set; }
     }
 }

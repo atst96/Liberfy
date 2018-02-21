@@ -1,15 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+using Utf8Json;
 
 namespace SocialApis.Twitter
 {
     [DataContract]
     public class PollEntity : EntityBase
     {
+        [DataMember(Name = "options")]
+        public PollOption Options { get; private set; }
 
+        [DataMember(Name = "end_datetime")]
+        [JsonFormatter(typeof(DateTimeOffsetFormatter))]
+        public DateTimeOffset EndDateTime { get; private set; }
+
+        [DataMember(Name = "duration_minutes")]
+        public int DurationMinutes { get; private set; }
     }
 }

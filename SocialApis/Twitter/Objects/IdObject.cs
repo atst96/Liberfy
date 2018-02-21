@@ -3,18 +3,16 @@
 namespace SocialApis.Twitter
 {
     [DataContract]
-    public class IdObject
+    public struct IdObject
     {
         [DataMember(Name = "id")]
-        private long _id;
-        public long Id => _id;
+        public long Id { get; private set; }
     }
 
     [DataContract]
-    public class IdObject<T>
+    public struct IdObject<T>
     {
         [DataMember(Name = "id")]
-        private T _id;
-        public T Id => _id;
+        public T Id { get; private set; }
     }
 }

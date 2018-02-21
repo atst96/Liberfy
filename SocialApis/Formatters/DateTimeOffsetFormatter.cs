@@ -14,7 +14,10 @@ namespace SocialApis
 
         public DateTimeOffset Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
-            var value = formatterResolver.GetFormatterWithVerify<string>().Deserialize(ref reader, formatterResolver);
+            var value = formatterResolver
+                .GetFormatterWithVerify<string>()
+                .Deserialize(ref reader, formatterResolver);
+
             return DateTimeOffset.ParseExact(
                 value,
                 TwitterTimeFormat,
@@ -24,8 +27,11 @@ namespace SocialApis
 
         public void Serialize(ref JsonWriter writer, DateTimeOffset value, IJsonFormatterResolver formatterResolver)
         {
-            throw new NotImplementedException();
-            //writer.WriteString(value.ToString(TwitterTimeFormat));
+            var outoutValue = value.ToString(TwitterTimeFormat);
+
+            formatterResolver
+                .GetFormatterWithVerify<string>()
+                .Serialize(ref writer, outoutValue, formatterResolver);
         }
     }
 }

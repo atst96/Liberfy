@@ -55,7 +55,7 @@
   <ItemGroup>
     <Compile Include="Twitter\Apis\AccountApi.cs" />
     <Compile Include="Class1.cs" />
-    <Compile Include="DateTimeOffsetFormatter.cs" />
+    <Compile Include="Formatters\DateTimeOffsetFormatter.cs" />
     <Compile Include="IRateLimit.cs" />
     <Compile Include="RateLimit.cs" />
     <Compile Include="Twitter\Apis\CollectionsApi.cs" />
@@ -64,7 +64,7 @@
     <Compile Include="Twitter\Apis\SearchApi.cs" />
     <Compile Include="Twitter\Apis\StatusesApi.cs" />
     <Compile Include="Twitter\Apis\TokenApiBase.cs" />
-    <Compile Include="Twitter\Objects\BoundingBox.cs" />
+    <Compile Include="Twitter\Enums\CoordinateType.cs" />
     <Compile Include="Twitter\Objects\Coordinates.cs" />
     <Compile Include="Twitter\Objects\Entities\Entities.cs" />
     <Compile Include="Twitter\Objects\Entities\EntityBase.cs" />
@@ -74,13 +74,16 @@
     <Compile Include="Twitter\Objects\Entities\MediaSizes.cs" />
     <Compile Include="Twitter\Objects\Entities\PollEntity.cs" />
     <Compile Include="Twitter\Objects\Entities\MediaSize.cs" />
+    <Compile Include="Twitter\Objects\Entities\PollOption.cs" />
     <Compile Include="Twitter\Objects\MediaDescription.cs" />
+    <Compile Include="Twitter\Objects\Point.cs" />
     <Compile Include="Twitter\Objects\ProcessingInfo.cs" />
     <Compile Include="Twitter\Objects\UploadImageInfo.cs" />
     <Compile Include="Twitter\Objects\IdObject.cs" />
     <Compile Include="Twitter\Objects\Media.cs" />
     <Compile Include="Twitter\Objects\Places.cs" />
     <Compile Include="Twitter\Objects\UploadVideoInfo.cs" />
+    <Compile Include="Twitter\Objects\Entities\UserEntities.cs" />
     <Compile Include="Twitter\Responses\ListedResponse.cs" />
     <Compile Include="Twitter\Responses\MediaResponse.cs" />
     <Compile Include="Twitter\Responses\StatusResponse.cs" />

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace SocialApis.Twitter
 {
@@ -11,23 +6,18 @@ namespace SocialApis.Twitter
     public struct Entities
     {
         [DataMember(Name = "hashtags")]
-        private HashtagEntity[] _hashTags;
-        public HashtagEntity[] Hashtags => _hashTags;
+        public HashtagEntity[] Hashtags { get; private set; }
 
         [DataMember(Name = "urls")]
-        private UrlEntity[] _urls;
-        public UrlEntity[] Urls => _urls;
+        public UrlEntity[] Urls { get; private set; }
 
         [DataMember(Name = "user_mentions")]
-        private UserMentionEntity[] _userMentions;
-        public UserMentionEntity[] UserMentions => _userMentions;
+        public UserMentionEntity[] UserMentions { get; private set; }
 
         [DataMember(Name = "symbols")]
-        private HashtagEntity[] _symbols;
-        public HashtagEntity[] Symbols => _symbols;
+        public HashtagEntity[] Symbols { get; private set; }
 
         [DataMember(Name = "media")]
-        private MediaEntity[] _media;
-        public MediaEntity[] Media => _media;
+        public MediaEntity[] Media { get; private set; }
     }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace SocialApis.Twitter
 {
@@ -11,34 +6,28 @@ namespace SocialApis.Twitter
     public class Places
     {
         [DataMember(Name = "id")]
-        private string _id;
-        public string Id => _id;
+        public string Id { get; private set; }
 
         [DataMember(Name = "url")]
-        private string _url;
-        public string Url => _url;
+        public string Url { get; private set; }
 
         [DataMember(Name = "place_type")]
-        private string _placeType;
-        public string PlaceType => _placeType;
+        public string PlaceType { get; private set; }
 
         [DataMember(Name = "name")]
-        private string _name;
-        public string Name => _name;
+        public string Name { get; private set; }
 
         [DataMember(Name = "full_name")]
-        private string _fullName;
-        public string FullName => _fullName;
+        public string FullName { get; private set; }
 
         [DataMember(Name = "country_code")]
-        private string _countryCode;
-        public string CountryCode => _countryCode;
+        public string CountryCode { get; private set; }
 
         [DataMember(Name = "country")]
-        private string _country;
-        public string Country => _country;
+        public string Country { get; private set; }
 
-        // [DataMember(Name = "bounding_box")]
+        [DataMember(Name = "bounding_box")]
+        public Coordinates<Point[][]> BoudingBox { get; private set; }
 
         // [DataMember(Name = "attributes")]
     }

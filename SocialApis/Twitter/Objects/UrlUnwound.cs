@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace SocialApis.Twitter
 {
@@ -11,19 +6,15 @@ namespace SocialApis.Twitter
     public class UrlUnwound
     {
         [DataMember(Name = "url")]
-        private string _url;
-        public string Url => _url;
+        public string Url { get; private set; }
 
         [DataMember(Name = "status")]
-        private int _status;
-        public int Status => _status;
+        public int Status { get; private set; }
 
         [DataMember(Name = "title")]
-        private string _title;
-        public string Title => _title;
+        public string Title { get; private set; }
 
         [DataMember(Name = "description")]
-        private string _description;
-        public string Description => _description;
+        public string Description { get; private set; }
     }
 }

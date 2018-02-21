@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace SocialApis.Twitter
 {
@@ -11,19 +6,15 @@ namespace SocialApis.Twitter
     public struct MediaSizes
     {
         [DataMember(Name = "thumb")]
-        private MediaSize _thumb;
-        public MediaSize Thumb => _thumb;
+        public MediaSize Thumb { get; private set; }
 
         [DataMember(Name = "large")]
-        private MediaSize _large;
-        public MediaSize Large => _large;
+        public MediaSize Large { get; private set; }
 
         [DataMember(Name = "medium")]
-        private MediaSize _medium;
-        public MediaSize Medium => _medium;
+        public MediaSize Medium { get; private set; }
 
         [DataMember(Name = "small")]
-        private MediaSize _small;
-        public MediaSize Small => _small;
+        public MediaSize Small { get; private set; }
     }
 }

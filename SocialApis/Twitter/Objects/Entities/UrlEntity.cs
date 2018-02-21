@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace SocialApis.Twitter
 {
@@ -11,19 +6,15 @@ namespace SocialApis.Twitter
     public class UrlEntity : EntityBase
     {
         [DataMember(Name = "url")]
-        private string _url;
-        public string Url => _url;
+        public string Url { get; private set; }
 
         [DataMember(Name = "display_url")]
-        private string _displayUrl;
-        public string DisplayUrl => _displayUrl;
+        public string DisplayUrl { get; private set; }
 
         [DataMember(Name = "expanded_url")]
-        private string _expandedUrl;
-        public string ExpandedUrl => _expandedUrl;
+        public string ExpandedUrl { get; private set; }
 
         [DataMember(Name = "unwound")]
-        private UrlUnwound _unwound;
-        public UrlUnwound Unwound => _unwound;
+        public UrlUnwound Unwound { get; private set; }
     }
 }

@@ -12,146 +12,114 @@ namespace SocialApis.Twitter
     public class User
     {
         [DataMember(Name = "id")]
-        private long _id;
-        public long Id => _id;
+        public long Id { get; private set; }
 
         [DataMember(Name = "name")]
-        private string _name;
-        public string Name => _name;
+        public string Name { get; private set; }
 
         [DataMember(Name = "screen_name")]
-        private string _screenName;
-        public string ScreenName => _screenName;
+        public string ScreenName { get; private set; }
 
         [DataMember(Name = "location")]
-        private string _location;
-        public string Location => _location;
+        public string Location { get; private set; }
 
         [DataMember(Name = "url")]
-        private string _url;
-        public string Url => _url;
+        public string Url { get; private set; }
 
         [DataMember(Name = "description")]
-        private string _description;
-        public string Description => _description;
+        public string Description { get; private set; }
+
+        [DataMember(Name = "entities")]
+        public UserEntities Entities { get; private set; }
 
         // [DataMember(Name = "derived")]
 
         [DataMember(Name = "protected")]
-        private bool _protected;
-        public bool IsProtected => _protected;
+        public bool IsProtected { get; private set; }
 
         [DataMember(Name = "verified")]
-        private bool _verified;
-        public bool IsVerified => _verified;
+        public bool IsVerified { get; private set; }
 
         [DataMember(Name = "followers_count")]
-        private int _followersCount;
-        public int FollowersCount => _followersCount;
+        public int FollowersCount { get; private set; }
 
         [DataMember(Name = "friends_count")]
-        private int _friendsCount;
-        public int FriendsCount => _friendsCount;
+        public int FriendsCount { get; private set; }
 
         [DataMember(Name = "listed_count")]
-        private int _listedCount;
-        public int ListedCount => _listedCount;
+        public int ListedCount { get; private set; }
 
         [DataMember(Name = "favourites_count")]
-        private int _favoritesCount;
-        public int FavoritesCount => _favoritesCount;
+        public int FavoritesCount { get; private set; }
 
         [DataMember(Name = "stauses_count")]
-        private int _statusesCount;
-        public int StatusesCount => _statusesCount;
+        public int StatusesCount { get; private set; }
 
         [DataMember(Name = "created_at")]
         [JsonFormatter(typeof(DateTimeOffsetFormatter))]
-        private DateTimeOffset _createdAt;
-        public DateTimeOffset CreatedAt => _createdAt;
+        public DateTimeOffset CreatedAt { get; private set; }
 
         [DataMember(Name = "utc_offset")]
-        private int? _utcOffset;
-        public int? UtcOffset => _utcOffset;
+        public int? UtcOffset { get; private set; }
 
         [DataMember(Name = "time_zone")]
-        private string _timeZone;
-        public string TimeZone => _timeZone;
+        public string TimeZone { get; private set; }
 
         [DataMember(Name = "geo_enabled")]
-        private bool _geoEnabled;
-        public bool IsGeoEnabled => _geoEnabled;
+        public bool IsGeoEnabled { get; private set; }
 
         [DataMember(Name = "lang")]
-        private string _language;
-        public string Language => _language;
+        public string Language { get; private set; }
 
         [DataMember(Name = "contributors_enabled")]
-        private bool _contributorsEnabled;
-        public bool IsContributorsEnabled => _contributorsEnabled;
+        public bool IsContributorsEnabled { get; private set; }
 
         [DataMember(Name = "profile_background_color")]
-        private string _profileBackgroundColor;
-        public string ProfileBackgroundColor => _profileBackgroundColor;
+        public string ProfileBackgroundColor { get; private set; }
 
         [DataMember(Name = "profile_background_image_url")]
-        private string _profileBackgroundImageUrl;
-        public string ProfileBackgroundImageUrl => _profileBackgroundImageUrl;
+        public string ProfileBackgroundImageUrl { get; private set; }
 
         [DataMember(Name = "profile_background_image_url_https")]
-        private string _profileBackgroundImageUrlHttps;
-        public string ProfileBackgroundImageUrlHttps => _profileBackgroundImageUrlHttps;
+        public string ProfileBackgroundImageUrlHttps { get; private set; }
 
         [DataMember(Name = "profile_background_tile")]
-        private bool _profileBackgroundTile;
-        public bool ProfileBackgroundTile => _profileBackgroundTile;
+        public bool ProfileBackgroundTile { get; private set; }
 
         [DataMember(Name = "profile_banner_url")]
-        private string _profileBannerUrl;
-        public string ProfileBannerUrl => _profileBannerUrl;
+        public string ProfileBannerUrl { get; private set; }
 
         [DataMember(Name = "profile_image_url")]
-        private string _profileImageUrl;
-        public string ProfileImageUrl => _profileImageUrl;
+        public string ProfileImageUrl { get; private set; }
 
         [DataMember(Name = "profile_image_url_https")]
-        private string _profileImageUrlHttps;
-        public string ProfileImageUrlHttps => _profileImageUrlHttps;
+        public string ProfileImageUrlHttps { get; private set; }
 
         [DataMember(Name = "profile_link_color")]
-        private string _profileLinkColor;
-        public string ProfileLinkColor => _profileLinkColor;
+        public string ProfileLinkColor { get; private set; }
 
         [DataMember(Name = "profile_sidebar_border_color")]
-        private string _profileSidebarBorderColor;
-        public string ProfileSidebarBorderColor => _profileSidebarBorderColor;
+        public string ProfileSidebarBorderColor { get; private set; }
 
         [DataMember(Name = "profile_sidebar_fill_color")]
-        private string _profileSidebarFillColor;
-        public string ProfileSidebarFillColor => _profileSidebarBorderColor;
+        public string ProfileSidebarFillColor { get; private set; }
 
         [DataMember(Name = "profile_text_color")]
-        private string _profileTextColor;
-        public string ProfileTextColor => _profileTextColor;
+        public string ProfileTextColor { get; private set; }
 
         [DataMember(Name = "profile_use_background_Image")]
-        private bool _profileUseBackgroundImage;
-        public bool IsProfileUseBackgroundImage => _profileUseBackgroundImage;
+        public bool IsProfileUseBackgroundImage { get; private set; }
 
         [DataMember(Name = "default_profile")]
-        private bool _defaultProfile;
-        public bool IsDefaultProfile => _defaultProfile;
+        public bool IsDefaultProfile { get; private set; }
 
         [DataMember(Name = "default_profile_image")]
-        private bool _defaultProfileImage;
-        public bool IsDefaultProfileImage => _defaultProfileImage;
+        public bool IsDefaultProfileImage { get; private set; }
 
         [DataMember(Name = "withheld_in_countries")]
-        private string _withheldInCountries;
-        public string WithheldInCountries => _withheldInCountries;
+        public string WithheldInCountries { get; private set; }
 
         [DataMember(Name = "withheld_scope")]
-        private string _withheldScope;
-        public string WithheldScope => _withheldScope;
+        public string WithheldScope { get; private set; }
     }
 }

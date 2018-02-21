@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace SocialApis.Twitter
 {
@@ -11,19 +6,15 @@ namespace SocialApis.Twitter
     public class UploadMediaInfo
     {
         [DataMember(Name = "image_type")]
-        private string _imageType;
-        public string ImageType => _imageType;
+        public string ImageType { get; private set; }
 
         [DataMember(Name = "w")]
-        private int _w;
-        public int W => _w;
+        public int Width { get; private set; }
 
         [DataMember(Name = "h")]
-        private int _h;
-        public int H => _h;
+        public int Height { get; private set; }
 
         [DataMember(Name = "processing_info")]
-        private ProcessingInfo _processingInfo;
-        public ProcessingInfo ProcessingInfo => _processingInfo;
+        public ProcessingInfo ProcessingInfo { get; private set; }
     }
 }
