@@ -8,7 +8,7 @@ using System.Web;
 
 namespace SocialApis
 {
-    public class Query : IDictionary<string, object>
+    public class Query : IDictionary<string, object>, ICloneable
     {
         private readonly IDictionary<string, object> _dictionary;
 
@@ -162,5 +162,38 @@ namespace SocialApis
         public bool TryGetValue(string key, out object value) => _dictionary.TryGetValue(key, out value);
 
         IEnumerator IEnumerable.GetEnumerator() => _dictionary.GetEnumerator();
+
+        public Query Clone()
+        {
+            return new Query(this);
+        }
+
+        object ICloneable.Clone() => this.Clone();
+
+        public static Query Merge(Query qLeft, Query qRight)
+        {
+            if (qLeft == null && qRight == null)
+                throw new ArgumentNullException($"{ nameof(qLeft) } and { nameof(qRight) }");
+
+            if (qLeft == null)
+                return qRight.Clone();
+
+            else if (qRight == null)
+                return qLeft.Clone();
+
+            var query = qLeft.Clone();
+
+            if (qRight.Count > 0)
+            {
+                foreach (var key in qRight.Keys.Except(qLeft.Keys))
+                {
+                    query[key] = qRight[key];
+                }
+            }
+
+            return query;
+        }
+
+        public static Query operator +(Query qLeft, Query qRight) => Merge(qLeft, qRight);
     }
 }
