@@ -12,6 +12,7 @@ namespace SocialApis
     {
         public static HttpWebRequest CreateOAuthWebRequest(string endpoint, ITokensBase tokens, Query query, string method, bool autoSetting = true)
         {
+            query = query ?? new Query();
             method = method?.ToUpper() ?? "GET";
 
             var timeStamp = OAuthHelper.GenerateTimeStamp();
