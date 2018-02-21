@@ -53,8 +53,8 @@ namespace SocialApis.Twitter
         private StatusesApi _statuses;
         public StatusesApi Statuses => _statuses ?? (this._statuses = new StatusesApi(this));
 
-        private FavoriteApi _favorite;
-        public FavoriteApi Favorite => _favorite ?? (_favorite = new FavoriteApi(this));
+        private FavoritesApi _favorites;
+        public FavoritesApi Favorites => _favorites ?? (_favorites = new FavoritesApi(this));
 
         private CollectionsApi _collections;
         public CollectionsApi Collections => _collections ?? (_collections = new CollectionsApi(this));

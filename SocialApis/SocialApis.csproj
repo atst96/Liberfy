@@ -59,7 +59,7 @@
     <Compile Include="IRateLimit.cs" />
     <Compile Include="RateLimit.cs" />
     <Compile Include="Twitter\Apis\CollectionsApi.cs" />
-    <Compile Include="Twitter\Apis\FavoriteApi.cs" />
+    <Compile Include="Twitter\Apis\FavoritesApi.cs" />
     <Compile Include="Twitter\Apis\MediaApi.cs" />
     <Compile Include="Twitter\Apis\SearchApi.cs" />
     <Compile Include="Twitter\Apis\StatusesApi.cs" />
