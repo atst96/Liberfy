@@ -1383,10 +1383,9 @@
                                             <DockPanel
                                                 Margin="4 4 4 4"
                                                 DockPanel.Dock="Top">
-                                                <Border
-                                                    Visibility="Collapsed"
-                                                    DockPanel.Dock="Left"
-                                                    Width="16" Height="16"/>
+                                                <Border DockPanel.Dock="Left" Width="16" Height="16">
+                                                    <md:PackIcon Kind="Lock" />
+                                                </Border>
 
                                                 <TextBlock
                                                     DockPanel.Dock="Right"
@@ -1425,7 +1424,29 @@
                                                 Margin="{StaticResource TimelineItemEntityMargin}"
                                                 Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
 
-                                            <Border
+                                            <app:MediaPanel
+                                                DockPanel.Dock="Top"
+                                                Height="120"
+                                                Margin="{StaticResource TimelineItemEntityMargin}">
+                                                <Button
+                                                    Margin="1"
+                                                    Background="#aaa"
+                                                    Style="{StaticResource ImageButton}" />
+                                                <Button
+                                                    Margin="1"
+                                                    Background="#aaa"
+                                                    Style="{StaticResource ImageButton}" />
+                                                <Button
+                                                    Margin="1"
+                                                    Background="#aaa"
+                                                    Style="{StaticResource ImageButton}" />
+                                                <Button
+                                                    Margin="1"
+                                                    Background="#aaa"
+                                                    Style="{StaticResource ImageButton}" />
+                                            </app:MediaPanel>
+                                            
+                                            <!--<Border
                                                 Height="120"
                                                 DockPanel.Dock="Top"
                                                 Margin="3 0 3 4"
@@ -1464,7 +1485,7 @@
                                                         Background="#aaa"
                                                         Style="{StaticResource ImageButton}" />
                                                 </Grid>
-                                            </Border>
+                                            </Border>-->
 
                                             <Border
                                                 DockPanel.Dock="Top"

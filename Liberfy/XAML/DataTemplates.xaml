@@ -138,7 +138,7 @@
                                 Text="{Binding ConsumerKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 md:HintAssist.Hint="ConsumerKey"
                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
-                            
+
                             <TextBox
                                 Margin="0 4" Grid.Row="4"
                                 app:ElementBehavior.Show="{Binding OverrideKey, Mode=OneWay}"
@@ -401,9 +401,10 @@
         <Button
             Margin="2" Padding="0"
             VerticalContentAlignment="Stretch"
-            HorizontalContentAlignment="Stretch">
+            HorizontalContentAlignment="Stretch"
+            Style="{StaticResource ImageButton}">
             <Image
-                Source="{Binding CurrentEntity.MediaUrl}" 
+                Source="{Binding CurrentEntity.MediaUrl, Mode=OneTime}" 
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Stretch="UniformToFill" />
@@ -415,29 +416,46 @@
     <DataTemplate x:Key="StatusItemTemplate" DataType="{x:Type app:StatusItem}">
         <Grid Background="Transparent">
             <DockPanel Margin="4">
-                <!--<DockPanel
+                <!-- Bottom elements -->
+                <DockPanel
                     DockPanel.Dock="Bottom"
                     Margin="8 4 8 8">
-
                     <UniformGrid
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
                         Rows="1" Width="160">
-
+                        <Button
+                            Style="{StaticResource ReplyActionButton}">
+                            <md:PackIcon
+                                Kind="Reply"
+                                Width="24" Height="23"
+                                Margin="0 -1 0 0"/>
+                        </Button>
+                        
+                        <ToggleButton Style="{StaticResource RetweetActionToggleButton}">
+                            <md:PackIcon 
+                                Kind="TwitterRetweet"
+                                Margin="0"
+                                Width="26" Height="26" />
+                        </ToggleButton>
+                        
+                        <ToggleButton Style="{StaticResource FavoriteActionToggleButton}">
+                            <md:PackIcon
+                                Margin="0 0 0 0"
+                                Kind="Heart"
+                                Width="20" Height="18" />
+                        </ToggleButton>
                     </UniformGrid>
 
                     <TextBlock
                         DockPanel.Dock="Left"
                         VerticalAlignment="Center"
-                        TextTrimming="CharacterEllipsis"
-                        Visibility="{DynamicResource TweetClientNameVisibility}">
-                        <Hyperlink
-                            Style="{StaticResource MetadataLinkText}"
-                            CommandParameter="{Binding Mode=OneTime}">
-                            <Run Text="{Binding SourceName, Mode=OneTime}" />
+                        TextTrimming="CharacterEllipsis">
+                        <Hyperlink Style="{StaticResource MetadataLinkText}">
+                            <Run Text="{Binding Status.SourceName, Mode=OneTime}" />
                         </Hyperlink>
                     </TextBlock>
-                </DockPanel>-->
+                </DockPanel>
 
                 <!-- Profile image -->
                 <Button
@@ -496,25 +514,73 @@
 
                 </DockPanel>
 
-                <StackPanel>
-                    <TextBlock
-                        TextWrapping="Wrap"
-                        DockPanel.Dock="Top"
-                        Margin="{StaticResource TimelineItemEntityMargin}"
-                        b:TimelineBehavior.StatusInfo="{Binding Status, Mode=OneTime}" />
+                <TextBlock
+                    TextWrapping="Wrap"
+                    DockPanel.Dock="Top"
+                    Margin="{StaticResource TimelineItemEntityMargin}"
+                    b:TimelineBehavior.StatusInfo="{Binding Status, Mode=OneTime}" />
 
-                    <ItemsControl
-                        x:Name="media"
-                        ItemsSource="{Binding MediaEntities, Mode=OneTime}"
-                        ItemTemplate="{StaticResource MediaItemTemplate}"
-                        Visibility="{DynamicResource TweetImagesVisibility}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <app:MediaPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </StackPanel>
+                <ItemsControl
+                    x:Name="media"
+                    ItemsSource="{Binding MediaEntities, Mode=OneTime}"
+                    ItemTemplate="{StaticResource MediaItemTemplate}"
+                    Visibility="{DynamicResource TweetImagesVisibility}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <app:MediaPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <!-- Quoed status -->
+
+                <Border
+                    DockPanel.Dock="Top"
+                    BorderThickness="0 1"
+                    BorderBrush="#bbb"
+                    Padding="4 6"
+                    app:ElementBehavior.Visible="{Binding IsRetweet}"
+                    Margin="{StaticResource TimelineItemEntityMargin}">
+                    <DockPanel>
+                        <md:PackIcon
+                            Margin="0 0 4 0"
+                            Kind="TwitterRetweet"
+                            Width="28" Height="28"
+                            VerticalAlignment="Center"
+                            Foreground="Green" />
+
+                        <Button
+                            Style="{StaticResource ImageButton}"
+                            Width="28" Height="28"
+                            Margin="0 0 8 0"
+                            DockPanel.Dock="Left">
+                            <Image
+                                Width="28" Height="28"
+                                Source="{Binding RetweetUser.ProfileImageUrl}" />
+                        </Button>
+
+                        <TextBlock
+                            FontWeight="Bold"
+                            DockPanel.Dock="Left"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            TextTrimming="CharacterEllipsis">
+                            <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                <Run Text="{Binding RetweetUser.Name}" />
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock
+                            DockPanel.Dock="Left"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            TextTrimming="CharacterEllipsis">
+                            <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                <Run Text="{Binding RetweetUser.ScreenName, StringFormat='{}@{0}'}" />
+                            </Hyperlink>
+                        </TextBlock>
+                    </DockPanel>
+                </Border>
+
             </DockPanel>
         </Grid>
 
