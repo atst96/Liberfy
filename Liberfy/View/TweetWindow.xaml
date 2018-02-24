@@ -1,487 +1,478 @@
 ﻿<Window
-	x:Class="Liberfy.View.TweetWindow"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:local="clr-namespace:Liberfy.View"
-	xmlns:etk="http://schemas.xceed.com/wpf/xaml/toolkit"
-	xmlns:app="clr-namespace:Liberfy"
-	xmlns:vm="clr-namespace:Liberfy.ViewModel"
-	xmlns:b="clr-namespace:Liberfy.Behaviors"
-	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-	mc:Ignorable="d" AllowDrop="True"
-	Title="ツイート" Height="300" Width="300"
-	FontFamily="Meiryo"
-	DataContext="{app:ViewModelConnector vm:TweetWindow}"
-	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-	xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
-	UseLayoutRounding="True">
-	<Window.Resources>
+    x:Class="Liberfy.View.TweetWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Liberfy.View"
+    xmlns:etk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:app="clr-namespace:Liberfy"
+    xmlns:vm="clr-namespace:Liberfy.ViewModel"
+    xmlns:b="clr-namespace:Liberfy.Behaviors"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    mc:Ignorable="d" AllowDrop="True"
+    Title="ツイート" Height="300" Width="300"
+    FontFamily="Meiryo"
+    DataContext="{app:ViewModelConnector vm:TweetWindow}"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+    UseLayoutRounding="True">
+    <Window.Resources>
 
-		<Duration x:Key="AnimationDuration">0:0:0.5</Duration>
-		<CubicEase x:Key="AnimationEase" />
+        <Duration x:Key="AnimationDuration">0:0:0.5</Duration>
+        <CubicEase x:Key="AnimationEase" />
 
-		<Style x:Key="MediaFunctionButtonStyle" TargetType="{x:Type Button}">
-			<Setter Property="OverridesDefaultStyle" Value="False" />
-			<Setter Property="SnapsToDevicePixels" Value="True" />
-			<Setter Property="HorizontalContentAlignment" Value="Center" />
-			<Setter Property="VerticalContentAlignment" Value="Center" />
-			<Setter Property="Foreground" Value="#fff" />
-			<Setter Property="FontWeight" Value="Bold" />
-			<Setter Property="Padding" Value="6 2" />
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type Button}">
-						<Border
-							x:Name="border"
-							Background="#8aaa">
-							<ContentPresenter
-								Margin="{TemplateBinding Padding}"
-								ContentSource="Content"
-								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-								VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-						</Border>
+        <Style x:Key="MediaFunctionButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="OverridesDefaultStyle" Value="False" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="#fff" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Padding" Value="6 2" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border
+                            x:Name="border"
+                            Background="#8aaa">
+                            <ContentPresenter
+                                Margin="{TemplateBinding Padding}"
+                                ContentSource="Content"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
 
-						<ControlTemplate.Triggers>
-							<Trigger Property="IsMouseOver" Value="true">
-								<Setter TargetName="border" Property="Background" Value="#a444" />
-							</Trigger>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="#a444" />
+                            </Trigger>
 
-							<Trigger Property="IsPressed" Value="true">
-								<Setter TargetName="border" Property="Background" Value="#a000" />
-							</Trigger>
-						</ControlTemplate.Triggers>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="#a000" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-		<DataTemplate x:Key="AccountTemplate" DataType="{x:Type app:Account}">
-			<Button
-				x:Name="border"
-				Padding="12"
-				BorderBrush="#ddd"
-				ClipToBounds="True"
-				Background="Transparent"
-				BorderThickness="0 0 0 1"
-				HorizontalContentAlignment="Left"
-				CommandParameter="{Binding Mode=OneTime}"
-				Command="{Binding DataContext.SelectAccountCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
-				<Grid DataContext="{Binding Info, Mode=OneTime}">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="auto" />
-						<ColumnDefinition Width="auto" />
-						<ColumnDefinition />
-					</Grid.ColumnDefinitions>
+        <DataTemplate x:Key="AccountTemplate" DataType="{x:Type app:Account}">
+            <Button
+                x:Name="border"
+                Padding="12"
+                BorderBrush="#ddd"
+                ClipToBounds="True"
+                Background="Transparent"
+                BorderThickness="0 0 0 1"
+                HorizontalContentAlignment="Left"
+                CommandParameter="{Binding Mode=OneTime}"
+                Command="{Binding DataContext.SelectAccountCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
+                <Grid DataContext="{Binding Info, Mode=OneTime}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
 
-					<Image
-						Margin="0 0 8 0" Width="36" Height="36"
-						Source="{Binding ProfileImageUrl, IsAsync=True}" />
+                    <Image
+                        Margin="0 0 8 0" Width="36" Height="36"
+                        Source="{Binding ProfileImageUrl, IsAsync=True}" />
 
-					<TextBlock
-						Grid.Column="1"
-						Margin="0 4 4 4"
-						Text="&#xf023;" FontSize="18"
-						Style="{StaticResource ToolBarIconText}"
-						app:ElementBehavior.Visible="{Binding IsProtected, Mode=OneWay}" />
+                    <md:PackIcon
+                        Grid.Column="1"
+                        Margin="0 4 4 4"
+                        Kind="Lock" Width="20" Height="20"
+                        app:ElementBehavior.Visible="{Binding IsProtected, Mode=OneWay}" />
 
-					<StackPanel 
-						Grid.Column="2" 
-						VerticalAlignment="Center">
-						<TextBlock Text="{Binding Name, Mode=OneWay}" FontWeight="Bold" />
-						<TextBlock Text="{Binding ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
-					</StackPanel>
-				</Grid>
-			</Button>
-		</DataTemplate>
+                    <StackPanel 
+                        Grid.Column="2" 
+                        VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Name, Mode=OneWay}" FontWeight="Bold" />
+                        <TextBlock Text="{Binding ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+                    </StackPanel>
+                </Grid>
+            </Button>
+        </DataTemplate>
 
-	</Window.Resources>
+    </Window.Resources>
 
-	<i:Interaction.Behaviors>
-		<b:DragDropBehavior
-			SetDescription="True"
-			UseDescriptionIcon="True"
-			Command="{Binding DragDropCommand, Mode=OneTime}"
-			AllowEffects="{Binding DragDropEffects, Mode=OneWay}"
-			DescriptionIcon="{Binding DropDescriptionIcon, Mode=OneWay}"
-			DescriptionMessage="{Binding DropDescriptionMessage, Mode=OneWay}"/>
-	</i:Interaction.Behaviors>
+    <i:Interaction.Behaviors>
+        <b:DragDropBehavior
+            SetDescription="True"
+            UseDescriptionIcon="True"
+            Command="{Binding DragDropCommand, Mode=OneTime}"
+            AllowEffects="{Binding DragDropEffects, Mode=OneWay}"
+            DescriptionIcon="{Binding DropDescriptionIcon, Mode=OneWay}"
+            DescriptionMessage="{Binding DropDescriptionMessage, Mode=OneWay}"/>
+    </i:Interaction.Behaviors>
 
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="auto" />
-			<RowDefinition Height="auto" />
-			<RowDefinition />
-		</Grid.RowDefinitions>
-		<Border 
-			Panel.ZIndex="100"
-			DockPanel.Dock="Top" Style="{StaticResource ToolBarBorderStyle}">
-			<DockPanel>
-				<StackPanel
-					DockPanel.Dock="Right"
-					Orientation="Horizontal">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Border 
+            Panel.ZIndex="100"
+            DockPanel.Dock="Top" Style="{StaticResource ToolBarBorderStyle}">
+            <DockPanel>
+                <StackPanel
+                    DockPanel.Dock="Right"
+                    Orientation="Horizontal">
 
-					<Label
-						AllowDrop="True"
-						DockPanel.Dock="Right"
-						Content="{Binding RemainingTweetLength, Mode=OneWay}">
-						<Label.Style>
-							<Style TargetType="{x:Type Label}">
-								<Style.Triggers>
-									<DataTrigger Binding="{Binding CanUpdateContent, Mode=OneWay}" Value="false">
-										<Setter Property="Foreground" Value="Red" />
-									</DataTrigger>
-								</Style.Triggers>
-							</Style>
-						</Label.Style>
-					</Label>
-					
-					<Button
-						AllowDrop="True"
-						DockPanel.Dock="Right"
-						Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-						Command="{Binding AddImageCommand, Mode=OneTime}">
-						<TextBlock Text="&#xf083;" Style="{StaticResource ToolBarIconText}" />
-					</Button>
-					
-					<xctk:DropDownButton
-						Padding="12 2"
-						DockPanel.Dock="Right"
-						Style="{StaticResource ToolBarDropDownButton}"
-						IsOpen="{Binding IsNowPlayingPanelOpen, Mode=TwoWay}">
-						<xctk:DropDownButton.Content>
-							<TextBlock Text="&#xf001;" Style="{StaticResource ToolBarIconText}" />
-						</xctk:DropDownButton.Content>
-						<xctk:DropDownButton.DropDownContent>
-							<Grid Margin="6" Width="260">
-								<Grid.RowDefinitions>
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-								</Grid.RowDefinitions>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="6*" />
-									<ColumnDefinition Width="3*" />
-									<ColumnDefinition Width="1*" />
-								</Grid.ColumnDefinitions>
+                    <Label
+                        AllowDrop="True"
+                        DockPanel.Dock="Right"
+                        Content="{Binding RemainingTweetLength, Mode=OneWay}">
+                        <Label.Style>
+                            <Style TargetType="{x:Type Label}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CanUpdateContent, Mode=OneWay}" Value="false">
+                                        <Setter Property="Foreground" Value="Red" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Label.Style>
+                    </Label>
 
-								<TextBlock 
-									Grid.ColumnSpan="2"
-									FontSize="16"
-									Margin="0 0 0 6">
-									<Run Text="&#xf001;" FontFamily="{StaticResource FontAwesome}" />
-									<Run Text=" NowPlaying" />
-								</TextBlock>
-							
-								<ComboBox
-									Margin="2"
-									Grid.Row="1"
-									SelectedValuePath="Key"
-									DisplayMemberPath="Value"
-									SelectedValue="{Binding NowPlayingPlayer, Mode=TwoWay}"
-									ItemsSource="{x:Static vm:TweetWindow.NowPlayingPlayerList}" />
+                    <Button
+                        AllowDrop="True"
+                        DockPanel.Dock="Right"
+                        Padding="{StaticResource ToolBarItemPadding}"
+                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                        Command="{Binding AddImageCommand, Mode=OneTime}">
+                        <md:PackIcon Kind="FileImage" Width="24" Height="20" />
+                    </Button>
 
+                    <md:PopupBox StaysOpen="True" Padding="10 8" ClipToBounds="True">
+                        <md:PopupBox.ToggleContent>
+                            <md:PackIcon Margin="4 0" Kind="LibraryMusic" Width="24" Height="24" />
+                        </md:PopupBox.ToggleContent>
 
-								<Button
-									Margin="2"
-									Grid.Row="1"
-									Grid.Column="1"
-									Content="取得"
-									Command="{Binding GetNowPlayingTextCommand, Mode=OneTime}"/>
+                        <StackPanel Width="280">
+                            <StackPanel Orientation="Horizontal">
+                                <md:PackIcon 
+                                    Kind="LibraryMusic"
+                                    VerticalAlignment="Center"
+                                    Width="28" Height="28" />
 
-								<TextBlock
-									Grid.Row="2"
-									Margin="2"
-									Text="フォーマット：" />
-								<TextBox
-									Grid.Row="3"
-									Margin="2"
-									TextWrapping="Wrap"
-									AcceptsReturn="True"
-									Grid.ColumnSpan="3"
-									Text="{Binding InsertionNowPlayingText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock
+                                    Margin="8 0 0 0" Text="NowPlaying"
+                                    VerticalAlignment="Center"
+                                    FontSize="{StaticResource UIFontSize}" />
+                            </StackPanel>
 
-								<ScrollViewer
-									Margin="2"
-									Grid.Row="4"
-									HorizontalScrollBarVisibility="Auto"
-									VerticalScrollBarVisibility="Hidden">
-									<ItemsControl
-										ItemsSource="{Binding NowPlayingArtworks}">
-										<ItemsControl.ItemTemplate>
-											<DataTemplate DataType="{x:Type vm:ArtworkItem}">
-												<CheckBox
-													Margin="0 0 0 4"
-													IsChecked="{Binding Use, Mode=TwoWay}">
-													<Image
-														Width="48" Height="48"
-														Stretch="UniformToFill"
-														RenderOptions.BitmapScalingMode="HighQuality"
-														Source="{Binding Image, Mode=OneTime}" />
-												</CheckBox>
-											</DataTemplate>
-										</ItemsControl.ItemTemplate>
-									</ItemsControl>
-								</ScrollViewer>
+                            <Grid Margin="0 2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="7*" />
+                                    <ColumnDefinition Width="3*" />
+                                </Grid.ColumnDefinitions>
 
-								<Button
-									Margin="2"
-									Grid.Row="5"
-									Content="挿入"
-									Padding="24 4"
-									Grid.ColumnSpan="3"
-									HorizontalAlignment="Center"
-									Command="{Binding InsertNowPlayingTextCommand, Mode=OneTime}" />
-							</Grid>
-						</xctk:DropDownButton.DropDownContent>
-					</xctk:DropDownButton>
-					
-					<Button
-						AllowDrop="True"
-						DockPanel.Dock="Right"
-						Content="ツイート"
-						Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-						Command="{Binding PostCommand, Mode=OneTime}" />
-				</StackPanel>
+                                <ComboBox
+                                    Margin="0 0 8 0"
+                                    SelectedValuePath="Key"
+                                    DisplayMemberPath="Value"
+                                    VerticalAlignment="Bottom"
+                                    FontSize="{StaticResource UIFontSize}"
+                                    SelectedValue="{Binding NowPlayingPlayer, Mode=TwoWay}"
+                                    ItemsSource="{x:Static vm:TweetWindow.NowPlayingPlayerList}"
+                                    md:HintAssist.Hint="プレーヤの選択"
+                                    Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
 
-				<xctk:DropDownButton
-					HorizontalContentAlignment="Stretch"
-					Style="{StaticResource ToolBarDropDownButton}">
-					<xctk:DropDownButton.DropDownContent>
-						<ScrollViewer
-							VerticalScrollBarVisibility="Auto">
-							<ItemsControl
-								Width="260"
-								ItemsSource="{Binding Accounts, Mode=OneTime}"
-								ItemTemplate="{StaticResource AccountTemplate}"/>
-						</ScrollViewer>
-					</xctk:DropDownButton.DropDownContent>
+                                <Button
+                                    Grid.Column="1"
+                                    Content="取得"
+                                    VerticalAlignment="Bottom"
+                                    FontSize="{StaticResource UIFontSize}"
+                                    Command="{Binding GetNowPlayingTextCommand, Mode=OneTime}"
+                                    Style="{StaticResource MaterialDesignRaisedButton}" />
+                            </Grid>
 
-					<StackPanel 
-						Orientation="Horizontal"
-						DataContext="{Binding SelectedAccount, Mode=TwoWay}">
-						<Image
-							Width="18" Height="18"
-							Source="{Binding Info.ProfileImageUrl, IsAsync=True, Mode=TwoWay}" />
+                            <TextBox
+                                Margin="0 2"
+                                TextWrapping="Wrap"
+                                AcceptsReturn="True"
+                                Grid.ColumnSpan="2"
+                                FontSize="{StaticResource UIFontSize}"
+                                Text="{Binding InsertionNowPlayingText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                md:HintAssist.Hint="テキスト"
+                                Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
 
-						<TextBlock
-							Margin="2 2 0 -2"
-							VerticalAlignment="Center"
-							Text="&#xf023;" FontSize="18"
-							Style="{StaticResource ToolBarIconText}"
-							app:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=TwoWay}"/>
+                            <ScrollViewer
+                                Margin="0 2"
+                                Grid.Row="4"
+                                FontSize="{StaticResource UIFontSize}"
+                                HorizontalScrollBarVisibility="Auto"
+                                VerticalScrollBarVisibility="Hidden">
+                                <ItemsControl
+                                    ItemsSource="{Binding NowPlayingArtworks}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type vm:ArtworkItem}">
+                                            <CheckBox
+                                                Margin="0 0 0 4"
+                                                IsChecked="{Binding Use, Mode=TwoWay}">
+                                                <Image
+                                                    Width="48" Height="48"
+                                                    Stretch="UniformToFill"
+                                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                                    Source="{Binding Image, Mode=OneTime}" />
+                                            </CheckBox>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
 
-						<TextBlock
-							Margin="4 2 0 -2"
-							TextWrapping="NoWrap"
-							VerticalAlignment="Center"
-							TextTrimming="CharacterEllipsis"
-							Text="{Binding Info.ScreenName, Mode=TwoWay, StringFormat='{}@{0}'}" />
-					</StackPanel>
-				</xctk:DropDownButton>
-				
-				<Border />
-			</DockPanel>
-		</Border>
+                            <Button
+                                Margin="0 2"
+                                Content="挿入"
+                                Padding="24 4"
+                                Grid.ColumnSpan="2"
+                                HorizontalAlignment="Center"
+                                FontSize="{StaticResource UIFontSize}"
+                                Command="{Binding InsertNowPlayingTextCommand, Mode=OneTime}"
+                                Style="{StaticResource MaterialDesignFlatButton}"/>
+                        </StackPanel>
+                    </md:PopupBox>
 
-		<Border 
-			Panel.ZIndex="1"
-			x:Name="MediaPanel"
-			Grid.Row="1"
-			Background="#eee"
-			BorderBrush="#ccc"
-			BorderThickness="0 0 0 1"
-			app:ElementBehavior.Visible="{Binding Media.HasItems, Mode=OneWay}">
-			<DockPanel>
-				<CheckBox
-					DockPanel.Dock="Top" Margin="4"
-					IsChecked="{Binding IsSensitiveMedia, Mode=TwoWay}"
-					Content="不適切な表現を含む画像であることを告示する"/>
-				
-				<ListBox
-					Padding="0"
-					BorderThickness="0"
-					Background="Transparent"
-					VerticalAlignment="Center"
-					HorizontalAlignment="Stretch"
-					VirtualizingPanel.ScrollUnit="Pixel"
-					ScrollViewer.CanContentScroll="False"
-					ItemsSource="{Binding Media, Mode=OneTime}">
-					<ListBox.ItemsPanel>
-						<ItemsPanelTemplate>
-							<StackPanel Orientation="Horizontal" />
-						</ItemsPanelTemplate>
-					</ListBox.ItemsPanel>
-					<ListBox.ItemTemplate>
-						<DataTemplate DataType="{x:Type vm:UploadMedia}">
-							<Grid Background="White">
-								<Grid.RowDefinitions>
-									<RowDefinition />
-									<RowDefinition />
-								</Grid.RowDefinitions>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition />
-									<ColumnDefinition />
-								</Grid.ColumnDefinitions>
+                    <Button
+                        AllowDrop="True"
+                        DockPanel.Dock="Right"
+                        Content="ツイート"
+                        Padding="{StaticResource ToolBarItemPadding}"
+                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                        Command="{Binding PostCommand, Mode=OneTime}" />
+                </StackPanel>
 
-								<Image 
-									Grid.RowSpan="2"
-									Grid.ColumnSpan="2"
-									Stretch="UniformToFill"
-									RenderOptions.BitmapScalingMode="HighQuality"
-									Source="{Binding PreviewImage, Mode=OneTime}" />
+                <md:PopupBox ClipToBounds="True">
+                    <md:PopupBox.ToggleContent>
+                        <StackPanel
+                            Margin="8 0"
+                            Orientation="Horizontal"
+                            DataContext="{Binding SelectedAccount, Mode=OneWay}">
+                            <Image
+                                Width="28" Height="28"
+                                Source="{Binding Info.ProfileImageUrl, IsAsync=True, Mode=OneWay}" />
 
-								<Label
-									Grid.Row="1"
-									Grid.Column="1"
-									Foreground="#fff"
-									Background="#8aaa"
-									HorizontalAlignment="Right"
-									VerticalAlignment="Bottom"
-									Padding="4 2" FontWeight="Bold"
-									Content="{Binding ViewExtension, Mode=OneTime}"/>
+                            <md:PackIcon
+                                Margin="2 2 0 2"
+                                VerticalAlignment="Center"
+                                Kind="Lock" Width="18" Height="18"
+                                app:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=OneWay}"/>
 
-								<ProgressBar
-									x:Name="progressBar"
-									Visibility="Collapsed"
-									Height="7"
-									Minimum="0.0"
-									Maximum="1.0"
-									Value="{Binding UploadProgress, Mode=OneWay}"
-									Grid.ColumnSpan="2"
-									HorizontalAlignment="Stretch"
-									VerticalAlignment="Top"
-									app:ElementBehavior.Visible="{Binding UseChunkedUpload, Mode=OneWay}"/>
+                            <TextBlock
+                                Margin="4 2 0 2"
+                                TextWrapping="NoWrap"
+                                VerticalAlignment="Center"
+                                TextTrimming="CharacterEllipsis"
+                                Text="{Binding Info.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+                        </StackPanel>
+                    </md:PopupBox.ToggleContent>
 
-								<Button
-									x:Name="removeButton"
-									Grid.Row="1"
-									Padding="4 2"
-									Content="削除"
-									HorizontalAlignment="Stretch"
-									VerticalAlignment="Bottom"
-									Command="{Binding DataContext.RemoveMediaCommand, Mode=OneTime, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
-									CommandParameter="{Binding}"
-									Style="{StaticResource MediaFunctionButtonStyle}"/>
+                    <ItemsControl
+                        Width="260" FontSize="{StaticResource UIFontSize}"
+                        ItemsSource="{Binding Accounts, Mode=OneTime}"
+                        ItemTemplate="{StaticResource AccountTemplate}"/>
+                </md:PopupBox>
+                <Border />
+            </DockPanel>
+        </Border>
 
-								<Border
-									Grid.RowSpan="2"
-									Grid.ColumnSpan="2"
-									Background="#B000"
-									app:ElementBehavior.Visible="{Binding IsUploading, Mode=OneWay}">
-									<TextBlock
-										Margin="4"
-										FontSize="12"
-										Foreground="#fff"
-										TextWrapping="Wrap"
-										TextTrimming="None"
-										VerticalAlignment="Center"
-										HorizontalAlignment="Center"
-										Text="アップロード中..." />
-								</Border>
-							</Grid>
+        <Border 
+            Panel.ZIndex="1"
+            x:Name="MediaPanel"
+            Grid.Row="1"
+            Background="#eee"
+            BorderBrush="#ccc"
+            BorderThickness="0 0 0 1"
+            app:ElementBehavior.Visible="{Binding Media.HasItems, Mode=OneWay}">
+            <DockPanel>
+                <CheckBox
+                    DockPanel.Dock="Top" Margin="8 6"
+                    IsChecked="{Binding IsSensitiveMedia, Mode=TwoWay}"
+                    Content="不適切な表現を含む画像であることを告示する"/>
+                
+                <ListBox
+                    Padding="0"
+                    BorderThickness="0"
+                    Background="Transparent"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Stretch"
+                    VirtualizingPanel.ScrollUnit="Pixel"
+                    ScrollViewer.CanContentScroll="False"
+                    ItemsSource="{Binding Media, Mode=OneTime}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:UploadMedia}">
+                            <Grid Background="White">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
 
-							<DataTemplate.Triggers>
-								<DataTrigger Binding="{Binding IsTweetPosting, Mode=OneWay}" Value="true">
-									<Setter TargetName="removeButton" Property="Visibility" Value="{x:Static Visibility.Collapsed}" />
-									<Setter TargetName="progressBar" Property="Visibility" Value="{x:Static Visibility.Visible}" />
-								</DataTrigger>
-							</DataTemplate.Triggers>
-						</DataTemplate>
-					</ListBox.ItemTemplate>
-					<ListBox.ItemContainerStyle>
-						<Style TargetType="{x:Type ListBoxItem}">
-							<Setter Property="Margin" Value="0" />
-							<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-							<Setter Property="VerticalContentAlignment" Value="Stretch" />
-							<Setter Property="Template">
-								<Setter.Value>
-									<ControlTemplate TargetType="{x:Type ListBoxItem}">
-										<Border
-											x:Name="border"
-											Margin="6"
-											Width="100" Height="75"
-											BorderThickness="1"
-											BorderBrush="#bbb">
-											<Border.Effect>
-												<DropShadowEffect
-													BlurRadius="5"
-													Direction="315" 
-													ShadowDepth="1"
-													Opacity="0.5" />
-											</Border.Effect>
-											<ContentPresenter
-												HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-												VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-										</Border>
+                                <Image 
+                                    Grid.RowSpan="2"
+                                    Grid.ColumnSpan="2"
+                                    Stretch="UniformToFill"
+                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                    Source="{Binding PreviewImage, Mode=OneTime}" />
 
-										<ControlTemplate.Triggers>
-											<Trigger Property="IsMouseOver" Value="true">
-												<Setter TargetName="border" Property="BorderBrush" Value="#aaa" />
-											</Trigger>
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Foreground="#fff"
+                                    Background="#8aaa"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Padding="4 2" FontWeight="Bold"
+                                    Content="{Binding ViewExtension, Mode=OneTime}"/>
 
-											<Trigger Property="IsSelected" Value="true">
-												<Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
-											</Trigger>
-										</ControlTemplate.Triggers>
-									</ControlTemplate>
-								</Setter.Value>
-							</Setter>
-						</Style>
-					</ListBox.ItemContainerStyle>
-				</ListBox>
-			</DockPanel>
-		</Border>
+                                <ProgressBar
+                                    x:Name="progressBar"
+                                    Visibility="Collapsed"
+                                    Height="7"
+                                    Minimum="0.0"
+                                    Maximum="1.0"
+                                    Value="{Binding UploadProgress, Mode=OneWay}"
+                                    Grid.ColumnSpan="2"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Top"
+                                    app:ElementBehavior.Visible="{Binding UseChunkedUpload, Mode=OneWay}"/>
 
-		<TextBox
-			Padding="4"
-			TabIndex="0"
-			AllowDrop="True"
-			Style="{x:Null}"
-			IsTabStop="False"
-			BorderThickness="0"
-			TextWrapping="Wrap"
-			AcceptsReturn="True"
-			Grid.Row="2"
-			Text="{Binding Tweet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-			IsReadOnly="{Binding IsEditable, Mode=OneWay, Converter={StaticResource BoolInverter}}">
-			<i:Interaction.Behaviors>
-				<b:TextBoxBehavior Controller="{Binding TextBoxController, Mode=OneTime}" />
-				<b:PasteImageBehavior Command="{Binding PasteImageCommand, Mode=OneTime}" />
-				<b:DragDropBehavior
-					SetDescription="True"
-					UseDescriptionIcon="True"
-					Command="{Binding DragDropCommand, Mode=OneTime}"
-					AllowEffects="{Binding DragDropEffects, Mode=OneWay}"
-					DescriptionIcon="{Binding DropDescriptionIcon, Mode=OneWay}"
-					DescriptionMessage="{Binding DropDescriptionMessage, Mode=OneWay}"/>
-			</i:Interaction.Behaviors>
-		</TextBox>
+                                <Button
+                                    x:Name="removeButton"
+                                    Grid.Row="1"
+                                    Padding="4 2"
+                                    Content="削除"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Bottom"
+                                    Command="{Binding DataContext.RemoveMediaCommand, Mode=OneTime, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource MediaFunctionButtonStyle}"/>
 
-		<Border
-			Grid.Row="2"
-			Background="#A000"
-			app:ElementBehavior.Visible="{Binding IsTweetPosting, Mode=OneWay}">
-			<TextBlock 
-				VerticalAlignment="Center"
-				HorizontalAlignment="Center"
-				FontSize="18"
-				Foreground="White"
-				TextTrimming="None"
-				TextWrapping="Wrap"
-				TextAlignment="Center"
-				Text="{Binding UploadStatusText, Mode=OneWay}">
-				<TextBlock.Effect>
-					<DropShadowEffect
-						BlurRadius="5"
-						ShadowDepth="1"
-						Direction="270" />
-				</TextBlock.Effect>
-			</TextBlock>
-		</Border>
-	</Grid>
+                                <Border
+                                    Grid.RowSpan="2"
+                                    Grid.ColumnSpan="2"
+                                    Background="#B000"
+                                    app:ElementBehavior.Visible="{Binding IsUploading, Mode=OneWay}">
+                                    <TextBlock
+                                        Margin="4"
+                                        FontSize="12"
+                                        Foreground="#fff"
+                                        TextWrapping="Wrap"
+                                        TextTrimming="None"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Text="アップロード中..." />
+                                </Border>
+                            </Grid>
+
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsTweetPosting, Mode=OneWay}" Value="true">
+                                    <Setter TargetName="removeButton" Property="Visibility" Value="{x:Static Visibility.Collapsed}" />
+                                    <Setter TargetName="progressBar" Property="Visibility" Value="{x:Static Visibility.Visible}" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                        <Border
+                                            x:Name="border"
+                                            Margin="6"
+                                            Width="100" Height="75"
+                                            BorderThickness="1"
+                                            BorderBrush="#bbb">
+                                            <Border.Effect>
+                                                <DropShadowEffect
+                                                    BlurRadius="5"
+                                                    Direction="315" 
+                                                    ShadowDepth="1"
+                                                    Opacity="0.5" />
+                                            </Border.Effect>
+                                            <ContentPresenter
+                                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                        </Border>
+
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="true">
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#aaa" />
+                                            </Trigger>
+
+                                            <Trigger Property="IsSelected" Value="true">
+                                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <TextBox
+            Padding="4"
+            TabIndex="0"
+            AllowDrop="True"
+            Style="{x:Null}"
+            IsTabStop="False"
+            BorderThickness="0"
+            TextWrapping="Wrap"
+            AcceptsReturn="True"
+            Grid.Row="2"
+            Text="{Binding Tweet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            IsReadOnly="{Binding IsEditable, Mode=OneWay, Converter={StaticResource BoolInverter}}">
+            <i:Interaction.Behaviors>
+                <b:TextBoxBehavior Controller="{Binding TextBoxController, Mode=OneTime}" />
+                <b:PasteImageBehavior Command="{Binding PasteImageCommand, Mode=OneTime}" />
+                <b:DragDropBehavior
+                    SetDescription="True"
+                    UseDescriptionIcon="True"
+                    Command="{Binding DragDropCommand, Mode=OneTime}"
+                    AllowEffects="{Binding DragDropEffects, Mode=OneWay}"
+                    DescriptionIcon="{Binding DropDescriptionIcon, Mode=OneWay}"
+                    DescriptionMessage="{Binding DropDescriptionMessage, Mode=OneWay}"/>
+            </i:Interaction.Behaviors>
+        </TextBox>
+
+        <Border
+            Grid.Row="2"
+            Background="#A000"
+            app:ElementBehavior.Visible="{Binding IsTweetPosting, Mode=OneWay}">
+            <TextBlock 
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                FontSize="18"
+                Foreground="White"
+                TextTrimming="None"
+                TextWrapping="Wrap"
+                TextAlignment="Center"
+                Text="{Binding UploadStatusText, Mode=OneWay}">
+                <TextBlock.Effect>
+                    <DropShadowEffect
+                        BlurRadius="5"
+                        ShadowDepth="1"
+                        Direction="270" />
+                </TextBlock.Effect>
+            </TextBlock>
+        </Border>
+    </Grid>
 </Window>

@@ -1,532 +1,531 @@
 ﻿<ResourceDictionary
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:vm="clr-namespace:Liberfy.ViewModel"
-	xmlns:app="clr-namespace:Liberfy"
-	xmlns:sys="clr-namespace:System;assembly=mscorlib"
-	xmlns:conv="clr-namespace:Liberfy.Converter"
-	xmlns:b="clr-namespace:Liberfy.Behaviors">
-
-	<sys:Double x:Key="ItemWidth">NaN</sys:Double>
-
-	<conv:LocalTimeConverter x:Key="LocalTimeConverter" />
-
-	<!--#region Template selectors-->
-	<app:ColumnOptionTemplateSelector x:Key="ColumnOptionTemplateSelector" />
-	<!--#endregion-->
-
-	<!--#region Data templates -->
-
-	<Style x:Key="ListViewGroupItemStyle" TargetType="{x:Type GroupItem}">
-		<Setter Property="Background">
-			<Setter.Value>
-				<LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-					<GradientStop Color="#FFE6E6E6"/>
-					<GradientStop Color="#FFF1F1F1" Offset="1"/>
-				</LinearGradientBrush>
-			</Setter.Value>
-		</Setter>
-		<Setter Property="Padding" Value="4 2" />
-		<Setter Property="BorderBrush" Value="Gainsboro" />
-		<Setter Property="BorderThickness" Value="0 0 0 1" />
-		<Setter Property="Template">
-			<Setter.Value>
-				<ControlTemplate TargetType="{x:Type GroupItem}">
-					<Grid>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="auto" />
-							<RowDefinition />
-						</Grid.RowDefinitions>
-
-						<Border
-							TextBlock.FontWeight="Bold"
-							TextBlock.Foreground="#444"
-							Background="{TemplateBinding Background}"
-							BorderBrush="{TemplateBinding BorderBrush}"
-							BorderThickness="{TemplateBinding BorderThickness}">
-							<ContentControl
-								TabIndex="0"
-								IsTabStop="False"
-								Margin="{TemplateBinding Padding}"
-								Content="{TemplateBinding Content}"
-								ContentTemplate="{TemplateBinding ContentTemplate}"
-								ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
-						</Border>
-
-						<ItemsPresenter
-							Grid.Row="1"
-							KeyboardNavigation.TabNavigation="Once" />
-					</Grid>
-				</ControlTemplate>
-			</Setter.Value>
-		</Setter>
-	</Style>
-
-	<DataTemplate DataType="{x:Type vm:AuthenticationViewModel}">
-		<Border
-			BorderThickness="2"
-			BorderBrush="#ccc">
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition />
-					<RowDefinition Height="auto" />
-				</Grid.RowDefinitions>
-
-				<Border
-					Grid.Row="1"
-					Padding="5"
-					Background="#eee">
-					<StackPanel 
-						Orientation="Horizontal"
-						HorizontalAlignment="Right">
-						<Button
-							Margin="4" Padding="18 4"
-							Content="次へ(_N)"
-							Command="{Binding NextCommand, Mode=OneTime}"/>
-						<Button
-							Margin="4" Padding="18 4"
-							Content="閉じる(_C)"
-							Command="{Binding CancelCommand, Mode=OneTime}"/>
-					</StackPanel>
-				</Border>
-
-				<TabControl
-					Margin="16 16 16 8"
-					SelectedIndex="{Binding PageIndex, Mode=TwoWay}"
-					Background="{x:Static Brushes.Transparent}"
-					BorderThickness="0" Padding="0">
-					<TabControl.ItemContainerStyle>
-						<Style TargetType="{x:Type TabItem}">
-							<Setter Property="Visibility" Value="Collapsed" />
-						</Style>
-					</TabControl.ItemContainerStyle>
-
-					<TabItem>
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="auto" />
-								<ColumnDefinition />
-							</Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="auto" />
-								<RowDefinition Height="*" />
-								<RowDefinition Height="auto" />
-								<RowDefinition Height="auto" />
-								<RowDefinition Height="auto" />
-							</Grid.RowDefinitions>
-
-							<TextBlock
-								Grid.Row="1" TextWrapping="Wrap"
-								Foreground="Red" FontWeight="Bold"
-								Text="{Binding Error, Mode=OneWay}" />
-
-							<Label
-								Grid.ColumnSpan="2"
-								Padding="0" FontSize="20"
-								Content="アカウントの追加" />
-
-							<CheckBox 
-								Margin="0 0 0 6"
-								Grid.Row="2" Grid.ColumnSpan="2"
-								IsChecked="{Binding OverrideKey,Mode=TwoWay}"
-								Content="Liberfy以外のAPIキーを使用する" />
-
-							<TextBlock
-								Grid.Row="3"
-								Text="ConsumerKey   " 
-								VerticalAlignment="Center"
-								app:ElementBehavior.Show="{Binding OverrideKey, Mode=OneWay}" />
-							<TextBlock
-								Grid.Row="4"
-								Text="ConsumerSecret   "
-								VerticalAlignment="Center"
-								app:ElementBehavior.Show="{Binding OverrideKey, Mode=OneWay}" />
-
-							<TextBox
-								Margin="0 4" Grid.Row="3" Grid.Column="1"
-								app:ElementBehavior.Show="{Binding OverrideKey, Mode=OneWay}"
-								Text="{Binding ConsumerKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-							<TextBox
-								Margin="0 4" Grid.Row="4" Grid.Column="1"
-								app:ElementBehavior.Show="{Binding OverrideKey, Mode=OneWay}"
-								Text="{Binding ConsumerSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-						</Grid>
-					</TabItem>
-
-					<TabItem>
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="auto" />
-								<RowDefinition Height="auto" />
-								<RowDefinition Height="*" />
-								<RowDefinition Height="auto" />
-								<RowDefinition Height="auto" />
-							</Grid.RowDefinitions>
-
-							<TextBlock
-								Grid.Row="1" TextWrapping="Wrap"
-								Foreground="Red" FontWeight="Bold"
-								Text="{Binding Error, Mode=OneWay}" />
-
-							<Label
-								Padding="0" FontSize="20"
-								Content="PINコードの入力" />
-
-							<TextBlock
-								Grid.Row="1" TextWrapping="Wrap"
-								Text="Liberfyを認証し、表示されるPINコードを入力してください。" />
-
-							<TextBlock Grid.Row="3" VerticalAlignment="Center">
-								<Hyperlink Command="{Binding CopyClipboardCommand, Mode=OneTime}">
-									<Run Text="URLをクリップボードにコピーする" />
-								</Hyperlink>
-							</TextBlock>
-
-							<TextBox
-								Margin="0 4" Grid.Row="4" FontSize="24" FontWeight="Bold"
-								FontFamily="Comic Sans MS" Foreground="#444" TextAlignment="Center"
-								Text="{Binding PinCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-								IsEnabled="{Binding IsRunning, Mode=OneWay, Converter={StaticResource BoolInverter}}" />
-						</Grid>
-					</TabItem>
-
-					<TabItem>
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="auto" />
-								<ColumnDefinition />
-							</Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="auto" />
-								<RowDefinition Height="*" />
-								<RowDefinition Height="auto" />
-							</Grid.RowDefinitions>
-
-							<TextBlock
-								Grid.Row="1" TextWrapping="Wrap"
-								Foreground="Red" FontWeight="Bold"
-								Text="{Binding Error, Mode=OneWay}" />
-
-							<Label
-								Grid.ColumnSpan="2"
-								Padding="0" FontSize="20"
-								Content="認証エラー" />
-
-						</Grid>
-					</TabItem>
-				</TabControl>
-			</Grid>
-		</Border>
-	</DataTemplate>
-
-	<!--#endregion-->
-
-	<!--#region Column option templates-->
-
-	<DataTemplate x:Key="SearchColumnOptionTemplate" DataType="{x:Type app:SearchColumn}">
-		<Grid>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="4*" />
-				<ColumnDefinition Width="6*" />
-			</Grid.ColumnDefinitions>
-			<Grid.RowDefinitions>
-				<RowDefinition />
-				<RowDefinition Height="auto" />
-			</Grid.RowDefinitions>
-
-			<TextBlock
-				Text="検索種別"
-				VerticalAlignment="Center" />
-
-			<ComboBox
-				Margin="0 2"
-				Grid.Column="1" Grid.ColumnSpan="2"
-				DisplayMemberPath="Value"
-				SelectedValuePath="Key"
-				SelectedValue="{Binding SearchType}"
-				ItemsSource="{x:Static app:SearchColumn.SearchTypes}" />
-
-			<Grid Grid.Row="1" Grid.ColumnSpan="2">
-				<Grid.RowDefinitions>
-					<RowDefinition />
-					<RowDefinition />
-					<RowDefinition />
-					<RowDefinition />
-					<RowDefinition />
-				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="4*" />
-					<ColumnDefinition Width="7*" />
-				</Grid.ColumnDefinitions>
-
-				<CheckBox
-					Content="言語"
-					Grid.Row="0"
-					VerticalAlignment="Center"
-					IsChecked="{Binding UseLanguage}" />
-
-				<ComboBox
-					Grid.Row="0"
-					Grid.Column="1"
-					Margin="0 2"
-					SelectedValuePath="Key"
-					DisplayMemberPath="Value"
-					SelectedValue="{Binding Language}"
-					ItemsSource="{x:Static app:SearchColumn.Languages}" />
-
-				<CheckBox
-					Grid.Row="1"
-					Content="検索結果"
-					VerticalAlignment="Center"
-					IsChecked="{Binding UseResultType}" />
-
-				<ComboBox
-					Grid.Row="1"
-					Grid.Column="1"
-					Margin="0 2"
-					SelectedValuePath="Key"
-					DisplayMemberPath="Value"
-					SelectedValue="{Binding ResultType}"
-					ItemsSource="{x:Static app:SearchColumn.ResultTypes}" />
-
-				<CheckBox
-					Grid.Row="2"
-					Content="until"
-					VerticalAlignment="Center"
-					IsChecked="{Binding UseUntil}" />
-
-				<TextBox
-					Grid.Row="2"
-					Grid.Column="1"
-					Margin="0 2"
-					Text="{Binding Until, UpdateSourceTrigger=PropertyChanged}" />
-
-				<CheckBox
-					Grid.Row="3"
-					Content="since__id"
-					VerticalAlignment="Center"
-					IsChecked="{Binding UseSinceId}"/>
-
-				<TextBox
-					Grid.Row="3"
-					Grid.Column="1"
-					Margin="0 2"
-					Text="{Binding SinceId, UpdateSourceTrigger=PropertyChanged}" />
-
-				<CheckBox
-					Grid.Row="4"
-					Content="max__id"
-					VerticalAlignment="Center"
-					IsChecked="{Binding UseMaxId}" />
-
-				<TextBox
-					Grid.Row="4"
-					Grid.Column="1"
-					Margin="0 2"
-					Text="{Binding MaxId, UpdateSourceTrigger=PropertyChanged}" />
-			</Grid>
-		</Grid>
-	</DataTemplate>
-
-	<DataTemplate x:Key="ListColumnOptionTemplate" DataType="{x:Type app:ListColumn}">
-		<Grid>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition />
-				<ColumnDefinition Width="auto" />
-			</Grid.ColumnDefinitions>
-
-		</Grid>
-	</DataTemplate>
-
-	<DataTemplate x:Key="StreamSearchColumnOptionTemplate" DataType="{x:Type app:StreamSearchColumn}">
-		<Grid>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="4*" />
-				<ColumnDefinition Width="6*" />
-			</Grid.ColumnDefinitions>
-			<Grid.RowDefinitions>
-				<RowDefinition />
-				<RowDefinition Height="auto" />
-			</Grid.RowDefinitions>
-
-			<Grid Grid.Row="1" Grid.ColumnSpan="2">
-				<Grid.RowDefinitions>
-					<RowDefinition />
-					<RowDefinition />
-					<RowDefinition />
-				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="4*" />
-					<ColumnDefinition Width="7*" />
-				</Grid.ColumnDefinitions>
-
-				<CheckBox
-					Grid.ColumnSpan="2"
-					Content="検索時に一覧をクリアする"
-					VerticalAlignment="Center"
-					IsChecked="{Binding ClearItemsAfterSearch}" />
-
-				<CheckBox
-					Grid.Row="1"
-					Grid.ColumnSpan="2"
-					Content="検索を行う"
-					VerticalAlignment="Center"
-					IsChecked="{Binding EnableBeforeSearch}" />
-
-				<CheckBox
-					Grid.Row="2"
-					Content="言語"
-					VerticalAlignment="Center"
-					IsChecked="{Binding UseLanguage}" />
-
-				<ComboBox
-					Grid.Row="2"
-					Grid.Column="1"
-					Margin="0 2"
-					SelectedValuePath="Key"
-					DisplayMemberPath="Value"
-					SelectedValue="{Binding Language}"
-					ItemsSource="{x:Static app:SearchColumn.Languages}" />
-
-			</Grid>
-		</Grid>
-	</DataTemplate>
-
-	<!--#endregion-->
-
-	<EllipseGeometry x:Key="EllipseMask"
-					 RadiusX="24"
-					 RadiusY="24" 
-					 Center="24, 24" />
-
-
-	<DataTemplate x:Key="MediaItemTemplate" DataType="{x:Type app:MediaEntityInfo}">
-		<Button
-			Margin="2" Padding="0"
-			VerticalContentAlignment="Stretch"
-			HorizontalContentAlignment="Stretch">
-			<Image
-				Source="{Binding CurrentEntity.MediaUrl}" 
-				HorizontalAlignment="Center"
-				VerticalAlignment="Center"
-				Stretch="UniformToFill" />
-		</Button>
-	</DataTemplate>
-
-	<!--#region Item templates-->
-
-	<DataTemplate x:Key="StatusItemTemplate" DataType="{x:Type app:StatusItem}">
-		<Grid Background="Transparent">
-			<DockPanel Margin="4">
-				<!--<DockPanel
-					DockPanel.Dock="Bottom"
-					Margin="8 4 8 8">
-
-					<UniformGrid
-						DockPanel.Dock="Right"
-						HorizontalAlignment="Right"
-						Rows="1" Width="160">
-
-					</UniformGrid>
-
-					<TextBlock
-						DockPanel.Dock="Left"
-						VerticalAlignment="Center"
-						TextTrimming="CharacterEllipsis"
-						Visibility="{DynamicResource TweetClientNameVisibility}">
-						<Hyperlink
-							Style="{StaticResource MetadataLinkText}"
-							CommandParameter="{Binding Mode=OneTime}">
-							<Run Text="{Binding SourceName, Mode=OneTime}" />
-						</Hyperlink>
-					</TextBlock>
-				</DockPanel>-->
-
-				<!-- Profile image -->
-				<Button
-					Margin="4"
-					DockPanel.Dock="Left"
-					VerticalAlignment="Top"
-					Style="{StaticResource ImageButton}"
-					Clip="{DynamicResource TweetProfileImageClip}"
-					Visibility="{DynamicResource TweetProfileImageVisibility}">
-					<Image
-						Width="{DynamicResource TweetProfileImageWidth}"
-						Height="{DynamicResource TweetProfileImageWidth}"
-						Source="{Binding User.ProfileImageUrl, Mode=OneWay, IsAsync=True}" />
-				</Button>
-
-				<!-- Right contents -->
-				<DockPanel
-					Margin="4"
-					DockPanel.Dock="Top">
-					<Border
-						app:ElementBehavior.Visible="{Binding User.IsProtected}"
-						DockPanel.Dock="Left" Width="16" Height="16" />
-
-					<TextBlock
-						DockPanel.Dock="Right"
-						VerticalAlignment="Top"
-						HorizontalAlignment="Right"
-						FontSize="11"
-						TextTrimming="CharacterEllipsis">
-						<Hyperlink Style="{StaticResource UserNameLinkText}">
-							<Run Text="{Binding CreatedAt, Mode=OneWay, Converter={StaticResource LocalTimeConverter}}" />
-						</Hyperlink>
-					</TextBlock>
-
-					<TextBlock
-						DockPanel.Dock="Left"
-						FontWeight="Bold"
-						VerticalAlignment="Center"
-						HorizontalAlignment="Left"
-						TextTrimming="CharacterEllipsis">
-						<Hyperlink Style="{StaticResource UserNameLinkText}">
-							<Run Text="{Binding User.Name, Mode=OneWay}" />
-						</Hyperlink>
-					</TextBlock>
-
-					<TextBlock
-						DockPanel.Dock="Left"
-						VerticalAlignment="Center"
-						HorizontalAlignment="Left">
-						<Hyperlink Style="{StaticResource UserNameLinkText}">
-							<Run Text="{Binding User.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
-						</Hyperlink>
-					</TextBlock>
-
-				</DockPanel>
-
-				<StackPanel>
-					<TextBlock
-						TextWrapping="Wrap"
-						DockPanel.Dock="Top"
-						Margin="{StaticResource TimelineItemEntityMargin}"
-						b:TimelineBehavior.StatusInfo="{Binding Status, Mode=OneTime}" />
-
-					<ItemsControl
-						x:Name="media"
-						ItemsSource="{Binding MediaEntities, Mode=OneTime}"
-						ItemTemplate="{StaticResource MediaItemTemplate}"
-						Visibility="{DynamicResource TweetImagesVisibility}">
-						<ItemsControl.ItemsPanel>
-							<ItemsPanelTemplate>
-								<app:MediaPanel />
-							</ItemsPanelTemplate>
-						</ItemsControl.ItemsPanel>
-					</ItemsControl>
-				</StackPanel>
-			</DockPanel>
-		</Grid>
-
-		<DataTemplate.Triggers>
-			<DataTrigger Binding="{Binding HasMediaEntities, Mode=OneTime}" Value="false">
-				<Setter TargetName="media" Property="Visibility" Value="Collapsed" />
-			</DataTrigger>
-		</DataTemplate.Triggers>
-	</DataTemplate>
-
-	<!--#endregion-->
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:Liberfy.ViewModel"
+    xmlns:app="clr-namespace:Liberfy"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:conv="clr-namespace:Liberfy.Converter"
+    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:b="clr-namespace:Liberfy.Behaviors">
+
+    <sys:Double x:Key="ItemWidth">NaN</sys:Double>
+
+    <conv:LocalTimeConverter x:Key="LocalTimeConverter" />
+
+    <!--#region Template selectors-->
+    <app:ColumnOptionTemplateSelector x:Key="ColumnOptionTemplateSelector" />
+    <!--#endregion-->
+
+    <!--#region Data templates -->
+
+    <Style x:Key="ListViewGroupItemStyle" TargetType="{x:Type GroupItem}">
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                    <GradientStop Color="#FFE6E6E6"/>
+                    <GradientStop Color="#FFF1F1F1" Offset="1"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Padding" Value="4 2" />
+        <Setter Property="BorderBrush" Value="Gainsboro" />
+        <Setter Property="BorderThickness" Value="0 0 0 1" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type GroupItem}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Border
+                            TextBlock.FontWeight="Bold"
+                            TextBlock.Foreground="#444"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentControl
+                                TabIndex="0"
+                                IsTabStop="False"
+                                Margin="{TemplateBinding Padding}"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
+                        </Border>
+
+                        <ItemsPresenter
+                            Grid.Row="1"
+                            KeyboardNavigation.TabNavigation="Once" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <DataTemplate DataType="{x:Type vm:AuthenticationViewModel}">
+        <Border
+            BorderThickness="2"
+            BorderBrush="#ccc">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
+                <Border
+                    Grid.Row="1"
+                    Padding="5"
+                    Background="#eee">
+                    <StackPanel 
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                        <Button
+                            Margin="4" Padding="18 4"
+                            Content="次へ(_N)"
+                            Foreground="#000"
+                            Command="{Binding NextCommand, Mode=OneTime}"
+                            Style="{StaticResource MaterialDesignFlatButton}"/>
+                        <Button
+                            Margin="4" Padding="18 4"
+                            Content="閉じる(_C)"
+                            Foreground="#000"
+                            Command="{Binding CancelCommand, Mode=OneTime}"
+                            Style="{StaticResource MaterialDesignFlatButton}"/>
+                    </StackPanel>
+                </Border>
+
+                <TabControl
+                    Margin="16 16 16 8"
+                    SelectedIndex="{Binding PageIndex, Mode=TwoWay}"
+                    Background="{x:Static Brushes.Transparent}"
+                    BorderThickness="0" Padding="0">
+                    <TabControl.ItemContainerStyle>
+                        <Style TargetType="{x:Type TabItem}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Style>
+                    </TabControl.ItemContainerStyle>
+
+                    <TabItem>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="1" TextWrapping="Wrap"
+                                Foreground="Red" FontWeight="Bold"
+                                Text="{Binding Error, Mode=OneWay}" />
+
+                            <Label
+                                Grid.ColumnSpan="2"
+                                Padding="0" FontSize="20"
+                                Content="アカウントの追加" />
+
+                            <CheckBox 
+                                Margin="0 0 0 6"
+                                Grid.Row="2"
+                                IsChecked="{Binding OverrideKey,Mode=TwoWay}"
+                                Content="Liberfy以外のAPIキーを使用する" />
+
+                            <TextBox
+                                Margin="0 4" Grid.Row="3"
+                                app:ElementBehavior.Show="{Binding OverrideKey, Mode=OneWay}"
+                                Text="{Binding ConsumerKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                md:HintAssist.Hint="ConsumerKey"
+                                Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                            
+                            <TextBox
+                                Margin="0 4" Grid.Row="4"
+                                app:ElementBehavior.Show="{Binding OverrideKey, Mode=OneWay}"
+                                Text="{Binding ConsumerSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                md:HintAssist.Hint="ConsumerSecret"
+                                Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="1" TextWrapping="Wrap"
+                                Foreground="Red" FontWeight="Bold"
+                                Text="{Binding Error, Mode=OneWay}" />
+
+                            <Label
+                                Padding="0" FontSize="20"
+                                Content="PINコードの入力" />
+
+                            <TextBlock
+                                Grid.Row="1" TextWrapping="Wrap"
+                                Text="Liberfyを認証し、表示されるPINコードを入力してください。" />
+
+                            <TextBlock Grid.Row="3" VerticalAlignment="Center">
+                                <Hyperlink Command="{Binding CopyClipboardCommand, Mode=OneTime}">
+                                    <Run Text="URLをクリップボードにコピーする" />
+                                </Hyperlink>
+                            </TextBlock>
+
+                            <TextBox
+                                Margin="0 4" Grid.Row="4" FontSize="24" FontWeight="Bold"
+                                FontFamily="Comic Sans MS, Meiryo" Foreground="#444" TextAlignment="Center"
+                                Text="{Binding PinCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                IsEnabled="{Binding IsRunning, Mode=OneWay, Converter={StaticResource BoolInverter}}"
+                                md:HintAssist.Hint="PINコード"
+                                Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="1" TextWrapping="Wrap"
+                                Foreground="Red" FontWeight="Bold"
+                                Text="{Binding Error, Mode=OneWay}" />
+
+                            <Label
+                                Grid.ColumnSpan="2"
+                                Padding="0" FontSize="20"
+                                Content="認証エラー" />
+
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <!--#endregion-->
+
+    <!--#region Column option templates-->
+
+    <DataTemplate x:Key="SearchColumnOptionTemplate" DataType="{x:Type app:SearchColumn}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="6*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock
+                Text="検索種別"
+                VerticalAlignment="Center" />
+
+            <ComboBox
+                Margin="0 2"
+                Grid.Column="1" Grid.ColumnSpan="2"
+                DisplayMemberPath="Value"
+                SelectedValuePath="Key"
+                SelectedValue="{Binding SearchType}"
+                ItemsSource="{x:Static app:SearchColumn.SearchTypes}" />
+
+            <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*" />
+                    <ColumnDefinition Width="7*" />
+                </Grid.ColumnDefinitions>
+
+                <CheckBox
+                    Content="言語"
+                    Grid.Row="0"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding UseLanguage}" />
+
+                <ComboBox
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="0 2"
+                    SelectedValuePath="Key"
+                    DisplayMemberPath="Value"
+                    SelectedValue="{Binding Language}"
+                    ItemsSource="{x:Static app:SearchColumn.Languages}" />
+
+                <CheckBox
+                    Grid.Row="1"
+                    Content="検索結果"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding UseResultType}" />
+
+                <ComboBox
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="0 2"
+                    SelectedValuePath="Key"
+                    DisplayMemberPath="Value"
+                    SelectedValue="{Binding ResultType}"
+                    ItemsSource="{x:Static app:SearchColumn.ResultTypes}" />
+
+                <CheckBox
+                    Grid.Row="2"
+                    Content="until"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding UseUntil}" />
+
+                <TextBox
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Margin="0 2"
+                    Text="{Binding Until, UpdateSourceTrigger=PropertyChanged}" />
+
+                <CheckBox
+                    Grid.Row="3"
+                    Content="since__id"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding UseSinceId}"/>
+
+                <TextBox
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Margin="0 2"
+                    Text="{Binding SinceId, UpdateSourceTrigger=PropertyChanged}" />
+
+                <CheckBox
+                    Grid.Row="4"
+                    Content="max__id"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding UseMaxId}" />
+
+                <TextBox
+                    Grid.Row="4"
+                    Grid.Column="1"
+                    Margin="0 2"
+                    Text="{Binding MaxId, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ListColumnOptionTemplate" DataType="{x:Type app:ListColumn}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="StreamSearchColumnOptionTemplate" DataType="{x:Type app:StreamSearchColumn}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="6*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*" />
+                    <ColumnDefinition Width="7*" />
+                </Grid.ColumnDefinitions>
+
+                <CheckBox
+                    Grid.ColumnSpan="2"
+                    Content="検索時に一覧をクリアする"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding ClearItemsAfterSearch}" />
+
+                <CheckBox
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    Content="検索を行う"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding EnableBeforeSearch}" />
+
+                <CheckBox
+                    Grid.Row="2"
+                    Content="言語"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding UseLanguage}" />
+
+                <ComboBox
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Margin="0 2"
+                    SelectedValuePath="Key"
+                    DisplayMemberPath="Value"
+                    SelectedValue="{Binding Language}"
+                    ItemsSource="{x:Static app:SearchColumn.Languages}" />
+
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+    <!--#endregion-->
+
+    <EllipseGeometry x:Key="EllipseMask"
+                     RadiusX="24"
+                     RadiusY="24" 
+                     Center="24, 24" />
+
+
+    <DataTemplate x:Key="MediaItemTemplate" DataType="{x:Type app:MediaEntityInfo}">
+        <Button
+            Margin="2" Padding="0"
+            VerticalContentAlignment="Stretch"
+            HorizontalContentAlignment="Stretch">
+            <Image
+                Source="{Binding CurrentEntity.MediaUrl}" 
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Stretch="UniformToFill" />
+        </Button>
+    </DataTemplate>
+
+    <!--#region Item templates-->
+
+    <DataTemplate x:Key="StatusItemTemplate" DataType="{x:Type app:StatusItem}">
+        <Grid Background="Transparent">
+            <DockPanel Margin="4">
+                <!--<DockPanel
+                    DockPanel.Dock="Bottom"
+                    Margin="8 4 8 8">
+
+                    <UniformGrid
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Right"
+                        Rows="1" Width="160">
+
+                    </UniformGrid>
+
+                    <TextBlock
+                        DockPanel.Dock="Left"
+                        VerticalAlignment="Center"
+                        TextTrimming="CharacterEllipsis"
+                        Visibility="{DynamicResource TweetClientNameVisibility}">
+                        <Hyperlink
+                            Style="{StaticResource MetadataLinkText}"
+                            CommandParameter="{Binding Mode=OneTime}">
+                            <Run Text="{Binding SourceName, Mode=OneTime}" />
+                        </Hyperlink>
+                    </TextBlock>
+                </DockPanel>-->
+
+                <!-- Profile image -->
+                <Button
+                    Margin="4"
+                    DockPanel.Dock="Left"
+                    VerticalAlignment="Top"
+                    Style="{StaticResource ImageButton}"
+                    Clip="{DynamicResource TweetProfileImageClip}"
+                    Visibility="{DynamicResource TweetProfileImageVisibility}">
+                    <Image
+                        Width="{DynamicResource TweetProfileImageWidth}"
+                        Height="{DynamicResource TweetProfileImageWidth}"
+                        Source="{Binding User.ProfileImageUrl, Mode=OneWay, IsAsync=True}" />
+                </Button>
+
+                <!-- Right contents -->
+                <DockPanel
+                    Margin="4"
+                    DockPanel.Dock="Top">
+                    <Border
+                        app:ElementBehavior.Visible="{Binding User.IsProtected}"
+                        DockPanel.Dock="Left" Width="16" Height="16">
+                        <md:PackIcon Kind="Lock" />
+                    </Border>
+
+                    <TextBlock
+                        DockPanel.Dock="Right"
+                        VerticalAlignment="Top"
+                        HorizontalAlignment="Right"
+                        FontSize="11"
+                        TextTrimming="CharacterEllipsis">
+                        <Hyperlink Style="{StaticResource UserNameLinkText}">
+                            <Run Text="{Binding CreatedAt, Mode=OneWay, Converter={StaticResource LocalTimeConverter}}" />
+                        </Hyperlink>
+                    </TextBlock>
+
+                    <TextBlock
+                        DockPanel.Dock="Left"
+                        FontWeight="Bold"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        TextTrimming="CharacterEllipsis">
+                        <Hyperlink Style="{StaticResource UserNameLinkText}">
+                            <Run Text="{Binding User.Name, Mode=OneWay}" />
+                        </Hyperlink>
+                    </TextBlock>
+
+                    <TextBlock
+                        DockPanel.Dock="Left"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left">
+                        <Hyperlink Style="{StaticResource UserNameLinkText}">
+                            <Run Text="{Binding User.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+                        </Hyperlink>
+                    </TextBlock>
+
+                </DockPanel>
+
+                <StackPanel>
+                    <TextBlock
+                        TextWrapping="Wrap"
+                        DockPanel.Dock="Top"
+                        Margin="{StaticResource TimelineItemEntityMargin}"
+                        b:TimelineBehavior.StatusInfo="{Binding Status, Mode=OneTime}" />
+
+                    <ItemsControl
+                        x:Name="media"
+                        ItemsSource="{Binding MediaEntities, Mode=OneTime}"
+                        ItemTemplate="{StaticResource MediaItemTemplate}"
+                        Visibility="{DynamicResource TweetImagesVisibility}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <app:MediaPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </StackPanel>
+            </DockPanel>
+        </Grid>
+
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding HasMediaEntities, Mode=OneTime}" Value="false">
+                <Setter TargetName="media" Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!--#endregion-->
 
 
 </ResourceDictionary>

@@ -1,1992 +1,2074 @@
 ﻿<Window
-	x:Class="Liberfy.SettingWindow"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:local="clr-namespace:Liberfy"
-	xmlns:app="clr-namespace:Liberfy"
-	xmlns:sys="clr-namespace:System;assembly=mscorlib"
-	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
-	xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
-	xmlns:b="clr-namespace:Liberfy.Behaviors"
-	xmlns:conv="clr-namespace:Liberfy.Converter"
-	xmlns:vm="clr-namespace:Liberfy.ViewModel"
-	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-	mc:Ignorable="d"
-	ResizeMode="NoResize"
-	UseLayoutRounding="True"
-	TextOptions.TextFormattingMode="Display"
-	Title="設定" Height="494" Width="712"
-	FontFamily="Meiryo"
-	DataContext="{local:ViewModelConnector {x:Type vm:SettingWindow}}">
-	<Window.Resources>
-		<sys:Double x:Key="tabItemWidth">120</sys:Double>
-		<conv:EnumBoolConverter x:Key="EnumBoolConverter" />
-
-		<conv:LocalizeNameConverter
-			x:Key="MuteTypeLocalizer"
-			LocalizeDictionary="{x:Static app:UILocalize.MuteTypes}" />
-
-		<conv:LocalizeNameConverter
-			x:Key="SearchModeLocalizer"
-			LocalizeDictionary="{x:Static app:UILocalize.MuteMatchTypes}" />
-
-		<CollectionViewSource
-			x:Key="MuteViewSource"
-			Source="{Binding MuteList, Mode=OneTime}">
-			<CollectionViewSource.GroupDescriptions>
-				<PropertyGroupDescription
-					PropertyName="Type"
-					Converter="{StaticResource MuteTypeLocalizer}" />
-			</CollectionViewSource.GroupDescriptions>
-		</CollectionViewSource>
-
-		<conv:LocalizeNameConverter
-			x:Key="ColumnNameConverter"
-			LocalizeDictionary="{x:Static app:ColumnBase.ColumnTypes}" />
-		<conv:ListBoxIndexConverter x:Key="ListBoxIndexConverter" />
-		<conv:ColumnSettingToColumnConverter x:Key="ColumnSettingToColumnConverter" />
-
-		<Style x:Key="HeaderLabel" TargetType="{x:Type Label}">
-			<Setter Property="FontWeight" Value="Bold" />
-			<Setter Property="Foreground" Value="#333" />
-		</Style>
-
-		<Style x:Key="HeaderLabelStyle2" TargetType="{x:Type Label}" BasedOn="{StaticResource HeaderLabel}">
-			<Setter Property="Margin" Value="0 8 0 0" />
-		</Style>
-
-		<Thickness x:Key="ContainerMargin">12</Thickness>
-
-		<Style x:Key="ElementsContainerStyle" TargetType="{x:Type Panel}">
-			<Setter Property="Margin" Value="{StaticResource ContainerMargin}" />
-			<Style.Resources>
-				<Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
-					<Setter Property="Margin" Value="4 3" />
-					<Setter Property="HorizontalAlignment" Value="Left" />
-				</Style>
-
-				<Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource {x:Type RadioButton}}">
-					<Setter Property="Margin" Value="4 3" />
-					<Setter Property="HorizontalAlignment" Value="Left" />
-				</Style>
-
-				<Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
-					<Setter Property="Padding" Value="4 0 4 6" />
-					<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
-				</Style>
-			</Style.Resources>
-		</Style>
-
-		<DataTemplate x:Key="AccountTemplate" DataType="{x:Type local:Account}">
-			<Border
-				x:Name="border"
-				Padding="12"
-				ClipToBounds="True"
-				BorderThickness="0 0 0 1"
-				Background="Transparent"
-				BorderBrush="#ddd"
-				d:DesignWidth="360">
-				<Grid>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="auto" />
-						<ColumnDefinition Width="auto" />
-						<ColumnDefinition />
-						<ColumnDefinition Width="auto" />
-					</Grid.ColumnDefinitions>
-
-					<Image
-						Margin="0 0 8 0" Width="36" Height="36"
-						Source="{Binding Info.ProfileImageUrl, IsAsync=True}" />
-
-					<TextBlock
-						Grid.Column="1"
-						Margin="0 4 4 4"
-						Text="&#xf023;" FontSize="18"
-						Style="{StaticResource ToolBarIconText}"
-						local:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=OneWay}" />
-
-					<StackPanel 
-						Grid.Column="2" 
-						VerticalAlignment="Center">
-						<TextBlock Text="{Binding Info.Name, Mode=OneWay}" FontWeight="Bold" />
-						<TextBlock Text="{Binding Info.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
-					</StackPanel>
-
-					<StackPanel
-						Grid.Column="3"
-						Opacity="0.6"
-						x:Name="accountFuncPanel"
-						Orientation="Horizontal"
-						VerticalAlignment="Center">
-						<Button
-							Margin="0 0 4 0"
-							Content="▲"
-							CommandParameter="{Binding}"
-							Command="{Binding DataContext.AccountMoveUpCommand, Mode=OneTime, 
-								RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, AncestorLevel=1}}"
-							Style="{StaticResource SimpleButtonStyle}" />
-
-						<Button
-							Margin="0 0 4 0"
-							Content="▼"
-							CommandParameter="{Binding}"
-							Command="{Binding DataContext.AccountMoveDownCommand, Mode=OneTime,
-								RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, AncestorLevel=1}}"
-							Style="{StaticResource SimpleButtonStyle}" />
-
-						<Button
-							Content="削除"
-							CommandParameter="{Binding}"
-							Command="{Binding DataContext.AccountDeleteCommand, Mode=OneTime,
-								RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, AncestorLevel=1}}"
-							Background="Red"
-							Style="{StaticResource SimpleButtonStyle}" />
-					</StackPanel>
-				</Grid>
-			</Border>
-
-			<DataTemplate.Triggers>
-				<DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true">
-					<Setter TargetName="accountFuncPanel" Property="Opacity" Value="1.0" />
-					<Setter TargetName="border" Property="Background" Value="#eee" />
-					<Setter TargetName="border" Property="BorderBrush" Value="#ccc" />
-				</DataTrigger>
-			</DataTemplate.Triggers>
-		</DataTemplate>
-
-
-		<!--#region TabControl Template-->
-		<Style x:Key="tabItemStyle" TargetType="{x:Type TabItem}">
-			<Setter Property="Padding" Value="14,8,30,8" />
-			<Setter Property="Background" Value="{x:Static Brushes.Transparent}" />
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type TabItem}">
-						<Border
-							x:Name="border"
-							Padding="{TemplateBinding Padding}"
-							Background="{TemplateBinding Background}">
-							<ContentPresenter
-								x:Name="tabHeader"
-								ContentSource="Header"
-								TextBlock.Foreground="{DynamicResource SettingTabItemForeground}"/>
-						</Border>
-
-						<ControlTemplate.Triggers>
-							<Trigger Property="IsMouseOver" Value="True">
-								<Setter TargetName="border" Property="Background" Value="#3fff" />
-							</Trigger>
-
-							<Trigger Property="IsSelected" Value="True">
-								<Setter TargetName="border" Property="Background" Value="#dfff" />
-								<Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource SettingTabItemSelectedBorderBrush}" />
-							</Trigger>
-						</ControlTemplate.Triggers>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-
-		<Style x:Key="tabControlStyle" TargetType="{x:Type TabControl}">
-			<Setter Property="OverridesDefaultStyle" Value="False" />
-			<Setter Property="UseLayoutRounding" Value="True" />
-			<Setter Property="TabStripPlacement" Value="Left" />
-			<Setter Property="BorderThickness" Value="0" />
-			<Setter Property="Background" Value="{DynamicResource TabControlBackground}" />
-			<Setter Property="BorderBrush" Value="{DynamicResource TabControlBorderBrush}" />
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type TabControl}">
-						<Border
-							Background="{TemplateBinding Background}"
-							BorderBrush="{TemplateBinding BorderBrush}"
-							BorderThickness="{TemplateBinding BorderThickness}">
-							<Grid>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="auto" />
-									<ColumnDefinition />
-								</Grid.ColumnDefinitions>
-
-								<Border
-									BorderThickness="0,0,1,0"
-									Background="{DynamicResource SettingTabPanelBackground}"
-									BorderBrush="{DynamicResource SettingTabItemNormalBorderBrush}" />
-
-								<TabPanel
-									x:Name="HeaderPanel"
-									IsItemsHost="True"
-									KeyboardNavigation.TabIndex="1"
-									Background="{x:Static Brushes.Transparent}" />
-
-								<ContentPresenter
-									Grid.Column="1"
-									x:Name="PART_SelectedContentHost" 
-									ContentSource="SelectedContent" />
-							</Grid>
-						</Border>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-			<Setter Property="ItemContainerStyle" Value="{StaticResource tabItemStyle}" />
-		</Style>
-
-		<Style x:Key="TabControlStyle1" TargetType="{x:Type TabControl}">
-			<Setter Property="TabStripPlacement" Value="Top" />
-			<Setter Property="Background" Value="White" />
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type TabControl}">
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="auto" />
-								<RowDefinition />
-							</Grid.RowDefinitions>
-
-							<Border
-								BorderThickness="0 0 0 1"
-								Background="{DynamicResource SettingTabPanelBackground}"
-								BorderBrush="{DynamicResource SettingTabItemNormalBorderBrush}" />
-
-							<TabPanel
-								x:Name="HeaderPanel"
-								Margin="4 4 4 0"
-								IsItemsHost="True"
-								KeyboardNavigation.TabIndex="1"
-								Background="{x:Static Brushes.Transparent}" />
-
-							<Border 
-								Grid.Row="1"
-								Background="{TemplateBinding Background}">
-								<ContentPresenter 
-									x:Name="PART_SelectedContentHost" 
-									ContentSource="SelectedContent" />
-							</Border>
-						</Grid>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-			<Setter Property="ItemContainerStyle">
-				<Setter.Value>
-					<Style TargetType="{x:Type TabItem}">
-						<Setter Property="Template">
-							<Setter.Value>
-								<ControlTemplate TargetType="{x:Type TabItem}">
-									<Border 
-										x:Name="border"
-										Padding="12 6"
-										BorderThickness="1 1 1 1"
-										Margin="0 0 -1 0"
-										Background="#f4f4f4"
-										BorderBrush="#ccc">
-										<ContentPresenter ContentSource="Header" />
-									</Border>
-
-									<ControlTemplate.Triggers>
-										<Trigger Property="IsMouseOver" Value="true">
-											<Setter TargetName="border" Property="Background" Value="#fafafa" />
-											<Setter TargetName="border" Property="BorderBrush" Value="#aaa" />
-										</Trigger>
-
-										<Trigger Property="IsSelected" Value="true">
-											<Setter TargetName="border" Property="BorderThickness" Value="1 1 1 0" />
-											<Setter TargetName="border" Property="Background" Value="#fff" />
-											<Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource SettingTabItemNormalBorderBrush}" />
-										</Trigger>
-
-										<Trigger Property="IsSelected" Value="false">
-											<Setter Property="Foreground" Value="#666" />
-										</Trigger>
-									</ControlTemplate.Triggers>
-								</ControlTemplate>
-							</Setter.Value>
-						</Setter>
-					</Style>
-				</Setter.Value>
-			</Setter>
-		</Style>
-		<!--#endregion-->
-
-		<conv:LocalFontNameConverter x:Key="LocalFontNameConverter" />
-
-		<DataTemplate x:Key="FontViewTemplate" DataType="{x:Type FontFamily}">
-			<Grid Margin="4">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="auto" />
-					<RowDefinition Height="auto" />
-				</Grid.RowDefinitions>
-
-				<TextBlock
-					FontSize="16"
-					Text="{Binding Converter={StaticResource LocalFontNameConverter}, Mode=OneTime}"
-					FontFamily="{Binding Mode=OneTime}" />
-
-				<TextBlock
-					Grid.Row="1" Margin="0 3 0 0"
-					Foreground="{DynamicResource DisabledForeground}">
-					<Run Text="{Binding Converter={StaticResource LocalFontNameConverter}, Mode=OneTime}" />
-					<Run />/ <Run Text="{Binding Source, Mode=OneWay}"/>
-				</TextBlock>
-			</Grid>
-		</DataTemplate>
-	</Window.Resources>
-	<DockPanel>
-		<Border
-			Height="32" DockPanel.Dock="Top"
-			Style="{StaticResource ToolBarBorderStyle}">
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="120" />
-					<ColumnDefinition />
-					<ColumnDefinition Width="auto" />
-				</Grid.ColumnDefinitions>
-
-				<TextBlock
-					Text="設定"
-					FontWeight="Bold"
-					VerticalAlignment="Center"
-					HorizontalAlignment="Center" />
-
-				<Border 
-					Width="1"
-					Background="{DynamicResource ToolBarBorderBrush}"
-					HorizontalAlignment="Right"
-					VerticalAlignment="Stretch" />
-
-				<TextBlock
-					Grid.Column="1"
-					FontWeight="Bold"
-					VerticalAlignment="Center"
-					HorizontalAlignment="Center"
-					Text="{Binding ElementName=tabControl, Path=SelectedItem.Header}" />
-			</Grid>
-		</Border>
-
-		<TabControl 
-			x:Name="tabControl"
-			Style="{StaticResource tabControlStyle}"
-			SelectedIndex="{Binding TabPageIndex, Mode=TwoWay}">
-			<TabItem Header="アカウント">
-				<TabControl Style="{StaticResource TabControlStyle1}">
-					<TabItem Header="アカウント管理">
-						<DockPanel>
-							<ToolBar
-								DockPanel.Dock="Top"
-								Style="{StaticResource ToolBarStyle}">
-								<Button 
-									Content="アカウントの追加"
-									Command="{Binding AccountAddCommand, Mode=OneTime}"/>
-							</ToolBar>
-
-							<ScrollViewer VerticalScrollBarVisibility="Auto">
-								<ItemsControl 
-									ItemsSource="{Binding Accounts, Mode=OneTime}"
-									ItemTemplate="{StaticResource AccountTemplate}"/>
-							</ScrollViewer>
-						</DockPanel>
-					</TabItem>
-					<TabItem Header="アカウントの初期設定">
-						<DockPanel>
-							<UniformGrid
-								Columns="2" Margin="4"
-								DockPanel.Dock="Top"
-								Style="{StaticResource ElementsContainerStyle}">
-
-								<CheckBox
-									Content="起動時に自動的にログインする"
-									IsChecked="{Binding Setting.AccountDefaultAutomaticallyLogin, Mode=TwoWay}" />
-
-								<CheckBox
-									Content="タイムラインを自動的に読み込む"
-									IsChecked="{Binding Setting.AccountDefaultAutomaticallyLoadTimeline, Mode=TwoWay}" />
-							</UniformGrid>
-
-							<Separator
-								DockPanel.Dock="Top"
-								Background="#ccc"
-								Margin="0"/>
-
-							<ListBox
-								Margin="0"
-								DockPanel.Dock="Left"
-								Width="260"
-								BorderThickness="0 0 1 0"
-								BorderBrush="#ccc"
-								ItemsSource="{Binding DefaultColumns, Mode=OneTime}"
-								SelectedItem="{Binding SelectedColumnSetting, Mode=TwoWay}">
-								<ListBox.ItemTemplate>
-									<DataTemplate DataType="{x:Type local:ColumnSetting}">
-										<TextBlock
-											Margin="8"
-											Text="{Binding Type, Mode=OneTime, Converter={StaticResource ColumnNameConverter}}" />
-									</DataTemplate>
-								</ListBox.ItemTemplate>
-							</ListBox>
-
-							<ToolBar
-								DockPanel.Dock="Top"
-								Grid.Row="1"
-								Style="{StaticResource ToolBarStyle}">
-
-								<xctk:DropDownButton
-									Content="カラムの追加"
-									Padding="12 3"
-									Style="{StaticResource ToolBarDropDownButton}">
-									<xctk:DropDownButton.DropDownContent>
-										<ScrollViewer
-											VerticalScrollBarVisibility="Auto">
-											<ItemsControl ItemsSource="{x:Static local:ColumnBase.ColumnTypes}">
-												<ItemsControl.ItemTemplate>
-													<DataTemplate>
-														<Button
-															Padding="12 4"
-															BorderThickness="0"
-															HorizontalContentAlignment="Left"
-															Content="{Binding Value, Mode=OneTime}"
-															CommandParameter="{Binding Key, Mode=OneTime}"
-															Style="{DynamicResource {x:Static ToolBar.ButtonStyleKey}}"
-															Command="{Binding DataContext.ColumnAddCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-													</DataTemplate>
-												</ItemsControl.ItemTemplate>
-											</ItemsControl>
-										</ScrollViewer>
-									</xctk:DropDownButton.DropDownContent>
-								</xctk:DropDownButton>
-
-								<Separator />
-
-								<Button
-									Content="削除"
-									Command="{Binding ColumnRemoveCommand, Mode=OneTime}"
-									CommandParameter="{Binding SelectedColumnSetting, Mode=OneWay}" />
-
-								<Separator />
-
-								<Label Content="並べ替え：" />
-
-								<Button
-									Content="▲"
-									Command="{Binding ColumnMoveUpCommand, Mode=OneTime}"
-									CommandParameter="{Binding SelectedColumnSetting, Mode=OneWay}" />
-
-								<Button
-									Content="▼"
-									Command="{Binding ColumnMoveDownCommand, Mode=OneTime}"
-									CommandParameter="{Binding SelectedColumnSetting, Mode=OneWay}" />
-							</ToolBar>
-
-							<TextBlock
-								Margin="12 8"
-								DockPanel.Dock="Top">
-								<Run Text="オプション：" />
-								<Run Text="{Binding SelectedColumnSetting.Type, Mode=OneWay, Converter={StaticResource ColumnNameConverter}}" />
-							</TextBlock>
-
-							<ScrollViewer
-								VerticalScrollBarVisibility="Auto">
-								<ContentPresenter
-									Margin="14 4 14 8"
-									VerticalAlignment="Top"
-									Content="{Binding SelectedColumnSetting, Converter={StaticResource ColumnSettingToColumnConverter}, Mode=OneWay}"
-									ContentTemplateSelector="{StaticResource ColumnOptionTemplateSelector}"/>
-							</ScrollViewer>
-						</DockPanel>
-					</TabItem>
-				</TabControl>
-			</TabItem>
-
-			<TabItem Header="基本設定">
-				<TabControl Style="{StaticResource TabControlStyle1}">
-					<TabItem Header="全般">
-						<StackPanel Style="{StaticResource ElementsContainerStyle}">
-							<CheckBox Content="起動時にアップデートを確認する"
-									  IsChecked="{Binding Setting.CheckUpdate}"/>
-
-							<CheckBox Content="ログオン時に自動的に起動する"
-									  IsChecked="{Binding AutoStartup}"/>
-
-							<Label Content="メインウィンドウ" Style="{StaticResource HeaderLabelStyle2}" />
-
-							<CheckBox
-								Content="最小化して起動する"
-								IsChecked="{Binding Setting.MinimizeStartup}"/>
-
-							<CheckBox
-								Content="閉じるボタンを押した際に最小化する"
-								IsChecked="{Binding Setting.MinimizeAtCloseButtonClick}"/>
-
-							<Label Content="タスクトレイ" Style="{StaticResource HeaderLabelStyle2}" />
-
-							<CheckBox
-								Content="アイコンをタスクトレイに表示する"
-								IsChecked="{Binding ShowInTaskTray}" />
-
-							<CheckBox 
-								Margin="24 2 0 2"
-								Content="最小化時にタスクバーに表示しない"
-								IsChecked="{Binding ShowInTaskTrayAtMinimized}"
-								IsEnabled="{Binding ShowInTaskTray, Mode=OneWay}" />
-
-							<CheckBox 
-								Margin="24 2 0 2"
-								Content="最小化時にバルーンを表示する"
-								IsChecked="{Binding Setting.ShowBalloonAtMinimized}"
-								IsEnabled="{Binding ShowInTaskTray, Mode=OneWay}"/>
-
-
-							<Label
-								Content="システム"
-								Style="{StaticResource HeaderLabelStyle2}" />
-
-							<CheckBox
-								Content="ログオフを抑止する"
-								IsChecked="{Binding Setting.SuppressShutdown}" />
-
-							<CheckBox
-								Content="スリープモードへの移行を抑止する"
-								IsChecked="{Binding Setting.SuppressStandby}"/>
-
-							<CheckBox
-								Content="スクリーンセーバーの表示を抑止する"
-								IsChecked="{Binding Setting.SuppressScreenSaver}"/>
-						</StackPanel>
-
-					</TabItem>
-
-					<TabItem Header="フォント設定">
-						<Grid Background="{DynamicResource ToolBarBackground}">
-							<Grid.RowDefinitions>
-								<RowDefinition Height="auto" MaxHeight="84" />
-								<RowDefinition Height="auto" />
-								<RowDefinition />
-							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition />
-								<ColumnDefinition Width="auto" />
-							</Grid.ColumnDefinitions>
-
-							<Border
-								Background="{DynamicResource ToolBarBackground}"
-								Grid.ColumnSpan="2">
-								<TextBox
-									Margin="6"
-									TextWrapping="WrapWithOverflow"
-									AcceptsReturn="True"
-									AcceptsTab="False"
-									ScrollViewer.VerticalScrollBarVisibility="Auto"
-									ScrollViewer.HorizontalScrollBarVisibility="Auto"
-									Height="60"
-									FontSize="{Binding ViewFontSize, Mode=OneWay}"
-									FontFamily="{Binding ViewFont, Mode=OneWay}"
-									TextOptions.TextFormattingMode="{Binding ViewFontRendering}"
-									Text="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJLMNOPQSTUVWXYZ&#xa;1234567890.:,; ' &#x22; (!?) +-*/=&#xa;C# でプログラミングの世界が広がります。1234567890" />
-							</Border>
-
-							<ToolBar
-								Grid.Row="1" Grid.ColumnSpan="2"
-								Style="{StaticResource ToolBarStyle}">
-								<xctk:DropDownButton
-									Content="アカウントの追加"
-									Style="{StaticResource ToolBarDropDownButton}">
-									<xctk:DropDownButton.DropDownContent>
-										<StackPanel Width="280" Margin="8">
-
-											<TextBlock
-												Margin="0 0 0 4">
-												<Hyperlink Command="{Binding FontSelectCommand, Mode=OneTime}">
-													<Run Text="フォントの参照" />
-												</Hyperlink>
-											</TextBlock>
-
-											<local:PlaceHolderTextBox
-												Margin="0 0 0 4"
-												PlaceHolder="フォントフィルタ"
-												Text="{Binding FontFontFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-											<Separator />
-
-											<ListBox
-												Margin="0 4"
-												MaxHeight="240"
-												SelectedItem="{Binding NewSelectedFont, Mode=TwoWay}"
-												ItemsSource="{Binding FontFontList, Mode=OneWay}"
-												ItemTemplate="{StaticResource FontViewTemplate}"
-												IsSynchronizedWithCurrentItem="False"
-												VirtualizingPanel.ScrollUnit="Pixel">
-												<ListBox.ItemsPanel>
-													<ItemsPanelTemplate>
-														<VirtualizingStackPanel Orientation="Vertical" />
-													</ItemsPanelTemplate>
-												</ListBox.ItemsPanel>
-											</ListBox>
-
-											<Button 
-												Content="選択"
-												Width="100"
-												CommandParameter="{Binding NewSelectedFont, Mode=OneWay}"
-												Command="{Binding AddFontCommand, Mode=OneTime}"
-												HorizontalAlignment="Center" />
-										</StackPanel>
-									</xctk:DropDownButton.DropDownContent>
-								</xctk:DropDownButton>
-
-								<Separator />
-
-								<Button
-									Content="削除"
-									Command="{Binding RemoveFontCommand, Mode=OneTime}"
-									CommandParameter="{Binding SelectedFont, Mode=OneWay}" />
-
-								<Label Content="優先度：" />
-
-								<Button
-									Content="▲"
-									Command="{Binding IncreaseFontPriorityCommand, Mode=OneTime}"
-									CommandParameter="{Binding SelectedFont, Mode=OneWay}"  />
-
-								<Button
-									Content="▼"
-									Command="{Binding DecreaseFontPriorityCommand, Mode=OneTime}"
-									CommandParameter="{Binding SelectedFont, Mode=OneWay}"  />
-
-								<Separator />
-
-								<Button
-									Content="フォント設定をリセット"
-									Command="{Binding ResetFontCommand, Mode=OneTime}" />
-							</ToolBar>
-
-
-							<ListBox
-								Grid.Row="2"
-								BorderThickness="0 0 1 0"
-								BorderBrush="#ccc"
-								ItemTemplate="{StaticResource FontViewTemplate}"
-								ItemsSource="{Binding ViewFonts, Mode=OneTime}"
-								SelectedItem="{Binding SelectedFont, Mode=TwoWay}"
-								SelectionMode="Single"
-								TextOptions.TextFormattingMode="{Binding ViewFontRendering}" />
-
-							<StackPanel
-								Margin="8 0 16 8"
-								Grid.Row="3"
-								Grid.Column="1"
-								Width="140">
-								<Label Content="フォントサイズ(pt)" Style="{StaticResource HeaderLabelStyle2}" Margin="0" />
-
-								<ComboBox
-									Grid.Column="1"
-									IsEditable="True"
-									Text="{Binding ViewFontSize, UpdateSourceTrigger=PropertyChanged}">
-									<ComboBoxItem>8</ComboBoxItem>
-									<ComboBoxItem>9</ComboBoxItem>
-									<ComboBoxItem>10</ComboBoxItem>
-									<ComboBoxItem>10.5</ComboBoxItem>
-									<ComboBoxItem>11</ComboBoxItem>
-									<ComboBoxItem>12</ComboBoxItem>
-									<ComboBoxItem>14</ComboBoxItem>
-									<ComboBoxItem>16</ComboBoxItem>
-									<ComboBoxItem>18</ComboBoxItem>
-									<ComboBoxItem>20</ComboBoxItem>
-									<ComboBoxItem>22</ComboBoxItem>
-									<ComboBoxItem>24</ComboBoxItem>
-									<ComboBoxItem>26</ComboBoxItem>
-									<ComboBoxItem>28</ComboBoxItem>
-									<ComboBoxItem>36</ComboBoxItem>
-									<ComboBoxItem>48</ComboBoxItem>
-									<ComboBoxItem>72</ComboBoxItem>
-								</ComboBox>
-
-								<Label Content="フォントレンダリング" Style="{StaticResource HeaderLabelStyle2}" />
-								<RadioButton
-									Margin="12 0 0 4"
-									Content="GDI互換"
-									IsChecked="{Binding IsLegacyGDIRender}"/>
-								<RadioButton
-									Margin="12 0 0 0"
-									Content="GDI+"
-									IsChecked="{Binding IsGDIPlusRender}"/>
-							</StackPanel>
-						</Grid>
-					</TabItem>
-				</TabControl>
-			</TabItem>
-
-			<TabItem Header="投稿">
-				<StackPanel Style="{StaticResource ElementsContainerStyle}">
-					<CheckBox
-						IsChecked="{Binding Setting.IncludeOtherAtReply, Mode=TwoWay}"
-						Content="リプライに他の会話中のアカウントを含める" />
-
-					<CheckBox
-						IsChecked="{Binding Setting.CloseWindowAfterPostComplated, Mode=TwoWay}"
-						Content="ツイートの投稿が完了したらウィンドウを閉じる" />
-
-					<Label Content="デフォルト設定" Style="{StaticResource HeaderLabelStyle2}"/>
-
-					<CheckBox
-						IsChecked="{Binding Setting.NoticePostSensitiveMedia, Mode=TwoWay}"
-						Content="不適切な表現を含む画像および動画であることを告示する" />
-				</StackPanel>
-			</TabItem>
-
-			<TabItem Header="通知">
-				<TabControl Style="{StaticResource TabControlStyle1}">
-					<TabItem Header="全般">
-						<StackPanel Style="{StaticResource ElementsContainerStyle}">
-							<CheckBox
-								Content="通知機能を使用する"
-								IsChecked="{Binding Setting.EnableNotification}"/>
-
-							<Label
-								Margin="0 8 0 0" Content="通知方法"
-								Style="{StaticResource HeaderLabel}" />
-
-							<CheckBox
-								Content="音声を再生する"
-								IsChecked="{Binding Setting.EnableSoundNotification}" />
-
-							<CheckBox 
-								Content="ポップアップを表示する"
-								IsChecked="{Binding Setting.EnablePopupNotification}"/>
-
-							<Label
-								Margin="0 8 0 0" Content="通知項目"
-								Style="{StaticResource HeaderLabel}" />
-
-							<UniformGrid Columns="2">
-								<CheckBox
-									Content="リプライ"
-									IsChecked="{Binding Setting.Notification_Reply}"/>
-
-								<CheckBox
-									Content="フォロー"
-									IsChecked="{Binding Setting.Notification_Follow}" />
-
-								<CheckBox
-									Content="いいね"
-									IsChecked="{Binding Setting.Notification_Favorite}" />
-
-								<CheckBox
-									Content="リツイート"
-									IsChecked="{Binding Setting.Notification_Retweet}" />
-
-								<CheckBox
-									Content="リストへ追加"
-									IsChecked="{Binding Setting.Notification_ListMemberAdded}" />
-
-								<!--<CheckBox Content="リストから除外された"
-										  IsChecked="{Binding Setting.}" />-->
-
-								<CheckBox
-									Content="リツイートにいいね"
-									IsChecked="{Binding Setting.Notification_FavoritedRetweet}" />
-
-								<CheckBox
-									Content="リツイートがリツイート"
-									IsChecked="{Binding Setting.Notification_RetweetedRetweet}" />
-
-								<CheckBox
-									Content="引用ツイート"
-									IsChecked="{Binding Setting.Notification_QuotedTweet}" />
-
-								<CheckBox
-									Content="ダイレクトメッセージ"
-									IsChecked="{Binding Setting.Notification_DirectMessageReceived}" />
-							</UniformGrid>
-						</StackPanel>
-					</TabItem>
-
-					<TabItem Header="音声設定">
-						<StackPanel Margin="{StaticResource ContainerMargin}">
-							<Label Content="ファイル" Style="{StaticResource HeaderLabel}" />
-							<Grid>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="*" />
-									<ColumnDefinition Width="auto" />
-								</Grid.ColumnDefinitions>
-
-								<TextBox
-									IsReadOnly="True"
-									Text="{Binding NotificationSoundFile, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-								<Button
-									Margin="6 0 0 0"
-									Padding="6 4"
-									Content="..."
-									Grid.Column="1" />
-							</Grid>
-
-							<StackPanel Margin="0 6 0 0" Orientation="Horizontal" HorizontalAlignment="Left">
-								<Button Content="再生" />
-								<Button Content="停止" Margin="6 0 0 0" />
-							</StackPanel>
-						</StackPanel>
-					</TabItem>
-				</TabControl>
-			</TabItem>
-
-			<TabItem Header="表示">
-				<TabControl Style="{StaticResource TabControlStyle1}">
-					<TabItem Header="ツイート">
-						<DockPanel>
-							<Border
-								DockPanel.Dock="Top"
-								Margin="108 8" Grid.Column="1"
-								BorderBrush="#eee" BorderThickness="1">
-								<Grid Background="Transparent">
-									<DockPanel Margin="4">
-										<DockPanel
-											DockPanel.Dock="Bottom"
-											Margin="8 4 8 8">
-											<UniformGrid
-												DockPanel.Dock="Right"
-												HorizontalAlignment="Right"
-												Rows="1" Width="160">
-												<Button
-													Style="{StaticResource ActionButton}"
-													Content="&#xf112;"
-													Foreground="#07c"
-													FontSize="18" />
-												<ToggleButton
-													Foreground="Green"
-													Content="&#xf079;" FontSize="20"
-													Style="{StaticResource ActionToggleButton}"
-													IsChecked="{Binding IsPreviewTweetRetweeted, Mode=TwoWay}"/>
-												<ToggleButton
-													Foreground="Red"
-													Content="&#xf004;" FontSize="16"
-													Style="{StaticResource ActionToggleButton}"
-													IsChecked="{Binding IsPreviewTweetFavorited, Mode=TwoWay}"/>
-											</UniformGrid>
-
-											<TextBlock
-												DockPanel.Dock="Left"
-												VerticalAlignment="Center"
-												TextTrimming="CharacterEllipsis"
-												app:ElementBehavior.Visible="{Binding Setting.IsShowTweetClientName, FallbackValue=true, Mode=OneWay}">
-												<Hyperlink Style="{StaticResource MetadataLinkText}">
-													<Run Text="Liberfy" />
-												</Hyperlink>
-											</TextBlock>
-										</DockPanel>
-
-										<Button
-											Margin="4"
-											DockPanel.Dock="Left"
-											VerticalAlignment="Top"
-											Style="{StaticResource ImageButton}">
-											<Border
-												d:DesignWidth="48" d:DesignHeight="48"
-												Width="{Binding PreviewProfileImageWidth, Mode=OneWay, FallbackValue=40}"
-												Height="{Binding PreviewProfileImageWidth, Mode=OneWay, FallbackValue=40}"
-												CornerRadius="{Binding ProfileImageCornerRadius, Mode=OneWay}"
-												Background="#ccc"
-												app:ElementBehavior.Visible="{Binding Setting.IsShowTweetProfileImage, Mode=OneWay, FallbackValue=true}"/>
-										</Button>
-
-										<DockPanel
-											Margin="4 4 4 4"
-											DockPanel.Dock="Top">
-											<Border
-												DockPanel.Dock="Left"
-												Margin="0 0 4 0"
-												Width="16" Height="16"/>
-
-											<TextBlock
-												DockPanel.Dock="Right"
-												VerticalAlignment="Top"
-												HorizontalAlignment="Right"
-												FontSize="11">
-												<Hyperlink Style="{StaticResource MetadataLinkText}">
-													<Run Text="{Binding PreviewTweetTimestampText, Mode=OneWay}" />
-												</Hyperlink>
-											</TextBlock>
-
-											<TextBlock
-												DockPanel.Dock="Left"
-												FontWeight="Bold"
-												VerticalAlignment="Center"
-												HorizontalAlignment="Left"
-												TextTrimming="CharacterEllipsis">
-												<Hyperlink Style="{StaticResource UserNameLinkText}">
-													<Run Text="Dummy User" />
-												</Hyperlink>
-											</TextBlock>
-
-											<TextBlock
-												DockPanel.Dock="Left"
-												VerticalAlignment="Center"
-												HorizontalAlignment="Left"
-												TextTrimming="CharacterEllipsis">
-												<Hyperlink Style="{StaticResource UserNameLinkText}">
-													<Run Text="@dummy_user" />
-												</Hyperlink>
-											</TextBlock>
-										</DockPanel>
-
-										<StackPanel>
-											<TextBlock
-												TextWrapping="Wrap"
-												DockPanel.Dock="Top"
-												HorizontalAlignment="Stretch"
-												Margin="{StaticResource TimelineItemEntityMargin}"
-												Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
-										</StackPanel>
-
-									</DockPanel>
-
-									<Polygon
-										Height="16" Width="16"
-										VerticalAlignment="Top"
-										HorizontalAlignment="Left"
-										Points="0,0 16,0 0,16"
-										Fill="{Binding PreviewTweetActionColor, Mode=OneWay}"/>
-								</Grid>
-							</Border>
-
-							<TabControl Style="{StaticResource tabControlStyle}" BorderThickness="0 1 0 0">
-								<TabItem Header="全般">
-									<StackPanel Style="{StaticResource ElementsContainerStyle}">
-										<Label
-											Content="全般"
-											Style="{StaticResource HeaderLabel}" />
-
-										<CheckBox
-											Content="プロフィール画像を表示する"
-											IsChecked="{Binding Setting.IsShowTweetProfileImage, Mode=TwoWay}" />
-
-										<CheckBox
-											Content="添付画像を表示する"
-											IsChecked="{Binding Setting.IsShowTweetImages, Mode=TwoWay}"/>
-
-										<CheckBox
-											Content="引用ツイートを表示する"
-											IsChecked="{Binding Setting.IsShowTweetQuotedTweet, Mode=TwoWay}" />
-
-										<CheckBox
-											Content="クライアント名を表示する"
-											IsChecked="{Binding Setting.IsShowTweetClientName, Mode=TwoWay}" />
-									</StackPanel>
-								</TabItem>
-
-								<TabItem Header="プロフィール画像">
-									<Grid>
-										<Grid.ColumnDefinitions>
-											<ColumnDefinition />
-											<ColumnDefinition />
-										</Grid.ColumnDefinitions>
-
-										<StackPanel
-											Style="{StaticResource ElementsContainerStyle}">
-											<Label
-												Style="{StaticResource HeaderLabel}"
-												Content="サイズ" />
-
-											<Slider
-												Minimum="20" Maximum="60"
-												SmallChange="1" LargeChange="5" 
-												TickFrequency="2"
-												IsMoveToPointEnabled="True"
-												Interval="1"
-												Value="{Binding PreviewProfileImageWidth, Mode=TwoWay, FallbackValue=40}"
-												TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" />
-
-											<Label
-												Foreground="#444"
-												ContentStringFormat="{}{0} px"
-												HorizontalAlignment="Center"
-												Content="{Binding PreviewProfileImageWidth, FallbackValue=40, Mode=OneWay}" />
-
-										</StackPanel>
-
-										<StackPanel
-											Grid.Column="1"
-											Style="{StaticResource ElementsContainerStyle}">
-											<Label
-												Style="{StaticResource HeaderLabel}"
-												Content="形状" />
-
-											<Grid>
-												<Grid.ColumnDefinitions>
-													<ColumnDefinition Width="auto" />
-													<ColumnDefinition />
-												</Grid.ColumnDefinitions>
-												<Grid.RowDefinitions>
-													<RowDefinition />
-													<RowDefinition />
-													<RowDefinition />
-												</Grid.RowDefinitions>
-
-												<Border
-													Margin="0,6,6,6"
-													Width="36" Height="36"
-													Background="#CCC"/>
-
-												<Border
-													Grid.Row="1"
-													Margin="0,6,6,6"
-													Width="36" Height="36"
-													Background="#CCC"
-													CornerRadius="3"/>
-
-												<Border
-													Grid.Row="2"
-													Margin="0,6,6,6"
-													Width="36" Height="36"
-													Background="#CCC"
-													CornerRadius="18"/>
-
-												<RadioButton
-													Grid.Column="1"
-													Margin="8"
-													VerticalAlignment="Center"
-													Content="四角"
-													GroupName="profileimage_form"
-													IsChecked="{Binding ProfileImageForm, Mode=TwoWay,
-														Converter={StaticResource EnumBoolConverter},
-														ConverterParameter=Square}" />
-
-												<RadioButton
-													Grid.Row="1"
-													Grid.Column="1"
-													Margin="8"
-													VerticalAlignment="Center"
-													Content="角丸"
-													GroupName="profileimage_form"
-													IsChecked="{Binding ProfileImageForm, Mode=TwoWay,
-														Converter={StaticResource EnumBoolConverter},
-														ConverterParameter=RoundedCorner}" />
-
-												<RadioButton
-													Grid.Row="2"
-													Grid.Column="1"
-													Margin="8"
-													VerticalAlignment="Center"
-													Content="円"
-													GroupName="profileimage_form"
-													IsChecked="{Binding ProfileImageForm, Mode=TwoWay,
-														Converter={StaticResource EnumBoolConverter},
-														ConverterParameter=Ellipse}" />
-											</Grid>
-
-										</StackPanel>
-									</Grid>
-								</TabItem>
-
-								<TabItem Header="投稿時刻">
-									<StackPanel Style="{StaticResource ElementsContainerStyle}">
-										<Label Content="投稿時刻の書式" Style="{StaticResource HeaderLabel}" />
-
-										<RadioButton
-											Content="絶対時刻"
-											GroupName="tweet_timeformat"
-											IsChecked="{Binding IsTweetTimestampAbsolute, Mode=TwoWay}" />
-										<TextBlock
-											Foreground="{StaticResource DisabledForeground}"
-											Margin="24 0 0 8" Text="e.g. 2017年1月1日 0時0分" />
-
-										<RadioButton
-											Content="相対時刻"
-											GroupName="tweet_timeformat"
-											IsChecked="{Binding IsTweetTimestampRelative, Mode=TwoWay}" />
-										<TextBlock
-											Foreground="{StaticResource DisabledForeground}"
-											Margin="24 0 0 8" Text="e.g. 1時間前" />
-									</StackPanel>
-								</TabItem>
-							</TabControl>
-						</DockPanel>
-					</TabItem>
-
-					<TabItem Header="カラム">
-						<DockPanel>
-							<Border
-								DockPanel.Dock="Top"
-								Height="180"
-								Margin="0 8"
-								d:DesignWidth="180"
-								ClipToBounds="True"
-								BorderThickness="1"
-								Background="{DynamicResource ColumnBackground}"
-								BorderBrush="{DynamicResource ColumnBorderBrush}"
-								Width="{Binding PreviewColumnWidth, Mode=OneWay, FallbackValue=300}">
-								<Border.OpacityMask>
-									<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-										<GradientStop Color="Black" Offset="0"/>
-										<GradientStop Color="Black" Offset="0.594"/>
-										<GradientStop Color="Transparent" Offset="1"/>
-									</LinearGradientBrush>
-								</Border.OpacityMask>
-								<DockPanel>
-									<Border
-										DockPanel.Dock="Top"
-										MinHeight="34"
-										BorderThickness="0 0 0 1"
-										Background="{DynamicResource ColumnHeaderBackground}"
-										BorderBrush="{DynamicResource ColumnHeaderBorderBrush}">
-										<Grid>
-											<Grid.RowDefinitions>
-												<RowDefinition Height="auto" />
-												<RowDefinition Height="auto" />
-											</Grid.RowDefinitions>
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="auto" />
-												<ColumnDefinition Width="auto" />
-												<ColumnDefinition Width="*" />
-												<ColumnDefinition Width="auto" />
-												<ColumnDefinition Width="auto" />
-											</Grid.ColumnDefinitions>
-
-											<Path
-												Grid.Column="1"
-												Margin="6 0"
-												VerticalAlignment="Center"
-												HorizontalAlignment="Center"
-												Width="16" Height="16"
-												Fill="#444" Stretch="Fill" />
-
-											<!--Column title-->
-											<TextBlock
-												Grid.Column="2"
-												TextWrapping="NoWrap"
-												TextTrimming="CharacterEllipsis"
-												VerticalAlignment="Center"
-												Margin="6" FontSize="16"
-												Text="Column Title"
-												Foreground="{DynamicResource ColumnHeaderForeground}" />
-
-											<Border
-												Grid.Column="3"
-												Margin="0,0,6,0"
-												Width="28" Height="28"
-												Background="#ccc" />
-
-											<ToggleButton
-												x:Name="paneToggle"
-												Grid.Column="4" Padding="6 4"
-												IsChecked="True" />
-
-											<Border
-												Grid.Row="1" Grid.ColumnSpan="5"
-												Padding="4"
-												Background="{DynamicResource ColumnBackground}"
-												app:ElementBehavior.Visible="{Binding IsChecked, ElementName=paneToggle, Mode=OneWay}">
-												<TextBlock 
-													TextTrimming="CharacterEllipsis"
-													Text="ここに設定項目が表示されます" />
-											</Border>
-										</Grid>
-									</Border>
-
-									<Label
-										DockPanel.Dock="Top"
-										Padding="7 10" 
-										VerticalAlignment="Top"
-										Background="#FFD1F5CD"
-										BorderBrush="#FF77D47C"
-										BorderThickness="0,0,0,1">
-										<TextBlock
-											TextWrapping="Wrap"
-											Text="ここにエラーメッセージが表示されます"/>
-									</Label>
-								</DockPanel>
-							</Border>
-
-							<TabControl
-								Style="{StaticResource tabControlStyle}"
-								BorderThickness="0 1 0 0">
-								<TabItem Header="全般">
-									<StackPanel Style="{StaticResource ElementsContainerStyle}">
-										<Label
-											Style="{StaticResource HeaderLabel}"
-											Content="カラムの幅"/>
-
-										<Slider
-											Minimum="200" Maximum="500"
-											SmallChange="5" LargeChange="5" 
-											TickFrequency="5"
-											IsMoveToPointEnabled="True"
-											Interval="1"
-											Value="{Binding PreviewColumnWidth, Mode=TwoWay, FallbackValue=300}"
-											TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" />
-
-										<Label
-											Foreground="#444"
-											ContentStringFormat="{}{0} px"
-											HorizontalAlignment="Center"
-											Content="{Binding PreviewColumnWidth, FallbackValue=300, Mode=OneWay}" />
-									</StackPanel>
-								</TabItem>
-							</TabControl>
-						</DockPanel>
-					</TabItem>
-				</TabControl>
-			</TabItem>
-
-			<TabItem Header="タイムライン">
-				<TabControl Style="{StaticResource TabControlStyle1}">
-					<TabItem Header="ツイート">
-						<DockPanel Background="White" TextBlock.Foreground="Black">
-							<Border
-								DockPanel.Dock="Right" Width="250"
-								Background="{StaticResource ToolBarBackground}"
-								BorderBrush="{StaticResource ToolBarBorderBrush}"
-								BorderThickness="1 0 0 0">
-								<StackPanel Style="{StaticResource ElementsContainerStyle}">
-									<Label
-										Content="設定"
-										Style="{StaticResource HeaderLabel}" />
-									<CheckBox 
-										Content="画像を表示する"
-										IsChecked="{Binding Setting.TimelineStatusShowMedia}" />
-									<CheckBox 
-										Content="引用ツイートを表示する"
-										IsChecked="{Binding Setting.TimelineStatusShowQuotedTweet}" />
-
-									<Label
-										Content="投稿時刻の表示方法"
-										Style="{StaticResource HeaderLabelStyle2}"/>
-									<RadioButton
-										Content="絶対時刻"
-										IsChecked="{Binding TimelineStatusShowAbsoluteTime}"/>
-									<TextBlock
-										Foreground="{StaticResource DisabledForeground}"
-										Margin="24 0 0 0" Text="e.g. 1990年1月1日 0時0分" />
-									<RadioButton
-										Content="相対時刻（e.g. 3日前）"
-										IsChecked="{Binding TimelineStatusShowRelativeTime}"/>
-									<TextBlock
-										Foreground="{StaticResource DisabledForeground}"
-										Margin="24 0 0 0" Text="e.g. 3分前" />
-								</StackPanel>
-							</Border>
-
-							<ScrollViewer>
-								<Border VerticalAlignment="Top">
-									<Grid Background="Transparent">
-										<DockPanel Margin="4">
-											<DockPanel
-												DockPanel.Dock="Bottom"
-												Margin="8 4 8 8">
-												<UniformGrid
-													DockPanel.Dock="Right"
-													HorizontalAlignment="Right"
-													Rows="1" Width="160">
-													<Button
-														Style="{StaticResource ActionButton}"
-														Content="&#xf112;"
-														Foreground="#07c"
-														FontSize="18" />
-													<ToggleButton
-														Foreground="Green"
-														Content="&#xf079;" FontSize="20"
-														Style="{StaticResource ActionToggleButton}"/>
-													<ToggleButton
-														Foreground="Red"
-														Content="&#xf004;" FontSize="16"
-														Style="{StaticResource ActionToggleButton}"/>
-												</UniformGrid>
-
-												<TextBlock
-													DockPanel.Dock="Left"
-													VerticalAlignment="Center"
-													TextTrimming="CharacterEllipsis">
-													<Hyperlink Style="{StaticResource MetadataLinkText}">
-														<Run Text="Liberfy" />
-													</Hyperlink>
-												</TextBlock>
-											</DockPanel>
-
-											<Button
-												Margin="4"
-												DockPanel.Dock="Left"
-												Width="48" Height="48"
-												VerticalAlignment="Top"
-												Style="{StaticResource ImageButton}">
-												<Border
-													Width="48" Height="48"
-													Background="#ccc" />
-											</Button>
-
-											<DockPanel
-												Margin="4 4 4 4"
-												DockPanel.Dock="Top">
-												<Border
-													Visibility="Collapsed"
-													DockPanel.Dock="Left"
-													Width="16" Height="16"/>
-
-												<TextBlock
-													DockPanel.Dock="Right"
-													VerticalAlignment="Top"
-													HorizontalAlignment="Right"
-													FontSize="11">
-													<Hyperlink Style="{StaticResource MetadataLinkText}">
-														<Run Text="1時間" />
-													</Hyperlink>
-												</TextBlock>
-
-												<TextBlock
-													DockPanel.Dock="Left"
-													FontWeight="Bold"
-													VerticalAlignment="Center"
-													HorizontalAlignment="Left">
-													<Hyperlink Style="{StaticResource UserNameLinkText}">
-														<Run Text="Dummy User" />
-													</Hyperlink>
-												</TextBlock>
-
-												<TextBlock
-													DockPanel.Dock="Left"
-													VerticalAlignment="Center"
-													HorizontalAlignment="Left">
-													<Hyperlink Style="{StaticResource UserNameLinkText}">
-														<Run Text="@dummy_user" />
-													</Hyperlink>
-												</TextBlock>
-											</DockPanel>
-
-											<TextBlock
-												TextWrapping="Wrap"
-												DockPanel.Dock="Top"
-												HorizontalAlignment="Stretch"
-												Margin="{StaticResource TimelineItemEntityMargin}"
-												Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
-
-											<Border
-												Height="120"
-												DockPanel.Dock="Top"
-												Margin="3 0 3 4"
-												local:ElementBehavior.Visible="{Binding Setting.TimelineStatusShowMedia, Mode=OneWay}">
-												<Grid>
-													<Grid.RowDefinitions>
-														<RowDefinition />
-														<RowDefinition />
-														<RowDefinition />
-													</Grid.RowDefinitions>
-													<Grid.ColumnDefinitions>
-														<ColumnDefinition Width="4*" />
-														<ColumnDefinition Width="2*" />
-													</Grid.ColumnDefinitions>
-
-													<Button
-														Margin="1"
-														Grid.RowSpan="3" />
-													<Button
-														Margin="1"
-														Grid.Column="1" />
-													<Button
-														Margin="1"
-														Grid.Row="1"
-														Grid.Column="1" />
-													<Button
-														Margin="1"
-														Grid.Row="2"
-														Grid.Column="1" />
-												</Grid>
-											</Border>
-
-											<Border
-												DockPanel.Dock="Top"
-												Margin="{StaticResource TimelineItemEntityMargin}">
-												<Button
-													Padding="8 5"
-													VerticalContentAlignment="Stretch"
-													HorizontalContentAlignment="Stretch"
-													Style="{StaticResource QuotedTweetButtonStyle}"
-													local:ElementBehavior.Visible="{Binding Setting.TimelineStatusShowQuotedTweet, Mode=OneWay}">
-													<DockPanel>
-														<Border
-															Width="80"
-															Margin="6 0 0 0"
-															DockPanel.Dock="Right"
-															BorderThickness="1"
-															BorderBrush="#6888"/>
-
-														<DockPanel DockPanel.Dock="Top">
-															<TextBlock
-																FontWeight="Black"
-																DockPanel.Dock="Left"
-																Style="{StaticResource UserNameTextStyle}">
-																<Hyperlink Style="{StaticResource UserNameLinkText}">
-																	<Run Text="Quoted User" />
-																</Hyperlink>
-															</TextBlock>
-															<TextBlock
-																DockPanel.Dock="Left"
-																Style="{StaticResource UserNameTextStyle}"
-																HorizontalAlignment="Stretch">
-																<Hyperlink Style="{StaticResource UserNameLinkText}">
-																	<Run Text="@quoted_user" />
-																</Hyperlink>
-															</TextBlock>
-														</DockPanel>
-
-														<TextBlock 
-															DockPanel.Dock="Top" MaxHeight="40"
-															TextWrapping="WrapWithOverflow"
-															TextTrimming="CharacterEllipsis"
-															Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
-													</DockPanel>
-												</Button>
-											</Border>
-
-											<Border
-												DockPanel.Dock="Top"
-												BorderThickness="0 1"
-												BorderBrush="#bbb"
-												Padding="4 6"
-												Margin="{StaticResource TimelineItemEntityMargin}">
-												<DockPanel>
-													<TextBlock
-														DockPanel.Dock="Left"
-														FontFamily="{StaticResource FontAwesome}"
-														Text="&#xf079;" Foreground="Green"
-														Margin="2 0 6 0"
-														FontSize="20" TextOptions.TextFormattingMode="Ideal"
-														VerticalAlignment="Center"/>
-
-													<Button
-														Style="{StaticResource ImageButton}"
-														Width="28" Height="28"
-														Margin="0 0 8 0"
-														DockPanel.Dock="Left">
-														<Border
-															Width="28" Height="28"
-															Background="#ece"/>
-													</Button>
-
-													<TextBlock
-														FontWeight="Bold"
-														DockPanel.Dock="Left"
-														VerticalAlignment="Center"
-														HorizontalAlignment="Left"
-														TextTrimming="CharacterEllipsis">
-														<Hyperlink Style="{StaticResource UserNameLinkText}">
-															<Run Text="Retweet User" />
-														</Hyperlink>
-													</TextBlock>
-													<TextBlock
-														DockPanel.Dock="Left"
-														VerticalAlignment="Center"
-														HorizontalAlignment="Left"
-														TextTrimming="CharacterEllipsis">
-														<Hyperlink Style="{StaticResource UserNameLinkText}">
-															<Run Text="@retweet_user" />
-														</Hyperlink>
-													</TextBlock>
-												</DockPanel>
-											</Border>
-
-										</DockPanel>
-
-										<Polygon
-											Height="16" Width="16"
-											VerticalAlignment="Top"
-											HorizontalAlignment="Left"
-											Points="0,0 16,0 0,16"
-											Fill="Black"/>
-									</Grid>
-								</Border>
-							</ScrollViewer>
-						</DockPanel>
-
-					</TabItem>
-					<TabItem Header="ツイート（詳細）">
-						<DockPanel Background="White" TextBlock.Foreground="Black">
-							<Border
-								DockPanel.Dock="Right" Width="250"
-								Background="{StaticResource ToolBarBackground}"
-								BorderBrush="{StaticResource ToolBarBorderBrush}"
-								BorderThickness="1 0 0 0">
-								<StackPanel Style="{StaticResource ElementsContainerStyle}">
-
-									<Label
-										Content="設定"
-										Style="{StaticResource HeaderLabel}" />
-									<CheckBox 
-										Content="画像を表示する"
-										IsChecked="{Binding Setting.TimelineStatusDetailShowMedia}" />
-									<CheckBox 
-										Content="引用ツイートを表示する"
-										IsChecked="{Binding Setting.TimelineStatusDetailShowQuotedTweet}"/>
-
-									<Label
-										Content="投稿時刻の表示方法"
-										Style="{StaticResource HeaderLabelStyle2}"/>
-									<RadioButton
-										Content="絶対時刻"
-										IsChecked="{Binding TimelineStatusShowAbsoluteTimeDetail}"/>
-									<TextBlock
-										Foreground="{StaticResource DisabledForeground}"
-										Margin="24 0 0 0" Text="e.g. 1990年1月1日 0時0分" />
-									<RadioButton
-										Content="相対時刻（e.g. 3日前）"
-										IsChecked="{Binding TimelineStatusShowRelativeTimeDetail}"/>
-									<TextBlock
-										Foreground="{StaticResource DisabledForeground}"
-										Margin="24 0 0 0" Text="e.g. 3分前" />
-								</StackPanel>
-							</Border>
-
-							<ScrollViewer>
-								<DockPanel
-									Margin="4"
-									VerticalAlignment="Top">
-									<DockPanel
-										DockPanel.Dock="Bottom"
-										Margin="8 4 8 8">
-										<UniformGrid
-											DockPanel.Dock="Right"
-											HorizontalAlignment="Right"
-											Rows="1" Width="160">
-											<Button
-												Style="{StaticResource ActionButton}"
-												Content="&#xf112;"
-												Foreground="#07c"
-												FontSize="18" />
-											<ToggleButton
-												Foreground="Green"
-												Content="&#xf079;" FontSize="20"
-												Style="{StaticResource ActionToggleButton}"/>
-											<ToggleButton
-												Foreground="Red"
-												Content="&#xf004;" FontSize="16"
-												Style="{StaticResource ActionToggleButton}"/>
-
-										</UniformGrid>
-
-										<TextBlock
-											DockPanel.Dock="Left"
-											VerticalAlignment="Center"
-											TextTrimming="CharacterEllipsis">
-											<Hyperlink Style="{StaticResource MetadataLinkText}">
-												<Run Text="Liberfy" />
-											</Hyperlink>
-										</TextBlock>
-									</DockPanel>
-
-									<Button
-										Margin="4"
-										DockPanel.Dock="Left"
-										Width="48" Height="48"
-										VerticalAlignment="Top"
-										Style="{StaticResource ImageButton}">
-										<Border
-											Width="48" Height="48"
-											Background="#ccc" />
-									</Button>
-
-									<DockPanel
-										Margin="4 4 4 4"
-										DockPanel.Dock="Top">
-										<Border
-											Visibility="Collapsed"
-											DockPanel.Dock="Left"
-											Width="16" Height="16"/>
-
-										<TextBlock
-											DockPanel.Dock="Right"
-											VerticalAlignment="Top"
-											HorizontalAlignment="Center"
-											FontSize="11">
-											<Hyperlink Style="{StaticResource MetadataLinkText}">
-												<Run Text="1時間" />
-											</Hyperlink>
-										</TextBlock>
-
-										<TextBlock
-											DockPanel.Dock="Top"
-											FontWeight="Bold"
-											VerticalAlignment="Center"
-											HorizontalAlignment="Left">
-											<Hyperlink Style="{StaticResource UserNameLinkText}">
-												<Run Text="Dummy User" />
-											</Hyperlink>
-										</TextBlock>
-
-										<TextBlock
-											DockPanel.Dock="Top"
-											VerticalAlignment="Center"
-											HorizontalAlignment="Left">
-											<Hyperlink Style="{StaticResource UserNameLinkText}">
-												<Run Text="@dummy_user" />
-											</Hyperlink>
-										</TextBlock>
-									</DockPanel>
-
-									<TextBox
-										Padding="0"
-										BorderThickness="0"
-										TextWrapping="Wrap"
-										DockPanel.Dock="Top"
-										HorizontalAlignment="Stretch"
-										Margin="2 -2 2 2" IsReadOnly="True"
-										Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
-
-									<Border
-										Height="120"
-										DockPanel.Dock="Top"
-										Margin="3 0 3 4"
-										local:ElementBehavior.Visible="{Binding Setting.TimelineStatusDetailShowMedia, Mode=OneWay}">
-										<Grid>
-											<Grid.RowDefinitions>
-												<RowDefinition />
-												<RowDefinition />
-												<RowDefinition />
-											</Grid.RowDefinitions>
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="4*" />
-												<ColumnDefinition Width="2*" />
-											</Grid.ColumnDefinitions>
-
-											<Button
-												Margin="1"
-												Grid.RowSpan="3" />
-											<Button
-												Margin="1"
-												Grid.Column="1" />
-											<Button
-												Margin="1"
-												Grid.Row="1"
-												Grid.Column="1" />
-											<Button
-												Margin="1"
-												Grid.Row="2"
-												Grid.Column="1" />
-										</Grid>
-									</Border>
-
-									<Border
-										DockPanel.Dock="Top"
-										Margin="{StaticResource TimelineItemEntityMargin}"
-										local:ElementBehavior.Visible="{Binding Setting.TimelineStatusDetailShowQuotedTweet, Mode=OneWay}">
-										<Button
-											Padding="8 5"
-											VerticalContentAlignment="Stretch"
-											HorizontalContentAlignment="Stretch"
-											Style="{StaticResource QuotedTweetButtonStyle}">
-											<DockPanel>
-												<Border
-													Width="80"
-													Margin="6 0 0 0"
-													DockPanel.Dock="Right"
-													BorderThickness="1"
-													BorderBrush="#6888"/>
-
-												<DockPanel DockPanel.Dock="Top">
-													<TextBlock
-														FontWeight="Black"
-														DockPanel.Dock="Left"
-														Style="{StaticResource UserNameTextStyle}">
-														<Hyperlink Style="{StaticResource UserNameLinkText}">
-															<Run Text="Quoted User" />
-														</Hyperlink>
-													</TextBlock>
-													<TextBlock
-														DockPanel.Dock="Left"
-														Style="{StaticResource UserNameTextStyle}"
-														HorizontalAlignment="Stretch">
-														<Hyperlink Style="{StaticResource UserNameLinkText}">
-															<Run Text="@quoted_user" />
-														</Hyperlink>
-													</TextBlock>
-												</DockPanel>
-
-												<TextBlock 
-													DockPanel.Dock="Top" MaxHeight="40"
-													TextWrapping="WrapWithOverflow"
-													TextTrimming="CharacterEllipsis"
-													Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
-											</DockPanel>
-										</Button>
-									</Border>
-
-									<Border
-										DockPanel.Dock="Top"
-										BorderThickness="0 1"
-										BorderBrush="#bbb"
-										Padding="0 2"
-										Margin="{StaticResource TimelineItemEntityMargin}">
-										<DockPanel>
-											<Button
-												Padding="6 6"
-												DockPanel.Dock="Left"
-												HorizontalAlignment="Left"
-												Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-												<TextBlock>
-													<Run Text="リツイート" FontWeight="Bold" />
-													<Run Text="1,024" />
-												</TextBlock>
-											</Button>
-
-											<Button
-												Padding="6 6"
-												Margin="4 0 0 0"
-												DockPanel.Dock="Left"
-												HorizontalAlignment="Left"
-												Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-												<TextBlock>
-													<Run Text="いいね" FontWeight="Bold" />
-													<Run Text="1,024" />
-												</TextBlock>
-											</Button>
-										</DockPanel>
-									</Border>
-								</DockPanel>
-							</ScrollViewer>
-						</DockPanel>
-					</TabItem>
-				</TabControl>
-			</TabItem>
-
-			<TabItem Header="ミュート">
-				<TabControl Style="{StaticResource TabControlStyle1}">
-					<TabItem Header="ミュート項目一覧">
-						<DockPanel>
-							<Border
-								DockPanel.Dock="Top"
-								Padding="4"
-								BorderBrush="{DynamicResource ToolBarBorderBrush}"
-								Background="{DynamicResource ToolBarBackground}"
-								BorderThickness="0 0 0 1">
-								<Grid
-									Margin="4"
-									DockPanel.Dock="Top">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="auto" />
-										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="auto" />
-										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="120" />
-									</Grid.ColumnDefinitions>
-									<Grid.RowDefinitions>
-										<RowDefinition />
-										<RowDefinition />
-										<RowDefinition />
-									</Grid.RowDefinitions>
-
-									<TextBlock
-										Margin="4 0 4 0"
-										Text="ミュートの種類"
-										HorizontalAlignment="Right"
-										VerticalAlignment="Center"/>
-
-									<TextBlock
-										Grid.Column="2"
-										Margin="12 0 4 0"
-										Text="検索方法"
-										HorizontalAlignment="Right"
-										VerticalAlignment="Center"/>
-
-									<TextBlock
-										Grid.Row="1"
-										Text="内容"
-										Margin="12 0 4 0"
-										HorizontalAlignment="Right"
-										VerticalAlignment="Center"/>
-
-									<ComboBox
-										Margin="4 4 0 4"
-										Grid.Column="1"
-										SelectedIndex="0"
-										DisplayMemberPath="Value"
-										SelectedValuePath="Key"
-										SelectedValue="{Binding TempMuteType, Mode=TwoWay}"
-										ItemsSource="{x:Static app:UILocalize.MuteTypes}" />
-
-									<ComboBox
-										Margin="4"
-										Grid.Column="3"
-										SelectedIndex="0"
-										DisplayMemberPath="Value"
-										SelectedValuePath="Key"
-										SelectedValue="{Binding TempMuteSearch, Mode=TwoWay}"
-										ItemsSource="{x:Static app:UILocalize.MuteMatchTypes}" />
-
-									<TextBox
-										Margin="4 0"
-										Grid.Row="1"
-										Grid.Column="1"
-										Grid.ColumnSpan="4"
-										TextWrapping="WrapWithOverflow"
-										Text="{Binding TempMuteText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-
-									<Button
-										Margin="4"
-										Grid.Column="4"
-										Content="追加"
-										CommandParameter="add"
-										Command="{Binding MuteAddCommand, Mode=OneTime}"/>
-								</Grid>
-							</Border>
-
-							<ListView
-								BorderThickness="0"
-								SelectedItem="{Binding SelectedMute, Mode=TwoWay}"
-								ItemsSource="{Binding Source={StaticResource MuteViewSource}}">
-								<ListView.ItemTemplate>
-									<DataTemplate DataType="{x:Type local:Mute}">
-										<Grid Margin="8">
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="auto" />
-												<ColumnDefinition Width="auto" />
-												<ColumnDefinition Width="120" />
-												<ColumnDefinition />
-											</Grid.ColumnDefinitions>
-
-											<Button
-												Content="削除"
-												Padding="6 3"
-												Margin="0 0 6 0"
-												Background="#FFCB0000"
-												FontWeight="Bold"
-												VerticalAlignment="Center"
-												CommandParameter="{Binding}"
-												Command="{Binding DataContext.MuteRemoveCommand, Mode=OneTime,
-													RelativeSource={RelativeSource AncestorType={x:Type ListBox}, AncestorLevel=1}}"
-												Style="{StaticResource SimpleButtonStyle}" />
-
-											<CheckBox
-												Margin="4 0"
-												Grid.Column="1"
-												VerticalAlignment="Center"
-												Content="有効"
-												IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
-
-											<TextBlock
-												Margin="4 0"
-												Grid.Column="2"
-												FontWeight="Bold"
-												VerticalAlignment="Center"
-												Text="{Binding Search, Mode=OneTime, Converter={StaticResource SearchModeLocalizer}}"/>
-
-											<TextBlock
-												Grid.Column="3"
-												VerticalAlignment="Center"
-												Margin="0 0"
-												TextWrapping="Wrap"
-												Text="{Binding Text, Mode=OneTime}" />
-										</Grid>
-									</DataTemplate>
-								</ListView.ItemTemplate>
-								<ListView.GroupStyle>
-									<GroupStyle
-										HidesIfEmpty="False"
-										ContainerStyle="{StaticResource ListViewGroupItemStyle}" />
-								</ListView.GroupStyle>
-							</ListView>
-						</DockPanel>
-					</TabItem>
-
-					<TabItem Header="その他の設定">
-						<StackPanel Style="{StaticResource ElementsContainerStyle}">
-							<CheckBox Content="Twitterのミュート設定を使用する" />
-							<CheckBox Content="Twitterのブロック設定を使用する" />
-
-							<Label
-								Content="ミュートリスト"
-								Style="{StaticResource HeaderLabelStyle2}"/>
-
-							<RadioButton
-								Content="ミュートしたアカウント一覧を起動時に読み込む" />
-						</StackPanel>
-					</TabItem>
-				</TabControl>
-			</TabItem>
-
-			<TabItem Header="NowPlaying">
-				<StackPanel Style="{StaticResource ElementsContainerStyle}">
-
-					<CheckBox 
-						Content="アートワークを添付する"
-						HorizontalAlignment="Left"	  
-						IsChecked="{Binding Setting.InsertThumbnailAtNowPlayying}"/>
-
-					<TextBlock
-						Foreground="Black"
-						Text="既定のプレーヤ" />
-					<ComboBox
-						Margin="2"
-						Width="200"
-						HorizontalAlignment="Left"
-						DisplayMemberPath="Value"
-						SelectedValuePath="Key"
-						SelectedValue="{Binding Setting.NowPlayingDefaultPlayer, Mode=TwoWay}"
-						ItemsSource="{x:Static vm:TweetWindow.NowPlayingPlayerList}">
-
-					</ComboBox>
-
-					<Label Content="フォーマット：" Style="{StaticResource HeaderLabel}" />
-
-					<TextBox
-						AcceptsReturn="True"
-						TextWrapping="Wrap"
-						Text="{Binding NowPlayingFormat, UpdateSourceTrigger=PropertyChanged}">
-						<i:Interaction.Behaviors>
-							<b:TextBoxBehavior Controller="{Binding NowPlayingTextBoxController}" />
-						</i:Interaction.Behaviors>
-					</TextBox>
-
-					<Label
-						Content="NowPlayingの置換文字列："
-						Style="{StaticResource HeaderLabelStyle2}" />
-
-					<UniformGrid Columns="2" Margin="8 0 0 0">
-						<Button
-							Content="%album% - アルバム名" 
-							CommandParameter="%album%" />
-
-						<Button
-							Content="%album__artist% - アルバムのアーティスト" 
-							CommandParameter="%album_artist%" />
-
-						<Button
-							Content="%artist% - アーティスト名" 
-							CommandParameter="%artist%" />
-
-						<Button
-							Content="%composer% - 作曲者" 
-							CommandParameter="%composer%" />
-
-						<Button
-							Content="%category% - カテゴリ" 
-							CommandParameter="%category%" />
-
-						<Button
-							Content="%genre% - ジャンル" 
-							CommandParameter="%genre%" />
-
-						<Button
-							Content="%name% - 楽曲名" 
-							CommandParameter="%name%" />
-
-						<Button
-							Content="%number% - トラック番号" 
-							CommandParameter="%number%" />
-
-						<Button
-							Content="%year% - 年代" 
-							CommandParameter="%year%" />
-
-						<Button
-							Content="リセット" 
-							Command="{Binding ResetNowPlayingCommand, Mode=OneTime}" />
-
-						<UniformGrid.Resources>
-							<Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
-								<Setter Property="Padding" Value="8 4 12 4" />
-								<Setter Property="Margin" Value="0 4 8 2" />
-								<Setter Property="HorizontalAlignment" Value="Stretch" />
-								<Setter Property="HorizontalContentAlignment" Value="Left" />
-								<Setter Property="Command" Value="{Binding InsertNowPlayingParamCommand, Mode=OneTime}" />
-							</Style>
-						</UniformGrid.Resources>
-					</UniformGrid>
-				</StackPanel>
-			</TabItem>
-		</TabControl>
-	</DockPanel>
+    x:Class="Liberfy.SettingWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Liberfy"
+    xmlns:app="clr-namespace:Liberfy"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+    xmlns:b="clr-namespace:Liberfy.Behaviors"
+    xmlns:conv="clr-namespace:Liberfy.Converter"
+    xmlns:vm="clr-namespace:Liberfy.ViewModel"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+    mc:Ignorable="d"
+    ResizeMode="NoResize"
+    UseLayoutRounding="True"
+    TextOptions.TextFormattingMode="Display"
+    Title="設定" Height="540" Width="760"
+    FontFamily="{StaticResource UIFont}"
+    DataContext="{local:ViewModelConnector {x:Type vm:SettingWindow}}">
+    <Window.Resources>
+        <sys:Double x:Key="tabItemWidth">120</sys:Double>
+        <conv:EnumBoolConverter x:Key="EnumBoolConverter" />
+
+        <conv:LocalizeNameConverter
+            x:Key="MuteTypeLocalizer"
+            LocalizeDictionary="{x:Static app:UILocalize.MuteTypes}" />
+
+        <conv:LocalizeNameConverter
+            x:Key="SearchModeLocalizer"
+            LocalizeDictionary="{x:Static app:UILocalize.MuteMatchTypes}" />
+
+        <CollectionViewSource
+            x:Key="MuteViewSource"
+            Source="{Binding MuteList, Mode=OneTime}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription
+                    PropertyName="Type"
+                    Converter="{StaticResource MuteTypeLocalizer}" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+
+        <conv:LocalizeNameConverter
+            x:Key="ColumnNameConverter"
+            LocalizeDictionary="{x:Static app:ColumnBase.ColumnTypes}" />
+        <conv:ListBoxIndexConverter x:Key="ListBoxIndexConverter" />
+        <conv:ColumnSettingToColumnConverter x:Key="ColumnSettingToColumnConverter" />
+
+        <Style x:Key="HeaderLabel" TargetType="{x:Type Label}">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#333" />
+        </Style>
+
+        <Style x:Key="HeaderLabelStyle2" TargetType="{x:Type Label}" BasedOn="{StaticResource HeaderLabel}">
+            <Setter Property="Margin" Value="0 8 0 0" />
+        </Style>
+
+        <Thickness x:Key="ContainerMargin">12</Thickness>
+
+        <Style x:Key="ElementsContainerStyle" TargetType="{x:Type Panel}">
+            <Setter Property="Margin" Value="{StaticResource ContainerMargin}" />
+            <Style.Resources>
+                <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
+                    <Setter Property="Margin" Value="4 3" />
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                </Style>
+
+                <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource {x:Type RadioButton}}">
+                    <Setter Property="Margin" Value="4 3" />
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                </Style>
+
+                <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
+                    <Setter Property="Padding" Value="4 0 4 6" />
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+                </Style>
+            </Style.Resources>
+        </Style>
+
+        <DataTemplate x:Key="AccountTemplate" DataType="{x:Type local:Account}">
+            <Border
+                x:Name="border"
+                Padding="12"
+                ClipToBounds="True"
+                BorderThickness="0 0 0 1"
+                Background="Transparent"
+                BorderBrush="#ddd"
+                d:DesignWidth="360">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Image
+                        Margin="0 0 8 0" Width="36" Height="36"
+                        Source="{Binding Info.ProfileImageUrl, IsAsync=True}" />
+
+                    <md:PackIcon
+                        Grid.Column="1"
+                        Margin="0 4 4 4"
+                        Kind="Lock"
+                        Width="20" Height="20"
+                        local:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=OneWay}" />
+
+                    <StackPanel 
+                        Grid.Column="2" 
+                        VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Info.Name, Mode=OneWay}" FontWeight="Bold" />
+                        <TextBlock Text="{Binding Info.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+                    </StackPanel>
+
+                    <StackPanel
+                        Grid.Column="3"
+                        Opacity="0.6"
+                        x:Name="accountFuncPanel"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center">
+                        <Button
+                            Margin="0 0 4 0"
+                            Content="▲"
+                            CommandParameter="{Binding}"
+                            Command="{Binding DataContext.AccountMoveUpCommand, Mode=OneTime, 
+                                RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, AncestorLevel=1}}"
+                            Style="{StaticResource SimpleButtonStyle}" />
+
+                        <Button
+                            Margin="0 0 4 0"
+                            Content="▼"
+                            CommandParameter="{Binding}"
+                            Command="{Binding DataContext.AccountMoveDownCommand, Mode=OneTime,
+                                RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, AncestorLevel=1}}"
+                            Style="{StaticResource SimpleButtonStyle}" />
+
+                        <Button
+                            Content="削除"
+                            CommandParameter="{Binding}"
+                            Command="{Binding DataContext.AccountDeleteCommand, Mode=OneTime,
+                                RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, AncestorLevel=1}}"
+                            Background="Red"
+                            Style="{StaticResource SimpleButtonStyle}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true">
+                    <Setter TargetName="accountFuncPanel" Property="Opacity" Value="1.0" />
+                    <Setter TargetName="border" Property="Background" Value="#eee" />
+                    <Setter TargetName="border" Property="BorderBrush" Value="#ccc" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+
+        <!--#region TabControl Template-->
+        <Style x:Key="tabItemStyle" TargetType="{x:Type TabItem}">
+            <Setter Property="Padding" Value="14,8,30,8" />
+            <Setter Property="Background" Value="{x:Static Brushes.Transparent}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Border
+                            x:Name="border"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}">
+                            <ContentPresenter
+                                x:Name="tabHeader"
+                                ContentSource="Header"
+                                TextBlock.Foreground="{DynamicResource SettingTabItemForeground}"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#3fff" />
+                            </Trigger>
+
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#dfff" />
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource SettingTabItemSelectedBorderBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="tabControlStyle" TargetType="{x:Type TabControl}">
+            <Setter Property="OverridesDefaultStyle" Value="False" />
+            <Setter Property="UseLayoutRounding" Value="True" />
+            <Setter Property="TabStripPlacement" Value="Left" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="{DynamicResource TabControlBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource TabControlBorderBrush}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabControl}">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <Border
+                                    BorderThickness="0,0,1,0"
+                                    Background="{DynamicResource SettingTabPanelBackground}"
+                                    BorderBrush="{DynamicResource SettingTabItemNormalBorderBrush}" />
+
+                                <TabPanel
+                                    x:Name="HeaderPanel"
+                                    IsItemsHost="True"
+                                    KeyboardNavigation.TabIndex="1"
+                                    Background="{x:Static Brushes.Transparent}" />
+
+                                <ContentPresenter
+                                    Grid.Column="1"
+                                    x:Name="PART_SelectedContentHost" 
+                                    ContentSource="SelectedContent" />
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle" Value="{StaticResource tabItemStyle}" />
+        </Style>
+
+        <Style x:Key="TabControlStyle1" TargetType="{x:Type TabControl}">
+            <Setter Property="TabStripPlacement" Value="Top" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabControl}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <Border
+                                BorderThickness="0 0 0 1"
+                                Background="{DynamicResource SettingTabPanelBackground}"
+                                BorderBrush="{DynamicResource SettingTabItemNormalBorderBrush}" />
+
+                            <TabPanel
+                                x:Name="HeaderPanel"
+                                Margin="4 4 4 0"
+                                IsItemsHost="True"
+                                KeyboardNavigation.TabIndex="1"
+                                Background="{x:Static Brushes.Transparent}" />
+
+                            <Border 
+                                Grid.Row="1"
+                                Background="{TemplateBinding Background}">
+                                <ContentPresenter 
+                                    x:Name="PART_SelectedContentHost" 
+                                    ContentSource="SelectedContent" />
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="{x:Type TabItem}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type TabItem}">
+                                    <Border 
+                                        x:Name="border"
+                                        Padding="12 6"
+                                        BorderThickness="1 1 1 1"
+                                        Margin="0 0 -1 0"
+                                        Background="#f4f4f4"
+                                        BorderBrush="#ccc">
+                                        <ContentPresenter ContentSource="Header" />
+                                    </Border>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter TargetName="border" Property="Background" Value="#fafafa" />
+                                            <Setter TargetName="border" Property="BorderBrush" Value="#aaa" />
+                                        </Trigger>
+
+                                        <Trigger Property="IsSelected" Value="true">
+                                            <Setter TargetName="border" Property="BorderThickness" Value="1 1 1 0" />
+                                            <Setter TargetName="border" Property="Background" Value="#fff" />
+                                            <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource SettingTabItemNormalBorderBrush}" />
+                                        </Trigger>
+
+                                        <Trigger Property="IsSelected" Value="false">
+                                            <Setter Property="Foreground" Value="#666" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--#endregion-->
+
+        <conv:LocalFontNameConverter x:Key="LocalFontNameConverter" />
+
+        <DataTemplate x:Key="FontViewTemplate" DataType="{x:Type FontFamily}">
+            <Grid Margin="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    FontSize="16"
+                    Text="{Binding Converter={StaticResource LocalFontNameConverter}, Mode=OneTime}"
+                    FontFamily="{Binding Mode=OneTime}" />
+
+                <TextBlock
+                    Grid.Row="1" Margin="0 3 0 0"
+                    Foreground="{DynamicResource DisabledForeground}"
+                    FontFamily="{StaticResource UIFont}"
+                    FontSize="{StaticResource UIFontSize}">
+                    <Run Text="{Binding Converter={StaticResource LocalFontNameConverter}, Mode=OneTime}" />
+                    <Run />/ <Run Text="{Binding Source, Mode=OneWay}"/>
+                </TextBlock>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+    <DockPanel>
+        <Border
+            Height="32" DockPanel.Dock="Top"
+            Style="{StaticResource ToolBarBorderStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Text="設定"
+                    FontWeight="Bold"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center" />
+
+                <Border 
+                    Width="1"
+                    Background="{DynamicResource ToolBarBorderBrush}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Stretch" />
+
+                <TextBlock
+                    Grid.Column="1"
+                    FontWeight="Bold"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Text="{Binding ElementName=tabControl, Path=SelectedItem.Header}" />
+            </Grid>
+        </Border>
+
+        <TabControl 
+            x:Name="tabControl"
+            Style="{StaticResource tabControlStyle}"
+            SelectedIndex="{Binding TabPageIndex, Mode=TwoWay}">
+            <TabItem Header="アカウント">
+                <TabControl Style="{StaticResource TabControlStyle1}">
+                    <TabItem Header="アカウント管理">
+                        <DockPanel>
+                            <ToolBar
+                                DockPanel.Dock="Top"
+                                ToolBarTray.IsLocked="True"
+                                FontSize="{StaticResource UIFontSize}"
+                                FontFamily="{StaticResource UIFont}"
+                                Style="{StaticResource ToolBarStyle}">
+                                <Button 
+                                    FontWeight="Normal"
+                                    Padding="{StaticResource ToolBarIconPadding}"
+                                    Command="{Binding AccountAddCommand, Mode=OneTime}">
+                                    <md:PackIcon Kind="AccountPlus" />
+                                </Button>
+                            </ToolBar>
+
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl 
+                                    ItemsSource="{Binding Accounts, Mode=OneTime}"
+                                    ItemTemplate="{StaticResource AccountTemplate}"/>
+                            </ScrollViewer>
+                        </DockPanel>
+                    </TabItem>
+                    <TabItem Header="アカウントの初期設定">
+                        <DockPanel>
+                            <UniformGrid
+                                Columns="2" Margin="4"
+                                DockPanel.Dock="Top"
+                                Style="{StaticResource ElementsContainerStyle}">
+
+                                <CheckBox
+                                    Content="起動時に自動的にログインする"
+                                    IsChecked="{Binding Setting.AccountDefaultAutomaticallyLogin, Mode=TwoWay}" />
+
+                                <CheckBox
+                                    Content="タイムラインを自動的に読み込む"
+                                    IsChecked="{Binding Setting.AccountDefaultAutomaticallyLoadTimeline, Mode=TwoWay}" />
+                            </UniformGrid>
+
+                            <Separator
+                                DockPanel.Dock="Top"
+                                Background="#ccc"
+                                Margin="0"/>
+
+                            <ToolBar
+                                DockPanel.Dock="Top"
+                                Grid.Row="1"
+                                ToolBarTray.IsLocked="True"
+                                Style="{StaticResource ToolBarStyle}"
+                                FontFamily="{StaticResource UIFont}"
+                                FontSize="{StaticResource UIFontSize}">
+                                <md:PopupBox
+                                    ClipToBounds="True"
+                                    FontWeight="Normal" FontSize="{StaticResource UIFontSize}">
+                                    <md:PopupBox.ToggleContent>
+                                        <md:PackIcon Kind="Plus" Margin="{StaticResource ToolBarIconPadding}" />
+                                    </md:PopupBox.ToggleContent>
+
+                                    <StackPanel>
+                                        <Label
+                                            Margin="0 0 0 8"
+                                            Content="カラムの追加"
+                                            FontSize="{StaticResource UIFontSize}"/>
+
+                                        <ItemsControl ItemsSource="{x:Static local:ColumnBase.ColumnTypes}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Button
+                                                        Padding="12 10"
+                                                        BorderThickness="0"
+                                                        FontWeight="Normal"
+                                                        FontSize="{StaticResource UIFontSize}"
+                                                        HorizontalContentAlignment="Left"
+                                                        Content="{Binding Value, Mode=OneTime}"
+                                                        Style="{DynamicResource {x:Static ToolBar.ButtonStyleKey}}"
+                                                        Command="{Binding DataContext.ColumnAddCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                        CommandParameter="{Binding Key, Mode=OneTime}" />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </md:PopupBox>
+
+                                <Button
+                                    FontWeight="Normal"
+                                    Padding="{StaticResource ToolBarIconPadding}"
+                                    Command="{Binding ColumnRemoveCommand, Mode=OneTime}"
+                                    CommandParameter="{Binding SelectedColumnSetting, Mode=OneWay}">
+                                    <md:PackIcon Kind="Delete" />
+                                </Button>
+
+                                <Separator />
+
+                                <Label
+                                    Content="並べ替え："
+                                    FontWeight="Bold"
+                                    VerticalAlignment="Center"
+                                    Padding="{StaticResource ToolBarItemPadding}" />
+
+                                <Button
+                                    Padding="{StaticResource ToolBarIconPadding}"
+                                    Command="{Binding ColumnMoveUpCommand, Mode=OneTime}"
+                                    CommandParameter="{Binding SelectedColumnSetting, Mode=OneWay}">
+                                    <md:PackIcon Kind="ChevronUp" />
+                                </Button>
+
+                                <Button
+                                    Padding="{StaticResource ToolBarIconPadding}"
+                                    Command="{Binding ColumnMoveDownCommand, Mode=OneTime}"
+                                    CommandParameter="{Binding SelectedColumnSetting, Mode=OneWay}">
+                                    <md:PackIcon Kind="ChevronDown" />
+                                </Button>
+                            </ToolBar>
+
+                            <ListBox
+                                Margin="0"
+                                DockPanel.Dock="Left"
+                                Width="260"
+                                BorderThickness="0 0 1 0"
+                                BorderBrush="#ccc"
+                                ItemsSource="{Binding DefaultColumns, Mode=OneTime}"
+                                SelectedItem="{Binding SelectedColumnSetting, Mode=TwoWay}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type local:ColumnSetting}">
+                                        <TextBlock
+                                            Margin="8"
+                                            Text="{Binding Type, Mode=OneTime, Converter={StaticResource ColumnNameConverter}}" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <TextBlock
+                                Margin="12 8"
+                                DockPanel.Dock="Top">
+                                <Run Text="オプション：" />
+                                <Run Text="{Binding SelectedColumnSetting.Type, Mode=OneWay, Converter={StaticResource ColumnNameConverter}}" />
+                            </TextBlock>
+
+                            <ScrollViewer
+                                VerticalScrollBarVisibility="Auto">
+                                <ContentPresenter
+                                    Margin="14 4 14 8"
+                                    VerticalAlignment="Top"
+                                    Content="{Binding SelectedColumnSetting, Converter={StaticResource ColumnSettingToColumnConverter}, Mode=OneWay}"
+                                    ContentTemplateSelector="{StaticResource ColumnOptionTemplateSelector}"/>
+                            </ScrollViewer>
+                        </DockPanel>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+
+            <TabItem Header="基本設定">
+                <TabControl Style="{StaticResource TabControlStyle1}">
+                    <TabItem Header="全般">
+                        <StackPanel Style="{StaticResource ElementsContainerStyle}">
+                            <CheckBox Content="起動時にアップデートを確認する"
+                                      IsChecked="{Binding Setting.CheckUpdate}"/>
+
+                            <CheckBox Content="ログオン時に自動的に起動する"
+                                      IsChecked="{Binding AutoStartup}"/>
+
+                            <Label Content="メインウィンドウ" Style="{StaticResource HeaderLabelStyle2}" />
+
+                            <CheckBox
+                                Content="最小化して起動する"
+                                IsChecked="{Binding Setting.MinimizeStartup}"/>
+
+                            <CheckBox
+                                Content="閉じるボタンを押した際に最小化する"
+                                IsChecked="{Binding Setting.MinimizeAtCloseButtonClick}"/>
+
+                            <Label Content="タスクトレイ" Style="{StaticResource HeaderLabelStyle2}" />
+
+                            <CheckBox
+                                Content="アイコンをタスクトレイに表示する"
+                                IsChecked="{Binding ShowInTaskTray}" />
+
+                            <CheckBox 
+                                Margin="24 2 0 2"
+                                Content="最小化時にタスクバーに表示しない"
+                                IsChecked="{Binding ShowInTaskTrayAtMinimized}"
+                                IsEnabled="{Binding ShowInTaskTray, Mode=OneWay}" />
+
+                            <CheckBox 
+                                Margin="24 2 0 2"
+                                Content="最小化時にバルーンを表示する"
+                                IsChecked="{Binding Setting.ShowBalloonAtMinimized}"
+                                IsEnabled="{Binding ShowInTaskTray, Mode=OneWay}"/>
+
+
+                            <Label
+                                Content="システム"
+                                Style="{StaticResource HeaderLabelStyle2}" />
+
+                            <CheckBox
+                                Content="ログオフを抑止する"
+                                IsChecked="{Binding Setting.SuppressShutdown}" />
+
+                            <CheckBox
+                                Content="スリープモードへの移行を抑止する"
+                                IsChecked="{Binding Setting.SuppressStandby}"/>
+
+                            <CheckBox
+                                Content="スクリーンセーバーの表示を抑止する"
+                                IsChecked="{Binding Setting.SuppressScreenSaver}"/>
+                        </StackPanel>
+
+                    </TabItem>
+
+                    <TabItem Header="フォント設定">
+                        <DockPanel>
+                            <ToolBar
+                                DockPanel.Dock="Top"
+                                Grid.Row="1" Grid.ColumnSpan="2"
+                                Padding="4 0 0 0"
+                                ToolBarTray.IsLocked="True"
+                                FontFamily="{StaticResource UIFont}"
+                                FontSize="{StaticResource UIFontSize}"
+                                Style="{StaticResource MaterialDesignToolBar}">
+
+                                <md:PopupBox StaysOpen="True" ClipToBounds="True">
+                                    <md:PopupBox.ToggleContent>
+                                        <TextBlock Text="フォントの追加" Margin="{StaticResource ToolBarItemPadding}" />
+                                    </md:PopupBox.ToggleContent>
+
+                                    <StackPanel Width="280" Margin="8">
+                                        <TextBlock
+                                            Margin="0 0 0 4"
+                                            FontFamily="{StaticResource UIFont}"
+                                            FontSize="{StaticResource UIFontSize}">
+                                            <Hyperlink Command="{Binding FontSelectCommand, Mode=OneTime}">
+                                                <Run Text="フォントの参照" />
+                                            </Hyperlink>
+                                        </TextBlock>
+
+                                        <local:PlaceHolderTextBox
+                                            Margin="0 4 0 4"
+                                            md:HintAssist.Hint="フィルタ"
+                                            FontFamily="{StaticResource UIFont}"
+                                            FontSize="{StaticResource UIFontSize}"
+                                            Text="{Binding FontFontFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
+                                        <Separator />
+
+                                        <ListView
+                                            Margin="0 4" MaxHeight="240"
+                                            SelectedItem="{Binding NewSelectedFont, Mode=TwoWay}"
+                                            ItemsSource="{Binding FontFontList, Mode=OneWay}"
+                                            ItemTemplate="{StaticResource FontViewTemplate}"
+                                            FontFamily="{StaticResource UIFont}"
+                                            FontSize="{StaticResource UIFontSize}"
+                                            IsSynchronizedWithCurrentItem="False"
+                                            VirtualizingPanel.ScrollUnit="Pixel">
+                                            <ListBox.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <VirtualizingStackPanel Orientation="Vertical" />
+                                                </ItemsPanelTemplate>
+                                            </ListBox.ItemsPanel>
+                                        </ListView>
+
+                                        <Button 
+                                            Content="選択"
+                                            FontFamily="{StaticResource UIFont}"
+                                            FontSize="{StaticResource UIFontSize}"
+                                            CommandParameter="{Binding NewSelectedFont, Mode=OneWay}"
+                                            Command="{Binding AddFontCommand, Mode=OneTime}"
+                                            HorizontalAlignment="Center"
+                                            Style="{StaticResource MaterialDesignFlatButton}"/>
+                                    </StackPanel>
+                                </md:PopupBox>
+
+                                <Separator />
+
+                                <Button
+                                    Content="削除"
+                                    FontWeight="Normal"
+                                    Padding="{StaticResource ToolBarItemPadding}"
+                                    Command="{Binding RemoveFontCommand, Mode=OneTime}"
+                                    CommandParameter="{Binding SelectedFont, Mode=OneWay}" />
+
+                                <Separator />
+
+                                <Label
+                                    Content="読み込み順："
+                                    FontWeight="Bold"
+                                    VerticalAlignment="Center"
+                                    Padding="{StaticResource ToolBarItemPadding}" />
+
+                                <Button
+                                    Content="▲"
+                                    Padding="{StaticResource ToolBarItemPadding}"
+                                    Command="{Binding IncreaseFontPriorityCommand, Mode=OneTime}"
+                                    CommandParameter="{Binding SelectedFont, Mode=OneWay}"  />
+
+                                <Button
+                                    Content="▼"
+                                    Padding="{StaticResource ToolBarItemPadding}"
+                                    Command="{Binding DecreaseFontPriorityCommand, Mode=OneTime}"
+                                    CommandParameter="{Binding SelectedFont, Mode=OneWay}"  />
+
+                                <Separator />
+
+                                <Button
+                                    FontWeight="Normal"
+                                    Content="フォント設定をリセット"
+                                    Padding="{StaticResource ToolBarItemPadding}"
+                                    Command="{Binding ResetFontCommand, Mode=OneTime}" />
+                            </ToolBar>
+
+                            <Border
+                                Height="96"
+                                DockPanel.Dock="Bottom"
+                                BorderThickness="0 1 0 0"
+                                BorderBrush="#dadada"
+                                Background="White">
+                                <TextBox
+                                    Margin="6" 
+                                    AcceptsTab="False"
+                                    AcceptsReturn="True"
+                                    VerticalAlignment="Stretch"
+                                    TextWrapping="WrapWithOverflow"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                    FontSize="{Binding ViewFontSize, Mode=OneWay}"
+                                    FontFamily="{Binding ViewFont, Mode=OneWay}"
+                                    TextOptions.TextFormattingMode="{Binding ViewFontRendering}"
+                                    md:HintAssist.Hint="フォントのプレビュー"
+                                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJLMNOPQSTUVWXYZ&#xa;1234567890.:,; ' &#x22; (!?) +-*/=&#xa;C# でプログラミングの世界が広がります。1234567890" />
+                            </Border>
+
+                            <Border
+                                DockPanel.Dock="Right"
+                                Width="160"
+                                Grid.Row="3"
+                                Grid.Column="1"
+                                Padding="10 8 12 8"
+                                BorderBrush="#dadada"
+                                BorderThickness="1 0 0 0"
+                                Background="#fafafa">
+                                <StackPanel>
+                                    <ComboBox
+                                        Grid.Column="1"
+                                        IsEditable="True"
+                                        Text="{Binding ViewFontSize, UpdateSourceTrigger=PropertyChanged}"
+                                        md:HintAssist.Hint="フォントサイズ"
+                                        Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+                                        <ComboBoxItem>8</ComboBoxItem>
+                                        <ComboBoxItem>9</ComboBoxItem>
+                                        <ComboBoxItem>10</ComboBoxItem>
+                                        <ComboBoxItem>10.5</ComboBoxItem>
+                                        <ComboBoxItem>11</ComboBoxItem>
+                                        <ComboBoxItem>12</ComboBoxItem>
+                                        <ComboBoxItem>14</ComboBoxItem>
+                                        <ComboBoxItem>16</ComboBoxItem>
+                                        <ComboBoxItem>18</ComboBoxItem>
+                                        <ComboBoxItem>20</ComboBoxItem>
+                                        <ComboBoxItem>22</ComboBoxItem>
+                                        <ComboBoxItem>24</ComboBoxItem>
+                                        <ComboBoxItem>26</ComboBoxItem>
+                                        <ComboBoxItem>28</ComboBoxItem>
+                                        <ComboBoxItem>36</ComboBoxItem>
+                                        <ComboBoxItem>48</ComboBoxItem>
+                                        <ComboBoxItem>72</ComboBoxItem>
+                                    </ComboBox>
+
+                                    <Label
+                                        Margin="0 8 0 0"
+                                        FontWeight="Bold"
+                                        Content="フォントレンダリング" />
+
+                                    <RadioButton
+                                        Margin="0 2 0 4"
+                                        Content="GDI互換"
+                                        IsChecked="{Binding IsLegacyGDIRender}"/>
+
+                                    <RadioButton
+                                        Margin="0 2 0 0"
+                                        Content="GDI+"
+                                        IsChecked="{Binding IsGDIPlusRender}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <ListView
+                                Grid.Row="2"
+                                BorderThickness="1"
+                                BorderBrush="#ccc"
+                                FontSize="{StaticResource UIFontSize}"
+                                ItemTemplate="{StaticResource FontViewTemplate}"
+                                ItemsSource="{Binding ViewFonts, Mode=OneTime}"
+                                SelectedItem="{Binding SelectedFont, Mode=TwoWay}"
+                                SelectionMode="Single"
+                                TextOptions.TextFormattingMode="{Binding ViewFontRendering}" />
+                        </DockPanel>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+
+            <TabItem Header="投稿">
+                <StackPanel Style="{StaticResource ElementsContainerStyle}">
+                    <CheckBox
+                        IsChecked="{Binding Setting.IncludeOtherAtReply, Mode=TwoWay}"
+                        Content="リプライに他の会話中のアカウントを含める" />
+
+                    <CheckBox
+                        IsChecked="{Binding Setting.CloseWindowAfterPostComplated, Mode=TwoWay}"
+                        Content="ツイートの投稿が完了したらウィンドウを閉じる" />
+
+                    <Label Content="デフォルト設定" Style="{StaticResource HeaderLabelStyle2}"/>
+
+                    <CheckBox
+                        IsChecked="{Binding Setting.NoticePostSensitiveMedia, Mode=TwoWay}"
+                        Content="不適切な表現を含む画像および動画であることを告示する" />
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="通知">
+                <TabControl Style="{StaticResource TabControlStyle1}">
+                    <TabItem Header="全般">
+                        <StackPanel Style="{StaticResource ElementsContainerStyle}">
+                            <CheckBox
+                                Content="通知機能を使用する"
+                                IsChecked="{Binding Setting.EnableNotification}"/>
+
+                            <Label
+                                Margin="0 8 0 0" Content="通知方法"
+                                Style="{StaticResource HeaderLabel}" />
+
+                            <CheckBox
+                                Content="音声を再生する"
+                                IsChecked="{Binding Setting.EnableSoundNotification}" />
+
+                            <CheckBox 
+                                Content="ポップアップを表示する"
+                                IsChecked="{Binding Setting.EnablePopupNotification}"/>
+
+                            <Label
+                                Margin="0 8 0 0" Content="通知項目"
+                                Style="{StaticResource HeaderLabel}" />
+
+                            <UniformGrid Columns="2">
+                                <CheckBox
+                                    Content="リプライ"
+                                    IsChecked="{Binding Setting.Notification_Reply}"/>
+
+                                <CheckBox
+                                    Content="フォロー"
+                                    IsChecked="{Binding Setting.Notification_Follow}" />
+
+                                <CheckBox
+                                    Content="いいね"
+                                    IsChecked="{Binding Setting.Notification_Favorite}" />
+
+                                <CheckBox
+                                    Content="リツイート"
+                                    IsChecked="{Binding Setting.Notification_Retweet}" />
+
+                                <CheckBox
+                                    Content="リストへ追加"
+                                    IsChecked="{Binding Setting.Notification_ListMemberAdded}" />
+
+                                <!--<CheckBox Content="リストから除外された"
+                                          IsChecked="{Binding Setting.}" />-->
+
+                                <CheckBox
+                                    Content="リツイートにいいね"
+                                    IsChecked="{Binding Setting.Notification_FavoritedRetweet}" />
+
+                                <CheckBox
+                                    Content="リツイートがリツイート"
+                                    IsChecked="{Binding Setting.Notification_RetweetedRetweet}" />
+
+                                <CheckBox
+                                    Content="引用ツイート"
+                                    IsChecked="{Binding Setting.Notification_QuotedTweet}" />
+
+                                <CheckBox
+                                    Content="ダイレクトメッセージ"
+                                    IsChecked="{Binding Setting.Notification_DirectMessageReceived}" />
+                            </UniformGrid>
+                        </StackPanel>
+                    </TabItem>
+
+                    <TabItem Header="音声設定">
+                        <StackPanel Margin="{StaticResource ContainerMargin}">
+                            <Label Content="ファイル" Style="{StaticResource HeaderLabel}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox
+                                    IsReadOnly="True"
+                                    Text="{Binding NotificationSoundFile, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <Button
+                                    Margin="6 0 0 0"
+                                    Padding="6 4"
+                                    Content="..."
+                                    Grid.Column="1" />
+                            </Grid>
+
+                            <StackPanel Margin="0 6 0 0" Orientation="Horizontal" HorizontalAlignment="Left">
+                                <Button Content="再生" />
+                                <Button Content="停止" Margin="6 0 0 0" />
+                            </StackPanel>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+
+            <TabItem Header="表示">
+                <TabControl Style="{StaticResource TabControlStyle1}">
+                    <TabItem Header="ツイート">
+                        <DockPanel>
+                            <Border
+                                DockPanel.Dock="Top"
+                                Margin="108 8" Grid.Column="1"
+                                BorderBrush="#eee" BorderThickness="1">
+                                <Grid Background="Transparent">
+                                    <DockPanel Margin="4">
+                                        <DockPanel
+                                            DockPanel.Dock="Bottom"
+                                            Margin="8 4 8 8">
+                                            <UniformGrid
+                                                DockPanel.Dock="Right"
+                                                HorizontalAlignment="Right"
+                                                Rows="1" Width="160">
+                                                <Button
+                                                Style="{StaticResource ReplyActionButton}">
+                                                    <md:PackIcon
+                                                    Kind="Reply"
+                                                    Width="24" Height="23"
+                                                    Margin="0 -1 0 0"/>
+                                                </Button>
+                                                <ToggleButton Style="{StaticResource RetweetActionToggleButton}">
+                                                    <md:PackIcon 
+                                                    Kind="TwitterRetweet"
+                                                    Margin="0"
+                                                    Width="26" Height="26" />
+                                                </ToggleButton>
+                                                <ToggleButton Style="{StaticResource FavoriteActionToggleButton}">
+                                                    <md:PackIcon
+                                                    Margin="0 0 0 0"
+                                                    Kind="Heart"
+                                                    Width="20" Height="18" />
+                                                </ToggleButton>
+                                            </UniformGrid>
+
+                                            <TextBlock
+                                                DockPanel.Dock="Left"
+                                                VerticalAlignment="Center"
+                                                TextTrimming="CharacterEllipsis"
+                                                app:ElementBehavior.Visible="{Binding Setting.IsShowTweetClientName, FallbackValue=true, Mode=OneWay}">
+                                                <Hyperlink Style="{StaticResource MetadataLinkText}">
+                                                    <Run Text="Liberfy" />
+                                                </Hyperlink>
+                                            </TextBlock>
+                                        </DockPanel>
+
+                                        <Button
+                                            Margin="4"
+                                            DockPanel.Dock="Left"
+                                            VerticalAlignment="Top"
+                                            Style="{StaticResource ImageButton}">
+                                            <Border
+                                                d:DesignWidth="48" d:DesignHeight="48"
+                                                Width="{Binding PreviewProfileImageWidth, Mode=OneWay, FallbackValue=40}"
+                                                Height="{Binding PreviewProfileImageWidth, Mode=OneWay, FallbackValue=40}"
+                                                CornerRadius="{Binding ProfileImageCornerRadius, Mode=OneWay}"
+                                                Background="#ccc"
+                                                app:ElementBehavior.Visible="{Binding Setting.IsShowTweetProfileImage, Mode=OneWay, FallbackValue=true}"/>
+                                        </Button>
+
+                                        <DockPanel
+                                            Margin="4 4 4 4"
+                                            DockPanel.Dock="Top">
+                                            <Border
+                                                DockPanel.Dock="Left"
+                                                Margin="0 0 4 0"
+                                                Width="16" Height="16">
+                                                <md:PackIcon Kind="Lock" />
+                                            </Border>
+
+                                            <TextBlock
+                                                DockPanel.Dock="Right"
+                                                VerticalAlignment="Top"
+                                                HorizontalAlignment="Right"
+                                                FontSize="11">
+                                                <Hyperlink Style="{StaticResource MetadataLinkText}">
+                                                    <Run Text="{Binding PreviewTweetTimestampText, Mode=OneWay}" />
+                                                </Hyperlink>
+                                            </TextBlock>
+
+                                            <TextBlock
+                                                DockPanel.Dock="Left"
+                                                FontWeight="Bold"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Left"
+                                                TextTrimming="CharacterEllipsis">
+                                                <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                                    <Run Text="Dummy User" />
+                                                </Hyperlink>
+                                            </TextBlock>
+
+                                            <TextBlock
+                                                DockPanel.Dock="Left"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Left"
+                                                TextTrimming="CharacterEllipsis">
+                                                <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                                    <Run Text="@dummy_user" />
+                                                </Hyperlink>
+                                            </TextBlock>
+                                        </DockPanel>
+
+                                        <StackPanel>
+                                            <TextBlock
+                                                TextWrapping="Wrap"
+                                                DockPanel.Dock="Top"
+                                                HorizontalAlignment="Stretch"
+                                                Margin="{StaticResource TimelineItemEntityMargin}"
+                                                Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
+                                        </StackPanel>
+
+                                    </DockPanel>
+
+                                    <Polygon
+                                        Height="16" Width="16"
+                                        VerticalAlignment="Top"
+                                        HorizontalAlignment="Left"
+                                        Points="0,0 16,0 0,16"
+                                        Fill="{Binding PreviewTweetActionColor, Mode=OneWay}"/>
+                                </Grid>
+                            </Border>
+
+                            <TabControl Style="{StaticResource tabControlStyle}" BorderThickness="0 1 0 0">
+                                <TabItem Header="全般">
+                                    <StackPanel Style="{StaticResource ElementsContainerStyle}">
+                                        <Label
+                                            Content="全般"
+                                            Style="{StaticResource HeaderLabel}" />
+
+                                        <CheckBox
+                                            Content="プロフィール画像を表示する"
+                                            IsChecked="{Binding Setting.IsShowTweetProfileImage, Mode=TwoWay}" />
+
+                                        <CheckBox
+                                            Content="添付画像を表示する"
+                                            IsChecked="{Binding Setting.IsShowTweetImages, Mode=TwoWay}"/>
+
+                                        <CheckBox
+                                            Content="引用ツイートを表示する"
+                                            IsChecked="{Binding Setting.IsShowTweetQuotedTweet, Mode=TwoWay}" />
+
+                                        <CheckBox
+                                            Content="クライアント名を表示する"
+                                            IsChecked="{Binding Setting.IsShowTweetClientName, Mode=TwoWay}" />
+                                    </StackPanel>
+                                </TabItem>
+
+                                <TabItem Header="プロフィール画像">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel
+                                            Style="{StaticResource ElementsContainerStyle}">
+                                            <Label
+                                                Style="{StaticResource HeaderLabel}"
+                                                Content="サイズ" />
+
+                                            <Slider
+                                                Minimum="20" Maximum="60"
+                                                SmallChange="1" LargeChange="5" 
+                                                TickFrequency="2"
+                                                IsMoveToPointEnabled="True"
+                                                Interval="1"
+                                                Value="{Binding PreviewProfileImageWidth, Mode=TwoWay, FallbackValue=40}"
+                                                TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" />
+
+                                            <Label
+                                                Foreground="#444"
+                                                ContentStringFormat="{}{0} px"
+                                                HorizontalAlignment="Center"
+                                                Content="{Binding PreviewProfileImageWidth, FallbackValue=40, Mode=OneWay}" />
+
+                                        </StackPanel>
+
+                                        <StackPanel
+                                            Grid.Column="1"
+                                            Style="{StaticResource ElementsContainerStyle}">
+                                            <Label
+                                                Style="{StaticResource HeaderLabel}"
+                                                Content="形状" />
+
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="auto" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition />
+                                                    <RowDefinition />
+                                                    <RowDefinition />
+                                                </Grid.RowDefinitions>
+
+                                                <Border
+                                                    Margin="0,6,6,6"
+                                                    Width="36" Height="36"
+                                                    Background="#CCC"/>
+
+                                                <Border
+                                                    Grid.Row="1"
+                                                    Margin="0,6,6,6"
+                                                    Width="36" Height="36"
+                                                    Background="#CCC"
+                                                    CornerRadius="3"/>
+
+                                                <Border
+                                                    Grid.Row="2"
+                                                    Margin="0,6,6,6"
+                                                    Width="36" Height="36"
+                                                    Background="#CCC"
+                                                    CornerRadius="18"/>
+
+                                                <RadioButton
+                                                    Grid.Column="1"
+                                                    Margin="8"
+                                                    VerticalAlignment="Center"
+                                                    Content="四角"
+                                                    GroupName="profileimage_form"
+                                                    IsChecked="{Binding ProfileImageForm, Mode=TwoWay,
+                                                        Converter={StaticResource EnumBoolConverter},
+                                                        ConverterParameter=Square}" />
+
+                                                <RadioButton
+                                                    Grid.Row="1"
+                                                    Grid.Column="1"
+                                                    Margin="8"
+                                                    VerticalAlignment="Center"
+                                                    Content="角丸"
+                                                    GroupName="profileimage_form"
+                                                    IsChecked="{Binding ProfileImageForm, Mode=TwoWay,
+                                                        Converter={StaticResource EnumBoolConverter},
+                                                        ConverterParameter=RoundedCorner}" />
+
+                                                <RadioButton
+                                                    Grid.Row="2"
+                                                    Grid.Column="1"
+                                                    Margin="8"
+                                                    VerticalAlignment="Center"
+                                                    Content="円"
+                                                    GroupName="profileimage_form"
+                                                    IsChecked="{Binding ProfileImageForm, Mode=TwoWay,
+                                                        Converter={StaticResource EnumBoolConverter},
+                                                        ConverterParameter=Ellipse}" />
+                                            </Grid>
+
+                                        </StackPanel>
+                                    </Grid>
+                                </TabItem>
+
+                                <TabItem Header="投稿時刻">
+                                    <StackPanel Style="{StaticResource ElementsContainerStyle}">
+                                        <Label Content="投稿時刻の書式" Style="{StaticResource HeaderLabel}" />
+
+                                        <RadioButton
+                                            Content="絶対時刻"
+                                            GroupName="tweet_timeformat"
+                                            IsChecked="{Binding IsTweetTimestampAbsolute, Mode=TwoWay}" />
+                                        <TextBlock
+                                            Foreground="{StaticResource DisabledForeground}"
+                                            Margin="24 0 0 8" Text="e.g. 2017年1月1日 0時0分" />
+
+                                        <RadioButton
+                                            Content="相対時刻"
+                                            GroupName="tweet_timeformat"
+                                            IsChecked="{Binding IsTweetTimestampRelative, Mode=TwoWay}" />
+                                        <TextBlock
+                                            Foreground="{StaticResource DisabledForeground}"
+                                            Margin="24 0 0 8" Text="e.g. 1時間前" />
+                                    </StackPanel>
+                                </TabItem>
+                            </TabControl>
+                        </DockPanel>
+                    </TabItem>
+
+                    <TabItem Header="カラム">
+                        <DockPanel>
+                            <Border
+                                DockPanel.Dock="Top"
+                                Height="180"
+                                Margin="0 8"
+                                d:DesignWidth="180"
+                                ClipToBounds="True"
+                                BorderThickness="1"
+                                Background="{DynamicResource ColumnBackground}"
+                                BorderBrush="{DynamicResource ColumnBorderBrush}"
+                                Width="{Binding PreviewColumnWidth, Mode=OneWay, FallbackValue=300}">
+                                <Border.OpacityMask>
+                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                        <GradientStop Color="Black" Offset="0"/>
+                                        <GradientStop Color="Black" Offset="0.594"/>
+                                        <GradientStop Color="Transparent" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.OpacityMask>
+                                <DockPanel>
+                                    <Border
+                                        DockPanel.Dock="Top"
+                                        MinHeight="34"
+                                        BorderThickness="0 0 0 1"
+                                        Background="{DynamicResource ColumnHeaderBackground}"
+                                        BorderBrush="{DynamicResource ColumnHeaderBorderBrush}">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="auto" />
+                                                <RowDefinition Height="auto" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto" />
+                                                <ColumnDefinition Width="auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="auto" />
+                                                <ColumnDefinition Width="auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Path
+                                                Grid.Column="1"
+                                                Margin="6 0"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                Width="16" Height="16"
+                                                Fill="#444" Stretch="Fill" />
+
+                                            <!--Column title-->
+                                            <TextBlock
+                                                Grid.Column="2"
+                                                TextWrapping="NoWrap"
+                                                TextTrimming="CharacterEllipsis"
+                                                VerticalAlignment="Center"
+                                                Margin="6" FontSize="16"
+                                                Text="Column Title"
+                                                Foreground="{DynamicResource ColumnHeaderForeground}" />
+
+                                            <Border
+                                                Grid.Column="3"
+                                                Margin="0,0,6,0"
+                                                Width="28" Height="28"
+                                                Background="#ccc" />
+
+                                            <ToggleButton
+                                                x:Name="paneToggle"
+                                                Grid.Column="4" Padding="6 4"
+                                                IsChecked="True" />
+
+                                            <Border
+                                                Grid.Row="1" Grid.ColumnSpan="5"
+                                                Padding="4"
+                                                Background="{DynamicResource ColumnBackground}"
+                                                app:ElementBehavior.Visible="{Binding IsChecked, ElementName=paneToggle, Mode=OneWay}">
+                                                <TextBlock 
+                                                    TextTrimming="CharacterEllipsis"
+                                                    Text="ここに設定項目が表示されます" />
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+
+                                    <Label
+                                        DockPanel.Dock="Top"
+                                        Padding="7 10" 
+                                        VerticalAlignment="Top"
+                                        Background="#FFD1F5CD"
+                                        BorderBrush="#FF77D47C"
+                                        BorderThickness="0,0,0,1">
+                                        <TextBlock
+                                            TextWrapping="Wrap"
+                                            Text="ここにエラーメッセージが表示されます"/>
+                                    </Label>
+                                </DockPanel>
+                            </Border>
+
+                            <TabControl
+                                Style="{StaticResource tabControlStyle}"
+                                BorderThickness="0 1 0 0">
+                                <TabItem Header="全般">
+                                    <StackPanel Style="{StaticResource ElementsContainerStyle}">
+                                        <Label
+                                            Style="{StaticResource HeaderLabel}"
+                                            Content="カラムの幅"/>
+
+                                        <Slider
+                                            Minimum="200" Maximum="500"
+                                            SmallChange="5" LargeChange="5" 
+                                            TickFrequency="5"
+                                            IsMoveToPointEnabled="True"
+                                            Interval="1"
+                                            Value="{Binding PreviewColumnWidth, Mode=TwoWay, FallbackValue=300}"
+                                            TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" />
+
+                                        <Label
+                                            Foreground="#444"
+                                            ContentStringFormat="{}{0} px"
+                                            HorizontalAlignment="Center"
+                                            Content="{Binding PreviewColumnWidth, FallbackValue=300, Mode=OneWay}" />
+                                    </StackPanel>
+                                </TabItem>
+                            </TabControl>
+                        </DockPanel>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+
+            <TabItem Header="タイムライン">
+                <TabControl Style="{StaticResource TabControlStyle1}">
+                    <TabItem Header="ツイート">
+                        <DockPanel Background="White" TextBlock.Foreground="Black">
+                            <Border
+                                DockPanel.Dock="Right" Width="250"
+                                Background="{StaticResource ToolBarBackground}"
+                                BorderBrush="{StaticResource ToolBarBorderBrush}"
+                                BorderThickness="1 0 0 0">
+                                <StackPanel Style="{StaticResource ElementsContainerStyle}">
+                                    <Label
+                                        Content="設定"
+                                        Style="{StaticResource HeaderLabel}" />
+                                    <CheckBox 
+                                        Content="画像を表示する"
+                                        IsChecked="{Binding Setting.TimelineStatusShowMedia}" />
+                                    <CheckBox 
+                                        Content="引用ツイートを表示する"
+                                        IsChecked="{Binding Setting.TimelineStatusShowQuotedTweet}" />
+
+                                    <Label
+                                        Content="投稿時刻の表示方法"
+                                        Style="{StaticResource HeaderLabelStyle2}"/>
+                                    <RadioButton
+                                        Content="絶対時刻"
+                                        IsChecked="{Binding TimelineStatusShowAbsoluteTime}"/>
+                                    <TextBlock
+                                        Foreground="{StaticResource DisabledForeground}"
+                                        Margin="24 0 0 0" Text="e.g. 1990年1月1日 0時0分" />
+                                    <RadioButton
+                                        Content="相対時刻（e.g. 3日前）"
+                                        IsChecked="{Binding TimelineStatusShowRelativeTime}"/>
+                                    <TextBlock
+                                        Foreground="{StaticResource DisabledForeground}"
+                                        Margin="24 0 0 0" Text="e.g. 3分前" />
+                                </StackPanel>
+                            </Border>
+
+                            <ScrollViewer>
+                                <Border VerticalAlignment="Top">
+                                    <Grid Background="Transparent">
+                                        <DockPanel Margin="4">
+                                            <DockPanel
+                                                DockPanel.Dock="Bottom"
+                                                Margin="8 4 8 8">
+                                                <UniformGrid
+                                                    DockPanel.Dock="Right"
+                                                    HorizontalAlignment="Right"
+                                                    Rows="1" Width="160">
+                                                    <Button
+                                                        Style="{StaticResource ReplyActionButton}">
+                                                        <md:PackIcon
+                                                            Kind="Reply"
+                                                            Width="24" Height="23"
+                                                            Margin="0 -1 0 0"/>
+                                                    </Button>
+                                                    <ToggleButton Style="{StaticResource RetweetActionToggleButton}">
+                                                        <md:PackIcon 
+                                                            Kind="TwitterRetweet"
+                                                            Margin="0"
+                                                            Width="26" Height="26" />
+                                                    </ToggleButton>
+                                                    <ToggleButton Style="{StaticResource FavoriteActionToggleButton}">
+                                                        <md:PackIcon
+                                                            Margin="0 0 0 0"
+                                                            Kind="Heart"
+                                                            Width="20" Height="18" />
+                                                    </ToggleButton>
+                                                </UniformGrid>
+
+                                                <TextBlock
+                                                    DockPanel.Dock="Left"
+                                                    VerticalAlignment="Center"
+                                                    TextTrimming="CharacterEllipsis">
+                                                    <Hyperlink Style="{StaticResource MetadataLinkText}">
+                                                        <Run Text="Liberfy" />
+                                                    </Hyperlink>
+                                                </TextBlock>
+                                            </DockPanel>
+
+                                            <Button
+                                                Margin="4"
+                                                DockPanel.Dock="Left"
+                                                Width="48" Height="48"
+                                                VerticalAlignment="Top"
+                                                Style="{StaticResource ImageButton}">
+                                                <Border
+                                                    Width="48" Height="48"
+                                                    Background="#ccc" />
+                                            </Button>
+
+                                            <DockPanel
+                                                Margin="4 4 4 4"
+                                                DockPanel.Dock="Top">
+                                                <Border
+                                                    Visibility="Collapsed"
+                                                    DockPanel.Dock="Left"
+                                                    Width="16" Height="16"/>
+
+                                                <TextBlock
+                                                    DockPanel.Dock="Right"
+                                                    VerticalAlignment="Top"
+                                                    HorizontalAlignment="Right"
+                                                    FontSize="11">
+                                                    <Hyperlink Style="{StaticResource MetadataLinkText}">
+                                                        <Run Text="1時間" />
+                                                    </Hyperlink>
+                                                </TextBlock>
+
+                                                <TextBlock
+                                                    DockPanel.Dock="Left"
+                                                    FontWeight="Bold"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Left">
+                                                    <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                                        <Run Text="Dummy User" />
+                                                    </Hyperlink>
+                                                </TextBlock>
+
+                                                <TextBlock
+                                                    DockPanel.Dock="Left"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Left">
+                                                    <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                                        <Run Text="@dummy_user" />
+                                                    </Hyperlink>
+                                                </TextBlock>
+                                            </DockPanel>
+
+                                            <TextBlock
+                                                TextWrapping="Wrap"
+                                                DockPanel.Dock="Top"
+                                                HorizontalAlignment="Stretch"
+                                                Margin="{StaticResource TimelineItemEntityMargin}"
+                                                Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
+
+                                            <Border
+                                                Height="120"
+                                                DockPanel.Dock="Top"
+                                                Margin="3 0 3 4"
+                                                local:ElementBehavior.Visible="{Binding Setting.TimelineStatusShowMedia, Mode=OneWay}">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="4*" />
+                                                        <ColumnDefinition Width="2*" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <Button
+                                                        Margin="1"
+                                                        Grid.RowSpan="3"
+                                                        Background="#aaa"
+                                                        Style="{StaticResource ImageButton}" />
+                                                    <Button
+                                                        Margin="1"
+                                                        Grid.Column="1"
+                                                        Background="#aaa"
+                                                        Style="{StaticResource ImageButton}" />
+                                                    <Button
+                                                        Margin="1"
+                                                        Grid.Row="1"
+                                                        Grid.Column="1"
+                                                        Background="#aaa"
+                                                        Style="{StaticResource ImageButton}" />
+                                                    <Button
+                                                        Margin="1"
+                                                        Grid.Row="2"
+                                                        Grid.Column="1"
+                                                        Background="#aaa"
+                                                        Style="{StaticResource ImageButton}" />
+                                                </Grid>
+                                            </Border>
+
+                                            <Border
+                                                DockPanel.Dock="Top"
+                                                Margin="{StaticResource TimelineItemEntityMargin}">
+                                                <Button
+                                                    Padding="8 5"
+                                                    Style="{StaticResource QuotedTweetButtonStyle}"
+                                                    FontSize="{StaticResource UIFontSize}"
+                                                    VerticalContentAlignment="Stretch" Height="auto"
+                                                    local:ElementBehavior.Visible="{Binding Setting.TimelineStatusShowQuotedTweet, Mode=OneWay}">
+                                                    <DockPanel>
+                                                        <Border
+                                                            Width="80"
+                                                            Margin="6 0 0 0"
+                                                            DockPanel.Dock="Right"
+                                                            BorderThickness="1"
+                                                            BorderBrush="#6888"/>
+
+                                                        <DockPanel DockPanel.Dock="Top">
+                                                            <TextBlock
+                                                                FontWeight="Black"
+                                                                DockPanel.Dock="Left"
+                                                                Style="{StaticResource UserNameTextStyle}">
+                                                                <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                                                    <Run Text="Quoted User" />
+                                                                </Hyperlink>
+                                                            </TextBlock>
+
+                                                            <TextBlock
+                                                                DockPanel.Dock="Left"
+                                                                Style="{StaticResource UserNameTextStyle}"
+                                                                HorizontalAlignment="Stretch">
+                                                                <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                                                    <Run Text="@quoted_user" />
+                                                                </Hyperlink>
+                                                            </TextBlock>
+                                                        </DockPanel>
+
+                                                        <TextBlock 
+                                                            DockPanel.Dock="Top" MaxHeight="40"
+                                                            TextWrapping="WrapWithOverflow"
+                                                            TextTrimming="CharacterEllipsis"
+                                                            Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
+                                                    </DockPanel>
+                                                </Button>
+                                            </Border>
+
+                                            <Border
+                                                DockPanel.Dock="Top"
+                                                BorderThickness="0 1"
+                                                BorderBrush="#bbb"
+                                                Padding="4 6"
+                                                Margin="{StaticResource TimelineItemEntityMargin}">
+                                                <DockPanel>
+                                                    <md:PackIcon
+                                                        Margin="0 0 4 0"
+                                                        Kind="TwitterRetweet"
+                                                        Width="28" Height="28"
+                                                        VerticalAlignment="Center"
+                                                        Foreground="Green" />
+
+                                                    <Button
+                                                        Style="{StaticResource ImageButton}"
+                                                        Width="28" Height="28"
+                                                        Margin="0 0 8 0"
+                                                        DockPanel.Dock="Left">
+                                                        <Border
+                                                            Width="28" Height="28"
+                                                            Background="#ece"/>
+                                                    </Button>
+
+                                                    <TextBlock
+                                                        FontWeight="Bold"
+                                                        DockPanel.Dock="Left"
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Left"
+                                                        TextTrimming="CharacterEllipsis">
+                                                        <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                                            <Run Text="Retweet User" />
+                                                        </Hyperlink>
+                                                    </TextBlock>
+                                                    <TextBlock
+                                                        DockPanel.Dock="Left"
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Left"
+                                                        TextTrimming="CharacterEllipsis">
+                                                        <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                                            <Run Text="@retweet_user" />
+                                                        </Hyperlink>
+                                                    </TextBlock>
+                                                </DockPanel>
+                                            </Border>
+
+                                        </DockPanel>
+
+                                        <Polygon
+                                            Height="16" Width="16"
+                                            VerticalAlignment="Top"
+                                            HorizontalAlignment="Left"
+                                            Points="0,0 16,0 0,16"
+                                            Fill="Black"/>
+                                    </Grid>
+                                </Border>
+                            </ScrollViewer>
+                        </DockPanel>
+
+                    </TabItem>
+                    <TabItem Header="ツイート（詳細）">
+                        <DockPanel Background="White" TextBlock.Foreground="Black">
+                            <Border
+                                DockPanel.Dock="Right" Width="250"
+                                Background="{StaticResource ToolBarBackground}"
+                                BorderBrush="{StaticResource ToolBarBorderBrush}"
+                                BorderThickness="1 0 0 0">
+                                <StackPanel Style="{StaticResource ElementsContainerStyle}">
+
+                                    <Label
+                                        Content="設定"
+                                        Style="{StaticResource HeaderLabel}" />
+                                    <CheckBox 
+                                        Content="画像を表示する"
+                                        IsChecked="{Binding Setting.TimelineStatusDetailShowMedia}" />
+                                    <CheckBox 
+                                        Content="引用ツイートを表示する"
+                                        IsChecked="{Binding Setting.TimelineStatusDetailShowQuotedTweet}"/>
+
+                                    <Label
+                                        Content="投稿時刻の表示方法"
+                                        Style="{StaticResource HeaderLabelStyle2}"/>
+                                    <RadioButton
+                                        Content="絶対時刻"
+                                        IsChecked="{Binding TimelineStatusShowAbsoluteTimeDetail}"/>
+                                    <TextBlock
+                                        Foreground="{StaticResource DisabledForeground}"
+                                        Margin="24 0 0 0" Text="e.g. 1990年1月1日 0時0分" />
+                                    <RadioButton
+                                        Content="相対時刻（e.g. 3日前）"
+                                        IsChecked="{Binding TimelineStatusShowRelativeTimeDetail}"/>
+                                    <TextBlock
+                                        Foreground="{StaticResource DisabledForeground}"
+                                        Margin="24 0 0 0" Text="e.g. 3分前" />
+                                </StackPanel>
+                            </Border>
+
+                            <ScrollViewer>
+                                <DockPanel
+                                    Margin="4"
+                                    VerticalAlignment="Top">
+                                    <DockPanel
+                                        DockPanel.Dock="Bottom"
+                                        Margin="8 4 8 8">
+                                        <UniformGrid
+                                            DockPanel.Dock="Right"
+                                            HorizontalAlignment="Right"
+                                            Rows="1" Width="160">
+                                            <Button
+                                                Style="{StaticResource ReplyActionButton}">
+                                                <md:PackIcon
+                                                    Kind="Reply"
+                                                    Width="24" Height="23"
+                                                    Margin="0 -1 0 0"/>
+                                            </Button>
+                                            <ToggleButton Style="{StaticResource RetweetActionToggleButton}">
+                                                <md:PackIcon 
+                                                    Kind="TwitterRetweet"
+                                                    Margin="0"
+                                                    Width="26" Height="26" />
+                                            </ToggleButton>
+                                            <ToggleButton Style="{StaticResource FavoriteActionToggleButton}">
+                                                <md:PackIcon
+                                                    Margin="0 0 0 0"
+                                                    Kind="Heart"
+                                                    Width="20" Height="18" />
+                                            </ToggleButton>
+
+                                        </UniformGrid>
+
+                                        <TextBlock
+                                            DockPanel.Dock="Left"
+                                            VerticalAlignment="Center"
+                                            TextTrimming="CharacterEllipsis">
+                                            <Hyperlink Style="{StaticResource MetadataLinkText}">
+                                                <Run Text="Liberfy" />
+                                            </Hyperlink>
+                                        </TextBlock>
+                                    </DockPanel>
+
+                                    <Button
+                                        Margin="4"
+                                        DockPanel.Dock="Left"
+                                        Width="48" Height="48"
+                                        VerticalAlignment="Top"
+                                        Style="{StaticResource ImageButton}">
+                                        <Border
+                                            Width="48" Height="48"
+                                            Background="#ccc" />
+                                    </Button>
+
+                                    <DockPanel
+                                        Margin="4 4 4 4"
+                                        DockPanel.Dock="Top">
+                                        <Border
+                                            Visibility="Collapsed"
+                                            DockPanel.Dock="Left"
+                                            Width="16" Height="16"/>
+
+                                        <TextBlock
+                                            DockPanel.Dock="Right"
+                                            VerticalAlignment="Top"
+                                            HorizontalAlignment="Center"
+                                            FontSize="11">
+                                            <Hyperlink Style="{StaticResource MetadataLinkText}">
+                                                <Run Text="1時間" />
+                                            </Hyperlink>
+                                        </TextBlock>
+
+                                        <TextBlock
+                                            DockPanel.Dock="Top"
+                                            FontWeight="Bold"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Left">
+                                            <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                                <Run Text="Dummy User" />
+                                            </Hyperlink>
+                                        </TextBlock>
+
+                                        <TextBlock
+                                            DockPanel.Dock="Top"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Left">
+                                            <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                                <Run Text="@dummy_user" />
+                                            </Hyperlink>
+                                        </TextBlock>
+                                    </DockPanel>
+
+                                    <TextBox
+                                        Padding="0"
+                                        BorderThickness="0"
+                                        TextWrapping="Wrap"
+                                        DockPanel.Dock="Top"
+                                        HorizontalAlignment="Stretch"
+                                        Margin="{StaticResource TimelineItemEntityMargin}"
+                                        IsReadOnly="True"
+                                        Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
+
+                                    <Border
+                                        Height="120"
+                                        DockPanel.Dock="Top"
+                                        Margin="3 0 3 4"
+                                        local:ElementBehavior.Visible="{Binding Setting.TimelineStatusDetailShowMedia, Mode=OneWay}">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="4*" />
+                                                <ColumnDefinition Width="2*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Button
+                                                Margin="1"
+                                                Grid.RowSpan="3"
+                                                Background="#aaa"
+                                                Style="{StaticResource ImageButton}" />
+                                            <Button
+                                                Margin="1"
+                                                Grid.Column="1"
+                                                Background="#aaa"
+                                                Style="{StaticResource ImageButton}" />
+                                            <Button
+                                                Margin="1"
+                                                Grid.Row="1"
+                                                Grid.Column="1"
+                                                Background="#aaa"
+                                                Style="{StaticResource ImageButton}" />
+                                            <Button
+                                                Margin="1"
+                                                Grid.Row="2"
+                                                Grid.Column="1"
+                                                Background="#aaa"
+                                                Style="{StaticResource ImageButton}" />
+                                        </Grid>
+                                    </Border>
+
+                                    <Border
+                                        DockPanel.Dock="Top"
+                                        Margin="{StaticResource TimelineItemEntityMargin}"
+                                        local:ElementBehavior.Visible="{Binding Setting.TimelineStatusDetailShowQuotedTweet, Mode=OneWay}">
+                                        <Button
+                                            Padding="8 5"
+                                            HorizontalContentAlignment="Stretch"
+                                            FontSize="{StaticResource UIFontSize}"
+                                            Style="{StaticResource QuotedTweetButtonStyle}">
+                                            <DockPanel>
+                                                <Border
+                                                    Width="80"
+                                                    Margin="6 0 0 0"
+                                                    DockPanel.Dock="Right"
+                                                    BorderThickness="1"
+                                                    BorderBrush="#6888"/>
+
+                                                <DockPanel DockPanel.Dock="Top">
+                                                    <TextBlock
+                                                        FontWeight="Black"
+                                                        DockPanel.Dock="Left"
+                                                        Style="{StaticResource UserNameTextStyle}">
+                                                        <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                                            <Run Text="Quoted User" />
+                                                        </Hyperlink>
+                                                    </TextBlock>
+                                                    <TextBlock
+                                                        DockPanel.Dock="Left"
+                                                        Style="{StaticResource UserNameTextStyle}"
+                                                        HorizontalAlignment="Stretch">
+                                                        <Hyperlink Style="{StaticResource UserNameLinkText}">
+                                                            <Run Text="@quoted_user" />
+                                                        </Hyperlink>
+                                                    </TextBlock>
+                                                </DockPanel>
+
+                                                <TextBlock 
+                                                    DockPanel.Dock="Top" MaxHeight="40"
+                                                    TextWrapping="WrapWithOverflow"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
+                                            </DockPanel>
+                                        </Button>
+                                    </Border>
+
+                                    <Border
+                                        DockPanel.Dock="Top"
+                                        BorderThickness="0 1"
+                                        BorderBrush="#bbb"
+                                        Padding="0 2"
+                                        Margin="{StaticResource TimelineItemEntityMargin}">
+                                        <DockPanel>
+                                            <Button
+                                                Padding="6 6"
+                                                DockPanel.Dock="Left"
+                                                HorizontalAlignment="Left"
+                                                Foreground="#000"
+                                                FontSize="{StaticResource UIFontSize}"
+                                                Style="{StaticResource MaterialDesignFlatButton}">
+                                                <TextBlock>
+                                                    <Run Text="リツイート" FontWeight="Bold" />
+                                                    <Run Text="1,024" />
+                                                </TextBlock>
+                                            </Button>
+
+                                            <Button
+                                                Padding="6 6"
+                                                DockPanel.Dock="Left"
+                                                HorizontalAlignment="Left"
+                                                Foreground="#000"
+                                                FontSize="{StaticResource UIFontSize}"
+                                                Style="{StaticResource MaterialDesignFlatButton}">
+                                                <TextBlock>
+                                                    <Run Text="いいね" FontWeight="Bold" />
+                                                    <Run Text="1,024" />
+                                                </TextBlock>
+                                            </Button>
+                                        </DockPanel>
+                                    </Border>
+                                </DockPanel>
+                            </ScrollViewer>
+                        </DockPanel>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+
+            <TabItem Header="ミュート">
+                <TabControl Style="{StaticResource TabControlStyle1}">
+                    <TabItem Header="ミュート項目一覧">
+                        <DockPanel>
+                            <Border
+                                DockPanel.Dock="Top"
+                                Padding="4"
+                                BorderBrush="{DynamicResource ToolBarBorderBrush}"
+                                Background="{DynamicResource ToolBarBackground}"
+                                BorderThickness="0 0 0 1">
+                                <Grid
+                                    Margin="4"
+                                    DockPanel.Dock="Top">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="120" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+
+                                    <ComboBox
+                                        Margin="4 0 8 4"
+                                        Grid.Column="1"
+                                        SelectedIndex="0"
+                                        DisplayMemberPath="Value"
+                                        SelectedValuePath="Key"
+                                        SelectedValue="{Binding TempMuteType, Mode=TwoWay}"
+                                        ItemsSource="{x:Static app:UILocalize.MuteTypes}"
+                                        md:HintAssist.Hint="ミュートの種類"
+                                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+
+                                    <ComboBox
+                                        Margin="4 0 8 4"
+                                        Grid.Column="3"
+                                        SelectedIndex="0"
+                                        DisplayMemberPath="Value"
+                                        SelectedValuePath="Key"
+                                        SelectedValue="{Binding TempMuteSearch, Mode=TwoWay}"
+                                        ItemsSource="{x:Static app:UILocalize.MuteMatchTypes}"
+                                        md:HintAssist.Hint="検索方法"
+                                        Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+
+                                    <TextBox
+                                        Margin="4 0"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Grid.ColumnSpan="4"
+                                        TextWrapping="WrapWithOverflow"
+                                        Text="{Binding TempMuteText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                        md:HintAssist.Hint="内容"
+                                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+
+                                    <Button
+                                        Margin="4"
+                                        Grid.Column="4"
+                                        Content="追加"
+                                        CommandParameter="add"
+                                        VerticalAlignment="Bottom"
+                                        Command="{Binding MuteAddCommand, Mode=OneTime}"
+                                        Style="{StaticResource MaterialDesignRaisedDarkButton}"/>
+                                </Grid>
+                            </Border>
+
+                            <ListView
+                                BorderThickness="0"
+                                SelectedItem="{Binding SelectedMute, Mode=TwoWay}"
+                                ItemsSource="{Binding Source={StaticResource MuteViewSource}}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type local:Mute}">
+                                        <Grid Margin="8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto" />
+                                                <ColumnDefinition Width="auto" />
+                                                <ColumnDefinition Width="120" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Button
+                                                Content="削除"
+                                                Padding="6 3"
+                                                Margin="0 0 6 0"
+                                                Background="#FFCB0000"
+                                                FontWeight="Bold"
+                                                VerticalAlignment="Center"
+                                                CommandParameter="{Binding}"
+                                                Command="{Binding DataContext.MuteRemoveCommand, Mode=OneTime,
+                                                    RelativeSource={RelativeSource AncestorType={x:Type ListBox}, AncestorLevel=1}}"
+                                                Style="{StaticResource SimpleButtonStyle}" />
+
+                                            <CheckBox
+                                                Margin="4 0"
+                                                Grid.Column="1"
+                                                VerticalAlignment="Center"
+                                                Content="有効"
+                                                IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
+
+                                            <TextBlock
+                                                Margin="4 0"
+                                                Grid.Column="2"
+                                                FontWeight="Bold"
+                                                VerticalAlignment="Center"
+                                                Text="{Binding Search, Mode=OneTime, Converter={StaticResource SearchModeLocalizer}}"/>
+
+                                            <TextBlock
+                                                Grid.Column="3"
+                                                VerticalAlignment="Center"
+                                                Margin="0 0"
+                                                TextWrapping="Wrap"
+                                                Text="{Binding Text, Mode=OneTime}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                                <ListView.GroupStyle>
+                                    <GroupStyle
+                                        HidesIfEmpty="False"
+                                        ContainerStyle="{StaticResource ListViewGroupItemStyle}" />
+                                </ListView.GroupStyle>
+                            </ListView>
+                        </DockPanel>
+                    </TabItem>
+
+                    <TabItem Header="その他の設定">
+                        <StackPanel Style="{StaticResource ElementsContainerStyle}">
+                            <CheckBox Content="Twitterのミュート設定を使用する" />
+                            <CheckBox Content="Twitterのブロック設定を使用する" />
+
+                            <Label
+                                Content="ミュートリスト"
+                                Style="{StaticResource HeaderLabelStyle2}"/>
+
+                            <RadioButton
+                                Content="ミュートしたアカウント一覧を起動時に読み込む" />
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+
+            <TabItem Header="NowPlaying">
+                <StackPanel Style="{StaticResource ElementsContainerStyle}">
+
+                    <CheckBox 
+                        Content="アートワークを添付する"
+                        HorizontalAlignment="Left"	  
+                        IsChecked="{Binding Setting.InsertThumbnailAtNowPlayying}"/>
+
+                    <ComboBox
+                        Margin="0 4 0 0"
+                        Width="200"
+                        HorizontalAlignment="Left"
+                        DisplayMemberPath="Value"
+                        SelectedValuePath="Key"
+                        SelectedValue="{Binding Setting.NowPlayingDefaultPlayer, Mode=TwoWay}"
+                        ItemsSource="{x:Static vm:TweetWindow.NowPlayingPlayerList}"
+                        md:HintAssist.Hint="既定のプレーヤ"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+
+                    </ComboBox>
+
+                    <TextBox
+                        Margin="0 4 0 0"
+                        AcceptsReturn="True"
+                        TextWrapping="Wrap"
+                        Text="{Binding NowPlayingFormat, UpdateSourceTrigger=PropertyChanged}"
+                        md:HintAssist.Hint="NowPlayingの書式"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+                        <i:Interaction.Behaviors>
+                            <b:TextBoxBehavior Controller="{Binding NowPlayingTextBoxController}" />
+                        </i:Interaction.Behaviors>
+                    </TextBox>
+
+                    <Label
+                        Content="NowPlayingの置換文字列："
+                        Style="{StaticResource HeaderLabelStyle2}" />
+
+                    <UniformGrid Columns="2" Margin="8 0 0 0">
+                        <Button
+                            Content="%album% - アルバム名" 
+                            CommandParameter="%album%" />
+
+                        <Button
+                            Content="%album__artist% - アルバムのアーティスト" 
+                            CommandParameter="%album_artist%" />
+
+                        <Button
+                            Content="%artist% - アーティスト名" 
+                            CommandParameter="%artist%" />
+
+                        <Button
+                            Content="%composer% - 作曲者" 
+                            CommandParameter="%composer%" />
+
+                        <Button
+                            Content="%category% - カテゴリ" 
+                            CommandParameter="%category%" />
+
+                        <Button
+                            Content="%genre% - ジャンル" 
+                            CommandParameter="%genre%" />
+
+                        <Button
+                            Content="%name% - 楽曲名" 
+                            CommandParameter="%name%" />
+
+                        <Button
+                            Content="%number% - トラック番号" 
+                            CommandParameter="%number%" />
+
+                        <Button
+                            Content="%year% - 年代" 
+                            CommandParameter="%year%" />
+
+                        <Button
+                            Content="リセット" 
+                            Command="{Binding ResetNowPlayingCommand, Mode=OneTime}" />
+
+                        <UniformGrid.Resources>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Padding" Value="8 4 12 4" />
+                                <Setter Property="Margin" Value="0 4 8 2" />
+                                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                <Setter Property="Command" Value="{Binding InsertNowPlayingParamCommand, Mode=OneTime}" />
+                            </Style>
+                        </UniformGrid.Resources>
+                    </UniformGrid>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
 </Window>
