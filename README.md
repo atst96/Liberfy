@@ -1,4 +1,4 @@
-﻿# Liberfy
+﻿# Liberfy (Alpha version)
 開発中のC#製ストリーミング対応Twitterアプリケーションです。
 
 ## 仕様
