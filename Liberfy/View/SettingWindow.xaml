@@ -606,13 +606,14 @@
                                             </Hyperlink>
                                         </TextBlock>
 
-                                        <local:PlaceHolderTextBox
+                                        <TextBox
                                             Margin="0 4 0 4"
                                             md:HintAssist.Hint="フィルタ"
                                             FontFamily="{StaticResource UIFont}"
                                             FontSize="{StaticResource UIFontSize}"
                                             Text="{Binding FontFontFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
+                                        
                                         <Separator />
 
                                         <ListView
@@ -763,6 +764,7 @@
                                 ItemsSource="{Binding ViewFonts, Mode=OneTime}"
                                 SelectedItem="{Binding SelectedFont, Mode=TwoWay}"
                                 SelectionMode="Single"
+                                Margin="1"
                                 TextOptions.TextFormattingMode="{Binding ViewFontRendering}" />
                         </DockPanel>
                     </TabItem>

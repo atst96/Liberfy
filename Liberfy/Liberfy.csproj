@@ -184,7 +184,6 @@
     <Compile Include="NativeMethods\Values.cs" />
     <Compile Include="Model\StatusInfo.cs" />
     <Compile Include="Model\UserInfo.cs" />
-    <Compile Include="PlaceHolderTextBox.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="Timeline.cs" />
     <Compile Include="ViewModel\AuthenticationViewModel.cs" />

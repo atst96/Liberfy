@@ -59,15 +59,5 @@ namespace Liberfy.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   型 System.Byte[] のローカライズされたリソースを検索します。
-        /// </summary>
-        internal static byte[] FontAwesome {
-            get {
-                object obj = ResourceManager.GetObject("FontAwesome", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }
