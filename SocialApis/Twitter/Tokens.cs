@@ -36,7 +36,18 @@ namespace SocialApis.Twitter
         public string ApiToken => _accessToken ?? string.Empty;
         public string ApiTokenSecret => _accessTokenSecret ?? string.Empty;
 
-        public Tokens(string consumerKey, string consumerSecret, string accessToken = null, string accessTokenSecret = null)
+        private Tokens()
+        {
+            OAuth = new OAuthApi(this);
+            Account = new AccountApi(this);
+            Statuses = new StatusesApi(this);
+            Favorites = new FavoritesApi(this);
+            Collections = new CollectionsApi(this);
+            Media = new MediaApi(this);
+            Stream = new StreamingApi(this);
+        }
+
+        public Tokens(string consumerKey, string consumerSecret, string accessToken = null, string accessTokenSecret = null) : this()
         {
             this._consumerKey = consumerKey;
             this._consumerSecret = consumerSecret;
@@ -44,23 +55,13 @@ namespace SocialApis.Twitter
             this._accessTokenSecret = accessTokenSecret;
         }
 
-        private OAuthApi _oauth;
-        public OAuthApi OAuth => _oauth ?? (this._oauth = new OAuthApi(this));
-
-        private AccountApi _account;
-        public AccountApi Account => _account ?? (this._account = new AccountApi(this));
-
-        private StatusesApi _statuses;
-        public StatusesApi Statuses => _statuses ?? (this._statuses = new StatusesApi(this));
-
-        private FavoritesApi _favorites;
-        public FavoritesApi Favorites => _favorites ?? (_favorites = new FavoritesApi(this));
-
-        private CollectionsApi _collections;
-        public CollectionsApi Collections => _collections ?? (_collections = new CollectionsApi(this));
-
-        private MediaApi _media;
-        public MediaApi Media => _media ?? (_media = new MediaApi(this));
+        public OAuthApi OAuth { get; }
+        public AccountApi Account { get; }
+        public StatusesApi Statuses { get; }
+        public FavoritesApi Favorites { get; }
+        public CollectionsApi Collections { get; }
+        public MediaApi Media { get; }
+        public StreamingApi Stream { get; }
 
         private const string _restApiBaseUrl = "https://api.twitter.com/1.1/";
 
@@ -106,7 +107,11 @@ namespace SocialApis.Twitter
             {
                 using (var webRes = await webReq.GetResponseAsync())
                 {
-                    var obj = await JsonSerializer.DeserializeAsync<T>(webRes.GetResponseStream(), Utf8Json.Resolvers.StandardResolver.AllowPrivate);
+                    var str = webRes.GetResponseStream();
+
+                    var wstr = str as System.Net.Sockets.NetworkStream;
+
+                    var obj = await JsonSerializer.DeserializeAsync<T>(str, Utf8Json.Resolvers.StandardResolver.AllowPrivate);
 
                     if (obj is IRateLimit rObj)
                         rObj.RateLimit.Set(webRes.Headers);
