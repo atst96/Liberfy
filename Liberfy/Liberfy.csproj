@@ -148,6 +148,7 @@
     <Compile Include="ListBoxEx.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="MediaPanel.cs" />
+    <Compile Include="Model\ReplyStatus.cs" />
     <Compile Include="Model\Setting\AccountItem.cs" />
     <Compile Include="Model\Setting\ApiToken.cs" />
     <Compile Include="MVVM\CommandHelper.cs" />
@@ -297,12 +298,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CoreTweet\CoreTweet.net45\CoreTweet.net45.csproj">
-      <Project>{5ae5a341-5e2b-42af-946a-7043bad12817}</Project>
-      <Name>CoreTweet.net45</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
@@ -324,6 +319,12 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CoreTweet\CoreTweet.net45\CoreTweet.net45.csproj">
+      <Project>{5ae5a341-5e2b-42af-946a-7043bad12817}</Project>
+      <Name>CoreTweet.net45</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

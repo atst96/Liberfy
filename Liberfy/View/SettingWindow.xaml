@@ -613,7 +613,7 @@
                                             FontSize="{StaticResource UIFontSize}"
                                             Text="{Binding FontFontFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
-                                        
+
                                         <Separator />
 
                                         <ListView
@@ -858,28 +858,43 @@
 
                     <TabItem Header="音声設定">
                         <StackPanel Margin="{StaticResource ContainerMargin}">
-                            <Label Content="ファイル" Style="{StaticResource HeaderLabel}" />
+                            <Label Content="効果音" Style="{StaticResource HeaderLabel}" />
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="auto" />
                                     <ColumnDefinition Width="auto" />
                                 </Grid.ColumnDefinitions>
 
                                 <TextBox
                                     IsReadOnly="True"
-                                    Text="{Binding NotificationSoundFile, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    md:HintAssist.Hint="ファイルのパス"
+                                    Text="{Binding NotificationSoundFile, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
 
                                 <Button
                                     Margin="6 0 0 0"
-                                    Padding="6 4"
-                                    Content="..."
-                                    Grid.Column="1" />
-                            </Grid>
+                                    Padding="6 6"
+                                    Grid.Column="1"
+                                    Style="{StaticResource MaterialDesignFlatButton}">
+                                    <md:PackIcon Kind="Folder" />
+                                </Button>
 
-                            <StackPanel Margin="0 6 0 0" Orientation="Horizontal" HorizontalAlignment="Left">
-                                <Button Content="再生" />
-                                <Button Content="停止" Margin="6 0 0 0" />
-                            </StackPanel>
+                                <Button
+                                    Margin="6 0 0 0"
+                                    Padding="6 6"
+                                    Grid.Column="2">
+                                    <md:PackIcon Kind="Play" />
+                                </Button>
+
+                                <Button
+                                    Margin="6 0 0 0"
+                                    Padding="6 6"
+                                    Grid.Column="3">
+                                    <md:PackIcon Kind="Stop" />
+                                </Button>
+                            </Grid>
                         </StackPanel>
                     </TabItem>
                 </TabControl>
@@ -1445,47 +1460,6 @@
                                                     Background="#aaa"
                                                     Style="{StaticResource ImageButton}" />
                                             </app:MediaPanel>
-                                            
-                                            <!--<Border
-                                                Height="120"
-                                                DockPanel.Dock="Top"
-                                                Margin="3 0 3 4"
-                                                local:ElementBehavior.Visible="{Binding Setting.TimelineStatusShowMedia, Mode=OneWay}">
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                    </Grid.RowDefinitions>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="4*" />
-                                                        <ColumnDefinition Width="2*" />
-                                                    </Grid.ColumnDefinitions>
-
-                                                    <Button
-                                                        Margin="1"
-                                                        Grid.RowSpan="3"
-                                                        Background="#aaa"
-                                                        Style="{StaticResource ImageButton}" />
-                                                    <Button
-                                                        Margin="1"
-                                                        Grid.Column="1"
-                                                        Background="#aaa"
-                                                        Style="{StaticResource ImageButton}" />
-                                                    <Button
-                                                        Margin="1"
-                                                        Grid.Row="1"
-                                                        Grid.Column="1"
-                                                        Background="#aaa"
-                                                        Style="{StaticResource ImageButton}" />
-                                                    <Button
-                                                        Margin="1"
-                                                        Grid.Row="2"
-                                                        Grid.Column="1"
-                                                        Background="#aaa"
-                                                        Style="{StaticResource ImageButton}" />
-                                                </Grid>
-                                            </Border>-->
 
                                             <Border
                                                 DockPanel.Dock="Top"
@@ -1732,46 +1706,27 @@
                                         IsReadOnly="True"
                                         Text="つれづれなるまゝに、日ぐらし硯に向かひて、心にうつりゆくよしなしごとをそこはかとなく書き付くれば、あやしうこそ物狂ほしけれ。" />
 
-                                    <Border
-                                        Height="120"
-                                        DockPanel.Dock="Top"
-                                        Margin="3 0 3 4"
-                                        local:ElementBehavior.Visible="{Binding Setting.TimelineStatusDetailShowMedia, Mode=OneWay}">
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition />
-                                                <RowDefinition />
-                                                <RowDefinition />
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="4*" />
-                                                <ColumnDefinition Width="2*" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <Button
-                                                Margin="1"
-                                                Grid.RowSpan="3"
-                                                Background="#aaa"
-                                                Style="{StaticResource ImageButton}" />
-                                            <Button
-                                                Margin="1"
-                                                Grid.Column="1"
-                                                Background="#aaa"
-                                                Style="{StaticResource ImageButton}" />
-                                            <Button
-                                                Margin="1"
-                                                Grid.Row="1"
-                                                Grid.Column="1"
-                                                Background="#aaa"
-                                                Style="{StaticResource ImageButton}" />
-                                            <Button
-                                                Margin="1"
-                                                Grid.Row="2"
-                                                Grid.Column="1"
-                                                Background="#aaa"
-                                                Style="{StaticResource ImageButton}" />
-                                        </Grid>
-                                    </Border>
+                                    <app:MediaPanel
+                                            DockPanel.Dock="Top"
+                                            Height="120"
+                                            Margin="{StaticResource TimelineItemEntityMargin}">
+                                        <Button
+                                            Margin="1"
+                                            Background="#aaa"
+                                            Style="{StaticResource ImageButton}" />
+                                        <Button
+                                            Margin="1"
+                                            Background="#aaa"
+                                            Style="{StaticResource ImageButton}" />
+                                        <Button
+                                            Margin="1"
+                                            Background="#aaa"
+                                            Style="{StaticResource ImageButton}" />
+                                        <Button
+                                            Margin="1"
+                                            Background="#aaa"
+                                            Style="{StaticResource ImageButton}" />
+                                    </app:MediaPanel>
 
                                     <Border
                                         DockPanel.Dock="Top"
@@ -2042,39 +1997,48 @@
                     <UniformGrid Columns="2" Margin="8 0 0 0">
                         <Button
                             Content="%album% - アルバム名" 
-                            CommandParameter="%album%" />
+                            CommandParameter="%album%"
+                            FontSize="{StaticResource UIFontSize}" />
 
                         <Button
                             Content="%album__artist% - アルバムのアーティスト" 
-                            CommandParameter="%album_artist%" />
+                            CommandParameter="%album_artist%"
+                            FontSize="{StaticResource UIFontSize}" />
 
                         <Button
                             Content="%artist% - アーティスト名" 
-                            CommandParameter="%artist%" />
+                            CommandParameter="%artist%"
+                            FontSize="{StaticResource UIFontSize}" />
 
                         <Button
                             Content="%composer% - 作曲者" 
-                            CommandParameter="%composer%" />
+                            CommandParameter="%composer%"
+                            FontSize="{StaticResource UIFontSize}" />
 
                         <Button
                             Content="%category% - カテゴリ" 
-                            CommandParameter="%category%" />
+                            CommandParameter="%category%"
+                            FontSize="{StaticResource UIFontSize}" />
 
                         <Button
                             Content="%genre% - ジャンル" 
-                            CommandParameter="%genre%" />
+                            CommandParameter="%genre%"
+                            FontSize="{StaticResource UIFontSize}" />
 
                         <Button
                             Content="%name% - 楽曲名" 
-                            CommandParameter="%name%" />
+                            CommandParameter="%name%"
+                            FontSize="{StaticResource UIFontSize}" />
 
                         <Button
                             Content="%number% - トラック番号" 
-                            CommandParameter="%number%" />
+                            CommandParameter="%number%"
+                            FontSize="{StaticResource UIFontSize}" />
 
                         <Button
                             Content="%year% - 年代" 
-                            CommandParameter="%year%" />
+                            CommandParameter="%year%"
+                            FontSize="{StaticResource UIFontSize}" />
 
                         <Button
                             Content="リセット" 

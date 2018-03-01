@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	interface IObjectInfo<T> where T: CoreBase
-	{
-		long Id { get; }
+    interface IObjectInfo<T> where T: CoreBase
+    {
+        long Id { get; }
 
-		void Update(T item);
-	}
+        void Update(T item);
+    }
 }

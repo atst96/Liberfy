@@ -8,133 +8,133 @@ using static Liberfy.DataStore;
 
 namespace Liberfy
 {
-	internal class StatusInfo : NotificationObject, IObjectInfo<Status>, IEquatable<StatusInfo>, IEquatable<Status>
-	{
-		private readonly Status _status;
+    internal class StatusInfo : NotificationObject, IObjectInfo<Status>, IEquatable<StatusInfo>, IEquatable<Status>
+    {
+        public long Id { get; }
 
-		private readonly long _id;
-		public long Id => _id;
+        public Contributors[] Contributors { get; }
 
-		public Contributors[] Contributors => _status.Contributors;
+        public Coordinates Coordinates { get; }
 
-		public Coordinates Coordinates => _status.Coordinates;
+        public DateTimeOffset CreatedAt { get; }
 
-		public DateTimeOffset CreatedAt => _status.CreatedAt;
+        public Entities Entities { get; }
 
-		public int[] DisplayTextRange => _status.DisplayTextRange;
+        public Entities ExtendedEntities { get; }
 
-		public Entities Entities => _status.Entities;
+        public FilterLevel FilterLevel { get; }
 
-		public Entities ExtendedEntities => _status.ExtendedEntities;
+        public string InReplyToScreenName { get; }
+        public long InReplyToStatusId { get; }
+        public long InReplyToUserId { get; }
 
-		public CompatExtendedTweet ExtendedTweet => _status.ExtendedTweet;
+        public string Language { get; }
 
-		public FilterLevel FilterLevel => _status.FilterLevel ?? FilterLevel.None;
+        public Place Place { get; }
 
-		public string FullText => _status.FullText;
+        public bool PossiblySensitive { get; }
+        public bool PossiblySensitiveAppealable { get; }
 
-		public string InReplyToScreenName => _status.InReplyToScreenName;
+        public string Source { get; }
+        public string SourceName { get; }
+        public string SourceUrl { get; }
 
-		public long InReplyToStatusId => _status.InReplyToStatusId ?? -1;
+        public bool IsQuotedStatus { get; }
+        public StatusInfo QuotedStatus { get; }
 
-		public long InReplyToUserId => _status.InReplyToUserId ?? -1;
+        public string Text { get; }
 
-		public bool IsQuotedStatus => _status.IsQuotedStatus ?? false;
+        public UserInfo User { get; }
 
-		public string Language => _status.Language;
+        public bool WithheldCopyright { get; }
 
-		public Place Place => _status.Place;
+        public string WithheldInCountries { get; }
 
-		public bool PossiblySensitive => _status.PossiblySensitive ?? false;
+        public Dictionary<string, object> Scopes { get; }
+        public string WithheldScope { get; }
 
-		public bool PossiblySensitiveAppealable => _status.PossiblySensitiveAppealable ?? false;
+        public int FavoriteCount { get; private set; }
+        public int RetweetCount { get; private set; }
 
-		public long QuotedStatusId => _status.QuotedStatusId ?? -1;
+        long IObjectInfo<Status>.Id => this.Id;
 
-		private string _sourceName;
-		public string SourceName => _sourceName;
+        public StatusInfo(Status status)
+        {
+            if (status.RetweetedStatus != null)
+                throw new ArgumentException();
 
-		private string _sourceUrl;
-		public string SourceUrl => _sourceUrl;
+            this.Id = status.Id;
 
-		private StatusInfo _quotedStatus;
-		public StatusInfo QuotedStatus
-		{
-			get => IsQuotedStatus ? (_quotedStatus ?? (_quotedStatus = StatusAddOrUpdate(_status.QuotedStatus))) : null;
-		}
+            this.Contributors     = status.Contributors;
+            this.Coordinates      = status.Coordinates;
+            this.CreatedAt        = status.CreatedAt;
+            this.Entities         = status.Entities;
+            this.ExtendedEntities = status.ExtendedEntities;
+            this.FilterLevel      = status.FilterLevel ?? FilterLevel.None;
 
-		public Dictionary<string, object> Scopes => _status.Scopes;
+            this.InReplyToScreenName = status.InReplyToScreenName;
+            this.InReplyToStatusId   = status.InReplyToStatusId ?? -1;
+            this.InReplyToUserId     = status.InReplyToUserId ?? -1;
 
-		public string Source => _status.Source;
+            this.IsQuotedStatus = (status.IsQuotedStatus ?? false) && status.QuotedStatus != null;
 
-		public string Text => _status.Text;
+            this.Language = status.Language;
 
-		private UserInfo _user;
-		public UserInfo User
-		{
-			get => _user ?? (_user = UserAddOrUpdate(_status.User));
-		}
+            this.Place = status.Place;
 
-		public bool WithheldCopyright => _status.WithheldCopyright ?? false;
+            this.PossiblySensitive = status.PossiblySensitive ?? false;
+            this.PossiblySensitiveAppealable = status.PossiblySensitiveAppealable ?? false;
 
-		public string WithheldInCountries => _status.WithheldInCountries;
+            if (this.IsQuotedStatus)
+                this.QuotedStatus = StatusAddOrUpdate(status.QuotedStatus);
 
-		public string WithheldScope => _status.WithheldScope;
+            this.Scopes = status.Scopes;
 
-		private int _favoriteCount;
-		public int FavoriteCount
-		{
-			get => _favoriteCount;
-			private set => SetProperty(ref _favoriteCount, value);
-		}
+            this.Text = status.Text;
 
-		private int _retweetCount;
-		public int RetweetCount
-		{
-			get => _retweetCount;
-			private set => SetProperty(ref _retweetCount, value);
-		}
+            this.User = UserAddOrUpdate(status.User);
 
+            this.WithheldCopyright = status.WithheldCopyright ?? false;
+            this.WithheldInCountries = status.WithheldInCountries;
+            this.WithheldScope = status.WithheldScope;
 
-		public StatusInfo(Status status)
-		{
-			if (status.RetweetedStatus != null)
-			{
-				throw new NotSupportedException();
-			}
+            this.Source = status.Source;
+            var regex = Regexes.ATagSource.Match(status.Source);
+            if (regex.Success)
+            {
+                this.SourceName = regex.Groups["name"].Value;
+                this.SourceUrl = regex.Groups["url"].Value;
+            }
 
-			_id = status.Id;
-			_status = status;
+            this.Update(status);
+        }
 
-			var regex = Regexes.ATagSource.Match(_status.Source);
-			if (regex.Success)
-			{
-				_sourceName = regex.Groups["name"].Value;
-				_sourceUrl = regex.Groups["url"].Value;
-			}
-		}
+        public StatusInfo Update(Status item)
+        {
+            if ((item.RetweetedStatus ?? item).Id != Id)
+                throw new ArgumentException();
 
-		public void Update(Status item)
-		{
-			if ((item.RetweetedStatus ?? item).Id != _id)
-			{
-				throw new ArgumentException();
-			}
+            this.FavoriteCount = item.FavoriteCount ?? FavoriteCount;
+            this.RetweetCount = item.RetweetCount ?? RetweetCount;
 
-			FavoriteCount = item.FavoriteCount ?? FavoriteCount;
-			RetweetCount = item.RetweetCount ?? RetweetCount;
-		}
+            RaisePropertyChanged(nameof(FavoriteCount));
+            RaisePropertyChanged(nameof(RetweetCount));
 
-		public bool Equals(StatusInfo other) => Equals(_id, other?.Id);
+            return this;
+        }
 
-		public bool Equals(Status other) => Equals(_id, other?.Id);
+        void IObjectInfo<Status>.Update(Status item) => this.Update(item);
 
-		public override bool Equals(object obj)
-		{
-			return (obj is StatusInfo statusInfo && Equals(statusInfo))
-				|| (obj is Status status && Equals(status));
-		}
+        public override bool Equals(object obj)
+        {
+            return (obj is StatusInfo statusInfo && Equals(statusInfo))
+                || (obj is Status status && Equals(status));
+        }
 
-		public override int GetHashCode() => _id.GetHashCode();
-	}
+        public bool Equals(StatusInfo other) => Equals(Id, other?.Id);
+
+        public bool Equals(Status other) => Equals(Id, other?.Id);
+
+        public override int GetHashCode() => Id.GetHashCode();
+    }
 }

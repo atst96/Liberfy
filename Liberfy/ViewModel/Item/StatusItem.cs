@@ -8,80 +8,69 @@ using static Liberfy.DataStore;
 
 namespace Liberfy
 {
-	internal class StatusItem : NotificationObject, IItem
-	{
-		public ItemType Type { get; }
+    internal class StatusItem : NotificationObject, IItem
+    {
+        public Account Account { get; }
 
-		public Account Account { get; }
+        public long Id { get; }
+        public DateTimeOffset CreatedAt { get; }
+        public bool IsRetweet { get; }
+        public bool IsReply { get; }
+        public string InReplyToScreenName { get; }
+        public StatusInfo Status { get; }
+        public UserInfo User { get; }
+        public UserInfo RetweetUser { get; }
+        public bool IsCurrentAccount { get; }
+        public StatusReaction Reaction { get; }
+        public IEnumerable<MediaEntityInfo> MediaEntities { get; }
+        public bool HasMediaEntities { get; }
 
-		public long Id { get; }
+        public ItemType Type { get; }
 
-		public DateTimeOffset CreatedAt { get; }
+        public StatusItem(Status status, Account account)
+        {
+            this.Id = status.Id;
 
-		public bool IsRetweet { get; }
+            var reaction = account.GetStatusReaction(status.GetSourceId());
+            reaction.SetAll(status.IsFavorited ?? false, status.IsRetweeted ?? false);
 
-		public bool IsReply { get; }
+            StatusInfo statusInfo;
 
-		public string InReplyToScreenName { get; }
+            this.IsRetweet = status.RetweetedStatus != null;
+            if (this.IsRetweet)
+            {
+                this.Type = ItemType.Retweet;
 
-		public StatusInfo Status { get; }
+                statusInfo = StatusAddOrUpdate(status.RetweetedStatus);
+                this.RetweetUser = UserAddOrUpdate(status.User);
 
-		public UserInfo User { get; }
+                if (status.User.Id == account.Id)
+                    reaction.IsRetweeted = true;
+            }
+            else
+            {
+                this.Type = ItemType.Status;
+                statusInfo = StatusAddOrUpdate(status);
 
-		public UserInfo RetweetUser { get; }
+                this.IsReply = status.InReplyToStatusId.HasValue;
+                if (this.IsReply)
+                    this.InReplyToScreenName = status.InReplyToScreenName;
+            }
 
-		public bool IsCurrentAccount { get; }
 
-		public StatusReaction Reaction { get; }
+            this.Reaction = reaction;
 
-		public MediaEntityInfo[] MediaEntities { get; }
+            this.User             = statusInfo.User;
+            this.CreatedAt        = statusInfo.CreatedAt;
+            this.MediaEntities    = statusInfo.ExtendedEntities?.Media?.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
+            this.HasMediaEntities = MediaEntities?.Any() ?? false;
 
-		public bool HasMediaEntities { get; }
+            this.IsCurrentAccount = statusInfo.User.Id == account.Id;
 
-		public StatusItem(Status status, Account account)
-		{
-			Id = status.Id;
+            this.Status = statusInfo;
+        }
 
-			Reaction = account.GetStatusReaction(status.GetSourceId());
-			Reaction.SetAll(
-				status.IsFavorited ?? false,
-				status.IsRetweeted ?? false);
-
-			if(IsRetweet = status.RetweetedStatus != null)
-			{
-				Type = ItemType.Retweet;
-				Status = StatusAddOrUpdate(status.RetweetedStatus);
-				RetweetUser = UserAddOrUpdate(status.User);
-
-				if(status.User.Id == account.Id)
-				{
-					Reaction.IsRetweeted = true;
-				}
-			}
-			else
-			{
-				Type = ItemType.Status;
-				Status = StatusAddOrUpdate(status);
-
-				if(IsReply = status.InReplyToStatusId.HasValue)
-				{
-					InReplyToScreenName = status.InReplyToScreenName;
-				}
-			}
-
-			User = Status.User;
-			CreatedAt = Status.CreatedAt;
-			MediaEntities = Status.ExtendedEntities?
-				.Media.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity))
-				.ToArray();
-			HasMediaEntities = MediaEntities?.Length > 0;
-
-			IsCurrentAccount = Status.User.Id == account.Id;
-		}
-
-		public void RaiseCreatedAtProeprtyChanged()
-		{
-			RaisePropertyChanged(nameof(CreatedAt));
-		}
-	}
+        // TODO: 何のために作ったメソッドかを忘れた
+        // public void RaiseCreatedAtProeprtyChanged() => this.RaisePropertyChanged(nameof(CreatedAt));
+    }
 }
