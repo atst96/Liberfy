@@ -54,6 +54,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Mastodon\Apis\AccountsApi.cs" />
+    <Compile Include="Mastodon\Apis\OAuthApi.cs" />
+    <Compile Include="Mastodon\MastodonError.cs" />
+    <Compile Include="Mastodon\MastodonException.cs" />
+    <Compile Include="Mastodon\Objects\AccessTokenResponse.cs" />
+    <Compile Include="Mastodon\Objects\Account.cs" />
+    <Compile Include="Mastodon\Objects\ClientKeyInfo.cs" />
+    <Compile Include="Mastodon\TokenApiBase.cs" />
+    <Compile Include="Mastodon\Tokens.cs" />
     <Compile Include="Twitter\Apis\AccountApi.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="Formatters\DateTimeOffsetFormatter.cs" />
@@ -135,5 +144,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

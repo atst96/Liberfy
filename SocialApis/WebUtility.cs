@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -10,26 +11,23 @@ namespace SocialApis
 {
     internal static class WebUtility
     {
-        public static HttpWebRequest CreateOAuthWebRequest(string endpoint, ITokensBase tokens, Query query, string method, bool autoSetting = true)
+        private static readonly char[] UrlSpritCharacters = new[] { '?', '&', '#' };
+
+        public static HttpWebRequest CreateWebRequest(string endpoint, Query query, string method, WebHeaderCollection headers = null, bool autoSetting = true)
         {
             query = query ?? new Query();
             method = method?.ToUpper() ?? "GET";
-
-            var timeStamp = OAuthHelper.GenerateTimeStamp();
-            var nonce = OAuthHelper.GenerateNonce();
-
-            endpoint = endpoint.Split(new[] { '?', '&', '#' }, 2)[0];
-
-            var oauthHeader = OAuthHelper.GenerateAuthenticationHeader(endpoint, tokens, query, method, timeStamp, nonce);
+            endpoint = endpoint.Split(UrlSpritCharacters, 2)[0];
 
             if (autoSetting && method == "GET")
             {
-                endpoint = $"{ endpoint.Split(new[] { '?', '&' }, 2)[0] }?{ string.Join("&", query.GetRequestParameters()) }";
+                endpoint += $"?{ string.Join("&", query.GetRequestParameters()) }";
             }
 
             var webReq = WebRequest.CreateHttp(endpoint);
             webReq.Method = method;
-            webReq.Headers.Add(HttpRequestHeader.Authorization, oauthHeader);
+            if (headers != null)
+                webReq.Headers = headers;
 
             if (autoSetting)
             {
@@ -51,8 +49,24 @@ namespace SocialApis
                 }
             }
 
-
             return webReq;
+        }
+
+        public static HttpWebRequest CreateOAuthWebRequest(string endpoint, ITokensBase tokens, Query query, string method, bool autoSetting = true)
+        {
+            query = query ?? new Query();
+
+            var timeStamp = OAuthHelper.GenerateTimeStamp();
+            var nonce = OAuthHelper.GenerateNonce();
+
+            var oauthHeader = OAuthHelper.GenerateAuthenticationHeader(endpoint, tokens, query, method, timeStamp, nonce);
+
+            var headers = new WebHeaderCollection
+            {
+                [HttpRequestHeader.Authorization] = oauthHeader,
+            };
+
+            return CreateWebRequest(endpoint, query, method, headers, autoSetting);
         }
 
         public static async Task<string> SendRequestText(HttpWebRequest httpWebRequest)
@@ -68,7 +82,8 @@ namespace SocialApis
         {
             using (var webRes = await httpWebRequest.GetResponseAsync())
             {
-                return await JsonSerializer.DeserializeAsync<T>(webRes.GetResponseStream());
+                return await JsonSerializer.DeserializeAsync<T>(webRes.GetResponseStream(),
+                    Utf8Json.Resolvers.StandardResolver.AllowPrivate);
             }
         }
 
