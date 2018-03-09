@@ -19,7 +19,7 @@ namespace SocialApis
             method = method?.ToUpper() ?? "GET";
             endpoint = endpoint.Split(UrlSpritCharacters, 2)[0];
 
-            if (autoSetting && method == "GET")
+            if (autoSetting && (method == "GET" || method == "DELETE"))
             {
                 endpoint += $"?{ string.Join("&", query.GetRequestParameters()) }";
             }
@@ -31,7 +31,7 @@ namespace SocialApis
 
             if (autoSetting)
             {
-                if (method == "POST")
+                if (method == "POST" || method == "PUT")
                 {
                     webReq.ContentType = "application/x-www-form-urlencoded";
 
@@ -76,6 +76,11 @@ namespace SocialApis
             {
                 return sr.ReadToEnd();
             }
+        }
+
+        public static async Task SendRequestVoid(HttpWebRequest httpWebRequest)
+        {
+            await httpWebRequest.GetRequestStreamAsync();
         }
 
         public static async Task<T> SendRequest<T>(HttpWebRequest httpWebRequest) where T : class

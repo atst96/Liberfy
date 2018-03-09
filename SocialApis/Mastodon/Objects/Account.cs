@@ -11,7 +11,8 @@ namespace SocialApis.Mastodon
     public class Account
     {
         [DataMember(Name = "id")]
-        public string Id { get; private set; }
+        [Utf8Json.JsonFormatter(typeof(Formatters.ToLongFormatter))]
+        public long Id { get; private set; }
 
         [DataMember(Name = "username")]
         public string UserName { get; private set; }

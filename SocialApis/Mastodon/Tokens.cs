@@ -61,8 +61,44 @@ namespace SocialApis.Mastodon
         public OAuthApi _oauth;
         public OAuthApi OAuth => _oauth ?? (_oauth = new OAuthApi(this));
 
-        public AccountsApi _accounts;
+        private AccountsApi _accounts;
         public AccountsApi Accounts => _accounts ?? (_accounts = new AccountsApi(this));
+
+        private DomainBlocksApi _domainBlocks;
+        public DomainBlocksApi DomainBlocks => _domainBlocks ?? (_domainBlocks = new DomainBlocksApi(this));
+
+        private FavouritesApi _favourites;
+        public FavouritesApi Favourites => _favourites ?? (_favourites = new FavouritesApi(this));
+
+        private FollowRequestsApi _followRequests;
+        public FollowRequestsApi FollowRequests => _followRequests ?? (_followRequests = new FollowRequestsApi(this));
+
+        private FollowsApi _follows;
+        public FollowsApi Follows => _follows ?? (_follows = new FollowsApi(this));
+
+        private InstancesApi _instances;
+        public InstancesApi Instances => _instances ?? (_instances = new InstancesApi(this));
+
+        private ListsApi _list;
+        public ListsApi List => _list ?? (_list = new ListsApi(this));
+
+        private MutesApi _mutes;
+        public MutesApi Mutes => _mutes ?? (_mutes = new MutesApi(this));
+
+        private NotificationsApi _notifications;
+        public NotificationsApi Notifications => _notifications ?? (_notifications = new NotificationsApi(this));
+
+        private ReportsApi _report;
+        public ReportsApi Report => _report ?? (_report = new ReportsApi(this));
+
+        private SearchApi _search;
+        public SearchApi Search => _search ?? (_search = new SearchApi(this));
+
+        private StatusesApi _statuses;
+        public StatusesApi Statuses => _statuses ?? (_statuses = new StatusesApi(this));
+
+        private TimelinesApi _timelines;
+        public TimelinesApi Timelines => _timelines ?? (_timelines = new TimelinesApi(this));
 
         public static class Apps
         {
@@ -86,7 +122,7 @@ namespace SocialApis.Mastodon
 
         internal HttpWebRequest CreateApiRequest(string endpoint, Query query = null, string method = "GET", bool autoSetting = true)
         {
-           return WebUtility.CreateWebRequest(endpoint, query, method, this._authorizeHeader, autoSetting);
+            return WebUtility.CreateWebRequest(endpoint, query, method, this._authorizeHeader, autoSetting);
         }
 
         internal HttpWebRequest CreateRequester(string endpoint, Query query = null, string method = "GET", bool autoSetting = true)
@@ -125,6 +161,12 @@ namespace SocialApis.Mastodon
             return this.SendRequest<T>(webReq);
         }
 
+        private Task SendRequest(string endpoint, Query query = null, string method = "GET")
+        {
+            var webReq = this.CreateApiRequest(endpoint, query, method);
+            return this.SendRequestVoid(webReq);
+        }
+
         internal async Task<string> SendRequestText(HttpWebRequest webReq)
         {
             try
@@ -147,6 +189,18 @@ namespace SocialApis.Mastodon
 
             var errors = JsonSerializer.Deserialize<MastodonError>(response, Utf8Json.Resolvers.StandardResolver.AllowPrivate);
             return new MastodonException(errors, wex);
+        }
+
+        internal async Task SendRequestVoid(HttpWebRequest webReq)
+        {
+            try
+            {
+                await webReq.GetResponseAsync();
+            }
+            catch (WebException wex) when (wex.Response != null)
+            {
+                throw GetException(wex);
+            }
         }
 
         internal async Task<T> SendRequest<T>(HttpWebRequest webReq) where T : class
@@ -175,7 +229,12 @@ namespace SocialApis.Mastodon
             return this.SendRequest<T>($"{ this._apiBaseUrl }{ path }", query, method);
         }
 
-        internal Task<T> GetRequestAsync<T>(string endpoint, Query query) where T : class
+        private Task SendApiRequestAsync(string path, Query query, string method)
+        {
+            return this.SendRequest($"{ this._apiBaseUrl }{ path }", query, method);
+        }
+
+        internal Task<T> GetRequestAsync<T>(string endpoint, Query query = null) where T : class
         {
             return this.SendRequest<T>(endpoint, query, "GET");
         }
@@ -193,6 +252,16 @@ namespace SocialApis.Mastodon
         internal Task<T> PostRequestRestApiAsync<T>(string path, Query query = null) where T : class
         {
             return this.SendApiRequestAsync<T>(path, query, "POST");
+        }
+
+        internal Task GetRequestRestApiAsync(string path, Query query = null)
+        {
+            return this.SendApiRequestAsync(path, query, "GET");
+        }
+
+        internal Task PostRequestRestApiAsync(string path, Query query = null)
+        {
+            return this.SendApiRequestAsync(path, query, "POST");
         }
     }
 }

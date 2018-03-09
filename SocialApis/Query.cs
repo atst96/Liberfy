@@ -41,45 +41,48 @@ namespace SocialApis
             return this.OrderBy(kvp => kvp.Key, StringComparer.CurrentCulture);
         }
 
-        public string[] GetRequestParameters(bool sort = false)
+        public IEnumerable<string> GetRequestParameters(bool sort = false)
         {
-            int count = this.Count;
-            int i = 0;
-            var parameters = new string[count];
+            var values = sort ? (IEnumerable<KeyValuePair<string, object>>)this.GetOrdered() : this;
 
-            if (sort)
+            return values
+                .Select(kvp => GetParameterPair(kvp.Key, kvp.Value));
+        }
+
+        private static string JoinParameterPais(string name, string value, string valueEnclosure = null)
+        {
+            return name + "=" + (string.IsNullOrEmpty(valueEnclosure) ? value : (valueEnclosure + value + valueEnclosure));
+        }
+
+        public static string GetParamPairString(string name, object value, string valueEnclosure = null)
+        {
+            if (value is UrlArray urlArray)
             {
-                foreach (var kvp in this.GetOrdered())
-                {
-                    parameters[i] = GetParameterPair(kvp.Key, kvp.Value);
-                    ++i;
-                }
+                var arrayedName = OAuthHelper.UrlEncode(name) + "[]";
+
+                var valuePairs = urlArray
+                    .Select(val => JoinParameterPais(arrayedName, OAuthHelper.UrlEncode(ValueToString(val))));
+
+                return string.Join("&", valuePairs);
             }
             else
             {
-                foreach (var kvp in this)
-                {
-                    parameters[i] = GetParameterPair(kvp.Key, kvp.Value);
-                    ++i;
-                }
+                return JoinParameterPais(OAuthHelper.UrlEncode(name), OAuthHelper.UrlEncode(ValueToString(value)), valueEnclosure);
             }
-
-            return parameters;
         }
 
-        public static string GetParameterPair(string name, object value)
+        public string ToUrlParameterString(string connector = "&", bool sort = false)
         {
-            return $"{ OAuthHelper.UrlEncode(name) }={ OAuthHelper.UrlEncode(GetValueString(value)) }";
+            return string.Join(connector, this.GetRequestParameters(sort));
         }
 
-        public static string GetParameterPairDq(string name, object value)
-        {
-            return $"{ OAuthHelper.UrlEncode(name) }=\"{ OAuthHelper.UrlEncode(GetValueString(value)) }\"";
-        }
+        public static string GetParameterPair(string name, object value) => GetParamPairString(name, value);
+
+        public static string GetParameterPairDq(string name, object value) => GetParamPairString(name, value, "\"");
 
         private static readonly Hashtable _typeHandles = new Hashtable();
 
-        public static string GetValueString(object value, bool nested = false)
+        public static string ValueToString(object value, bool nested = false)
         {
             if (value == null)
                 return string.Empty;
@@ -93,7 +96,7 @@ namespace SocialApis
 
                 foreach (object element in arrayValue)
                 {
-                    stringValueList.Add(GetValueString(element, true));
+                    stringValueList.Add(ValueToString(element, true));
                 }
 
                 return string.Join(",", stringValueList);

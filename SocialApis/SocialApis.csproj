@@ -54,13 +54,49 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Formatters\ToIntFormatter.cs" />
+    <Compile Include="Formatters\ToLongFormatter.cs" />
+    <Compile Include="Formatters\ToNullableLongFormatter.cs" />
     <Compile Include="Mastodon\Apis\AccountsApi.cs" />
+    <Compile Include="Mastodon\Apis\BlocksApi.cs" />
+    <Compile Include="Mastodon\Apis\DomainBlocksApi.cs" />
+    <Compile Include="Mastodon\Apis\FavouritesApi.cs" />
+    <Compile Include="Mastodon\Apis\FollowRequestsApi.cs" />
+    <Compile Include="Mastodon\Apis\FollowsApi.cs" />
+    <Compile Include="Mastodon\Apis\InstancesApi.cs" />
+    <Compile Include="Mastodon\Apis\ListsApi.cs" />
+    <Compile Include="Mastodon\Apis\MutesApi.cs" />
+    <Compile Include="Mastodon\Apis\NotificationsApi.cs" />
     <Compile Include="Mastodon\Apis\OAuthApi.cs" />
+    <Compile Include="Mastodon\Apis\ReportsApi.cs" />
+    <Compile Include="Mastodon\Apis\SearchApi.cs" />
+    <Compile Include="Mastodon\Apis\StatusesApi.cs" />
+    <Compile Include="Mastodon\Apis\TimelinesApi.cs" />
+    <Compile Include="Mastodon\Enums\AttachmentType.cs" />
+    <Compile Include="Mastodon\Enums\CardType.cs" />
+    <Compile Include="Mastodon\Enums\NotificationType.cs" />
+    <Compile Include="Mastodon\Enums\StatusVisibility.cs" />
+    <Compile Include="Mastodon\Enums\Tag.cs" />
     <Compile Include="Mastodon\MastodonError.cs" />
     <Compile Include="Mastodon\MastodonException.cs" />
     <Compile Include="Mastodon\Objects\AccessTokenResponse.cs" />
     <Compile Include="Mastodon\Objects\Account.cs" />
+    <Compile Include="Mastodon\Objects\Application.cs" />
+    <Compile Include="Mastodon\Objects\Attachment.cs" />
+    <Compile Include="Mastodon\Objects\AttachmentMeta.cs" />
+    <Compile Include="Mastodon\Objects\Card.cs" />
     <Compile Include="Mastodon\Objects\ClientKeyInfo.cs" />
+    <Compile Include="Mastodon\Objects\Context.cs" />
+    <Compile Include="Mastodon\Objects\Emoji.cs" />
+    <Compile Include="Mastodon\Objects\Instance.cs" />
+    <Compile Include="Mastodon\Objects\List.cs" />
+    <Compile Include="Mastodon\Objects\Mention.cs" />
+    <Compile Include="Mastodon\Objects\Notification.cs" />
+    <Compile Include="Mastodon\Objects\Meta.cs" />
+    <Compile Include="Mastodon\Objects\Relationship.cs" />
+    <Compile Include="Mastodon\Objects\Report.cs" />
+    <Compile Include="Mastodon\Objects\Results.cs" />
+    <Compile Include="Mastodon\Objects\Status.cs" />
     <Compile Include="Mastodon\TokenApiBase.cs" />
     <Compile Include="Mastodon\Tokens.cs" />
     <Compile Include="Twitter\Apis\AccountApi.cs" />
@@ -139,6 +175,7 @@
     <Compile Include="Twitter\Apis\OAuthApi.cs" />
     <Compile Include="Twitter\RequestTokenResponse.cs" />
     <Compile Include="Twitter\Tokens.cs" />
+    <Compile Include="UrlArray.cs" />
     <Compile Include="WebUtility.cs" />
   </ItemGroup>
   <ItemGroup>
