@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -104,32 +105,47 @@ namespace SocialApis
             else
             {
                 var typeHandle = Type.GetTypeHandle(value);
-                var _type = _typeHandles[typeHandle];
-                if (!(_type is Type type))
+                var type = _typeHandles[typeHandle] as Type;
+                if (type == null)
                 {
                     type = Type.GetTypeFromHandle(typeHandle);
                     _typeHandles[typeHandle] = type;
                 }
 
-                var typeCode = Type.GetTypeCode(type);
-                switch (typeCode)
+                if (type.IsEnum)
                 {
-                    case TypeCode.Byte:
-                    case TypeCode.Char:
-                    case TypeCode.Decimal:
-                    case TypeCode.Double:
-                    case TypeCode.Int16:
-                    case TypeCode.Int32:
-                    case TypeCode.Int64:
-                    case TypeCode.SByte:
-                    case TypeCode.Single:
-                    case TypeCode.UInt16:
-                    case TypeCode.UInt32:
-                    case TypeCode.UInt64:
-                        return value.ToString();
+                    var enumString = type.GetEnumName(value);
 
-                    case TypeCode.Boolean:
-                        return value.ToString().ToLower();
+                    var memberInfo = type.GetMember(enumString).FirstOrDefault();
+                    var attr = Attribute.GetCustomAttribute(memberInfo, typeof(EnumMemberAttribute), true);
+
+                    if (attr is EnumMemberAttribute enumMember)
+                        return enumMember.Value;
+                    else
+                        return enumString;
+                }
+                else
+                {
+                    var typeCode = Type.GetTypeCode(type);
+                    switch (typeCode)
+                    {
+                        case TypeCode.Byte:
+                        case TypeCode.Char:
+                        case TypeCode.Decimal:
+                        case TypeCode.Double:
+                        case TypeCode.Int16:
+                        case TypeCode.Int32:
+                        case TypeCode.Int64:
+                        case TypeCode.SByte:
+                        case TypeCode.Single:
+                        case TypeCode.UInt16:
+                        case TypeCode.UInt32:
+                        case TypeCode.UInt64:
+                            return value.ToString();
+
+                        case TypeCode.Boolean:
+                            return value.ToString().ToLower();
+                    }
                 }
 
                 throw new NotSupportedException();
