@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,34 +11,34 @@ namespace Liberfy
 	/// <summary>
 	/// アカウント設定をJsonデータに変換するためのクラス
 	/// </summary>
-	[JsonObject(MemberSerialization.OptIn)]
+	[DataContract]
 	internal class AccountItem
 	{
-		[JsonProperty("user_id")]
+		[DataMember(Name = "user_id")]
 		public long Id { get; set; }
 
-		[JsonProperty("screen_name")]
+		[DataMember(Name = "screen_name")]
 		public string ScreenName { get; set; }
 
-		[JsonProperty("name")]
+		[DataMember(Name = "name")]
 		public string Name { get; set; }
 
-		[JsonProperty("profile_image_url")]
+		[DataMember(Name = "profile_image_url")]
 		public string ProfileImageUrl { get; set; }
 
-		[JsonProperty("is_protected")]
+		[DataMember(Name = "is_protected")]
 		public bool IsProtected { get; set; }
 
-		[JsonProperty("token")]
+		[DataMember(Name = "token")]
 		public ApiTokenInfo Token { get; set; }
 
-		[JsonProperty("tokens_third", NullValueHandling = NullValueHandling.Ignore)]
+		[DataMember(Name = "tokens_third")]
 		public ApiTokenInfo[] ThirdPartyTokens { get; set; }
 
-		[JsonProperty("automatically_login")]
+		[DataMember(Name = "automatically_login")]
 		public bool AutomaticallyLogin { get; set; }
 
-		[JsonProperty("automatically_load_timeline")]
+		[DataMember(Name = "automatically_load_timeline")]
 		public bool AutomaticallyLoadTimeline { get; set; }
 	}
 }

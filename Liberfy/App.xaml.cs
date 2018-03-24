@@ -1,6 +1,5 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using Microsoft.Windows.Themes;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Utf8Json;
 
 namespace Liberfy
 {
@@ -107,23 +107,25 @@ namespace Liberfy
             catch (Exception e)
             {
                 MessageBox.Show(IntPtr.Zero,
-                    $"設定ファイルの{(e is JsonException ? "保存形式が誤っています" : "読み込みに失敗しました")}：\n"
+                    $"設定ファイルの読み込みに失敗しました：\n"
                     + $"{e.Message}\n\nアプリケーションを終了します。",
                     caption: "エラー", icon: MsgBoxIcon.Error);
                 return true;
             }
         }
 
+        private static IJsonFormatterResolver _jsonFormatterResolver = Utf8Json.Resolvers.StandardResolver.AllowPrivate;
+
         private static T SettingFromFile<T>(string filename)
         {
-            return JsonConvert.DeserializeObject<T>(
-                File.ReadAllText(filename));
+            using (var fs = File.OpenRead(filename))
+                return JsonSerializer.Deserialize<T>(fs, _jsonFormatterResolver);
         }
 
         private static void SaveSettingFile<T>(string filename, T TObj)
         {
-            File.WriteAllText(filename,
-                JsonConvert.SerializeObject(TObj, Formatting.Indented));
+            using (var fs = File.Open(filename, FileMode.Create))
+                JsonSerializer.Serialize(fs, TObj, _jsonFormatterResolver);
         }
 
         private static void SaveSettings()

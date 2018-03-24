@@ -2,12 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	[JsonObject(MemberSerialization.OptIn)]
+	[DataContract]
 	internal class AccountSetting : NotificationObject
 	{
 		private static FluidCollection<Account> _accounts => App.Accounts;
@@ -28,10 +29,10 @@ namespace Liberfy
 			return _accounts.FirstOrDefault((a) => a.Id == id);
 		}
 
-		[JsonProperty("accounts")]
+		[DataMember(Name = "accounts")]
 		public AccountItem[] Accounts { get; set; }
 
-		[JsonProperty("columns")]
+		[DataMember(Name = "columns")]
 		public ColumnSetting[] Columns { get; set; }
 	}
 }

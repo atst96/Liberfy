@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	[JsonObject(MemberSerialization.OptIn)]
+	[DataContract]
 	internal sealed class Mute
 	{
 		private const StringComparison comparison = StringComparison.CurrentCultureIgnoreCase;
@@ -35,16 +36,16 @@ namespace Liberfy
 
 		public bool IsValidItem { get; set; }
 
-		[JsonProperty("type")]
+		[DataMember(Name = "type")]
 		public MuteType Type { get; private set; }
 
-		[JsonProperty("search")]
+		[DataMember(Name = "search")]
 		public SearchMode Search { get; private set; }
 
-		[JsonProperty("text")]
+		[DataMember(Name = "text")]
 		public string Text { get; private set; }
 
-		[JsonProperty("enabled")]
+		[DataMember(Name = "enabled")]
 		public bool IsEnabled { get; set; } = true;
 
 		public bool Apply()
