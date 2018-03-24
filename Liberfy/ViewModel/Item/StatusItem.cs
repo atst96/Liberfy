@@ -60,14 +60,12 @@ namespace Liberfy
 
             this.Reaction = reaction;
 
+            this.Status           = statusInfo;
             this.User             = statusInfo.User;
             this.CreatedAt        = statusInfo.CreatedAt;
             this.MediaEntities    = statusInfo.ExtendedEntities?.Media?.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
             this.HasMediaEntities = MediaEntities?.Any() ?? false;
-
             this.IsCurrentAccount = statusInfo.User.Id == account.Id;
-
-            this.Status = statusInfo;
         }
 
         // TODO: 何のために作ったメソッドかを忘れた
