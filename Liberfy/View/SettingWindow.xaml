@@ -494,7 +494,7 @@
                                 ItemsSource="{Binding DefaultColumns, Mode=OneTime}"
                                 SelectedItem="{Binding SelectedColumnSetting, Mode=TwoWay}">
                                 <ListBox.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type local:ColumnSetting}">
+                                    <DataTemplate DataType="{x:Type vm:ColumnOptionBase}">
                                         <TextBlock
                                             Margin="8"
                                             Text="{Binding Type, Mode=OneTime, Converter={StaticResource ColumnNameConverter}}" />

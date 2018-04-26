@@ -10,6 +10,7 @@ namespace Liberfy
 {
     internal class UserInfo : NotificationObject, IObjectInfo<User>, IEquatable<UserInfo>, IEquatable<User>
     {
+        public long Id { get; }
         public bool IsContributorsEnabled { get; private set; }
         public DateTimeOffset CreatedAt { get; }
         public bool IsDefaultProfile { get; private set; }
@@ -22,7 +23,7 @@ namespace Liberfy
         public int FriendsCount { get; private set; }
         public bool HasExtendedProfile { get; private set; }
         public bool IsGeoEnabled { get; private set; }
-        public long Id { get; }
+        // public long Id { get; }
         public bool IsTranslator { get; private set; }
         public bool IsTranslationEnabled { get; private set; }
         public string Language { get; private set; }
@@ -31,17 +32,11 @@ namespace Liberfy
         public bool IsMuting { get; private set; }
         public string Name { get; private set; }
         public bool NeedsPhoneVerification { get; private set; }
-        public Color ProfileBackgroundColor { get; private set; }
         public string ProfileBackgroundImageUrl { get; private set; }
-        public string ProfileBackgroundImageUrlHttps { get; private set; }
         public bool IsProfileBackgroundTile { get; private set; }
         public string ProfileBannerUrl { get; private set; }
         public string ProfileImageUrl { get; private set; }
-        public Color ProfileLinkColor { get; private set; }
         public Place ProfileLocation { get; private set; }
-        public Color ProfileSidebarBorderColor { get; private set; }
-        public Color ProfileSidebarFillColor { get; private set; }
-        public Color ProfileTextColor { get; private set; }
         public bool IsProfileUseBackgroundImage { get; private set; }
         public bool IsProtected { get; private set; }
         public string ScreenName { get; private set; }
@@ -56,32 +51,24 @@ namespace Liberfy
         public string WithheldInCountries { get; private set; }
         public string WithheldScope { get; private set; }
         public DateTime UpdatedAt { get; private set; }
-        long IObjectInfo<User>.Id => throw new NotImplementedException();
 
         public UserInfo(User user)
         {
-            Id = user.Id ?? Id;
-            CreatedAt = user.CreatedAt;
+            this.Id = user.Id ?? Id;
+            this.CreatedAt = user.CreatedAt;
 
-            Update(user);
+            this.Update(user);
         }
 
         public UserInfo(long id, string name, string screenName, bool isProtected, string profileImageUrl)
         {
-            Id = id;
-            Name = name;
-            ScreenName = screenName;
-            IsProtected = isProtected;
-            ProfileImageUrl = profileImageUrl;
+            this.Id = id;
+            this.Name = name;
+            this.ScreenName = screenName;
+            this.IsProtected = isProtected;
+            this.ProfileImageUrl = profileImageUrl;
 
-            UpdatedAt = DateTime.Now;
-        }
-
-        private static Color ToColor(string name)
-        {
-            return string.IsNullOrWhiteSpace(name)
-                ? Colors.Transparent
-                : (Color)ColorConverter.ConvertFromString("#" + name);
+            this.UpdatedAt = DateTime.Now;
         }
 
         public UserInfo Update(User item)
@@ -105,17 +92,11 @@ namespace Liberfy
             this.IsMuting = item.IsMuting ?? IsMuting;
             this.Name = item.Name;
             this.NeedsPhoneVerification = item.NeedsPhoneVerification ?? NeedsPhoneVerification;
-            this.ProfileBackgroundColor = ToColor(item.ProfileBackgroundColor);
             this.ProfileBackgroundImageUrl = item.ProfileBackgroundImageUrl;
-            this.ProfileBackgroundImageUrlHttps = item.ProfileBackgroundImageUrlHttps;
             this.IsProfileBackgroundTile = item.IsProfileBackgroundTile;
             this.ProfileBannerUrl = item.ProfileBannerUrl;
             this.ProfileImageUrl = item.ProfileImageUrl;
-            this.ProfileLinkColor = ToColor(item.ProfileLinkColor);
             this.ProfileLocation = item.ProfileLocation;
-            this.ProfileSidebarBorderColor = ToColor(item.ProfileSidebarBorderColor);
-            this.ProfileSidebarFillColor = ToColor(item.ProfileSidebarFillColor);
-            this.ProfileTextColor = ToColor(item.ProfileTextColor);
             this.IsProfileUseBackgroundImage = item.IsProfileUseBackgroundImage;
             this.IsProtected = item.IsProtected;
             this.ScreenName = item.ScreenName;

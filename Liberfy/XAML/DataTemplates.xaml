@@ -208,7 +208,6 @@
                                 Grid.ColumnSpan="2"
                                 Padding="0" FontSize="20"
                                 Content="認証エラー" />
-
                         </Grid>
                     </TabItem>
                 </TabControl>
@@ -331,7 +330,6 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-
         </Grid>
     </DataTemplate>
 
@@ -404,7 +402,7 @@
             HorizontalContentAlignment="Stretch"
             Style="{StaticResource ImageButton}">
             <Image
-                Source="{Binding CurrentEntity.MediaUrl, Mode=OneTime}" 
+                Source="{Binding CurrentEntity.MediaUrl, Mode=OneTime, IsAsync=True}" 
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Stretch="UniformToFill" />
@@ -432,14 +430,18 @@
                                 Margin="0 -1 0 0"/>
                         </Button>
                         
-                        <ToggleButton Style="{StaticResource RetweetActionToggleButton}">
+                        <ToggleButton
+                            IsChecked="{Binding Reaction.IsRetweeted, Mode=OneWay}"
+                            Style="{StaticResource RetweetActionToggleButton}">
                             <md:PackIcon 
                                 Kind="TwitterRetweet"
                                 Margin="0"
                                 Width="26" Height="26" />
                         </ToggleButton>
                         
-                        <ToggleButton Style="{StaticResource FavoriteActionToggleButton}">
+                        <ToggleButton
+                            IsChecked="{Binding Reaction.IsFavorited, Mode=OneWay}"
+                            Style="{StaticResource FavoriteActionToggleButton}">
                             <md:PackIcon
                                 Margin="0 0 0 0"
                                 Kind="Heart"
@@ -556,7 +558,7 @@
                             DockPanel.Dock="Left">
                             <Image
                                 Width="28" Height="28"
-                                Source="{Binding RetweetUser.ProfileImageUrl}" />
+                                Source="{Binding RetweetUser.ProfileImageUrl, IsAsync=True, Mode=OneWay}" />
                         </Button>
 
                         <TextBlock
@@ -566,7 +568,7 @@
                             HorizontalAlignment="Left"
                             TextTrimming="CharacterEllipsis">
                             <Hyperlink Style="{StaticResource UserNameLinkText}">
-                                <Run Text="{Binding RetweetUser.Name}" />
+                                <Run Text="{Binding RetweetUser.Name, Mode=OneWay}" />
                             </Hyperlink>
                         </TextBlock>
                         <TextBlock
@@ -575,7 +577,7 @@
                             HorizontalAlignment="Left"
                             TextTrimming="CharacterEllipsis">
                             <Hyperlink Style="{StaticResource UserNameLinkText}">
-                                <Run Text="{Binding RetweetUser.ScreenName, StringFormat='{}@{0}'}" />
+                                <Run Text="{Binding RetweetUser.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
                             </Hyperlink>
                         </TextBlock>
                     </DockPanel>

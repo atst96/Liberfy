@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Liberfy.ViewModel;
+using Liberfy.ViewModel.Column.Options;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Windows.Media;
 using static Liberfy.Defines;
@@ -151,9 +154,10 @@ namespace Liberfy
         #region Account
 
         [DataMember(Name = "account_column_defaults")]
-        private FluidCollection<ColumnSetting> _defaultColumns;
+        [Utf8Json.JsonFormatter(typeof(FluidColumnOptionFormatter))]
+        private FluidCollection<ColumnOptionBase> _defaultColumns;
         [IgnoreDataMember]
-        public FluidCollection<ColumnSetting> DefaultColumns
+        public FluidCollection<ColumnOptionBase> DefaultColumns
         {
             get
             {
@@ -163,14 +167,14 @@ namespace Liberfy
                 }
                 else
                 {
-                    var account = Account.Dummy;
+                    var defaultOptions = new[]
+                    {
+                        new GeneralColumnOption(ColumnType.Home),
+                        new GeneralColumnOption(ColumnType.Notification),
+                        new GeneralColumnOption(ColumnType.Messages)
+                    };
 
-                    return _defaultColumns =
-                        new FluidCollection<ColumnSetting>(new[] {
-                            new ColumnSetting(ColumnType.Home, account),
-                            new ColumnSetting(ColumnType.Notification, account),
-                            new ColumnSetting(ColumnType.Messages, account)
-                        });
+                    return _defaultColumns = new FluidCollection<ColumnOptionBase>(defaultOptions);
                 }
             }
         }

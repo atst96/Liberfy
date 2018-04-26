@@ -21,7 +21,6 @@ namespace Liberfy.ViewModel
 
         public Setting Setting => App.Setting;
 
-        public AccountSetting AccountSetting => App.AccountSetting;
         public FluidCollection<Account> Accounts => App.Accounts;
 
         /*
@@ -452,7 +451,7 @@ namespace Liberfy.ViewModel
             {
                 var tokens = auth.Tokens;
 
-                var account = Accounts.FirstOrDefault((a) => a.Id == tokens.UserId);
+                var account = this.Accounts.FirstOrDefault((a) => a.Id == tokens.UserId);
 
                 if (account != null)
                 {
@@ -460,31 +459,25 @@ namespace Liberfy.ViewModel
                 }
                 else
                 {
-                    account = new Account(tokens)
+                    var columnOptions = this.DefaultColumns.Select(ColumnOptionBase.CreateFromDefault);
+
+                    account = new Account(tokens, columnOptions)
                     {
-                        AutomaticallyLogin = Setting.AccountDefaultAutomaticallyLogin,
-                        AutomaticallyLoadTimeline = Setting.AccountDefaultAutomaticallyLoadTimeline
+                        AutomaticallyLogin = this.Setting.AccountDefaultAutomaticallyLogin,
+                        AutomaticallyLoadTimeline = this.Setting.AccountDefaultAutomaticallyLoadTimeline
                     };
-
-                    Accounts.Add(account);
-
-                    if (account.AutomaticallyLogin)
-                    {
-                        foreach (var column in DefaultColumns)
-                        {
-                            App.Columns.Add(ColumnBase.FromSettings(ColumnSetting.CreateFromDefault(column, account)));
-                        }
-                    }
 
                     account.IsLoading = true;
 
-                    if (!await account.LoginAsync())
+                    this.Accounts.Add(account);
+
+                    if (!await account.Login())
                     {
                         DialogService.MessageBox(
                             $"アカウント情報の取得に失敗しました:\n",
                             MsgBoxButtons.Ok, MsgBoxIcon.Information);
 
-                        Accounts.Remove(account);
+                        this.Accounts.Remove(account);
                     }
 
                     account.IsLoading = false;
@@ -544,21 +537,21 @@ namespace Liberfy.ViewModel
 
         #endregion Commands for account
 
-        public FluidCollection<ColumnSetting> DefaultColumns => Setting.DefaultColumns;
+        public FluidCollection<ColumnOptionBase> DefaultColumns => this.Setting.DefaultColumns;
 
         #region Commands for columns
 
-        private ColumnSetting _selectedColumnSetting;
-        public ColumnSetting SelectedColumnSetting
+        private ColumnOptionBase _selectedColumnSetting;
+        public ColumnOptionBase SelectedColumnSetting
         {
-            get => _selectedColumnSetting;
+            get => this._selectedColumnSetting;
             set
             {
-                if (SetProperty(ref _selectedColumnSetting, value))
+                if (this.SetProperty(ref _selectedColumnSetting, value))
                 {
-                    ColumnMoveUpCommand.RaiseCanExecute();
-                    ColumnMoveDownCommand.RaiseCanExecute();
-                    ColumnRemoveCommand.RaiseCanExecute();
+                    this.ColumnMoveUpCommand.RaiseCanExecute();
+                    this.ColumnMoveDownCommand.RaiseCanExecute();
+                    this.ColumnRemoveCommand.RaiseCanExecute();
                 }
             }
         }
@@ -584,9 +577,9 @@ namespace Liberfy.ViewModel
         #region Command: ColumnAddCommand
 
         private Command _columnAddCommand;
-        public Command ColumnAddCommand => _columnAddCommand ?? (_columnAddCommand = this.RegisterCommand<ColumnType>(this.ColumnAdd));
+        public Command ColumnAddCommand => this._columnAddCommand ?? (this._columnAddCommand = this.RegisterCommand<ColumnType>(this.ColumnAdd));
 
-        private void ColumnAdd(ColumnType type) => DefaultColumns.Add(new ColumnSetting(type, Account.Dummy));
+        private void ColumnAdd(ColumnType type) => this.DefaultColumns.Add(ColumnOptionBase.GetDefault(type));
 
         #endregion
 
@@ -595,12 +588,12 @@ namespace Liberfy.ViewModel
         private Command _columnRemoveCommand;
         public Command ColumnRemoveCommand
         {
-            get => _columnRemoveCommand ?? (_columnRemoveCommand = RegisterCommand<ColumnSetting>(ColumnRemove, CanColumnRemove));
+            get => _columnRemoveCommand ?? (_columnRemoveCommand = RegisterCommand<ColumnOptionBase>(ColumnRemove, CanColumnRemove));
         }
 
-        private static bool CanColumnRemove(ColumnSetting column) => column != null;
+        private static bool CanColumnRemove(ColumnOptionBase column) => column != null;
 
-        private void ColumnRemove(ColumnSetting column) => DefaultColumns.Remove(column);
+        private void ColumnRemove(ColumnOptionBase column) => this.DefaultColumns.Remove(column);
 
         #endregion
 
@@ -609,19 +602,19 @@ namespace Liberfy.ViewModel
         private Command _columnMoveUpCommand;
         public Command ColumnMoveUpCommand
         {
-            get => _columnMoveUpCommand ?? (_columnMoveUpCommand = RegisterCommand<ColumnSetting>(ColumnMoveUp, CanColumnMoveUp));
+            get => this._columnMoveUpCommand ?? (this._columnMoveUpCommand = this.RegisterCommand<ColumnOptionBase>(this.ColumnMoveUp, this.CanColumnMoveUp));
         }
 
-        private bool CanColumnMoveUp(ColumnSetting column)
+        private bool CanColumnMoveUp(ColumnOptionBase column)
         {
             return column != null && DefaultColumns.CanItemIndexDecrement(column);
         }
 
-        private void ColumnMoveUp(ColumnSetting column)
+        private void ColumnMoveUp(ColumnOptionBase column)
         {
-            DefaultColumns.ItemIndexDecrement(column);
-            ColumnMoveUpCommand.RaiseCanExecute();
-            ColumnMoveDownCommand.RaiseCanExecute();
+            this.DefaultColumns.ItemIndexDecrement(column);
+            this.ColumnMoveUpCommand.RaiseCanExecute();
+            this.ColumnMoveDownCommand.RaiseCanExecute();
         }
 
         #endregion
@@ -631,19 +624,19 @@ namespace Liberfy.ViewModel
         private Command _columnMoveDownCommand;
         public Command ColumnMoveDownCommand
         {
-            get => _columnMoveDownCommand ?? (_columnMoveDownCommand = RegisterCommand<ColumnSetting>(ColumnMoveRight, CanColumnMoveRight));
+            get => this._columnMoveDownCommand ?? (this._columnMoveDownCommand = this.RegisterCommand<ColumnOptionBase>(this.ColumnMoveRight, this.CanColumnMoveRight));
         }
 
-        private bool CanColumnMoveRight(ColumnSetting column)
+        private bool CanColumnMoveRight(ColumnOptionBase column)
         {
             return column != null && DefaultColumns.CanItemIndexIncrement(column);
         }
 
-        private void ColumnMoveRight(ColumnSetting column)
+        private void ColumnMoveRight(ColumnOptionBase column)
         {
-            DefaultColumns.ItemIndexIncrement(column);
-            ColumnMoveDownCommand?.RaiseCanExecute();
-            ColumnMoveUpCommand.RaiseCanExecute();
+            this.DefaultColumns.ItemIndexIncrement(column);
+            this.ColumnMoveDownCommand?.RaiseCanExecute();
+            this.ColumnMoveUpCommand.RaiseCanExecute();
         }
 
         #endregion

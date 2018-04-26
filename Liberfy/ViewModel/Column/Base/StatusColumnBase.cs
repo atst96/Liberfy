@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	abstract class StatusColumnBase : ColumnBase
+	internal abstract class StatusColumnBase : ColumnBase
 	{
-		protected StatusColumnBase(Account account, ColumnType type, string title = null)
-			: base(account, type, title)
+	    protected StatusColumnBase(Timeline timeline, ColumnType type, string title = null)
+			: base(timeline, type, title)
 		{
 			if (type == ColumnType.Status || !type.HasFlag(ColumnType.Status))
 				throw new NotSupportedException();
@@ -23,8 +23,8 @@ namespace Liberfy
 		private StatusItem _selectedStatus;
 		public StatusItem SelectedStatus
 		{
-			get { return _selectedStatus; }
-			set { SetProperty(ref _selectedStatus, value); }
+			get { return this._selectedStatus; }
+			set { this.SetProperty(ref this._selectedStatus, value); }
 		}
 
 		public override void OnShowDetails(IItem item)

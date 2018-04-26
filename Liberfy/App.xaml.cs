@@ -24,17 +24,14 @@ namespace Liberfy
     {
         internal static readonly object CommonLockObject = new object();
 
-        private static AccountSetting _accounts;
         private static Setting _setting;
 
         public static Brush RetweetColor;
         public static Brush FavoriteColor;
         public static Brush RetweetFavoriteColor;
-
-        internal static AccountSetting AccountSetting => _accounts;
         internal static Setting Setting => _setting;
 
-        internal static FluidCollection<Account> Accounts { get; } = new FluidCollection<Account>();
+        internal static FluidCollection<Account> Accounts { get; private set; }
 
         internal static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
 
@@ -50,27 +47,17 @@ namespace Liberfy
         {
             base.OnStartup(e);
 
-            // 設定を読み込む
-            if (LoadSettingWithErrorDialog(Defines.AccountsFile, ref _accounts))
-            {
-                if (_accounts.Accounts?.Length > 0)
-                {
-                    foreach (var item in _accounts.Accounts.Distinct())
-                    {
-                        Accounts.Add(new Account(item));
-                    }
-                }
+            InitializeProgram();
+        }
 
-                if (_accounts.Columns?.Length > 0)
-                {
-                    foreach (var s in _accounts.Columns)
-                    {
-                        if (ColumnBase.TryFromSetting(s, out var column))
-                        {
-                            Columns.Add(column);
-                        }
-                    }
-                }
+        private static void InitializeProgram()
+        {
+            IEnumerable<AccountItem> accountsSetting = null;
+
+            if (TryParseSettingFileOrDisplayError(Defines.AccountsFile, ref accountsSetting))
+            {
+                Accounts = new FluidCollection<Account>(
+                    accountsSetting.Distinct().Select(a => new Account(a)));
             }
             else
             {
@@ -78,7 +65,7 @@ namespace Liberfy
                 return;
             }
 
-            if (!LoadSettingWithErrorDialog(Defines.SettingFile, ref _setting))
+            if (!TryParseSettingFileOrDisplayError(Defines.SettingFile, ref _setting))
             {
                 Shutdown(false);
                 return;
@@ -88,38 +75,67 @@ namespace Liberfy
 
             _setting.Mute.ForEach(m => m.Apply());
 
-            TaskbarIcon = (TaskbarIcon)FindResource("taskbarIcon");
-
-            RetweetColor = (Brush)Current.Resources["RetweetColor"];
-            FavoriteColor = (Brush)Current.Resources["FavoriteColor"];
-            RetweetFavoriteColor = (Brush)Current.Resources["RetweetFavoriteColor"];
+            TaskbarIcon = GetAppResource<TaskbarIcon>("taskbarIcon");
+            RetweetColor = GetAppResource<Brush>("RetweetColor");
+            FavoriteColor = GetAppResource<Brush>("FavoriteColor");
+            RetweetFavoriteColor = GetAppResource<Brush>("RetweetFavoriteColor");
         }
 
-        internal static FluidCollection<ColumnBase> Columns { get; } = new FluidCollection<ColumnBase>();
+        private static T GetAppResource<T>(string resourceKey) => Current.Resources[resourceKey] is T val ? val : default(T);
 
-        private static bool LoadSettingWithErrorDialog<T>(string filename, ref T setting) where T : new()
+        private static bool TryParseSettingFileOrDisplayError<T>(string filename, ref IEnumerable<T> setting)
         {
             try
             {
-                setting = File.Exists(filename) ? SettingFromFile<T>(filename) : new T();
+                setting = SettingFromFile<IEnumerable<T>>(filename) ?? Enumerable.Empty<T>();
                 return true;
             }
             catch (Exception e)
             {
-                MessageBox.Show(IntPtr.Zero,
-                    $"設定ファイルの読み込みに失敗しました：\n"
-                    + $"{e.Message}\n\nアプリケーションを終了します。",
-                    caption: "エラー", icon: MsgBoxIcon.Error);
+                DisplayException(e, $"設定ファイルの読み込みに失敗しました:\n{ filename }");
                 return true;
             }
+        }
+
+        private static bool TryParseSettingFileOrDisplayError<T>(string filename, ref T setting) where T : class, new()
+        {
+            try
+            {
+                setting = SettingFromFile<T>(filename) ?? new T();
+                return true;
+            }
+            catch (Exception e)
+            {
+                DisplayException(e, "設定ファイルの読み込みに失敗しました");
+                return true;
+            }
+        }
+
+        public static void DisplayException(Exception exception, string instruction = null)
+        {
+            MessageBox.Show(IntPtr.Zero,
+                (string.IsNullOrEmpty(instruction) ? "" : $"{ instruction }:\n")
+                + $"{ exception.Message }\n\nアプリケーションを終了します。",
+                caption: "エラー",
+                icon: MsgBoxIcon.Error);
         }
 
         private static IJsonFormatterResolver _jsonFormatterResolver = Utf8Json.Resolvers.StandardResolver.AllowPrivate;
 
         private static T SettingFromFile<T>(string filename)
         {
-            using (var fs = File.OpenRead(filename))
-                return JsonSerializer.Deserialize<T>(fs, _jsonFormatterResolver);
+            try
+            {
+                using (var fs = File.OpenRead(filename))
+                    if (fs.Length > 0)
+                        return JsonSerializer.Deserialize<T>(fs, _jsonFormatterResolver);
+            }
+            catch (FileNotFoundException)
+            {
+                // pass
+            }
+
+            return default(T);
         }
 
         private static void SaveSettingFile<T>(string filename, T TObj)
@@ -130,14 +146,11 @@ namespace Liberfy
 
         private static void SaveSettings()
         {
-            // アカウント設定の保存
-            AccountSetting.Accounts = Accounts.Select(a => a.ToSetting()).ToArray();
-            // カラム設定の保存
-            AccountSetting.Columns = Columns.Select(c => c.ToSetting()).ToArray();
+            var accountsSetting = Accounts.Select(a => a.ToSetting());
 
             // 設定をファイルに保存
             SaveSettingWithErrorDialog(Defines.SettingFile, Setting);
-            SaveSettingWithErrorDialog(Defines.AccountsFile, AccountSetting);
+            SaveSettingWithErrorDialog(Defines.AccountsFile, accountsSetting);
         }
 
         private static void SaveSettingWithErrorDialog<T>(string filename, T setting) where T : class

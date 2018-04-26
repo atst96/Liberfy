@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Liberfy.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -13,163 +14,163 @@ using System.Windows.Media;
 
 namespace Liberfy.Converter
 {
-	public class DummyConverter : IValueConverter
-	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			Debug.WriteLine($"Converted: {value}");
-			Debugger.Break();
-			return value;
-		}
+    public class DummyConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Debug.WriteLine($"Converted: {value}");
+            Debugger.Break();
+            return value;
+        }
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			Debug.WriteLine($"Reconverted: {value}");
-			Debugger.Break();
-			return value;
-		}
-	}
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Debug.WriteLine($"Reconverted: {value}");
+            Debugger.Break();
+            return value;
+        }
+    }
 
-	[ValueConversion(typeof(object), typeof(string))]
-	public class LocalizeNameConverter : IValueConverter
-	{
-		public IDictionary<object, string> LocalizeDictionary { get; set; }
+    [ValueConversion(typeof(object), typeof(string))]
+    public class LocalizeNameConverter : IValueConverter
+    {
+        public IDictionary<object, string> LocalizeDictionary { get; set; }
 
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			return LocalizeDictionary.TryGetValue(value, out var strVal)
-				? strVal : DependencyProperty.UnsetValue;
-		}
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return LocalizeDictionary.TryGetValue(value, out var strVal)
+                ? strVal : DependencyProperty.UnsetValue;
+        }
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
-	[ValueConversion(typeof(FontFamily), typeof(string))]
-	internal class LocalFontNameConverter : IValueConverter
-	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			var fontFamily = value as FontFamily;
+    [ValueConversion(typeof(FontFamily), typeof(string))]
+    internal class LocalFontNameConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var fontFamily = value as FontFamily;
 
-			if (fontFamily != null)
-			{
-				return fontFamily.FamilyNames.TryGetValue(OSInfo.XmlLanguage, out var xmlLang)
-					? xmlLang : fontFamily.ToString();
-			}
-			else
-			{
-				return DependencyProperty.UnsetValue;
-			}
-		}
+            if (fontFamily != null)
+            {
+                return fontFamily.FamilyNames.TryGetValue(OSInfo.XmlLanguage, out var xmlLang)
+                    ? xmlLang : fontFamily.ToString();
+            }
+            else
+            {
+                return DependencyProperty.UnsetValue;
+            }
+        }
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
-	[ValueConversion(typeof(ListBoxItem), typeof(int))]
-	internal class ListBoxIndexConverter : IValueConverter
-	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			var item = value as DependencyObject;
-			var view = ItemsControl.ItemsControlFromItemContainer(item);
+    [ValueConversion(typeof(ListBoxItem), typeof(int))]
+    internal class ListBoxIndexConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var item = value as DependencyObject;
+            var view = ItemsControl.ItemsControlFromItemContainer(item);
 
-			return view.ItemContainerGenerator.IndexFromContainer(item) + 1;
-		}
+            return view.ItemContainerGenerator.IndexFromContainer(item) + 1;
+        }
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
-	[ValueConversion(typeof(bool), typeof(bool))]
-	internal class BoolenInverter : IValueConverter
-	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			return !(bool)value;
-		}
+    [ValueConversion(typeof(bool), typeof(bool))]
+    internal class BoolenInverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return !(bool)value;
+        }
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			return !(bool)value;
-		}
-	}
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return !(bool)value;
+        }
+    }
 
-	[ValueConversion(typeof(ColumnSetting), typeof(ColumnBase))]
-	internal class ColumnSettingToColumnConverter : IValueConverter
-	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			return ColumnBase.TryFromSetting(value as ColumnSetting, out var column) ? column : null;
-		}
+    [ValueConversion(typeof(ColumnOptionBase), typeof(ColumnBase))]
+    internal class ColumnSettingToColumnConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ColumnBase.TryFromSetting(value as ColumnOptionBase, null, out var column) ? column : null;
+        }
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			return ((ColumnBase)value).ToSetting();
-		}
-	}
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ((ColumnBase)value).Option;
+        }
+    }
 
-	[ValueConversion(typeof(DateTimeOffset), typeof(string))]
-	public class LocalTimeConverter : IValueConverter
-	{
-		private const string FormatFullDateTime = "yyyy年M月d日 H時m分";
-		private const string FormatDateTime = "M月d日 H時mm分";
-		private const string FormatTiem = "H時mm分";
+    [ValueConversion(typeof(DateTimeOffset), typeof(string))]
+    public class LocalTimeConverter : IValueConverter
+    {
+        private const string FormatFullDateTime = "yyyy年M月d日 H時m分";
+        private const string FormatDateTime = "M月d日 H時mm分";
+        private const string FormatTiem = "H時mm分";
 
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			if (value is DateTimeOffset offsetTime)
-			{
-				var now = DateTime.Now;
-				var localTime = offsetTime.LocalDateTime;
-				var time = now - offsetTime + TimeSpan.FromSeconds(1);
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is DateTimeOffset offsetTime)
+            {
+                var now = DateTime.Now;
+                var localTime = offsetTime.LocalDateTime;
+                var time = now - offsetTime + TimeSpan.FromSeconds(1);
 
-				//if (App.Setting.TimelineStatusShowRelativeTime)
-				//{
-				//	return
-				//		time.TotalSeconds < 3 ? "現在"
-				//		: time.TotalSeconds < 60 ? $"{time.Seconds}秒"
-				//		: time.TotalMinutes < 60 ? $"{time.Minutes}分"
-				//		: time.TotalHours < 24 ? $"{time.Hours}時間"
-				//		: time.TotalDays > 365 ? $"{time.Days / 365}年"
-				//		: time.TotalDays > 7 ? $"{time.Days / 7}週間"
-				//		: $"{time.Days}日";
-				//}
-				//else
-				//{
-				return offsetTime.LocalDateTime.ToString(GetFormat(ref now, ref localTime));
-				//}
-			}
-			else
-				return DependencyProperty.UnsetValue;
-		}
+                //if (App.Setting.TimelineStatusShowRelativeTime)
+                //{
+                //	return
+                //		time.TotalSeconds < 3 ? "現在"
+                //		: time.TotalSeconds < 60 ? $"{time.Seconds}秒"
+                //		: time.TotalMinutes < 60 ? $"{time.Minutes}分"
+                //		: time.TotalHours < 24 ? $"{time.Hours}時間"
+                //		: time.TotalDays > 365 ? $"{time.Days / 365}年"
+                //		: time.TotalDays > 7 ? $"{time.Days / 7}週間"
+                //		: $"{time.Days}日";
+                //}
+                //else
+                //{
+                return offsetTime.LocalDateTime.ToString(GetFormat(ref now, ref localTime));
+                //}
+            }
+            else
+                return DependencyProperty.UnsetValue;
+        }
 
-		private static string GetFormat(ref DateTime now, ref DateTime localTime)
-		{
-			if (now.Year != localTime.Year)
-			{
-				return FormatFullDateTime;
-			}
-			else if (now.Date != localTime.Date)
-			{
-				return FormatDateTime;
-			}
-			else
-			{
-				return FormatTiem;
-			}
-		}
+        private static string GetFormat(ref DateTime now, ref DateTime localTime)
+        {
+            if (now.Year != localTime.Year)
+            {
+                return FormatFullDateTime;
+            }
+            else if (now.Date != localTime.Date)
+            {
+                return FormatDateTime;
+            }
+            else
+            {
+                return FormatTiem;
+            }
+        }
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

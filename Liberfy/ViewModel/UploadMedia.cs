@@ -42,21 +42,21 @@ namespace Liberfy.ViewModel
 
 			if (ext.Equals(".gif") && IsAnimatedGif(ext))
 			{
-				MediaType = MediaType.AnimatedGifFile;
-				PreviewImage = new BitmapImage(new Uri(filePath));
+				this.MediaType = MediaType.AnimatedGifFile;
+				this.PreviewImage = new BitmapImage(new Uri(filePath));
 			}
 			else if (VideoExtensions.Contains(ext))
 			{
-				MediaType = MediaType.VideoFile;
-				UseChunkedUpload = true;
+				this.MediaType = MediaType.VideoFile;
+				this.UseChunkedUpload = true;
 			}
 			else if (ImageExtensions.Contains(ext))
 			{
-				MediaType = MediaType.ImageFile;
+				this.MediaType = MediaType.ImageFile;
 
 				if (ext != ".webp")
 				{
-					PreviewImage = new BitmapImage(new Uri(filePath));
+					this.PreviewImage = new BitmapImage(new Uri(filePath));
 				}
 			}
 			else
@@ -64,14 +64,14 @@ namespace Liberfy.ViewModel
 				throw new NotSupportedException();
 			}
 
-			FilePath = filePath;
+			this.FilePath = filePath;
 			filePath = Path.GetFileName(filePath);
-			ViewExtension = ext.Substring(1).ToUpper();
-			SourceStream = File.OpenRead(FilePath);
+			this.ViewExtension = ext.Substring(1).ToUpper();
+			this.SourceStream = File.OpenRead(this.FilePath);
 
-			if (PreviewImage?.CanFreeze ?? false)
+			if (this.PreviewImage?.CanFreeze ?? false)
 			{
-				PreviewImage.Freeze();
+				this.PreviewImage.Freeze();
 			}
 		}
 
@@ -107,33 +107,33 @@ namespace Liberfy.ViewModel
 		private string _description;
 		public string Description
 		{
-			get => _description;
-			private set => SetProperty(ref _description, value);
+			get => this._description;
+			private set => this.SetProperty(ref this._description, value);
 		}
 
 		private double _uploadProgress;
 		public double UploadProgress
 		{
-			get => _uploadProgress;
-			private set => SetProperty(ref _uploadProgress, value);
+			get => this._uploadProgress;
+			private set => this.SetProperty(ref this._uploadProgress, value);
 		}
 
 		private bool _isUploadFailed;
 		public bool IsUploadFailed
 		{
-			get => _isUploadFailed;
-			private set => SetProperty(ref _isUploadFailed, value);
+			get => this._isUploadFailed;
+			private set => this.SetProperty(ref this._isUploadFailed, value);
 		}
 
 		private bool _isUploading;
 		public bool IsUploading
 		{
-			get => _isUploading;
-			private set => SetProperty(ref _isUploading, value);
+			get => this._isUploading;
+			private set => this.SetProperty(ref this._isUploading, value);
 		}
 
 		private bool _isTweetPosting;
-		public bool IsTweetPosting => _isTweetPosting;
+		public bool IsTweetPosting => this._isTweetPosting;
 
 		public bool UseChunkedUpload { get; }
 
@@ -141,14 +141,14 @@ namespace Liberfy.ViewModel
 
 		private void CleanUploadState()
 		{
-			IsUploading = false;
-			UploadProgress = 0.0d;
-			IsUploadFailed = false;
+			this.IsUploading = false;
+			this.UploadProgress = 0.0d;
+			this.IsUploadFailed = false;
 		}
 
 		public void SetIsTweetPosting(bool value)
 		{
-			SetProperty(ref _isTweetPosting, value, nameof(IsTweetPosting));
+			SetProperty(ref this._isTweetPosting, value, nameof(IsTweetPosting));
 		}
 
 		public async Task Upload(Tokens tokens)
@@ -159,11 +159,11 @@ namespace Liberfy.ViewModel
 				? UploadMediaType.Video
 				: UploadMediaType.Image;
 
-			CleanUploadState();
+			this.CleanUploadState();
 
-			IsUploading = true;
+			this.IsUploading = true;
 
-			SourceStream.Position = 0;
+			this.SourceStream.Position = 0;
 
 			try
 			{
@@ -183,16 +183,16 @@ namespace Liberfy.ViewModel
 
 				var result = await task.ConfigureAwait(true);
 
-				UploadId = result.MediaId;
+				this.UploadId = result.MediaId;
 			}
 			catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine(ex);
-				IsUploadFailed = true;
+				this.IsUploadFailed = true;
 			}
 			finally
 			{
-				IsUploading = false;
+				this.IsUploading = false;
 			}
 		}
 

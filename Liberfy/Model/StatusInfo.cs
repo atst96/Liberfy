@@ -127,13 +127,13 @@ namespace Liberfy
 
         public override bool Equals(object obj)
         {
-            return (obj is StatusInfo statusInfo && Equals(statusInfo))
-                || (obj is Status status && Equals(status));
+            return (obj is StatusInfo statusInfo && this.Equals(statusInfo))
+                || (obj is Status status && this.Equals(status));
         }
 
-        public bool Equals(StatusInfo other) => Equals(Id, other?.Id);
+        public bool Equals(StatusInfo other) => object.Equals(Id, other?.Id);
 
-        public bool Equals(Status other) => Equals(Id, other?.Id);
+        public bool Equals(Status other) => object.Equals(Id, other?.Id);
 
         public override int GetHashCode() => Id.GetHashCode();
     }

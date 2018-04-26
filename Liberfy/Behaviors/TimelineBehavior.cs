@@ -12,113 +12,125 @@ using Twitter.Text;
 
 namespace Liberfy.Behaviors
 {
-	internal static class TimelineBehavior
-	{
-		public static StatusInfo GetStatusInfo(DependencyObject obj)
-		{
-			return (StatusInfo)obj.GetValue(StatusInfoProperty);
-		}
+    internal static class TimelineBehavior
+    {
+        public static StatusInfo GetStatusInfo(DependencyObject obj)
+        {
+            return (StatusInfo)obj.GetValue(StatusInfoProperty);
+        }
 
-		public static void SetStatusInfo(DependencyObject obj, StatusInfo value)
-		{
-			obj.SetValue(StatusInfoProperty, value);
-		}
+        public static void SetStatusInfo(DependencyObject obj, StatusInfo value)
+        {
+            obj.SetValue(StatusInfoProperty, value);
+        }
 
-		public static readonly DependencyProperty StatusInfoProperty =
-			DependencyProperty.RegisterAttached("StatusInfo",
-				typeof(StatusInfo), typeof(TimelineBehavior),
-				new PropertyMetadata(null, StatusInfoChanged));
+        public static readonly DependencyProperty StatusInfoProperty =
+            DependencyProperty.RegisterAttached("StatusInfo",
+                typeof(StatusInfo), typeof(TimelineBehavior),
+                new PropertyMetadata(null, StatusInfoChanged));
 
-		private static async void StatusInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		{
-			var textBlock = d as TextBlock;
-			if (textBlock == null) return;
+        internal static IEnumerable<Entity> GetOrderedEntities(StatusInfo status)
+        {
+            return new Entity[][]
+            {
+                status.Entities.HashTags,
+                status.Entities.Symbols,
+                status.Entities.Urls,
+                status.Entities.UserMentions,
+                status.Entities.Media
+            }.Merge();
+        }
 
-			textBlock.Inlines.Clear();
+        private static async void StatusInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var textBlock = d as TextBlock;
+            if (textBlock == null) return;
 
-			var status = e.NewValue as StatusInfo;
-			if (status == null) return;
+            textBlock.Inlines.Clear();
 
-			var entities = status.GetEntities()
-				.OrderBy(entity => entity.Indices[0])
-				.ToArray();
+            var status = e.NewValue as StatusInfo;
+            if (status == null) return;
 
-			var text = new TwStringInfo(status.Text);
-			int textLength = text.Length;
+            var entities = status.GetEntities()
+                .OrderBy(entity => entity.Indices[0])
+                .ToArray();
 
-			var inlines = textBlock.Inlines;
+            var text = new TwStringInfo(status.Text);
+            int textLength = text.Length;
 
-			if (entities.Length == 0)
-			{
-				inlines.Add(status.Text);
-			}
-			else
-			{
-				await App.Current.Dispatcher.InvokeAsync(() =>
-				{
-					// リンク付きツイートの作成
-					// ([テキスト])[リンク][テキスト][リンク][テキスト]....[リンク]([テキスト]) の順に生成する
+            var inlines = textBlock.Inlines;
 
-					int endIndex;
-					var entity = entities[0];
+            if (entities.Length == 0)
+            {
+                inlines.Add(status.Text);
+            }
+            else
+            {
+                await App.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    // リンク付きツイートの作成
+                    // ([PlainText])[Link][PlainText][Link][PlainText]....[Link]([PlainText]) の順に生成する
 
-					if (entity.StartIndex != 0)
-					{
-						inlines.Add(text.Slice(0, entity.StartIndex));
-					}
+                    int endIndex;
+                    var entity = entities[0];
 
-					for (int i = 0; i < entities.Length; i++)
-					{
-						entity = entities[i];
+                    if (entity.StartIndex != 0)
+                    {
+                        inlines.Add(text.Slice(0, entity.StartIndex));
+                    }
 
-						inlines.Add(CreateHyperlink(entity, text));
+                    for (int i = 0; i < entities.Length; i++)
+                    {
+                        entity = entities[i];
 
-						endIndex = entity.EndIndex;
-						if (endIndex <= textLength)
-						{
-							if (entities.Length > i + 1)
-								inlines.Add(text.Slice(endIndex, entities[i + 1].StartIndex));
-							else
-								inlines.Add(text.Slice(endIndex, textLength));
-						}
-						else
-							break;
-					}
-				});
-			}
+                        inlines.Add(CreateHyperlink(entity, text));
 
-			// text.Dispose();
-			text = null;
-		}
+                        endIndex = entity.EndIndex;
+                        if (endIndex <= textLength)
+                        {
+                            if (entities.Length > i + 1)
+                                inlines.Add(text.Slice(endIndex, entities[i + 1].StartIndex));
+                            else
+                                inlines.Add(text.Slice(endIndex, textLength));
+                        }
+                        else
+                            break;
+                    }
+                });
+            }
 
-		private static Hyperlink CreateHyperlink(Entity entity, TwStringInfo text)
-		{
-			var link = new Hyperlink()
-			{
-				Cursor = Cursors.Hand,
-				CommandParameter = entity,
-			};
+            // text.Dispose();
+            text = null;
+        }
 
-			switch (entity)
-			{
-				case UserMentionEntity mention:
-					link.Inlines.Add(text.Slice(mention.StartIndex, mention.EndIndex));
-					break;
+        private static Hyperlink CreateHyperlink(Entity entity, TwStringInfo text)
+        {
+            var link = new Hyperlink()
+            {
+                Cursor = Cursors.Hand,
+                CommandParameter = entity,
+            };
 
-				case MediaEntity media:
-					link.Inlines.Add(media.DisplayUrl);
-					break;
+            switch (entity)
+            {
+                case UserMentionEntity mention:
+                    link.Inlines.Add(text.Slice(mention.StartIndex, mention.EndIndex));
+                    break;
 
-				case UrlEntity url:
-					link.Inlines.Add(url.DisplayUrl);
-					break;
+                case MediaEntity media:
+                    link.Inlines.Add(media.DisplayUrl);
+                    break;
 
-				case SymbolEntity symbol:
-					link.Inlines.Add(text.Slice(symbol.StartIndex, symbol.EndIndex));
-					break;
-			}
+                case UrlEntity url:
+                    link.Inlines.Add(url.DisplayUrl);
+                    break;
 
-			return link;
-		}
-	}
+                case SymbolEntity symbol:
+                    link.Inlines.Add(text.Slice(symbol.StartIndex, symbol.EndIndex));
+                    break;
+            }
+
+            return link;
+        }
+    }
 }

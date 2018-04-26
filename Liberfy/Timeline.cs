@@ -1,95 +1,112 @@
 ﻿using CoreTweet;
+using Liberfy.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace Liberfy
 {
-	class Timeline : NotificationObject
-	{
-		private Account _account;
-		private Tokens _tokens => _account.Tokens;
-		private FluidCollection<ColumnBase> Columns => App.Columns;
+    internal class Timeline : NotificationObject
+    {
+        private static Dispatcher _dispatcher = App.Current.Dispatcher;
 
-		private readonly long _userId;
+        private readonly long _userId;
+        private readonly Account _account;
+        private Tokens _tokens => _account.Tokens;
+        public FluidCollection<ColumnBase> Columns { get; } = new FluidCollection<ColumnBase>();
 
-		public Timeline(Account account)
-		{
-			_account = account;
-			_userId = account.Id;
-		}
+        public event EventHandler<IEnumerable<StatusItem>> OnHomeStatusesLoaded;
+        public event EventHandler<IEnumerable<IItem>> OnNotificationsLoaded;
+        public event EventHandler OnUnloading;
 
-		public void Load()
-		{
-			Parallel.Invoke(
-				LoadHomeTimeline,
-				LoadNotificationTimeline,
-				LoadMessageTimeline
-			);
-		}
+        public Timeline(Account account)
+        {
+            this._account = account;
+            this._userId = account.Id;
+        }
 
-		private void LoadHomeTimeline()
-		{
-			try
-			{
-				var statuses = _tokens.Statuses.HomeTimeline();
-				var items = GetStatusItem(statuses);
+        public Timeline(Account account, IEnumerable<ColumnOptionBase> columnOptions)
+            : this(account)
+        {
+            this.LoadColumns(columnOptions);
+        }
 
-				Columns
-					.Where(c => c.Type == ColumnType.Home)
-					.ForEach(c => c.Items.Reset(items), App.Current.Dispatcher);
-			}
-			catch
-			{
-				// TODO: 取得失敗時の処理
-			}
-		}
+        public void LoadColumns(IEnumerable<ColumnOptionBase> columnOptions)
+        {
+            foreach (var columnSetting in columnOptions)
+            {
+                if (ColumnBase.TryFromSetting(columnSetting, this, out var column))
+                    this.Columns.Add(column);
+            }
+        }
 
-		private IEnumerable<StatusItem> GetStatusItem(IEnumerable<Status> statuses)
-		{
-			return statuses.Select(s => new StatusItem(s, _account));
-		}
+        public void Load()
+        {
+            this.LoadHomeTimelineAsync();
+            this.LoadNotificationTimelineAsync();
+            this.LoadMessageTimelineAsync();
+        }
 
-		private void LoadNotificationTimeline()
-		{
-			try
-			{
-				var statuses = _tokens.Statuses.MentionsTimeline();
-				var items = GetStatusItem(statuses);
+        private IEnumerable<StatusItem> GetStatusItem(IEnumerable<Status> statuses)
+        {
+            return statuses.Select(s => new StatusItem(s, _account));
+        }
 
-				Columns
-					.Where(c => c.Type == ColumnType.Notification)
-					.ForEach(c => c.Items.Reset(items), App.Current.Dispatcher);
-			}
-			catch
-			{
-				// TODO: 取得失敗時の処理
-			}
-		}
+        private Task LoadHomeTimelineAsync() => Task.Run(() =>
+        {
+            try
+            {
+                var statuses = _tokens.Statuses.HomeTimeline();
+                var items = this.GetStatusItem(statuses);
 
-		private void LoadMessageTimeline()
-		{
-			try
-			{
+                if (this.OnHomeStatusesLoaded != null)
+                {
+                    _dispatcher.InvokeAsync(() => this.OnHomeStatusesLoaded(this, items));
+                }
+            }
+            catch
+            {
+                // TODO: 取得失敗時の処理
+            }
+        });
 
-			}
-			catch
-			{
-				// TODO: 取得失敗時の処理
-			}
-		}
+        private Task LoadNotificationTimelineAsync() => Task.Run(() =>
+        {
+            try
+            {
+                var statuses = _tokens.Statuses.MentionsTimeline();
+                var items = this.GetStatusItem(statuses);
 
-		public void Unload()
-		{
-			var columns = Columns;
+                if (this.OnNotificationsLoaded != null)
+                {
+                    _dispatcher.InvokeAsync(() => this.OnNotificationsLoaded(this, items));
+                }
+            }
+            catch
+            {
+                // TODO: 取得失敗時の処理
+            }
+        });
 
-			foreach (var column in columns
-				.Where(c => c.Account.Id == _userId).ToArray())
-			{
-				columns.Remove(column);
-			}
-		}
-	}
+        private Task LoadMessageTimelineAsync() => Task.Run(() =>
+        {
+            try
+            {
+
+            }
+            catch
+            {
+                // TODO: 取得失敗時の処理
+            }
+        });
+
+        public void Unload()
+        {
+            this.OnUnloading?.Invoke(this, EventArgs.Empty);
+            this.Columns.Clear();
+        }
+    }
 }

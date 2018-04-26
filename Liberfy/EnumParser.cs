@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	class StreamSearchColumn : SearchColumnBase
-	{
-		public StreamSearchColumn(Timeline timeline) : base(timeline, ColumnType.Stream)
-		{
-		}
-	}
+    internal class EnumParser<T>
+    {
+        private Type _enumType;
+
+        public EnumParser()
+        {
+        }
+    }
 }

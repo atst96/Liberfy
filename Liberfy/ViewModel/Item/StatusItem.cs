@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Liberfy.DataStore;
 
 namespace Liberfy
 {
@@ -21,7 +20,7 @@ namespace Liberfy
         public UserInfo User { get; }
         public UserInfo RetweetUser { get; }
         public bool IsCurrentAccount { get; }
-        public StatusReaction Reaction { get; }
+        public StatusActivity Reaction { get; }
         public IEnumerable<MediaEntityInfo> MediaEntities { get; }
         public bool HasMediaEntities { get; }
 
@@ -31,7 +30,7 @@ namespace Liberfy
         {
             this.Id = status.Id;
 
-            var reaction = account.GetStatusReaction(status.GetSourceId());
+            var reaction = account.GetStatusActivity(status.GetSourceId());
             reaction.SetAll(status.IsFavorited ?? false, status.IsRetweeted ?? false);
 
             StatusInfo statusInfo;
@@ -41,8 +40,8 @@ namespace Liberfy
             {
                 this.Type = ItemType.Retweet;
 
-                statusInfo = StatusAddOrUpdate(status.RetweetedStatus);
-                this.RetweetUser = UserAddOrUpdate(status.User);
+                statusInfo = DataStore.StatusAddOrUpdate(status.RetweetedStatus);
+                this.RetweetUser = DataStore.UserAddOrUpdate(status.User);
 
                 if (status.User.Id == account.Id)
                     reaction.IsRetweeted = true;
@@ -50,7 +49,7 @@ namespace Liberfy
             else
             {
                 this.Type = ItemType.Status;
-                statusInfo = StatusAddOrUpdate(status);
+                statusInfo = DataStore.StatusAddOrUpdate(status);
 
                 this.IsReply = status.InReplyToStatusId.HasValue;
                 if (this.IsReply)

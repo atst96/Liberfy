@@ -6,119 +6,113 @@ using Liberfy.ViewModel;
 
 namespace Liberfy
 {
-	[MarkupExtensionReturnType(typeof(ViewModelBase))]
-	class ViewModelConnector : MarkupExtension
-	{
-		public ViewModelConnector() { }
+    [MarkupExtensionReturnType(typeof(ViewModelBase))]
+    internal class ViewModelConnector : MarkupExtension
+    {
+        public ViewModelConnector() { }
 
-		public ViewModelConnector(Type instanceType)
-		{
-			_instanceType = instanceType;
-		}
+        public ViewModelConnector(Type instanceType)
+        {
+            this._instanceType = instanceType;
+        }
 
-		public ViewModelConnector(ViewModelBase viewModel)
-		{
-			_viewModel = viewModel;
-		}
+        public ViewModelConnector(ViewModelBase viewModel)
+        {
+            this._viewModel = viewModel;
+        }
 
-		private Window _view;
+        private Window _view;
 
-		private Type _instanceType;
-		[ConstructorArgument("instnaceType")]
-		public Type InstanceType => _instanceType;
+        private Type _instanceType;
+        [ConstructorArgument("instnaceType")]
+        public Type InstanceType => _instanceType;
 
-		private ViewModelBase _viewModel;
-		[DefaultValue(null)]
-		public ViewModelBase ViewModel => _viewModel;
+        private ViewModelBase _viewModel;
+        [DefaultValue(null)]
+        public ViewModelBase ViewModel => this._viewModel;
 
-		[DefaultValue(true)]
-		public bool RegisterDialogService { get; set; } = true;
+        [DefaultValue(true)]
+        public bool RegisterDialogService { get; set; } = true;
 
-		[DefaultValue(false)]
-		public bool IsMainView { get; set; } = false;
+        [DefaultValue(false)]
+        public bool IsMainView { get; set; } = false;
 
-		private static Type _providerType = typeof(IProvideValueTarget);
+        private static Type _providerType = typeof(IProvideValueTarget);
 
-		public override object ProvideValue(IServiceProvider serviceProvider)
-		{
-			if (_instanceType != null)
-			{
-				if (Activator.CreateInstance(_instanceType) is ViewModelBase vm)
-				{
-					_viewModel = vm;
-				}
-				else
-				{
-					throw new NotSupportedException();
-				}
-			}
-			else if (_viewModel != null)
-			{
-				_instanceType = ViewModel.GetType();
-			}
-			else
-			{
-				throw new NullReferenceException();
-			}
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            if (this._instanceType != null)
+            {
+                this._viewModel = Activator.CreateInstance(this._instanceType) as ViewModelBase
+                    ?? throw new NotSupportedException();
+            }
+            else if (this._viewModel != null)
+            {
+                this._instanceType = this.ViewModel.GetType();
+            }
+            else
+            {
+                throw new NullReferenceException();
+            }
 
-			var dialogService = _viewModel.DialogService;
+            var dialogService = this._viewModel.DialogService;
 
-			if(serviceProvider.GetService(_providerType) is IProvideValueTarget valueTarget
-				&& valueTarget.TargetObject is Window view)
-			{
-				_view = view;
-				if (RegisterDialogService)
-				{
-					dialogService.RegisterView(view, IsMainView);
-				}
+            if (serviceProvider.GetService(_providerType) is IProvideValueTarget valueTarget
+                && valueTarget.TargetObject is Window view)
+            {
+                this._view = view;
+                if (this.RegisterDialogService)
+                {
+                    dialogService.RegisterView(view, IsMainView);
+                }
 
-				RegisterEvents();
-			}
+                this.RegisterEvents();
+            }
 
-			return _viewModel;
-		}
+            return _viewModel;
+        }
 
-		void RegisterEvents()
-		{
-			_view.Initialized += OnViewInitialized;
-			_view.Closing += OnViewClosing;
-			_view.Closed += OnViewClosed;
-		}
+        void RegisterEvents()
+        {
+            this._view.Initialized += this.OnViewInitialized;
+            this._view.Closing += this.OnViewClosing;
+            this._view.Closed += this.OnViewClosed;
+        }
 
-		void UnregisterEvents()
-		{
-			_view.Initialized -= OnViewInitialized;
-			_view.Closing -= OnViewClosing;
-			_view.Closed -= OnViewClosed;
-		}
+        void UnregisterEvents()
+        {
+            this._view.Initialized -= this.OnViewInitialized;
+            this._view.Closing -= this.OnViewClosing;
+            this._view.Closed -= this.OnViewClosed;
+        }
 
-		void OnViewInitialized(object sender, EventArgs e)
-		{
-			_viewModel?.OnInitialized();
-		}
+        void OnViewInitialized(object sender, EventArgs e)
+        {
+            this._viewModel?.OnInitialized();
+        }
 
-		void OnViewClosing(object sender, CancelEventArgs e)
-		{
-			e.Cancel = !ViewModel?.CanClose() ?? false;
-		}
+        void OnViewClosing(object sender, CancelEventArgs e)
+        {
+            e.Cancel = !this.ViewModel?.CanClose() ?? false;
+        }
 
-		void OnViewClosed(object sender, EventArgs e)
-		{
-			var dialogService = ViewModel.DialogService;
+        void OnViewClosed(object sender, EventArgs e)
+        {
+            var dialogService = this.ViewModel.DialogService;
 
-			if (_viewModel != null)
-			{
-				_viewModel.OnClosed();
-				_viewModel.Dispose();
-			}
+            if (this._viewModel != null)
+            {
+                this._viewModel.OnClosed();
+                this._viewModel.Dispose();
+            }
 
-			UnregisterEvents();
+            this.UnregisterEvents();
 
-			_view.DataContext = null;
+            this._view.DataContext = null;
 
-			_instanceType = null;
-			_viewModel = null;
-			_view = null;
-		}
-	}
+            this._instanceType = null;
+            this._viewModel = null;
+            this._view = null;
+        }
+    }
 }

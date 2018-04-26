@@ -7,92 +7,94 @@ using System.Threading.Tasks;
 
 namespace Liberfy.ViewModel
 {
-	internal class MainWindow : ViewModelBase
-	{
-		public AccountSetting AccountSetting => App.AccountSetting;
-		public FluidCollection<Account> Accounts => App.Accounts;
-		public FluidCollection<ColumnBase> Columns => App.Columns;
+    internal class MainWindow : ViewModelBase
+    {
+        public FluidCollection<Account> Accounts => App.Accounts;
 
-		private bool _isAccountsLoaded;
-		public bool IsAccountsLoaded
-		{
-			get => _isAccountsLoaded;
-			set => SetProperty(ref _isAccountsLoaded, value);
-		}
+        private bool _isAccountsLoaded;
+        public bool IsAccountsLoaded
+        {
+            get => this._isAccountsLoaded;
+            set => this.SetProperty(ref this._isAccountsLoaded, value);
+        }
 
-		private bool _initialized;
-		internal override async void OnInitialized()
-		{
-			if (_initialized) return;
-			_initialized = true;
+        private bool _initialized;
+        internal override async void OnInitialized()
+        {
+            if (this._initialized) return;
+            this._initialized = true;
 
-			if (Accounts.Count == 0 && !DialogService.OpenInitSettingView())
-			{
-				DialogService.Invoke(ViewState.Close);
-				return;
-			}
+            if (Accounts.Count == 0 && !DialogService.OpenInitSettingView())
+            {
+                this.DialogService.Invoke(ViewState.Close);
+                return;
+            }
 
-			foreach (var account in Accounts.Where(a => a.AutomaticallyLogin))
-			{
-				account.IsLoading = true;
+            foreach (var account in Accounts.Where(a => a.AutomaticallyLogin))
+            {
+                account.IsLoading = true;
 
-				if (await account.LoginAsync())
-				{
-					await account.LoadDetails();
-					account.StartTimeline();
-				}
+                if (await account.Login())
+                {
+                    await account.LoadAccountDetails();
+                    account.StartTimeline();
+                }
 
-				account.IsLoading = false;
-			}
+                account.IsLoading = false;
+            }
 
-			IsAccountsLoaded = true;
-		}
+            this.IsAccountsLoaded = true;
+        }
 
-		private bool _isAccountMenuOpen;
-		public bool IsAccountMenuOpen
-		{
-			get => _isAccountMenuOpen;
-			set => SetProperty(ref _isAccountMenuOpen, value);
-		}
+        private bool _isAccountMenuOpen;
+        public bool IsAccountMenuOpen
+        {
+            get => this._isAccountMenuOpen;
+            set => this.SetProperty(ref this._isAccountMenuOpen, value);
+        }
 
-		private void CloseAccountMenu()
-		{
-			IsAccountMenuOpen = false;
-		}
+        private void CloseAccountMenu()
+        {
+            this.IsAccountMenuOpen = false;
+        }
 
-		private Command<Account> _accountTweetCommand;
-		public Command<Account> AccountTweetCommand
-		{
-			get => _accountTweetCommand ?? (_accountTweetCommand = RegisterCommand<Account>(AccountTweet));
-		}
+        private Command<Account> _accountTweetCommand;
+        public Command<Account> AccountTweetCommand
+        {
+            get => this._accountTweetCommand ?? (this._accountTweetCommand = this.RegisterCommand<Account>(AccountTweet));
+        }
 
-		private void AccountTweet(Account account)
-		{
-			DialogService.Open(ViewType.TweetWindow, account);
-		}
+        private void AccountTweet(Account account)
+        {
+            DialogService.Open(ViewType.TweetWindow, account);
+        }
 
-		private Command _tweetCommand;
-		public Command TweetCommand
-		{
-			get => _tweetCommand ?? (_tweetCommand = RegisterCommand(Tweet));
-		}
+        private Command _tweetCommand;
+        public Command TweetCommand
+        {
+            get => this._tweetCommand ?? (this._tweetCommand = this.RegisterCommand(Tweet));
+        }
 
-		private void Tweet()
-		{
-			DialogService.Open(ViewType.TweetWindow);
-		}
+        private void Tweet()
+        {
+            DialogService.Open(ViewType.TweetWindow);
+        }
 
-		private Command _showSettingDialog;
-		public Command ShowSettingDialog
-		{
-			get => _showSettingDialog ?? (_showSettingDialog = RegisterCommand(() => DialogService.OpenSetting()));
-		}
+        private Command _showSettingDialog;
+        public Command ShowSettingDialog
+        {
+            get =>this. _showSettingDialog ?? (this._showSettingDialog = this.RegisterCommand(() => this.DialogService.OpenSetting()));
+        }
 
-		internal override bool CanClose()
-		{
-			App.Shutdown(true);
+        internal override bool CanClose()
+        {
+            App.Shutdown(true);
+            return true;
+        }
 
-			return true;
-		}
-	}
+        public IEnumerable<ColumnBase> Columns
+        {
+            get => this.Accounts.First().Timeline.Columns;
+        }
+    }
 }
