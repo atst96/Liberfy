@@ -54,6 +54,13 @@ namespace Liberfy
         {
             IEnumerable<AccountItem> accountsSetting = null;
 
+            // 作業ディレクトリの再指定（自動起動時に C:/Windows/system32になってしまうため）
+
+            var workingDirectory = Path.GetDirectoryName(Assembly.Location);
+            Directory.SetCurrentDirectory(workingDirectory);
+
+            // アプリケーション設定の読み込み
+
             if (TryParseSettingFileOrDisplayError(Defines.AccountsFile, ref accountsSetting))
             {
                 Accounts = new FluidCollection<Account>(
