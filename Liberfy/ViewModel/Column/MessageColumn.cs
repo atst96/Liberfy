@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    class MessageColumn : ColumnBase
+    class MessageColumn : ColumnBase<GeneralColumnOption>
     {
         public MessageColumn(Timeline timeline)
             : base(timeline, ColumnType.Messages, "Message")
         {
         }
+
+        protected override GeneralColumnOption CreateOption() => new GeneralColumnOption(this.Type);
 
         public override void OnShowDetails(IItem item) { }
     }

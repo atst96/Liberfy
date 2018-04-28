@@ -16,7 +16,7 @@ namespace Liberfy
 
 		public override DataTemplate SelectTemplate(object item, DependencyObject container)
 		{
-			switch((item as ColumnBase)?.Type)
+			switch((item as IColumn)?.Type)
 			{
 				case ColumnType.Search:
 					return _searchTemplate;
