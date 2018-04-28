@@ -126,8 +126,10 @@
 
                             <ToggleButton
                                 x:Name="paneToggle"
-                                Grid.Column="4" Padding="6 4"
-                                IsChecked="{Binding IsDetailOpen, Mode=TwoWay}" />
+                                Grid.Column="4" Padding="11"
+                                Width="34" Height="34"
+                                IsChecked="{Binding IsDetailOpen, Mode=TwoWay}"
+                                Style="{StaticResource ColumnPanelToggleButton}" />
 
                             <Grid
                                 Grid.Row="1" Grid.ColumnSpan="5"

@@ -151,3 +151,9 @@
 > LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 > OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 > SOFTWARE.
+---
+
+## FontAwesome
+(SVGアイコンのデータを使用 : /Liberfy/XAML/Icons.xaml)
+> Font Awesome Free 5.0.10 by @fontawesome - https://fontawesome.com
+> License - https://fontawesome.com/license (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)

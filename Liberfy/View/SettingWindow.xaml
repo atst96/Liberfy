@@ -1244,8 +1244,10 @@
 
                                             <ToggleButton
                                                 x:Name="paneToggle"
-                                                Grid.Column="4" Padding="6 4"
-                                                IsChecked="True" />
+                                                Grid.Column="4" Padding="11"
+                                                IsChecked="False"
+                                                Width="34" Height="34"
+                                                Style="{StaticResource ColumnPanelToggleButton}" />
 
                                             <Border
                                                 Grid.Row="1" Grid.ColumnSpan="5"
