@@ -83,6 +83,10 @@ namespace Liberfy.JsonFormatter
                                 return Deserialize<GeneralColumnOption>(ref reader, formatterResolver);
                         }
                     }
+                    else
+                    {
+                        reader.ReadNextBlockSegment();
+                    }
                 }
 
                 return null;
