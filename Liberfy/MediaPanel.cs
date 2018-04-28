@@ -28,6 +28,12 @@ namespace Liberfy
                 new FrameworkPropertyMetadata(0.75,
                     FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
 
+        private static void ApplyLayout(UIElement element, ref Rect rect)
+        {
+            element.Measure(rect.Size);
+            element.Arrange(rect);
+        }
+
         protected override Size MeasureOverride(Size availableSize)
         {
             double width = availableSize.Width;
@@ -57,44 +63,66 @@ namespace Liberfy
         {
             var children = this.Children;
 
-            double containerWidth = finalSize.Width;
-            double containerHeight = finalSize.Height;
-
-            int childrenCount = this.Children.Count;
+            int childrenCount = children.Count;
 
             if (childrenCount == 1)
             {
-                children[0].Arrange(new Rect(0, 0, containerWidth, containerHeight));
+                var rect = new Rect(new Point(), finalSize);
+
+                ApplyLayout(children[0], ref rect);
             }
             else if (childrenCount == 2)
             {
-                double halfWidth = containerWidth / 2.0d;
+                const double splitWidthCoe = 0.5d;
 
-                children[0].Arrange(new Rect(0, 0, halfWidth, containerHeight));
-                children[1].Arrange(new Rect(halfWidth, 0, halfWidth, containerHeight));
+                var itemRect = new Rect(
+                    0,
+                    0,
+                    finalSize.Width * splitWidthCoe,
+                    finalSize.Height
+                );
+
+                ApplyLayout(children[0], ref itemRect);
+
+                itemRect.X += itemRect.Width;
+
+                ApplyLayout(children[1], ref itemRect);
             }
             else if (childrenCount > 0)
             {
-                double leftItemWidth = containerWidth * (1 / 3d * 2);
-                double rightItemWidth = containerWidth - leftItemWidth;
+                const double leftItemWidthCoe = 2 / 3d;
 
-                int rightItemCount = Math.Min(MaxItems, childrenCount) - 1;
-                double rightItemHeight = containerHeight / rightItemCount;
+                var leftItemRect = new Rect(
+                    0,
+                    0,
+                    finalSize.Width * leftItemWidthCoe,
+                    finalSize.Height
+                );
 
-                var rightItemSize = new Size(containerWidth - leftItemWidth, rightItemHeight);
+                ApplyLayout(children[0], ref leftItemRect);
 
-                children[0].Arrange(new Rect(0, 0, leftItemWidth, containerHeight));
+                int rightItemCount = childrenCount - 1;
 
-                for (int i = 1; i < children.Count; ++i)
+                var rightItemRect = new Rect(
+                    leftItemRect.Width,
+                    0,
+                    finalSize.Width - leftItemRect.Width,
+                    finalSize.Height / rightItemCount
+                );
+
+                var rightItemVec = new Vector(
+                    0,
+                    rightItemRect.Height
+                );
+
+                for (int i = 1; i <= rightItemCount; ++i)
                 {
-                    var element = children[i];
-                    var point = new Point(leftItemWidth, (i - 1) * rightItemHeight);
-                    element.Measure(rightItemSize);
-                    element.Arrange(new Rect(point, rightItemSize));
+                    ApplyLayout(children[i], ref rightItemRect);
+                    rightItemRect.Location += rightItemVec;
                 }
             }
 
-            return new Size(containerWidth, containerHeight);
+            return finalSize;
         }
     }
 }
