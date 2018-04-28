@@ -1391,7 +1391,9 @@
                                                 VerticalAlignment="Top"
                                                 Style="{StaticResource ImageButton}">
                                                 <Border
-                                                    Width="48" Height="48"
+                                                    d:DesignWidth="48" d:DesignHeight="48"
+                                                    Width="{Binding PreviewProfileImageWidth, Mode=OneWay, FallbackValue=40}"
+                                                    Height="{Binding PreviewProfileImageWidth, Mode=OneWay, FallbackValue=40}"
                                                     Background="#ccc"
                                                     CornerRadius="{Binding ProfileImageCornerRadius, Mode=OneWay}" />
                                             </Button>
@@ -1643,7 +1645,9 @@
                                         VerticalAlignment="Top"
                                         Style="{StaticResource ImageButton}">
                                         <Border
-                                            Width="48" Height="48"
+                                            d:DesignWidth="48" d:DesignHeight="48"
+                                            Width="{Binding PreviewProfileImageWidth, Mode=OneWay, FallbackValue=40}"
+                                            Height="{Binding PreviewProfileImageWidth, Mode=OneWay, FallbackValue=40}"
                                             Background="#ccc"
                                             CornerRadius="{Binding ProfileImageCornerRadius, Mode=OneWay}" />
                                     </Button>
