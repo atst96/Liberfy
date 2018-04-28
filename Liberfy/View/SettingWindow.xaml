@@ -1441,24 +1441,12 @@
 
                                             <app:MediaPanel
                                                 DockPanel.Dock="Top"
-                                                Height="120"
+                                                Height="120" Spacing="4"
                                                 Margin="{StaticResource TimelineItemEntityMargin}">
-                                                <Button
-                                                    Margin="1"
-                                                    Background="#aaa"
-                                                    Style="{StaticResource ImageButton}" />
-                                                <Button
-                                                    Margin="1"
-                                                    Background="#aaa"
-                                                    Style="{StaticResource ImageButton}" />
-                                                <Button
-                                                    Margin="1"
-                                                    Background="#aaa"
-                                                    Style="{StaticResource ImageButton}" />
-                                                <Button
-                                                    Margin="1"
-                                                    Background="#aaa"
-                                                    Style="{StaticResource ImageButton}" />
+                                                <Button Style="{StaticResource TimelineImageButton}" />
+                                                <Button Style="{StaticResource TimelineImageButton}" />
+                                                <Button Style="{StaticResource TimelineImageButton}" />
+                                                <Button Style="{StaticResource TimelineImageButton}" />
                                             </app:MediaPanel>
 
                                             <Border
@@ -1708,24 +1696,12 @@
 
                                     <app:MediaPanel
                                             DockPanel.Dock="Top"
-                                            Height="120"
+                                            Height="120" Spacing="4"
                                             Margin="{StaticResource TimelineItemEntityMargin}">
-                                        <Button
-                                            Margin="1"
-                                            Background="#aaa"
-                                            Style="{StaticResource ImageButton}" />
-                                        <Button
-                                            Margin="1"
-                                            Background="#aaa"
-                                            Style="{StaticResource ImageButton}" />
-                                        <Button
-                                            Margin="1"
-                                            Background="#aaa"
-                                            Style="{StaticResource ImageButton}" />
-                                        <Button
-                                            Margin="1"
-                                            Background="#aaa"
-                                            Style="{StaticResource ImageButton}" />
+                                        <Button Style="{StaticResource TimelineImageButton}" />
+                                        <Button Style="{StaticResource TimelineImageButton}" />
+                                        <Button Style="{StaticResource TimelineImageButton}" />
+                                        <Button Style="{StaticResource TimelineImageButton}" />
                                     </app:MediaPanel>
 
                                     <Border
