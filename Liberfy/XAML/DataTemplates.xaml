@@ -396,15 +396,11 @@
 
 
     <DataTemplate x:Key="MediaItemTemplate" DataType="{x:Type app:MediaEntityInfo}">
-        <Button
-            Margin="2" Padding="0"
-            VerticalContentAlignment="Stretch"
-            HorizontalContentAlignment="Stretch"
-            Style="{StaticResource ImageButton}">
+        <Button Style="{StaticResource TimelineImageButton}">
             <Image
                 Source="{Binding CurrentEntity.MediaUrl, Mode=OneTime, IsAsync=True}" 
-                HorizontalAlignment="Center"
                 VerticalAlignment="Center"
+                HorizontalAlignment="Center"
                 Stretch="UniformToFill" />
         </Button>
     </DataTemplate>
@@ -529,7 +525,7 @@
                     Visibility="{DynamicResource TweetImagesVisibility}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <app:MediaPanel />
+                            <app:MediaPanel Spacing="4" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
