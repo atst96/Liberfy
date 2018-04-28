@@ -1,6 +1,4 @@
-﻿using Liberfy.ViewModel;
-using Liberfy.ViewModel.Column.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Windows.Media;
@@ -154,7 +152,7 @@ namespace Liberfy
         #region Account
 
         [DataMember(Name = "account_column_defaults")]
-        [Utf8Json.JsonFormatter(typeof(FluidColumnOptionFormatter))]
+        [Utf8Json.JsonFormatter(typeof(JsonFormatter.FluidColumnOptionFormatter))]
         private FluidCollection<ColumnOptionBase> _defaultColumns;
         [IgnoreDataMember]
         public FluidCollection<ColumnOptionBase> DefaultColumns

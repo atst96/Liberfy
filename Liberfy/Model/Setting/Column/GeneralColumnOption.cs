@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Liberfy.ViewModel.Column.Options
+namespace Liberfy
 {
     [DataContract]
     internal class GeneralColumnOption : ColumnOptionBase

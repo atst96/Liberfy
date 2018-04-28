@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Liberfy.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Utf8Json;
 
-namespace Liberfy.ViewModel
+namespace Liberfy.JsonFormatter
 {
     internal class ArrayColumnOptionFormatter : IJsonFormatter<IEnumerable<ColumnOptionBase>>
     {
@@ -18,6 +19,7 @@ namespace Liberfy.ViewModel
             if (!reader.ReadIsNull() && reader.ReadIsBeginArray())
             {
                 int count = 0;
+
                 while (!reader.ReadIsEndArrayWithSkipValueSeparator(ref count))
                 {
                     list.AddLast(_columnOptionFormatter.Deserialize(ref reader, formatterResolver));

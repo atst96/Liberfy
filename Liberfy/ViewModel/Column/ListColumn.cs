@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using Liberfy.ViewModel;
-using Liberfy.ViewModel.Column.Options;
 
 namespace Liberfy
 {

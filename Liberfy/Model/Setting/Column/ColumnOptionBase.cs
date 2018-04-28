@@ -1,10 +1,9 @@
-﻿using Liberfy.ViewModel.Column.Options;
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Liberfy.ViewModel
+namespace Liberfy
 {
     [DataContract, Serializable]
     internal class ColumnOptionBase : NotificationObject, ICloneable

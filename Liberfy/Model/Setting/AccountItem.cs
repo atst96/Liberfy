@@ -43,7 +43,7 @@ namespace Liberfy
         public bool AutomaticallyLoadTimeline { get; set; }
 
         [DataMember(Name = "columns")]
-        [Utf8Json.JsonFormatter(typeof(ArrayColumnOptionFormatter))]
+        [Utf8Json.JsonFormatter(typeof(JsonFormatter.ArrayColumnOptionFormatter))]
         private IEnumerable<ColumnOptionBase> _columns;
         [IgnoreDataMember]
         public IEnumerable<ColumnOptionBase> Columns

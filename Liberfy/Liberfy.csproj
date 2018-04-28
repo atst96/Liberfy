@@ -169,13 +169,13 @@
     <Compile Include="TwStringInfo.cs" />
     <Compile Include="ViewModel\Column\HomeColumn.cs" />
     <Compile Include="ViewModel\Column\NotificationColumn.cs" />
-    <Compile Include="ViewModel\Column\Options\ArrayColumnOptionFormatter.cs" />
-    <Compile Include="ViewModel\Column\Options\ColumnOptionBase.cs" />
-    <Compile Include="ViewModel\Column\Options\ColumnOptionJsonFormatter.cs" />
-    <Compile Include="ViewModel\Column\Options\GeneralColumnOption.cs" />
-    <Compile Include="ViewModel\Column\Options\ListColumnOption.cs" />
-    <Compile Include="ViewModel\Column\Options\SearchColumnOption.cs" />
-    <Compile Include="ViewModel\Column\Options\SearchColumnOptionBase.cs" />
+    <Compile Include="JsonFormatter\ArrayColumnOptionFormatter.cs" />
+    <Compile Include="Model\Setting\Column\ColumnOptionBase.cs" />
+    <Compile Include="JsonFormatter\ColumnOptionJsonFormatter.cs" />
+    <Compile Include="Model\Setting\Column\GeneralColumnOption.cs" />
+    <Compile Include="Model\Setting\Column\ListColumnOption.cs" />
+    <Compile Include="Model\Setting\Column\SearchColumnOption.cs" />
+    <Compile Include="Model\Setting\Column\SearchColumnOptionBase.cs" />
     <Compile Include="ViewModel\SettingWindowViewModel.View.cs" />
     <Compile Include="ViewModel\UploadMedia.cs" />
     <Compile Include="UILocalize.cs" />
@@ -314,9 +314,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <COMReference Include="iTunesLib">
       <Guid>{9E93C96F-CF0D-43F6-8BA8-B807A3370712}</Guid>

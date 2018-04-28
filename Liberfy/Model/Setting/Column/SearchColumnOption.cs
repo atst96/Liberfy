@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Liberfy.ViewModel.Column.Options
+namespace Liberfy
 {
     [DataContract]
     internal class SearchColumnOption : SearchColumnOptionBase
