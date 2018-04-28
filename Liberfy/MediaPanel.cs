@@ -16,6 +16,21 @@ namespace Liberfy
 
         public const int MaxItems = 6;
 
+
+
+        public double Spacing
+        {
+            get { return (double)GetValue(SpacingProperty); }
+            set { SetValue(SpacingProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Spacing.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SpacingProperty =
+            DependencyProperty.Register("Spacing", typeof(double), typeof(MediaPanel),
+                new FrameworkPropertyMetadata(0d,
+                    FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
+
+
         public double HeightCore
         {
             get => (double)GetValue(HeightCoreProperty);
@@ -62,8 +77,9 @@ namespace Liberfy
         protected override Size ArrangeOverride(Size finalSize)
         {
             var children = this.Children;
-
             int childrenCount = children.Count;
+
+            double spacingWidth = this.Spacing;
 
             if (childrenCount == 1)
             {
@@ -73,52 +89,53 @@ namespace Liberfy
             }
             else if (childrenCount == 2)
             {
-                const double splitWidthCoe = 0.5d;
+                double itemSpacingWidth = spacingWidth / 2d;
 
                 var itemRect = new Rect(
                     0,
                     0,
-                    finalSize.Width * splitWidthCoe,
+                    (finalSize.Width / 2) - itemSpacingWidth,
                     finalSize.Height
                 );
 
                 ApplyLayout(children[0], ref itemRect);
 
-                itemRect.X += itemRect.Width;
+                itemRect.X += itemRect.Width + spacingWidth;
 
                 ApplyLayout(children[1], ref itemRect);
             }
             else if (childrenCount > 0)
             {
                 const double leftItemWidthCoe = 2 / 3d;
+                double itemSpacingWidth = spacingWidth / 2d;
 
                 var leftItemRect = new Rect(
                     0,
                     0,
-                    finalSize.Width * leftItemWidthCoe,
+                    (finalSize.Width * leftItemWidthCoe) - itemSpacingWidth,
                     finalSize.Height
                 );
 
                 ApplyLayout(children[0], ref leftItemRect);
 
-                int rightItemCount = childrenCount - 1;
+                int rightItemsCount = childrenCount - 1;
 
                 var rightItemRect = new Rect(
-                    leftItemRect.Width,
+                    leftItemRect.Width + spacingWidth,
                     0,
-                    finalSize.Width - leftItemRect.Width,
-                    finalSize.Height / rightItemCount
+                    finalSize.Width - leftItemRect.Width - spacingWidth,
+                    ((finalSize.Height - (spacingWidth * (rightItemsCount - 1))) / rightItemsCount)
                 );
 
-                var rightItemVec = new Vector(
+                var rightItemVector = new Vector(
                     0,
-                    rightItemRect.Height
+                    rightItemRect.Height + spacingWidth
                 );
 
-                for (int i = 1; i <= rightItemCount; ++i)
+                for (int i = 1; i <= rightItemsCount; ++i)
                 {
                     ApplyLayout(children[i], ref rightItemRect);
-                    rightItemRect.Location += rightItemVec;
+                    rightItemRect.Location += rightItemVector;
                 }
             }
 
