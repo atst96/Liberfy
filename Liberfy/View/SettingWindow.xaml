@@ -1392,7 +1392,8 @@
                                                 Style="{StaticResource ImageButton}">
                                                 <Border
                                                     Width="48" Height="48"
-                                                    Background="#ccc" />
+                                                    Background="#ccc"
+                                                    CornerRadius="{Binding ProfileImageCornerRadius, Mode=OneWay}" />
                                             </Button>
 
                                             <DockPanel
@@ -1643,7 +1644,8 @@
                                         Style="{StaticResource ImageButton}">
                                         <Border
                                             Width="48" Height="48"
-                                            Background="#ccc" />
+                                            Background="#ccc"
+                                            CornerRadius="{Binding ProfileImageCornerRadius, Mode=OneWay}" />
                                     </Button>
 
                                     <DockPanel
