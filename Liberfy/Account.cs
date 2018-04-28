@@ -331,7 +331,7 @@ namespace Liberfy
             Token = ApiTokenInfo.FromCoreTweetTokens(Tokens),
             AutomaticallyLogin = this.AutomaticallyLogin,
             AutomaticallyLoadTimeline = this.AutomaticallyLoadTimeline,
-            Columns = this.Timeline.Columns.Select(c => c.Option),
+            Columns = this.Timeline.Columns.Select(c => c.GetOption()),
         };
     }
 

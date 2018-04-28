@@ -103,7 +103,7 @@ namespace Liberfy.Converter
         }
     }
 
-    [ValueConversion(typeof(ColumnOptionBase), typeof(ColumnBase))]
+    [ValueConversion(typeof(ColumnOptionBase), typeof(IColumn))]
     internal class ColumnSettingToColumnConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -113,7 +113,7 @@ namespace Liberfy.Converter
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return ((ColumnBase)value).Option;
+            return (value as IColumn)?.GetOption();
         }
     }
 

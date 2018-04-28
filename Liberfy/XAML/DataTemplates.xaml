@@ -239,7 +239,7 @@
                 Grid.Column="1" Grid.ColumnSpan="2"
                 DisplayMemberPath="Value"
                 SelectedValuePath="Key"
-                SelectedValue="{Binding SearchType}"
+                SelectedValue="{Binding Option.SearchType}"
                 ItemsSource="{x:Static app:SearchColumn.SearchTypes}" />
 
             <Grid Grid.Row="1" Grid.ColumnSpan="2">
@@ -259,7 +259,7 @@
                     Content="言語"
                     Grid.Row="0"
                     VerticalAlignment="Center"
-                    IsChecked="{Binding UseLanguage}" />
+                    IsChecked="{Binding Option.UseLanguage}" />
 
                 <ComboBox
                     Grid.Row="0"
@@ -267,14 +267,14 @@
                     Margin="0 2"
                     SelectedValuePath="Key"
                     DisplayMemberPath="Value"
-                    SelectedValue="{Binding Language}"
+                    SelectedValue="{Binding Option.Language}"
                     ItemsSource="{x:Static app:SearchColumn.Languages}" />
 
                 <CheckBox
                     Grid.Row="1"
                     Content="検索結果"
                     VerticalAlignment="Center"
-                    IsChecked="{Binding UseResultType}" />
+                    IsChecked="{Binding Option.UseResultType}" />
 
                 <ComboBox
                     Grid.Row="1"
@@ -282,44 +282,44 @@
                     Margin="0 2"
                     SelectedValuePath="Key"
                     DisplayMemberPath="Value"
-                    SelectedValue="{Binding ResultType}"
+                    SelectedValue="{Binding Option.ResultType}"
                     ItemsSource="{x:Static app:SearchColumn.ResultTypes}" />
 
                 <CheckBox
                     Grid.Row="2"
                     Content="until"
                     VerticalAlignment="Center"
-                    IsChecked="{Binding UseUntil}" />
+                    IsChecked="{Binding Option.UseUntil}" />
 
                 <TextBox
                     Grid.Row="2"
                     Grid.Column="1"
                     Margin="0 2"
-                    Text="{Binding Until, UpdateSourceTrigger=PropertyChanged}" />
+                    Text="{Binding Option.Until, UpdateSourceTrigger=PropertyChanged}" />
 
                 <CheckBox
                     Grid.Row="3"
                     Content="since__id"
                     VerticalAlignment="Center"
-                    IsChecked="{Binding UseSinceId}"/>
+                    IsChecked="{Binding Option.UseSinceId, Mode=TwoWay}"/>
 
                 <TextBox
                     Grid.Row="3"
                     Grid.Column="1"
                     Margin="0 2"
-                    Text="{Binding SinceId, UpdateSourceTrigger=PropertyChanged}" />
+                    Text="{Binding Option.SinceId, UpdateSourceTrigger=PropertyChanged}" />
 
                 <CheckBox
                     Grid.Row="4"
                     Content="max__id"
                     VerticalAlignment="Center"
-                    IsChecked="{Binding UseMaxId}" />
+                    IsChecked="{Binding Option.UseMaxId, Mode=TwoWay}" />
 
                 <TextBox
                     Grid.Row="4"
                     Grid.Column="1"
                     Margin="0 2"
-                    Text="{Binding MaxId, UpdateSourceTrigger=PropertyChanged}" />
+                    Text="{Binding Option.MaxId, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
         </Grid>
     </DataTemplate>
@@ -359,20 +359,20 @@
                     Grid.ColumnSpan="2"
                     Content="検索時に一覧をクリアする"
                     VerticalAlignment="Center"
-                    IsChecked="{Binding ClearItemsAfterSearch}" />
+                    IsChecked="{Binding Option.ClearItemsAfterSearch}" />
 
                 <CheckBox
                     Grid.Row="1"
                     Grid.ColumnSpan="2"
                     Content="検索を行う"
                     VerticalAlignment="Center"
-                    IsChecked="{Binding EnableBeforeSearch}" />
+                    IsChecked="{Binding Option.EnableBeforeSearch}" />
 
                 <CheckBox
                     Grid.Row="2"
                     Content="言語"
                     VerticalAlignment="Center"
-                    IsChecked="{Binding UseLanguage}" />
+                    IsChecked="{Binding Option.UseLanguage}" />
 
                 <ComboBox
                     Grid.Row="2"
@@ -380,7 +380,7 @@
                     Margin="0 2"
                     SelectedValuePath="Key"
                     DisplayMemberPath="Value"
-                    SelectedValue="{Binding Language}"
+                    SelectedValue="{Binding Option.Language}"
                     ItemsSource="{x:Static app:SearchColumn.Languages}" />
 
             </Grid>

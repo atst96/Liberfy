@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    internal class HomeColumn : StatusColumnBase
+    internal class HomeColumn : StatusColumnBase<GeneralColumnOption>
     {
         public HomeColumn(Timeline timeline)
             : base(timeline, ColumnType.Home, "Home")
@@ -16,6 +16,8 @@ namespace Liberfy
                 timeline.OnHomeStatusesLoaded += OnHomeTimelineLoaded;
             }
         }
+
+        protected override GeneralColumnOption CreateOption() => new GeneralColumnOption(this.Type);
 
         private void OnHomeTimelineLoaded(object sender, IEnumerable<StatusItem> e)
         {

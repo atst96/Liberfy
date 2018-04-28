@@ -92,7 +92,7 @@ namespace Liberfy.ViewModel
             return true;
         }
 
-        public IEnumerable<ColumnBase> Columns
+        public IEnumerable<IColumn> Columns
         {
             get => this.Accounts.First().Timeline.Columns;
         }

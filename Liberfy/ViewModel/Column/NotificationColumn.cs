@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    internal class NotificationColumn : StatusColumnBase
+    internal class NotificationColumn : StatusColumnBase<GeneralColumnOption>
     {
         public NotificationColumn(Timeline timeline)
             : base(timeline, ColumnType.Notification, "Notification")
@@ -16,6 +16,8 @@ namespace Liberfy
                 timeline.OnNotificationsLoaded += OnNotificationLoaded;
             }
         }
+
+        protected override GeneralColumnOption CreateOption() => new GeneralColumnOption(this.Type);
 
         private void OnNotificationLoaded(object sender, IEnumerable<IItem> e)
         {

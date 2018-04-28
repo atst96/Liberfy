@@ -10,10 +10,11 @@ namespace Liberfy
     [DataContract]
     internal class SearchColumnOption : SearchColumnOptionBase
     {
+        [DataMember(Name = "type")]
         public override ColumnType Type { get; } = ColumnType.Search;
 
         [DataMember(Name = "use_result_type")]
-        private bool? _useResultType;
+        public bool? _useResultType;
         [IgnoreDataMember]
         public bool UseResultType
         {
@@ -51,7 +52,7 @@ namespace Liberfy
         [DataMember(Name = "use_since_id")]
         private bool? _useSinceId;
         [IgnoreDataMember]
-        public bool UseSince
+        public bool UseSinceId
         {
             get => this._useSinceId ?? false;
             set => this.SetProperty(ref this._useSinceId, value);
@@ -60,7 +61,7 @@ namespace Liberfy
         [DataMember(Name = "since_id")]
         private long? _sinceId;
         [IgnoreDataMember]
-        public long Since
+        public long SinceId
         {
             get => this._sinceId ?? default(long);
             set => this.SetProperty(ref this._sinceId, value);
