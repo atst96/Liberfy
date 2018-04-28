@@ -93,14 +93,11 @@ namespace Liberfy.JsonFormatter
             }
         }
 
-        private static IJsonFormatter<object> _objectJsonFormatter;
-
         public void Serialize(ref JsonWriter writer, ColumnOptionBase value, IJsonFormatterResolver formatterResolver)
         {
-            if (_objectJsonFormatter == null)
-                _objectJsonFormatter = formatterResolver.GetFormatter<object>();
-
-            _objectJsonFormatter.Serialize(ref writer, value, formatterResolver);
+            formatterResolver
+                .GetFormatter<ColumnOptionBase>()
+                .Serialize(ref writer, value, formatterResolver);
         }
     }
 }

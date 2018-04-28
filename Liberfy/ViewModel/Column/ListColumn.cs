@@ -8,7 +8,7 @@ using System.Windows.Threading;
 
 namespace Liberfy
 {
-    internal class ListColumn : StatusColumnBase<ListColumnOption>
+    internal class ListColumn : StatusColumnBase
     {
         private static string BaseTitle = "List";
         DispatcherTimer _listTimer;
@@ -24,7 +24,13 @@ namespace Liberfy
             };
         }
 
-        protected override ListColumnOption CreateOption() => new ListColumnOption();
+        private ListColumnOption _listOption;
+        public ListColumnOption ListOption => this._listOption ?? (this._listOption = (ListColumnOption)this.GetOption());
+
+        protected override ColumnOptionBase GetOption()
+        {
+            return this.InternalColumnOption as ColumnOptionBase ?? (this.InternalColumnOption = new ListColumnOption());
+        }
 
         private void listTimerTicked(object sender, EventArgs e)
         {

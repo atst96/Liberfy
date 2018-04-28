@@ -16,7 +16,7 @@ namespace Liberfy
         private readonly long _userId;
         private readonly Account _account;
         private Tokens _tokens => _account.Tokens;
-        public FluidCollection<IColumn> Columns { get; } = new FluidCollection<IColumn>();
+        public FluidCollection<ColumnBase> Columns { get; } = new FluidCollection<ColumnBase>();
 
         public event EventHandler<IEnumerable<StatusItem>> OnHomeStatusesLoaded;
         public event EventHandler<IEnumerable<IItem>> OnNotificationsLoaded;

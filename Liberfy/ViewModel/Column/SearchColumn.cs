@@ -7,13 +7,72 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    class SearchColumn : SearchColumnBase<SearchColumnOption>
+    class SearchColumn : SearchColumnBase
     {
         public SearchColumn(Timeline timeline) : base(timeline, ColumnType.Search)
         {
         }
 
-        protected override SearchColumnOption CreateOption() => new SearchColumnOption();
+        protected override ColumnOptionBase GetOption()
+        {
+            return this.InternalOption as SearchColumnOption ?? (this.InternalOption = new SearchColumnOption());
+        }
+
+        //private bool? _useResultType;
+        //public bool UseResultType
+        //{
+        //    get { return this.GetPropValue(ref this._useResultType, "use_result_type", false); }
+        //    set { this.SetValueWithProp(ref this._useResultType, value, "use_result_type"); }
+        //}
+
+        //private string _resultType;
+        //public string ResultType
+        //{
+        //    get { return this.GetPropValue(ref this._resultType, "result_type", "recent"); }
+        //    set { this.SetValueWithProp(ref this._resultType, value, "result_type"); }
+        //}
+
+        //private bool? _useUntil;
+        //public bool UseUntil
+        //{
+        //    get { return this.GetPropValue(ref this._useUntil, "use_until", false); }
+        //    set { this.SetValueWithProp(ref this._useUntil, value, "use_until"); }
+        //}
+
+        //private string _until;
+        //public string Until
+        //{
+        //    get { return this.GetPropValue(ref this._until, "until", ""); }
+        //    set { this.SetValueWithProp(ref this._until, value, "until"); }
+        //}
+
+        //private bool? _useSinceId;
+        //public bool UseSinceId
+        //{
+        //    get { return this.GetPropValue(ref this._useSinceId, "use_since_id", false); }
+        //    set { this.SetValueWithProp(ref this._useSinceId, value, "use_since_id"); }
+        //}
+
+        //private long? _sinceId;
+        //public long? SinceId
+        //{
+        //    get { return this.GetPropValue(ref this._sinceId, "since_id"); }
+        //    set { this.SetValueWithProp(ref this._sinceId, value, "since_id"); }
+        //}
+
+        //private bool? _useMaxId;
+        //public bool UseMaxId
+        //{
+        //    get { return this.GetPropValue(ref this._useMaxId, "use_max_id", false); }
+        //    set { this.SetValueWithProp(ref this._useMaxId, value, "use_max_id"); }
+        //}
+
+        //private long? _maxId;
+        //public long? MaxId
+        //{
+        //    get { return this.GetPropValue(ref this._maxId, "max_id"); }
+        //    set { this.SetValueWithProp(ref this._maxId, value, "max_id"); }
+        //}
 
         public static ReadOnlyDictionary<string, string> SearchTypes { get; } =
             new ReadOnlyDictionary<string, string>(new Dictionary<string, string>

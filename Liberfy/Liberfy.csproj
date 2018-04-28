@@ -167,7 +167,6 @@
     <Compile Include="TimelineItemTemplateSelector.cs" />
     <Compile Include="TimelineView.cs" />
     <Compile Include="TwStringInfo.cs" />
-    <Compile Include="ViewModel\Column\Base\IColumn.cs" />
     <Compile Include="ViewModel\Column\HomeColumn.cs" />
     <Compile Include="ViewModel\Column\NotificationColumn.cs" />
     <Compile Include="JsonFormatter\ArrayColumnOptionFormatter.cs" />

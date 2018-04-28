@@ -6,10 +6,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace Liberfy
 {
     [DataContract, Serializable]
-    internal abstract class ColumnOptionBase : NotificationObject, ICloneable
+    internal class ColumnOptionBase : NotificationObject, ICloneable
     {
         [DataMember(Name = "type")]
-        public abstract ColumnType Type { get; }
+        public virtual ColumnType Type { get; }
 
         public static Type GetOptionClassType(ColumnType type)
         {
