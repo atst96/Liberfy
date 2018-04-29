@@ -51,31 +51,26 @@ namespace Liberfy
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            double width = availableSize.Width;
-            double height = availableSize.Height;
-            bool isWidthInfinity = double.IsInfinity(width);
-            bool isHeightInfinity = double.IsInfinity(height);
+            bool isWidthInfinity = double.IsInfinity(availableSize.Width);
+            bool isHeightInfinity = double.IsInfinity(availableSize.Height);
 
-            if (!isWidthInfinity && !isHeightInfinity)
-            {
-                return availableSize;
-            }
-            else if (isWidthInfinity && isHeightInfinity)
-            {
-                return base.MeasureOverride(availableSize);
-            }
-            else if (isWidthInfinity)
-            {
-                return new Size(height / HeightCore, height);
-            }
-            else
-            {
-                return new Size(width, width * HeightCore);
-            }
+            if (isWidthInfinity)
+                if (isHeightInfinity)
+                    return base.MeasureOverride(availableSize);
+                else
+                    availableSize.Width = availableSize.Height / HeightCore;
+
+            else if (isHeightInfinity)
+                availableSize.Height = availableSize.Width * HeightCore;
+
+            return availableSize;
         }
 
         protected override Size ArrangeOverride(Size finalSize)
         {
+            if (finalSize.Width <= 0 || finalSize.Height <= 0)
+                return finalSize;
+
             var children = this.Children;
             int childrenCount = children.Count;
 
@@ -89,12 +84,12 @@ namespace Liberfy
             }
             else if (childrenCount == 2)
             {
-                double itemSpacingWidth = spacingWidth / 2d;
+                double halfSpacingWidth = spacingWidth / 2d;
 
                 var itemRect = new Rect(
                     0,
                     0,
-                    (finalSize.Width / 2) - itemSpacingWidth,
+                    (finalSize.Width / 2) - halfSpacingWidth,
                     finalSize.Height
                 );
 
@@ -107,12 +102,12 @@ namespace Liberfy
             else if (childrenCount > 0)
             {
                 const double leftItemWidthCoe = 2 / 3d;
-                double itemSpacingWidth = spacingWidth / 2d;
+                double halfSpacingWidth = spacingWidth / 2d;
 
                 var leftItemRect = new Rect(
                     0,
                     0,
-                    (finalSize.Width * leftItemWidthCoe) - itemSpacingWidth,
+                    (finalSize.Width * leftItemWidthCoe) - halfSpacingWidth,
                     finalSize.Height
                 );
 
