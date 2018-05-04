@@ -123,6 +123,11 @@
         </Setter>
     </Style>
 
+    <Style x:Key="ActionIconPath" TargetType="{x:Type Path}">
+        <Setter Property="Stretch" Value="Uniform" />
+        <Setter Property="Fill" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ButtonBase}}" />
+    </Style>
+
     <Style x:Key="ActionButton" TargetType="{x:Type Button}">
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Padding" Value="2" />
@@ -459,5 +464,27 @@
         <Setter Property="BorderBrush" Value="{DynamicResource ToolBarBorderBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource ToolBarForeground}" />
     </Style>
+    
+    <!--#region GeometryIcon style -->
 
+    <Style x:Key="{x:Type app:GeometryIcon}" TargetType="{x:Type app:GeometryIcon}">
+        <Setter Property="Width" Value="16" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Fill" Value="{Binding (TextElement.Foreground), RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type app:GeometryIcon}">
+                    <Path
+                        Stretch="Uniform"
+                        Fill="{TemplateBinding Fill}"
+                        Data="{TemplateBinding Data}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <!--#endregion-->
+    
 </ResourceDictionary>

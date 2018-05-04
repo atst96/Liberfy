@@ -13,8 +13,8 @@
     xmlns:app="clr-namespace:Liberfy"
     DataContext="{local:ViewModelConnector {x:Type vm:MainWindow}, IsMainView=True}">
     <Window.Resources>
-
         <app:TimelineItemTemplateSelector x:Key="TimelineItemTemplateSelector" />
+        
         <DataTemplate x:Key="AccountTemplate" DataType="{x:Type local:Account}">
             <Border
                 x:Name="border"

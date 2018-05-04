@@ -85,6 +85,7 @@
       <HintPath>..\NowPlayingLib\NowPlayingLib.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -130,6 +131,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Behaviors\TimelineBehavior.cs" />
+    <Compile Include="Component\DropDownButton.cs" />
+    <Compile Include="Component\GeometryIcon.cs" />
     <Compile Include="Converters\EnumBoolConverter.cs" />
     <Compile Include="dev_*.cs" />
     <Compile Include="Behaviors\PasteImageBehavior.cs" />
@@ -219,10 +222,6 @@
     <Compile Include="View\TweetWindow.xaml.cs">
       <DependentUpon>TweetWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="Themes\Black.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

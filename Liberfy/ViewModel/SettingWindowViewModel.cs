@@ -418,15 +418,25 @@ namespace Liberfy.ViewModel
             set => SetProperty(ref _tempColumnType, value);
         }
 
+        private Account _selectedAccount;
+        public Account SelectedAccount
+        {
+            get => this._selectedAccount;
+            set
+            {
+                if (this.SetProperty(ref this._selectedAccount, value))
+                {
+                    this._accountDeleteCommand?.RaiseCanExecute();
+                }
+            }
+        }
+
         #region Commands for account
 
         #region Command: AccountAddCommand
 
         private Command _accountAddCommand;
-        public Command AccountAddCommand
-        {
-            get => _accountAddCommand ?? (_accountAddCommand = RegisterCommand(AccountAdd));
-        }
+        public Command AccountAddCommand => this._accountAddCommand ?? (this._accountAddCommand = this.RegisterCommand(this.AccountAdd));
 
         private async void AccountAdd()
         {
@@ -473,7 +483,7 @@ namespace Liberfy.ViewModel
 
                     if (!await account.Login())
                     {
-                        DialogService.MessageBox(
+                        this.DialogService.MessageBox(
                             $"アカウント情報の取得に失敗しました:\n",
                             MsgBoxButtons.Ok, MsgBoxIcon.Information);
 
@@ -490,17 +500,14 @@ namespace Liberfy.ViewModel
         #region Command: AccountDeleteCommand
 
         private Command _accountDeleteCommand;
-        public Command AccountDeleteCommand
-        {
-            get => _accountDeleteCommand ?? (_accountDeleteCommand = RegisterCommand<Account>(AccountDelete, Accounts.Contains));
-        }
+        public Command AccountDeleteCommand => this._accountDeleteCommand ?? (this._accountDeleteCommand = this.RegisterCommand<Account>(this.AccountDelete, this.Accounts.Contains));
 
         void AccountDelete(Account account)
         {
-            if (DialogService.ShowQuestion(
-                $"本当にアカウントを一覧から削除しますか？\n{account.Info.Name}@{account.Info.ScreenName}"))
+            if (this.DialogService.ShowQuestion(
+                $"本当にアカウントを一覧から削除しますか？\n {account.Info.Name }@{ account.Info.ScreenName }"))
             {
-                Accounts.Remove(account);
+                this.Accounts.Remove(account);
                 account.Unload();
             }
         }
@@ -510,14 +517,11 @@ namespace Liberfy.ViewModel
         #region Command: AccountMoveUpCommand
 
         private Command _accountMoveUpCommand;
-        public Command AccountMoveUpCommand
-        {
-            get => _accountMoveUpCommand ?? (_accountMoveUpCommand = RegisterCommand<Account>(AccountMoveUp, CanAccountMoveUp));
-        }
+        public Command AccountMoveUpCommand => this._accountMoveUpCommand ?? (this._accountMoveUpCommand = this.RegisterCommand<Account>(this.AccountMoveUp, this.CanAccountMoveUp));
 
-        private bool CanAccountMoveUp(Account account) => Accounts.CanItemIndexDecrement(account);
+        private bool CanAccountMoveUp(Account account) => this.Accounts.CanItemIndexDecrement(account);
 
-        private void AccountMoveUp(Account account) => Accounts.ItemIndexDecrement(account);
+        private void AccountMoveUp(Account account) => this.Accounts.ItemIndexDecrement(account);
 
         #endregion
 
@@ -526,16 +530,17 @@ namespace Liberfy.ViewModel
         private Command _accountMoveDownCommand;
         public Command AccountMoveDownCommand
         {
-            get => _accountMoveDownCommand ?? (_accountMoveDownCommand = RegisterCommand<Account>(AccountMoveDown, CanAccountMoveDown));
+            get => _accountMoveDownCommand ?? (this._accountMoveDownCommand = this.RegisterCommand<Account>(this.AccountMoveDown, this.CanAccountMoveDown));
         }
 
-        private bool CanAccountMoveDown(Account account) => Accounts.CanItemIndexIncrement(account);
+        private bool CanAccountMoveDown(Account account) => this.Accounts.CanItemIndexIncrement(account);
 
-        private void AccountMoveDown(Account account) => Accounts.ItemIndexIncrement(account);
+        private void AccountMoveDown(Account account) => this.Accounts.ItemIndexIncrement(account);
 
         #endregion
 
         #endregion Commands for account
+
 
         public FluidCollection<ColumnOptionBase> DefaultColumns => this.Setting.DefaultColumns;
 
@@ -651,15 +656,27 @@ namespace Liberfy.ViewModel
 
         public string NowPlayingFormat
         {
-            get => Setting.NowPlayingFormat;
+            get => this.Setting.NowPlayingFormat;
             set
             {
-                Setting.NowPlayingFormat = value;
-                RaisePropertyChanged(nameof(NowPlayingFormat));
+                this.Setting.NowPlayingFormat = value;
+                this.RaisePropertyChanged(nameof(NowPlayingFormat));
             }
         }
 
         #region InsertNowPlayingCommand
+
+        public string SelectedNowPlayingParameter
+        {
+            get => null;
+            set
+            {
+                this.NowPlayingTextBoxController.Insert(value);
+                this.NowPlayingTextBoxController.Focus();
+
+                this.RaisePropertyChanged(nameof(this.SelectedNowPlayingParameter));
+            }
+        }
 
         private Command _insertNowPlayingCommand;
         public Command InsertNowPlayingParamCommand

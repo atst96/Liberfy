@@ -11,7 +11,7 @@
     xmlns:b="clr-namespace:Liberfy.Behaviors"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     mc:Ignorable="d" AllowDrop="True"
-    Title="ツイート" Height="300" Width="300"
+    Title="ツイート" Height="329" Width="453"
     FontFamily="Meiryo"
     DataContext="{app:ViewModelConnector vm:TweetWindow}"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
@@ -292,7 +292,7 @@
                     DockPanel.Dock="Top" Margin="8 6"
                     IsChecked="{Binding IsSensitiveMedia, Mode=TwoWay}"
                     Content="不適切な表現を含む画像であることを告示する"/>
-                
+
                 <ListBox
                     Padding="0"
                     BorderThickness="0"
