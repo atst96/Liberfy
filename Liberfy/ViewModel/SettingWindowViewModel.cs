@@ -448,7 +448,7 @@ namespace Liberfy.ViewModel
                 StartupLocation = WindowStartupLocation.CenterOwner,
                 SizeToContent = SizeToContent.Manual,
                 Width = 400,
-                Height = 240,
+                Height = 280,
                 WindowChrome = new System.Windows.Shell.WindowChrome
                 {
                     GlassFrameThickness = new Thickness(0),

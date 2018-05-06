@@ -412,7 +412,7 @@
                                         CommandParameter="{Binding SelectedAccount}"
                                         Command="{Binding AccountDeleteCommand, Mode=OneTime}"
                                         Width="180"
-                                        Style="{StaticResource DangerButton}" />
+                                        Style="{StaticResource Button.Danger}" />
                                 </StackPanel>
                             </ScrollViewer>
                         </Grid>
@@ -968,25 +968,21 @@
                                                 HorizontalAlignment="Right"
                                                 Rows="1" Width="160">
                                                 <Button Style="{StaticResource ReplyActionButton}">
-                                                    <Path
-                                                        Margin="0 0 0 0"
+                                                    <app:GeometryIcon
                                                         Width="17"
-                                                        Style="{StaticResource ActionIconPath}"
-                                                        Data="{DynamicResource FontAwesomeReplyIcon}" />
+                                                        Data="{StaticResource FontAwesome.Icon.Reply}"/>
                                                 </Button>
+                                                
                                                 <ToggleButton Style="{StaticResource RetweetActionToggleButton}">
-                                                    <Path
-                                                        Margin="0"
-                                                        Width="24"
-                                                        Style="{StaticResource ActionIconPath}"
-                                                        Data="{DynamicResource FontAwesomeRetweetIcon}" />
+                                                    <app:GeometryIcon
+                                                        Margin="0" Width="24"
+                                                        Data="{StaticResource FontAwesome.Icon.Retweet}"/>
                                                 </ToggleButton>
+                                                
                                                 <ToggleButton Style="{StaticResource FavoriteActionToggleButton}">
-                                                    <Path
-                                                        Margin="0"
-                                                        Height="14"
-                                                        Style="{StaticResource ActionIconPath}"
-                                                        Data="{StaticResource FontAwesomeHeartIcon}" />
+                                                    <app:GeometryIcon
+                                                        Margin="0" Height="14"
+                                                        Data="{StaticResource FontAwesome.Icon.Heart}"/>
                                                 </ToggleButton>
                                             </UniformGrid>
 
@@ -1416,21 +1412,21 @@
                                                             Margin="0 0 0 0"
                                                             Width="17"
                                                             Style="{StaticResource ActionIconPath}"
-                                                            Data="{DynamicResource FontAwesomeReplyIcon}" />
+                                                            Data="{DynamicResource FontAwesome.Icon.Reply}" />
                                                     </Button>
                                                     <ToggleButton Style="{StaticResource RetweetActionToggleButton}">
                                                         <Path
                                                             Margin="0"
                                                             Width="24"
                                                             Style="{StaticResource ActionIconPath}"
-                                                            Data="{DynamicResource FontAwesomeRetweetIcon}" />
+                                                            Data="{DynamicResource FontAwesome.Icon.Retweet}" />
                                                     </ToggleButton>
                                                     <ToggleButton Style="{StaticResource FavoriteActionToggleButton}">
                                                         <Path
                                                             Margin="0"
                                                             Height="14"
                                                             Style="{StaticResource ActionIconPath}"
-                                                            Data="{StaticResource FontAwesomeHeartIcon}" />
+                                                            Data="{StaticResource FontAwesome.Icon.Heart}" />
                                                     </ToggleButton>
                                                 </UniformGrid>
 
@@ -1574,7 +1570,7 @@
                                                         Margin="4"
                                                         Width="24" Height="Auto"
                                                         Fill="Green"
-                                                        Data="{StaticResource FontAwesomeRetweetIcon}" />
+                                                        Data="{StaticResource FontAwesome.Icon.Retweet}" />
 
                                                     <TextBlock
                                                         FontWeight="Bold"
@@ -1665,21 +1661,21 @@
                                                 Margin="0 0 0 0"
                                                 Width="17"
                                                 Style="{StaticResource ActionIconPath}"
-                                                Data="{DynamicResource FontAwesomeReplyIcon}" />
+                                                Data="{DynamicResource FontAwesome.Icon.Reply}" />
                                             </Button>
                                             <ToggleButton Style="{StaticResource RetweetActionToggleButton}">
                                                 <Path
                                                 Margin="0"
                                                 Width="24"
                                                 Style="{StaticResource ActionIconPath}"
-                                                Data="{DynamicResource FontAwesomeRetweetIcon}" />
+                                                Data="{DynamicResource FontAwesome.Icon.Retweet}" />
                                             </ToggleButton>
                                             <ToggleButton Style="{StaticResource FavoriteActionToggleButton}">
                                                 <Path
                                                 Margin="0"
                                                 Height="14"
                                                 Style="{StaticResource ActionIconPath}"
-                                                Data="{StaticResource FontAwesomeHeartIcon}" />
+                                                Data="{StaticResource FontAwesome.Icon.Heart}" />
                                             </ToggleButton>
                                         </UniformGrid>
 

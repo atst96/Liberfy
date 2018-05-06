@@ -83,15 +83,12 @@
                         <Button
                             Margin="4" Padding="18 4"
                             Content="次へ(_N)"
-                            Foreground="#000"
-                            Command="{Binding NextCommand, Mode=OneTime}"
-                            Style="{StaticResource MaterialDesignFlatButton}"/>
+                            Command="{Binding NextCommand, Mode=OneTime}" />
                         <Button
                             Margin="4" Padding="18 4"
                             Content="閉じる(_C)"
-                            Foreground="#000"
-                            Command="{Binding CancelCommand, Mode=OneTime}"
-                            Style="{StaticResource MaterialDesignFlatButton}"/>
+                            Style="{StaticResource Button.Danger}"
+                            Command="{Binding CancelCommand, Mode=OneTime}" />
                     </StackPanel>
                 </Border>
 
@@ -132,19 +129,19 @@
                                 IsChecked="{Binding OverrideKey,Mode=TwoWay}"
                                 Content="Liberfy以外のAPIキーを使用する" />
 
-                            <TextBox
+                            <HeaderedContentControl
                                 Margin="0 4" Grid.Row="3"
-                                app:ElementBehavior.Show="{Binding OverrideKey, Mode=OneWay}"
-                                Text="{Binding ConsumerKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                md:HintAssist.Hint="ConsumerKey"
-                                Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                                Header="ConsumerKey"
+                                app:ElementBehavior.Show="{Binding OverrideKey, Mode=OneWay}">
+                                <TextBox Text="{Binding ConsumerKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </HeaderedContentControl>
 
-                            <TextBox
+                            <HeaderedContentControl
                                 Margin="0 4" Grid.Row="4"
-                                app:ElementBehavior.Show="{Binding OverrideKey, Mode=OneWay}"
-                                Text="{Binding ConsumerSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                md:HintAssist.Hint="ConsumerSecret"
-                                Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                                Header="ConsumerSecret"
+                                app:ElementBehavior.Show="{Binding OverrideKey, Mode=OneWay}">
+                                <TextBox Text="{Binding ConsumerSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </HeaderedContentControl>
                         </Grid>
                     </TabItem>
 
@@ -177,13 +174,18 @@
                                 </Hyperlink>
                             </TextBlock>
 
-                            <TextBox
-                                Margin="0 4" Grid.Row="4" FontSize="24" FontWeight="Bold"
-                                FontFamily="Comic Sans MS, Meiryo" Foreground="#444" TextAlignment="Center"
-                                Text="{Binding PinCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                IsEnabled="{Binding IsRunning, Mode=OneWay, Converter={StaticResource BoolInverter}}"
-                                md:HintAssist.Hint="PINコード"
-                                Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                            <HeaderedContentControl
+                                Margin="0 4" Grid.Row="4"
+                                Header="PINコード"
+                                IsEnabled="{Binding IsRunning, Mode=OneWay, Converter={StaticResource BoolInverter}}">
+                                <TextBox
+                                    FontSize="24" FontWeight="Bold"
+                                    FontFamily="Comic Sans MS, Meiryo"
+                                    TextAlignment="Center"
+                                    Foreground="#444"
+                                    Text="{Binding PinCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </HeaderedContentControl>
+
                         </Grid>
                     </TabItem>
 
@@ -418,30 +420,26 @@
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
                         Rows="1" Width="160">
-                        <Button
-                            Style="{StaticResource ReplyActionButton}">
-                            <md:PackIcon
-                                Kind="Reply"
-                                Width="24" Height="23"
-                                Margin="0 -1 0 0"/>
+                        <Button Style="{StaticResource ReplyActionButton}">
+                            <app:GeometryIcon
+                                Width="17"
+                                Data="{StaticResource FontAwesome.Icon.Reply}" />
                         </Button>
-                        
+
                         <ToggleButton
                             IsChecked="{Binding Reaction.IsRetweeted, Mode=OneWay}"
                             Style="{StaticResource RetweetActionToggleButton}">
-                            <md:PackIcon 
-                                Kind="TwitterRetweet"
-                                Margin="0"
-                                Width="26" Height="26" />
+                            <app:GeometryIcon
+                                Margin="0" Width="24"
+                                Data="{StaticResource FontAwesome.Icon.Retweet}" />
                         </ToggleButton>
-                        
+
                         <ToggleButton
                             IsChecked="{Binding Reaction.IsFavorited, Mode=OneWay}"
                             Style="{StaticResource FavoriteActionToggleButton}">
-                            <md:PackIcon
-                                Margin="0 0 0 0"
-                                Kind="Heart"
-                                Width="20" Height="18" />
+                            <app:GeometryIcon
+                                Height="14"
+                                Data="{StaticResource FontAwesome.Icon.Heart}" />
                         </ToggleButton>
                     </UniformGrid>
 
@@ -476,7 +474,11 @@
                     <Border
                         app:ElementBehavior.Visible="{Binding User.IsProtected}"
                         DockPanel.Dock="Left" Width="16" Height="16">
-                        <md:PackIcon Kind="Lock" />
+                        <app:GeometryIcon
+                            Margin="2"
+                            Width="Auto" Height="Auto"
+                            Fill="#000"
+                            Data="{StaticResource FontAwesome.Icon.Lock}" />
                     </Border>
 
                     <TextBlock
@@ -537,15 +539,14 @@
                     BorderThickness="0 1"
                     BorderBrush="#bbb"
                     Padding="4 6"
-                    app:ElementBehavior.Visible="{Binding IsRetweet}"
+                    app:ElementBehavior.Visible="{Binding IsRetweet, Mode=OneTime}"
                     Margin="{StaticResource TimelineItemEntityMargin}">
                     <DockPanel>
-                        <md:PackIcon
-                            Margin="0 0 4 0"
-                            Kind="TwitterRetweet"
-                            Width="28" Height="28"
-                            VerticalAlignment="Center"
-                            Foreground="Green" />
+                        <app:GeometryIcon
+                            Margin="4"
+                            Width="24" Height="Auto"
+                            Fill="Green"
+                            Data="{StaticResource FontAwesome.Icon.Retweet}" />
 
                         <Button
                             Style="{StaticResource ImageButton}"

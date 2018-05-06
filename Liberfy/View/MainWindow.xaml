@@ -36,11 +36,12 @@
                         Margin="0 0 8 0" Width="36" Height="36"
                         Source="{Binding Info.ProfileImageUrl, IsAsync=True}" />
 
-                    <md:PackIcon
+                    <app:GeometryIcon
                         Grid.Column="1"
                         Margin="0 4 4 4"
-                        Kind="Lock" Width="20" Height="20"
-                        local:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=OneWay}" />
+                        Width="18" Height="18"
+                        local:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=OneWay}"
+                        Data="{StaticResource FontAwesome.Icon.Lock}" />
 
                     <StackPanel 
                         Grid.Column="2" 
@@ -58,10 +59,11 @@
                         <Button
                             Background="#F333"
                             CommandParameter="{Binding}"
-                            Command="{Binding DataContext.AccountTweetCommand, Mode=OneTime,
-                                RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, AncestorLevel=1}}"
+                            Command="{Binding DataContext.AccountTweetCommand, Mode=OneTime, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, AncestorLevel=1}}"
                             Style="{StaticResource SimpleButtonStyle}">
-                            <md:PackIcon Kind="LeadPencil" />
+                            <app:GeometryIcon
+                                Margin="4"
+                                Data="{StaticResource FontAwesome.Icon.Edit}" />
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -200,16 +202,19 @@
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
 
-                <md:PopupBox ClipToBounds="True" FontSize="{StaticResource UIFontSize}">
+                <md:PopupBox
+                    Margin="2"
+                    ClipToBounds="True"
+                    FontSize="{StaticResource UIFontSize}">
                     <md:PopupBox.ToggleContent>
                         <StackPanel
                             Margin="12 0"
                             Orientation="Horizontal">
 
-                            <md:PackIcon 
-                                Kind="AccountCircle" 
-                                Width="20" Height="20"
-                                VerticalAlignment="Center"/>
+                            <app:GeometryIcon
+                                Width="18" Height="18"
+                                VerticalAlignment="Center"
+                                Data="{StaticResource FontAwesome.Icon.UserCircle}" />
 
                             <TextBlock
                                 VerticalAlignment="Center"
@@ -226,25 +231,24 @@
                     </ScrollViewer>
                 </md:PopupBox>
 
-                <ToolBar Grid.Column="2" ToolBarTray.IsLocked="True">
+                <ToolBar Grid.Column="2" ToolBarTray.IsLocked="True" BorderThickness="0">
                     <Button
                         ToolTip="ツイートする" Padding="8 0"
                         VerticalAlignment="Stretch"
                         Command="{Binding TweetCommand, Mode=OneTime}">
-                        <md:PackIcon
-                            VerticalAlignment="Center"
-                            Width="20" Height="20"
-                            Kind="LeadPencil" />
+                        <app:GeometryIcon
+                            Width="18" Height="18"
+                            Data="{StaticResource FontAwesome.Icon.Edit}" />
                     </Button>
 
                     <Button 
                         ToolTip="設定を開く" Padding="8 0"
                         VerticalAlignment="Stretch"
                         Command="{Binding ShowSettingDialog, Mode=OneTime}">
-                        <md:PackIcon
+                        <app:GeometryIcon
                             VerticalAlignment="Center"
-                            Width="20" Height="20"
-                            Kind="Settings" />
+                            Width="18" Height="18"
+                            Data="{StaticResource FontAwesome.Icon.Cog}" />
                     </Button>
                 </ToolBar>
             </Grid>

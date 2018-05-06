@@ -80,11 +80,12 @@
                         Margin="0 0 8 0" Width="36" Height="36"
                         Source="{Binding ProfileImageUrl, IsAsync=True}" />
 
-                    <md:PackIcon
+                    <app:GeometryIcon
                         Grid.Column="1"
                         Margin="0 4 4 4"
-                        Kind="Lock" Width="20" Height="20"
-                        app:ElementBehavior.Visible="{Binding IsProtected, Mode=OneWay}" />
+                        Width="18" Height="18"
+                        app:ElementBehavior.Visible="{Binding IsProtected, Mode=OneWay}"
+                        Data="{StaticResource FontAwesome.Icon.Lock}" />
 
                     <StackPanel 
                         Grid.Column="2" 
@@ -119,12 +120,14 @@
             DockPanel.Dock="Top" Style="{StaticResource ToolBarBorderStyle}">
             <DockPanel>
                 <StackPanel
+                    Margin="2"
                     DockPanel.Dock="Right"
                     Orientation="Horizontal">
 
                     <Label
                         AllowDrop="True"
                         DockPanel.Dock="Right"
+                        VerticalAlignment="Center"
                         Content="{Binding RemainingTweetLength, Mode=OneWay}">
                         <Label.Style>
                             <Style TargetType="{x:Type Label}">
@@ -143,20 +146,25 @@
                         Padding="{StaticResource ToolBarItemPadding}"
                         Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                         Command="{Binding AddImageCommand, Mode=OneTime}">
-                        <md:PackIcon Kind="FileImage" Width="24" Height="20" />
+                        <app:GeometryIcon
+                            Width="20" Height="20"
+                            Data="{StaticResource FontAwesome.Icon.Images}" />
                     </Button>
 
-                    <md:PopupBox StaysOpen="True" Padding="10 8" ClipToBounds="True">
+                    <md:PopupBox StaysOpen="True">
                         <md:PopupBox.ToggleContent>
-                            <md:PackIcon Margin="4 0" Kind="LibraryMusic" Width="24" Height="24" />
+                            <app:GeometryIcon
+                                Margin="4 0"
+                                Width="20" Height="20"
+                                Data="{StaticResource FontAwesome.Icon.Music}" />
                         </md:PopupBox.ToggleContent>
 
                         <StackPanel Width="280">
                             <StackPanel Orientation="Horizontal">
-                                <md:PackIcon 
-                                    Kind="LibraryMusic"
+                                <app:GeometryIcon
                                     VerticalAlignment="Center"
-                                    Width="28" Height="28" />
+                                    Width="24" Height="24"
+                                    Data="{StaticResource FontAwesome.Icon.Music}" />
 
                                 <TextBlock
                                     Margin="8 0 0 0" Text="NowPlaying"
@@ -245,7 +253,9 @@
                         Command="{Binding PostCommand, Mode=OneTime}" />
                 </StackPanel>
 
-                <md:PopupBox ClipToBounds="True">
+                <md:PopupBox
+                    Margin="2"
+                    ClipToBounds="True">
                     <md:PopupBox.ToggleContent>
                         <StackPanel
                             Margin="8 0"
@@ -255,11 +265,11 @@
                                 Width="28" Height="28"
                                 Source="{Binding Info.ProfileImageUrl, IsAsync=True, Mode=OneWay}" />
 
-                            <md:PackIcon
+                            <app:GeometryIcon
                                 Margin="2 2 0 2"
-                                VerticalAlignment="Center"
-                                Kind="Lock" Width="18" Height="18"
-                                app:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=OneWay}"/>
+                                Width="16" Height="16"
+                                app:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=OneWay}"
+                                Data="{StaticResource FontAwesome.Icon.Lock}" />
 
                             <TextBlock
                                 Margin="4 2 0 2"
@@ -275,7 +285,8 @@
                         ItemsSource="{Binding Accounts, Mode=OneTime}"
                         ItemTemplate="{StaticResource AccountTemplate}"/>
                 </md:PopupBox>
-                <Border />
+                
+                <Border Margin="2" />
             </DockPanel>
         </Border>
 
