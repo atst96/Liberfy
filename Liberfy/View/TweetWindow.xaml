@@ -443,7 +443,6 @@
             Padding="4"
             TabIndex="0"
             AllowDrop="True"
-            Style="{x:Null}"
             IsTabStop="False"
             BorderThickness="0"
             TextWrapping="Wrap"

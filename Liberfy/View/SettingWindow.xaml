@@ -618,8 +618,7 @@
                                 Padding="4 0 0 0"
                                 ToolBarTray.IsLocked="True"
                                 FontFamily="{StaticResource UIFont}"
-                                FontSize="{StaticResource UIFontSize}"
-                                Style="{StaticResource MaterialDesignToolBar}">
+                                FontSize="{StaticResource UIFontSize}">
 
                                 <md:PopupBox StaysOpen="True" ClipToBounds="True">
                                     <md:PopupBox.ToggleContent>
