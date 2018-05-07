@@ -443,44 +443,14 @@
                                 DockPanel.Dock="Top"
                                 Grid.Row="1"
                                 ToolBarTray.IsLocked="True"
-                                Style="{StaticResource ToolBarStyle}"
                                 FontFamily="{StaticResource UIFont}"
                                 FontSize="{StaticResource UIFontSize}">
 
-                                <md:PopupBox
-                                    ClipToBounds="True"
-                                    FontWeight="Normal" FontSize="{StaticResource UIFontSize}">
-                                    <md:PopupBox.ToggleContent>
-                                        <app:GeometryIcon
-                                            Margin="6 0"
-                                            Data="{StaticResource FontAwesome.Icon.Pluse}" />
-                                    </md:PopupBox.ToggleContent>
-
-                                    <StackPanel>
-                                        <Label
-                                            Margin="0 0 0 8"
-                                            Content="カラムの追加"
-                                            FontSize="{StaticResource UIFontSize}"/>
-
-                                        <ItemsControl ItemsSource="{x:Static local:ColumnBase.ColumnTypes}">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Button
-                                                        Padding="12 10"
-                                                        BorderThickness="0"
-                                                        FontWeight="Normal"
-                                                        FontSize="{StaticResource UIFontSize}"
-                                                        HorizontalContentAlignment="Left"
-                                                        Content="{Binding Value, Mode=OneTime}"
-                                                        Style="{DynamicResource {x:Static ToolBar.ButtonStyleKey}}"
-                                                        Command="{Binding DataContext.ColumnAddCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                                        CommandParameter="{Binding Key, Mode=OneTime}" />
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </StackPanel>
-                                </md:PopupBox>
-
+                                <Button Command="{Binding ColumnAddCommand, Mode=OneTime}">
+                                    <app:GeometryIcon
+                                        Data="{StaticResource FontAwesome.Icon.Pluse}" />
+                                </Button>
+                                
                                 <Button
                                     FontWeight="Normal"
                                     Padding="{StaticResource ToolBarIconPadding}"

@@ -561,30 +561,23 @@ namespace Liberfy.ViewModel
             }
         }
 
-        private int _selectedColumnTypeIndex;
-        public int SelectedColumnTypeIndex
-        {
-            get => _selectedColumnTypeIndex;
-            set => this.SetProperty(ref _selectedColumnTypeIndex, value);
-        }
-
-        private ColumnType _selectedColumnType;
-        public ColumnType SelectedColumnType
-        {
-            get => _selectedColumnType;
-            set
-            {
-                ColumnAdd(value);
-                SelectedColumnTypeIndex = -1;
-            }
-        }
-
         #region Command: ColumnAddCommand
 
         private Command _columnAddCommand;
-        public Command ColumnAddCommand => this._columnAddCommand ?? (this._columnAddCommand = this.RegisterCommand<ColumnType>(this.ColumnAdd));
+        public Command ColumnAddCommand => this._columnAddCommand ?? (this._columnAddCommand = this.RegisterCommand(() =>
+        {
+            var res = this.DialogService.SelectDialog(new SelectDialogOption<KeyValuePair<object, string>>
+            {
+                Items = ColumnBase.ColumnTypes,
+                SelectedValuePath = "Key",
+                DisplayMemberPath = "Value",
+            });
 
-        private void ColumnAdd(ColumnType type) => this.DefaultColumns.Add(ColumnOptionBase.GetDefault(type));
+            if (res.IsSelected && res.SelectedValue is ColumnType columnType)
+            {
+                this.DefaultColumns.Add(ColumnOptionBase.GetDefault(columnType));
+            }
+        }));
 
         #endregion
 
