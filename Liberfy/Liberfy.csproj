@@ -131,6 +131,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Behaviors\TimelineBehavior.cs" />
+    <Compile Include="Component\CommandChain.cs" />
     <Compile Include="Component\DropDownButton.cs" />
     <Compile Include="Component\GeometryIcon.cs" />
     <Compile Include="Converters\EnumBoolConverter.cs" />
