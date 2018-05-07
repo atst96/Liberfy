@@ -30,7 +30,7 @@
     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#07c" />
     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#fff" />
 
-    
+
     <!--#region Common styles -->
 
     <SolidColorBrush x:Key="TextBoxBorderBrush" Color="#aaa" />

@@ -147,7 +147,7 @@
                         Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                         Command="{Binding AddImageCommand, Mode=OneTime}">
                         <app:GeometryIcon
-                            Width="20" Height="20"
+                            Width="23" Height="20"
                             Data="{StaticResource FontAwesome.Icon.Images}" />
                     </Button>
 
