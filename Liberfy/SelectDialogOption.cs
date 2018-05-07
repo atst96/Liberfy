@@ -22,7 +22,7 @@ namespace Liberfy
 
         public T SelectedItem { get; set; }
 
-        public T SelectedValue { get; set; }
+        public object SelectedValue { get; set; }
 
         public IEnumerable<T> Items { get; set; }
 
