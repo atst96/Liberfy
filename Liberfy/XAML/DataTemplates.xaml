@@ -217,6 +217,115 @@
         </Border>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type vm:NowPlayingViewModel}">
+        <Border
+            BorderBrush="#FFAAAAAA"
+            BorderThickness="1">
+            <DockPanel Margin="7">
+                <StackPanel
+                    DockPanel.Dock="Top"
+                    Margin="7"
+                    Orientation="Horizontal">
+                    <app:GeometryIcon
+                        Width="18" Height="18"
+                        VerticalAlignment="Center"
+                        Data="{StaticResource FontAwesome.Icon.Music}" />
+
+                    <TextBlock
+                        Margin="8 0 0 0"
+                        VerticalAlignment="Center"
+                        Text="NowPlaying" />
+                </StackPanel>
+
+                <Grid
+                    Margin="7"
+                    DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="7*" />
+                        <ColumnDefinition Width="3*" />
+                    </Grid.ColumnDefinitions>
+
+                    <HeaderedContentControl
+                        Margin="0 0 8 0"
+                        Header="プレーヤの選択">
+                        <ComboBox
+                            SelectedValuePath="Key"
+                            DisplayMemberPath="Value"
+                            VerticalAlignment="Bottom"
+                            SelectedValue="{Binding NowPlayingPlayer, Mode=TwoWay}"
+                            ItemsSource="{x:Static vm:TweetWindow.NowPlayingPlayerList}" />
+                    </HeaderedContentControl>
+
+                    <Button
+                        Grid.Column="1"
+                        Padding="8 4"
+                        VerticalAlignment="Bottom"
+                        Content="取得"
+                        Command="{Binding GetPlayingDataCommand, Mode=OneTime}"
+                        Style="{StaticResource Button.Primary}" />
+                </Grid>
+
+                <StackPanel
+                    Margin="7"
+                    DockPanel.Dock="Bottom"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center">
+                    <Button
+                        Margin="5 0"
+                        Padding="24 4"
+                        IsDefault="True"
+                        Content="挿入"
+                        Command="{Binding InsertTextCommand, Mode=OneTime}" />
+
+                    <Button
+                        Margin="5 0"
+                        IsCancel="True"
+                        Content="キャンセル"
+                        Padding="24 4"
+                        Style="{StaticResource Button.Danger}" />
+                </StackPanel>
+
+                <ScrollViewer
+                    x:Name="AlbumArtViewer"
+                    DockPanel.Dock="Bottom"
+                    Margin="7"
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Hidden">
+                    <ItemsControl
+                        ItemsSource="{Binding Artworks}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:ArtworkItem}">
+                                <CheckBox
+                                    Margin="0 0 0 4"
+                                    IsChecked="{Binding Use, Mode=TwoWay}">
+                                    <Image
+                                        Width="48" Height="48"
+                                        Stretch="UniformToFill"
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        Source="{Binding Image, Mode=OneTime}" />
+                                </CheckBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <HeaderedContentControl
+                    Margin="7" Header="テキスト">
+                    <TextBox
+                        TextWrapping="Wrap"
+                        AcceptsReturn="True"
+                        Text="{Binding InsertionText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </HeaderedContentControl>
+            </DockPanel>
+        </Border>
+
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding Artworks.Count, Mode=OneWay}" Value="0">
+                <Setter TargetName="AlbumArtViewer" Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
     <!--#endregion-->
 
     <!--#region Column option templates-->
@@ -592,5 +701,43 @@
 
     <!--#endregion-->
 
+    <DataTemplate x:Key="AccountItemTemplate" DataType="{x:Type app:Account}">
+        <Button
+            x:Name="border"
+            Padding="12"
+            BorderBrush="#ddd"
+            ClipToBounds="True"
+            Background="Transparent"
+            BorderThickness="0 0 0 1"
+            HorizontalContentAlignment="Left"
+            CommandParameter="{Binding Mode=OneTime}"
+            Command="{Binding DataContext.SelectAccountCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
+            <Grid DataContext="{Binding Info, Mode=OneTime}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Image
+                    Margin="0 0 8 0" Width="36" Height="36"
+                    Source="{Binding ProfileImageUrl, IsAsync=True}" />
+
+                <app:GeometryIcon
+                    Grid.Column="1"
+                    Margin="0 4 4 4"
+                    Width="18" Height="18"
+                    app:ElementBehavior.Visible="{Binding IsProtected, Mode=OneWay}"
+                    Data="{StaticResource FontAwesome.Icon.Lock}" />
+
+                <StackPanel 
+                    Grid.Column="2" 
+                    VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Name, Mode=OneWay}" FontWeight="Bold" />
+                    <TextBlock Text="{Binding ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+                </StackPanel>
+            </Grid>
+        </Button>
+    </DataTemplate>
 
 </ResourceDictionary>

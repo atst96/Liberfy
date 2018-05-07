@@ -57,46 +57,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <DataTemplate x:Key="AccountTemplate" DataType="{x:Type app:Account}">
-            <Button
-                x:Name="border"
-                Padding="12"
-                BorderBrush="#ddd"
-                ClipToBounds="True"
-                Background="Transparent"
-                BorderThickness="0 0 0 1"
-                HorizontalContentAlignment="Left"
-                CommandParameter="{Binding Mode=OneTime}"
-                Command="{Binding DataContext.SelectAccountCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
-                <Grid DataContext="{Binding Info, Mode=OneTime}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-
-                    <Image
-                        Margin="0 0 8 0" Width="36" Height="36"
-                        Source="{Binding ProfileImageUrl, IsAsync=True}" />
-
-                    <app:GeometryIcon
-                        Grid.Column="1"
-                        Margin="0 4 4 4"
-                        Width="18" Height="18"
-                        app:ElementBehavior.Visible="{Binding IsProtected, Mode=OneWay}"
-                        Data="{StaticResource FontAwesome.Icon.Lock}" />
-
-                    <StackPanel 
-                        Grid.Column="2" 
-                        VerticalAlignment="Center">
-                        <TextBlock Text="{Binding Name, Mode=OneWay}" FontWeight="Bold" />
-                        <TextBlock Text="{Binding ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
-                    </StackPanel>
-                </Grid>
-            </Button>
-        </DataTemplate>
-
     </Window.Resources>
 
     <i:Interaction.Behaviors>
@@ -110,14 +70,17 @@
     </i:Interaction.Behaviors>
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="147*"/>
+            <ColumnDefinition Width="299*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <Border 
-            Panel.ZIndex="100"
-            DockPanel.Dock="Top" Style="{StaticResource ToolBarBorderStyle}">
+            Panel.ZIndex="100" Style="{StaticResource ToolBarBorderStyle}" Grid.ColumnSpan="2">
             <DockPanel>
                 <StackPanel
                     Margin="2"
@@ -142,7 +105,7 @@
 
                     <Button
                         AllowDrop="True"
-                        DockPanel.Dock="Right"
+                        VerticalAlignment="Stretch"
                         Padding="{StaticResource ToolBarItemPadding}"
                         Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                         Command="{Binding AddImageCommand, Mode=OneTime}">
@@ -151,98 +114,15 @@
                             Data="{StaticResource FontAwesome.Icon.Images}" />
                     </Button>
 
-                    <md:PopupBox StaysOpen="True">
-                        <md:PopupBox.ToggleContent>
-                            <app:GeometryIcon
-                                Margin="4 0"
-                                Width="20" Height="20"
-                                Data="{StaticResource FontAwesome.Icon.Music}" />
-                        </md:PopupBox.ToggleContent>
-
-                        <StackPanel Width="280">
-                            <StackPanel Orientation="Horizontal">
-                                <app:GeometryIcon
-                                    VerticalAlignment="Center"
-                                    Width="24" Height="24"
-                                    Data="{StaticResource FontAwesome.Icon.Music}" />
-
-                                <TextBlock
-                                    Margin="8 0 0 0" Text="NowPlaying"
-                                    VerticalAlignment="Center"
-                                    FontSize="{StaticResource UIFontSize}" />
-                            </StackPanel>
-
-                            <Grid Margin="0 2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="7*" />
-                                    <ColumnDefinition Width="3*" />
-                                </Grid.ColumnDefinitions>
-
-                                <ComboBox
-                                    Margin="0 0 8 0"
-                                    SelectedValuePath="Key"
-                                    DisplayMemberPath="Value"
-                                    VerticalAlignment="Bottom"
-                                    FontSize="{StaticResource UIFontSize}"
-                                    SelectedValue="{Binding NowPlayingPlayer, Mode=TwoWay}"
-                                    ItemsSource="{x:Static vm:TweetWindow.NowPlayingPlayerList}"
-                                    md:HintAssist.Hint="プレーヤの選択"
-                                    Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
-
-                                <Button
-                                    Grid.Column="1"
-                                    Content="取得"
-                                    VerticalAlignment="Bottom"
-                                    FontSize="{StaticResource UIFontSize}"
-                                    Command="{Binding GetNowPlayingTextCommand, Mode=OneTime}"
-                                    Style="{StaticResource MaterialDesignRaisedButton}" />
-                            </Grid>
-
-                            <TextBox
-                                Margin="0 2"
-                                TextWrapping="Wrap"
-                                AcceptsReturn="True"
-                                Grid.ColumnSpan="2"
-                                FontSize="{StaticResource UIFontSize}"
-                                Text="{Binding InsertionNowPlayingText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                md:HintAssist.Hint="テキスト"
-                                Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
-
-                            <ScrollViewer
-                                Margin="0 2"
-                                Grid.Row="4"
-                                FontSize="{StaticResource UIFontSize}"
-                                HorizontalScrollBarVisibility="Auto"
-                                VerticalScrollBarVisibility="Hidden">
-                                <ItemsControl
-                                    ItemsSource="{Binding NowPlayingArtworks}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type vm:ArtworkItem}">
-                                            <CheckBox
-                                                Margin="0 0 0 4"
-                                                IsChecked="{Binding Use, Mode=TwoWay}">
-                                                <Image
-                                                    Width="48" Height="48"
-                                                    Stretch="UniformToFill"
-                                                    RenderOptions.BitmapScalingMode="HighQuality"
-                                                    Source="{Binding Image, Mode=OneTime}" />
-                                            </CheckBox>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </ScrollViewer>
-
-                            <Button
-                                Margin="0 2"
-                                Content="挿入"
-                                Padding="24 4"
-                                Grid.ColumnSpan="2"
-                                HorizontalAlignment="Center"
-                                FontSize="{StaticResource UIFontSize}"
-                                Command="{Binding InsertNowPlayingTextCommand, Mode=OneTime}"
-                                Style="{StaticResource MaterialDesignFlatButton}"/>
-                        </StackPanel>
-                    </md:PopupBox>
+                    <Button
+                        VerticalAlignment="Stretch"
+                        Command="{Binding ShowNowPlayingDialogCommand, Mode=OneTime}"
+                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                        <app:GeometryIcon
+                            Margin="4 0"
+                            Width="20" Height="20"
+                            Data="{StaticResource FontAwesome.Icon.Music}" />
+                    </Button>
 
                     <Button
                         AllowDrop="True"
@@ -253,39 +133,33 @@
                         Command="{Binding PostCommand, Mode=OneTime}" />
                 </StackPanel>
 
-                <md:PopupBox
-                    Margin="2"
-                    ClipToBounds="True">
-                    <md:PopupBox.ToggleContent>
-                        <StackPanel
-                            Margin="8 0"
-                            Orientation="Horizontal"
-                            DataContext="{Binding SelectedAccount, Mode=OneWay}">
-                            <Image
-                                Width="28" Height="28"
-                                Source="{Binding Info.ProfileImageUrl, IsAsync=True, Mode=OneWay}" />
+                <Button
+                    Margin="2" Padding="2 0"
+                    Command="{Binding SelectAccountCommand, Mode=OneTime}"
+                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                    <StackPanel
+                        Margin="8 0"
+                        Orientation="Horizontal"
+                        DataContext="{Binding SelectedAccount, Mode=OneWay}">
+                        <Image
+                            Width="28" Height="28"
+                            Source="{Binding Info.ProfileImageUrl, IsAsync=True, Mode=OneWay}" />
 
-                            <app:GeometryIcon
-                                Margin="2 2 0 2"
-                                Width="16" Height="16"
-                                app:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=OneWay}"
-                                Data="{StaticResource FontAwesome.Icon.Lock}" />
+                        <app:GeometryIcon
+                            Margin="2 2 0 2"
+                            Width="16" Height="16"
+                            app:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=OneWay}"
+                            Data="{StaticResource FontAwesome.Icon.Lock}" />
 
-                            <TextBlock
-                                Margin="4 2 0 2"
-                                TextWrapping="NoWrap"
-                                VerticalAlignment="Center"
-                                TextTrimming="CharacterEllipsis"
-                                Text="{Binding Info.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
-                        </StackPanel>
-                    </md:PopupBox.ToggleContent>
+                        <TextBlock
+                            Margin="4 2 0 2"
+                            TextWrapping="NoWrap"
+                            VerticalAlignment="Center"
+                            TextTrimming="CharacterEllipsis"
+                            Text="{Binding Info.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+                    </StackPanel>
+                </Button>
 
-                    <ItemsControl
-                        Width="260" FontSize="{StaticResource UIFontSize}"
-                        ItemsSource="{Binding Accounts, Mode=OneTime}"
-                        ItemTemplate="{StaticResource AccountTemplate}"/>
-                </md:PopupBox>
-                
                 <Border Margin="2" />
             </DockPanel>
         </Border>
@@ -297,7 +171,7 @@
             Background="#eee"
             BorderBrush="#ccc"
             BorderThickness="0 0 0 1"
-            app:ElementBehavior.Visible="{Binding Media.HasItems, Mode=OneWay}">
+            app:ElementBehavior.Visible="{Binding Media.HasItems, Mode=OneWay}" Grid.ColumnSpan="2">
             <DockPanel>
                 <CheckBox
                     DockPanel.Dock="Top" Margin="8 6"
@@ -449,7 +323,7 @@
             AcceptsReturn="True"
             Grid.Row="2"
             Text="{Binding Tweet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            IsReadOnly="{Binding IsEditable, Mode=OneWay, Converter={StaticResource BoolInverter}}">
+            IsReadOnly="{Binding IsEditable, Mode=OneWay, Converter={StaticResource BoolInverter}}" Grid.ColumnSpan="2">
             <i:Interaction.Behaviors>
                 <b:TextBoxBehavior Controller="{Binding TextBoxController, Mode=OneTime}" />
                 <b:PasteImageBehavior Command="{Binding PasteImageCommand, Mode=OneTime}" />
@@ -466,7 +340,7 @@
         <Border
             Grid.Row="2"
             Background="#A000"
-            app:ElementBehavior.Visible="{Binding IsTweetPosting, Mode=OneWay}">
+            app:ElementBehavior.Visible="{Binding IsTweetPosting, Mode=OneWay}" Grid.ColumnSpan="2">
             <TextBlock 
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"

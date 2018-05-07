@@ -182,6 +182,7 @@
     <Compile Include="Model\Setting\Column\ListColumnOption.cs" />
     <Compile Include="Model\Setting\Column\SearchColumnOption.cs" />
     <Compile Include="Model\Setting\Column\SearchColumnOptionBase.cs" />
+    <Compile Include="ViewModel\NowPlayingViewModel.cs" />
     <Compile Include="ViewModel\SettingWindowViewModel.View.cs" />
     <Compile Include="ViewModel\UploadMedia.cs" />
     <Compile Include="UILocalize.cs" />

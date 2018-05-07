@@ -178,6 +178,36 @@ namespace Liberfy.ViewModel
             public int GetHashCode(string obj) => GetHashCode();
         }
 
+        private TextBoxController _textBoxController = new TextBoxController();
+        public TextBoxController TextBoxController => _textBoxController;
+
+        #region NowPlaying
+
+        public static IDictionary<string, string> NowPlayingPlayerList { get; }
+        = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
+        {
+            ["wmplayer"] = "Windows Media Player",
+            ["itunes"] = "iTunes",
+            ["foobar2000"] = "foobar2000"
+        });
+
+        public static IDictionary<string, string> NowPlayingFormatParameters { get; }
+        = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
+        {
+            ["%album%"] = "アルバム名 (%album%)",
+            ["%album_artist%"] = "アルバムアーティスト (%album_artist%)",
+            ["%artist%"] = "アーティスト名 (%artist%)",
+            ["%composer%"] = "作曲者 (%coposer%)",
+            ["%category%"] = "カテゴリ (%category%)",
+            ["%genre%"] = "ジャンル (%genre%)",
+            ["%name%"] = "楽曲名 (%name%)",
+            ["%number%"] = "トラック番号 (%nubmer%)",
+            ["%year%"] = "年代 (%year%)",
+        });
+
+        #endregion NowPlaying
+
+
         #region Command: PostCommand
 
         private Command _postCommand;
@@ -337,26 +367,6 @@ namespace Liberfy.ViewModel
 
         #endregion
 
-        #region Command: SelectAccountCommand
-
-        private Command<Account> _selectAccountCommand;
-        public Command<Account> SelectAccountCommand
-        {
-            get => _selectAccountCommand ?? (_selectAccountCommand = RegisterCommand<Account>(SelectAccount, IsAvailableAccount));
-        }
-
-        private void SelectAccount(Account account)
-        {
-            SelectedAccount = account;
-        }
-
-        private bool IsAvailableAccount(Account account)
-        {
-            return account != null;
-        }
-
-        #endregion
-
         #region Command: AddImageCommand
 
         private Command _addImageCommand;
@@ -435,6 +445,7 @@ namespace Liberfy.ViewModel
         }
 
         #endregion
+
 
         #region Command: DragDropCommand
 
@@ -557,202 +568,6 @@ namespace Liberfy.ViewModel
 
         #endregion
 
-        #region Command: NowPlaying
-
-        private TextBoxController _textBoxController = new TextBoxController();
-        public TextBoxController TextBoxController => _textBoxController;
-
-        private string _nowPlayingPlayer = Setting.NowPlayingDefaultPlayer;
-        public string NowPlayingPlayer
-        {
-            get => _nowPlayingPlayer;
-            set => SetProperty(ref _nowPlayingPlayer, value, _getNowPlayingTextCommand);
-        }
-
-        private string _insertinNowPlayingText;
-        public string InsertionNowPlayingText
-        {
-            get => _insertinNowPlayingText;
-            set => SetProperty(ref _insertinNowPlayingText, value);
-        }
-
-        private bool _isNowPlayingPanelOpen;
-        public bool IsNowPlayingPanelOpen
-        {
-            get => _isNowPlayingPanelOpen;
-            set => SetProperty(ref _isNowPlayingPanelOpen, value);
-        }
-
-        public FluidCollection<ArtworkItem> NowPlayingArtworks { get; } = new FluidCollection<ArtworkItem>();
-
-        #region Command: GetNowPlayingTextCommand
-
-        private Command _getNowPlayingTextCommand;
-        public Command GetNowPlayingTextCommand
-        {
-            get => _getNowPlayingTextCommand ?? (_getNowPlayingTextCommand = RegisterCommand(GetNowPlayingText, IsSupportedPlayer));
-        }
-
-        private bool IsSupportedPlayer()
-        {
-            return !string.IsNullOrEmpty(_nowPlayingPlayer)
-                && NowPlayingPlayerList.ContainsKey(_nowPlayingPlayer);
-        }
-
-        private async void GetNowPlayingText()
-        {
-            var atwks = NowPlayingArtworks.ToArray();
-            NowPlayingArtworks.Clear();
-            atwks.DisposeAll();
-
-            MediaPlayerBase player = null;
-
-            if (!IsProcessRunning(_nowPlayingPlayer))
-            {
-                DialogService.MessageBox(
-                    $"再生情報の取得に失敗しました。プレーヤが起動しているか確認してください。",
-                    MsgBoxButtons.Ok, MsgBoxIcon.Error);
-                return;
-            }
-
-            try
-            {
-                switch (_nowPlayingPlayer)
-                {
-                    case "wmplayer":
-                        player = new WindowsMediaPlayer();
-                        break;
-
-                    case "itunes":
-                        player = new iTunes();
-                        break;
-
-                    case "foobar2000":
-                        player = new NowPlayingLib.Foobar2000();
-                        break;
-
-                    default:
-                        return;
-                }
-
-                var media = await player.GetCurrentMedia();
-
-                InsertionNowPlayingText = ReplaceMediaAlias(media, Setting.NowPlayingFormat);
-                foreach (var stream in media.Artworks)
-                {
-                    try
-                    {
-                        NowPlayingArtworks.Add(new ArtworkItem(stream, Setting.InsertThumbnailAtNowPlayying));
-                    }
-                    catch { /* 非対応形式のアートワークは処理しない */ }
-                }
-            }
-            catch (Exception ex)
-            {
-                DialogService.MessageBox(
-                    $"再生情報の取得に失敗しました。プレーヤで楽曲が再生中かどうか確認してください。\n\nエラー：\n{ex.Message}",
-                    MsgBoxButtons.Ok, MsgBoxIcon.Error);
-            }
-            finally
-            {
-                if (player != null)
-                {
-                    player.Dispose();
-                    player = null;
-                }
-            }
-        }
-
-        public static IDictionary<string, string> NowPlayingPlayerList { get; }
-        = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
-        {
-            ["wmplayer"] = "Windows Media Player",
-            ["itunes"] = "iTunes",
-            ["foobar2000"] = "foobar2000"
-        });
-
-        public static IDictionary<string, string> NowPlayingFormatParameters { get; }
-        = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
-        {
-            ["%album%"] = "アルバム名 (%album%)",
-            ["%album_artist%"] = "アルバムアーティスト (%album_artist%)",
-            ["%artist%"] = "アーティスト名 (%artist%)",
-            ["%composer%"] = "作曲者 (%coposer%)",
-            ["%category%"] = "カテゴリ (%category%)",
-            ["%genre%"] = "ジャンル (%genre%)",
-            ["%name%"] = "楽曲名 (%name%)",
-            ["%number%"] = "トラック番号 (%nubmer%)",
-            ["%year%"] = "年代 (%year%)",
-        });
-
-        private static bool IsProcessRunning(string processName)
-        {
-            return Process.GetProcessesByName(processName).Length > 0;
-        }
-
-        private string ReplaceMediaAlias(MediaItem media, string format)
-        {
-            var aliases = new Dictionary<string, string>
-            {
-                ["album"] = media.Album,
-                ["album_artist"] = media.AlbumArtist,
-                ["artist"] = media.Artist,
-                ["composer"] = media.Composer,
-                ["category"] = media.Category,
-                ["genre"] = media.Genre,
-                ["name"] = media.Name,
-                ["number"] = media.TrackNumber.ToString(),
-                ["year"] = media.Year.ToString()
-            };
-
-            string replacedString = format;
-
-            foreach (var arias in aliases)
-            {
-                replacedString = Regex.Replace(
-                    replacedString, $"%{arias.Key}%", arias.Value, RegexOptions.IgnoreCase);
-            }
-
-            return replacedString;
-        }
-
-        #endregion Command: GetNowPlayingTextCommand
-
-        #region Command: InsertNowPlayingTextCommand
-
-        private Command _insertNowPlayingTextCommand;
-        public Command InsertNowPlayingTextCommand
-        {
-            get => _insertNowPlayingTextCommand ?? (_insertNowPlayingTextCommand = RegisterCommand(InsertNowPlaying));
-        }
-
-        private void InsertNowPlaying()
-        {
-            TextBoxController.Insert(InsertionNowPlayingText);
-
-            foreach (var artwork in NowPlayingArtworks)
-            {
-                if (artwork.Use)
-                {
-                    Media.Add(UploadMedia.FromArtwork(artwork));
-                    artwork.Dispose(false);
-                }
-                else
-                {
-                    artwork.Dispose(true);
-                }
-            }
-
-            NowPlayingArtworks.Clear();
-
-            InsertionNowPlayingText = null;
-            IsNowPlayingPanelOpen = false;
-        }
-
-        #endregion Command: InsertNowPlayingTextCommand
-
-        #endregion NowPlaying
-
         #region Command: ImagePasting
 
         private Command _pasteImageCommand;
@@ -782,6 +597,60 @@ namespace Liberfy.ViewModel
         }
 
         #endregion
+
+        private Command _selectAccountCommand;
+        public Command SelectAccountCommand => this._selectAccountCommand ?? (this._selectAccountCommand = this.RegisterCommand(() =>
+        {
+            var res = this.DialogService.SelectDialog(new SelectDialogOption<Account>
+            {
+                Instruction = "ツイートするアカウントを選択してください",
+                Items = this.Accounts,
+                ItemTemplate = Application.Current.TryFindResource("AccountItemTemplate") as DataTemplate,
+            });
+        }));
+
+        private Command _showNowPlayingDialogCommand;
+        public Command ShowNowPlayingDialogCommand => this._showNowPlayingDialogCommand ?? (this._showNowPlayingDialogCommand = this.RegisterCommand(() =>
+        {
+            var nowPlaying = new ViewModel.NowPlayingViewModel();
+
+            if (DialogService.OpenModal(nowPlaying, new ViewOption
+            {
+                ResizeMode = ResizeMode.NoResize,
+                StartupLocation = WindowStartupLocation.CenterOwner,
+                SizeToContent = SizeToContent.Manual,
+                Width = 340,
+                Height = 320,
+                WindowChrome = new System.Windows.Shell.WindowChrome
+                {
+                    GlassFrameThickness = new Thickness(0, 1, 0, 0),
+                    UseAeroCaptionButtons = false,
+                    CornerRadius = new CornerRadius(0),
+                    CaptionHeight = 0,
+                },
+                ShowInTaskbar = false,
+            }))
+            {
+                TextBoxController.Insert(nowPlaying.InsertionText);
+
+                foreach (var artwork in nowPlaying.Artworks)
+                {
+                    if (artwork.Use)
+                    {
+                        Media.Add(UploadMedia.FromArtwork(artwork));
+                        artwork.Dispose(false);
+                    }
+                    else
+                    {
+                        artwork.Dispose(true);
+                    }
+                }
+
+                nowPlaying.Artworks.Clear();
+                nowPlaying.InsertionText = null;
+                nowPlaying = null;
+            }
+        }));
 
         internal override bool CanClose()
         {
