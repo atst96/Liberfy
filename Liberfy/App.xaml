@@ -51,7 +51,10 @@
                 IconSource="Icons/app_tasktray.ico" />
             
             <!--#region Converters -->
+            
             <conv:BoolInverter x:Key="BoolInverter" />
+            <conv:IsNotNullConverter x:Key="IsNotNullConverter" />
+
             <!--#endregion-->
             
             <ResourceDictionary.MergedDictionaries>
