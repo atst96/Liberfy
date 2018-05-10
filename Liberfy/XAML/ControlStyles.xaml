@@ -249,7 +249,7 @@
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 
-    <Style x:Key="QuotedTweetButtonStyle" BasedOn="{StaticResource MaterialDesignFlatButton}" TargetType="{x:Type Button}">
+    <Style x:Key="QuotedTweetButtonStyle" BasedOn="{StaticResource {x:Type Button}}" TargetType="{x:Type Button}">
         <Setter Property="OverridesDefaultStyle" Value="False" />
         <Setter Property="Height" Value="auto" />
         <Setter Property="Foreground" Value="#000" />

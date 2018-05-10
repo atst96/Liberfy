@@ -13,7 +13,6 @@
     xmlns:conv="clr-namespace:Liberfy.Converter"
     xmlns:vm="clr-namespace:Liberfy.ViewModel"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
     mc:Ignorable="d"
     ResizeMode="NoResize"
     UseLayoutRounding="True"
@@ -1741,9 +1740,7 @@
                                                 Padding="6 6"
                                                 DockPanel.Dock="Left"
                                                 HorizontalAlignment="Left"
-                                                Foreground="#000"
-                                                FontSize="{StaticResource UIFontSize}"
-                                                Style="{StaticResource MaterialDesignFlatButton}">
+                                                Foreground="#000">
                                                 <TextBlock>
                                                     <Run Text="リツイート" FontWeight="Bold" />
                                                     <Run Text="1,024" />
@@ -1754,9 +1751,7 @@
                                                 Padding="6 6"
                                                 DockPanel.Dock="Left"
                                                 HorizontalAlignment="Left"
-                                                Foreground="#000"
-                                                FontSize="{StaticResource UIFontSize}"
-                                                Style="{StaticResource MaterialDesignFlatButton}">
+                                                Foreground="#000">
                                                 <TextBlock>
                                                     <Run Text="いいね" FontWeight="Bold" />
                                                     <Run Text="1,024" />

@@ -7,7 +7,6 @@
     xmlns:vm="clr-namespace:Liberfy.ViewModel"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:local="clr-namespace:Liberfy"
-    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
     mc:Ignorable="d" FontFamily="Meiryo"
     Title="MainWindow" Height="350" Width="525"
     xmlns:app="clr-namespace:Liberfy"

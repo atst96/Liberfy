@@ -16,7 +16,6 @@
     DataContext="{app:ViewModelConnector vm:TweetWindow}"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
-    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
     UseLayoutRounding="True">
     <Window.Resources>
 
