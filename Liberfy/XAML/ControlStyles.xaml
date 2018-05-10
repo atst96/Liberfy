@@ -487,4 +487,26 @@
     
     <!--#endregion-->
     
+    <!--#region Window style -->
+
+    <Style x:Key="DialogWindowStyle" TargetType="{x:Type Window}">
+        <Setter Property="FontFamily" Value="Meiryo" />
+        <Setter Property="ShowInTaskbar" Value="False" />
+        <Setter Property="ResizeMode" Value="NoResize" />
+        <Setter Property="WindowChrome.WindowChrome">
+            <Setter.Value>
+                <WindowChrome
+                    UseAeroCaptionButtons="False"
+                    CaptionHeight="0"
+                    GlassFrameThickness="1 0 0 0"
+                    CornerRadius="0" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Background" Value="#FFFFFFFF" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="#FFAAAAAA" />
+    </Style>
+    
+    <!--#endregion-->
+    
 </ResourceDictionary>

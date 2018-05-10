@@ -142,13 +142,13 @@
                 </Grid>
             </Border>
 
-            <DataTemplate.Triggers>
+            <!--<DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true">
                     <Setter TargetName="accountFuncPanel" Property="Opacity" Value="1.0" />
                     <Setter TargetName="border" Property="Background" Value="#eee" />
                     <Setter TargetName="border" Property="BorderBrush" Value="#ccc" />
                 </DataTrigger>
-            </DataTemplate.Triggers>
+            </DataTemplate.Triggers>-->
         </DataTemplate>
 
 
@@ -302,30 +302,6 @@
             </Setter>
         </Style>
         <!--#endregion-->
-
-        <conv:LocalFontNameConverter x:Key="LocalFontNameConverter" />
-
-        <DataTemplate x:Key="FontViewTemplate" DataType="{x:Type FontFamily}">
-            <Grid Margin="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
-                <TextBlock
-                    FontSize="16"
-                    Text="{Binding Converter={StaticResource LocalFontNameConverter}, Mode=OneTime}"
-                    FontFamily="{Binding Mode=OneTime}" />
-
-                <TextBlock
-                    Grid.Row="1" Margin="0 3 0 0"
-                    Foreground="{DynamicResource DisabledForeground}"
-                    FontFamily="{StaticResource UIFont}"
-                    FontSize="{StaticResource UIFontSize}">
-                    <Run Text="{Binding Converter={StaticResource LocalFontNameConverter}, Mode=OneTime}" />
-                    <Run />/ <Run Text="{Binding Source, Mode=OneWay}"/>
-                </TextBlock>
-            </Grid>
-        </DataTemplate>
     </Window.Resources>
     <DockPanel>
         <Border
@@ -586,61 +562,40 @@
                                 DockPanel.Dock="Top"
                                 Grid.Row="1" Grid.ColumnSpan="2"
                                 Padding="4 0 0 0"
-                                ToolBarTray.IsLocked="True"
-                                FontFamily="{StaticResource UIFont}"
-                                FontSize="{StaticResource UIFontSize}">
+                                ToolBarTray.IsLocked="True">
+                                <Button
+                                    VerticalAlignment="Stretch"
+                                    ToolTip="フォントをリストから追加"
+                                    Command="{Binding AddFontCommand, Mode=OneTime}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <app:GeometryIcon
+                                            VerticalAlignment="Center"
+                                            Data="{StaticResource FontAwesome.Icon.Font}" />
 
-                                <md:PopupBox StaysOpen="True" ClipToBounds="True">
-                                    <md:PopupBox.ToggleContent>
-                                        <TextBlock Text="フォントの追加" Margin="{StaticResource ToolBarItemPadding}" />
-                                    </md:PopupBox.ToggleContent>
-
-                                    <StackPanel Width="280" Margin="8">
-                                        <TextBlock
-                                            Margin="0 0 0 4"
-                                            FontFamily="{StaticResource UIFont}"
-                                            FontSize="{StaticResource UIFontSize}">
-                                            <Hyperlink Command="{Binding FontSelectCommand, Mode=OneTime}">
-                                                <Run Text="フォントの参照" />
-                                            </Hyperlink>
-                                        </TextBlock>
-
-                                        <TextBox
-                                            Margin="0 4 0 4"
-                                            md:HintAssist.Hint="フィルタ"
-                                            FontFamily="{StaticResource UIFont}"
-                                            FontSize="{StaticResource UIFontSize}"
-                                            Text="{Binding FontFontFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
-
-                                        <Separator />
-
-                                        <ListView
-                                            Margin="0 4" MaxHeight="240"
-                                            SelectedItem="{Binding NewSelectedFont, Mode=TwoWay}"
-                                            ItemsSource="{Binding FontFontList, Mode=OneWay}"
-                                            ItemTemplate="{StaticResource FontViewTemplate}"
-                                            FontFamily="{StaticResource UIFont}"
-                                            FontSize="{StaticResource UIFontSize}"
-                                            IsSynchronizedWithCurrentItem="False"
-                                            VirtualizingPanel.ScrollUnit="Pixel">
-                                            <ListBox.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <VirtualizingStackPanel Orientation="Vertical" />
-                                                </ItemsPanelTemplate>
-                                            </ListBox.ItemsPanel>
-                                        </ListView>
-
-                                        <Button 
-                                            Content="選択"
-                                            FontFamily="{StaticResource UIFont}"
-                                            FontSize="{StaticResource UIFontSize}"
-                                            CommandParameter="{Binding NewSelectedFont, Mode=OneWay}"
-                                            Command="{Binding AddFontCommand, Mode=OneTime}"
-                                            HorizontalAlignment="Center"
-                                            Style="{StaticResource MaterialDesignFlatButton}"/>
+                                        <app:GeometryIcon
+                                            Margin="-4 2 0 0"
+                                            VerticalAlignment="Top"
+                                            Width="8" Height="8"
+                                            Data="{StaticResource FontAwesome.Icon.Pluse}" />
                                     </StackPanel>
-                                </md:PopupBox>
+                                </Button>
+
+                                <Button
+                                    VerticalAlignment="Stretch"
+                                    Command="{Binding SelectExternalFontCommand, Mode=OneTime}"
+                                    ToolTip="フォントをファイルから追加">
+                                    <StackPanel Orientation="Horizontal">
+                                        <app:GeometryIcon
+                                            VerticalAlignment="Center"
+                                            Data="{StaticResource FontAwesome.Icon.Font}" />
+
+                                        <app:GeometryIcon
+                                            Margin="-4 2 0 0"
+                                            VerticalAlignment="Top"
+                                            Width="8" Height="8"
+                                            Data="{StaticResource FontAwesome.Icon.ExternalLinkSquareAlt}" />
+                                    </StackPanel>
+                                </Button>
 
                                 <Separator />
 

@@ -172,62 +172,27 @@ namespace Liberfy.ViewModel
 
         public TextFormattingMode ViewFontRendering { get; private set; }
 
-        private string _fontFontFilter;
-        public string FontFontFilter
-        {
-            get => _fontFontFilter;
-            set
-            {
-                if (SetProperty(ref _fontFontFilter, value))
-                {
-                    FilteringFontFontList();
-                }
-            }
-        }
+        //private static readonly StringComparison strComp = StringComparison.CurrentCultureIgnoreCase;
 
-        private ICollection<FontFamily> _baseFontList = Fonts.SystemFontFamilies;
-        private List<FontFamily> _fontFontList;
-        public List<FontFamily> FontFontList
-        {
-            get
-            {
-                if (_fontFontList == null)
-                {
-                    FilteringFontFontList();
-                }
+        //private void FilteringFontFontList()
+        //{
+        //    if (string.IsNullOrWhiteSpace(_fontFontFilter))
+        //    {
+        //        _fontFontList = new List<FontFamily>(_baseFontList);
+        //    }
+        //    else
+        //    {
+        //        bool isFontFiltering(FontFamily fontFamily)
+        //        {
+        //            return fontFamily.Source.Contains(_fontFontFilter, strComp)
+        //                || fontFamily.FamilyNames.Any(kvp => kvp.Value.Contains(_fontFontFilter, strComp));
+        //        }
 
-                return _fontFontList;
-            }
-        }
+        //        _fontFontList = new List<FontFamily>(_baseFontList.Where(isFontFiltering));
+        //    }
 
-        private static readonly StringComparison strComp = StringComparison.CurrentCultureIgnoreCase;
-
-        private void FilteringFontFontList()
-        {
-            if (string.IsNullOrWhiteSpace(_fontFontFilter))
-            {
-                _fontFontList = new List<FontFamily>(_baseFontList);
-            }
-            else
-            {
-                bool isFontFiltering(FontFamily fontFamily)
-                {
-                    return fontFamily.Source.Contains(_fontFontFilter, strComp)
-                        || fontFamily.FamilyNames.Any(kvp => kvp.Value.Contains(_fontFontFilter, strComp));
-                }
-
-                _fontFontList = new List<FontFamily>(_baseFontList.Where(isFontFiltering));
-            }
-
-            RaisePropertyChanged(nameof(FontFontList));
-        }
-
-        private FontFamily _newSelectedFont;
-        public FontFamily NewSelectedFont
-        {
-            get => _newSelectedFont;
-            set => SetProperty(ref _newSelectedFont, value, _addFontCommand);
-        }
+        //    RaisePropertyChanged(nameof(FontFontList));
+        //}
 
         private FontFamily _selectedFont;
         public FontFamily SelectedFont
@@ -237,7 +202,7 @@ namespace Liberfy.ViewModel
             {
                 if (SetProperty(ref _selectedFont, value))
                 {
-                    UpdateFontUI();
+                    this.UpdateFontUI();
                 }
             }
         }
@@ -246,59 +211,48 @@ namespace Liberfy.ViewModel
 
         private void ReloadViewFont()
         {
-            ViewFont = new FontFamily(string.Join(", ", ViewFonts.Select(f => f.Source)));
-            RaisePropertyChanged(nameof(ViewFont));
+            this.ViewFont = new FontFamily(string.Join(", ", ViewFonts.Select(f => f.Source)));
+            this.RaisePropertyChanged(nameof(ViewFont));
         }
 
         private void UpdateFontUI()
         {
-            ReloadViewFont();
+            this.ReloadViewFont();
 
-            AddFontCommand.RaiseCanExecute();
-            RemoveFontCommand.RaiseCanExecute();
-            IncreaseFontPriorityCommand.RaiseCanExecute();
-            DecreaseFontPriorityCommand.RaiseCanExecute();
+            this.AddFontCommand.RaiseCanExecute();
+            this.RemoveFontCommand.RaiseCanExecute();
+            this.IncreaseFontPriorityCommand.RaiseCanExecute();
+            this.DecreaseFontPriorityCommand.RaiseCanExecute();
         }
 
         private void ApplyFontSetting()
         {
-            Setting.TimelineFont = ViewFonts.Select(f => f.Source).ToArray();
-            Setting.TimelineFontSize = ViewFontSize.Value;
-            Setting.TimelineFontRendering = ViewFontRendering;
+            Setting.TimelineFont = this.ViewFonts.Select(f => f.Source).ToArray();
+            Setting.TimelineFontSize = this.ViewFontSize.Value;
+            Setting.TimelineFontRendering = this.ViewFontRendering;
         }
 
-        #region Command: AddFontCommand
-
-        private Command<FontFamily> _addFontCommand;
-        public Command AddFontCommand
+        private Command _addFontCommand;
+        public Command AddFontCommand => this._addFontCommand ?? (this._addFontCommand = this.RegisterCommand(() =>
         {
-            get => _addFontCommand ?? (_addFontCommand = RegisterCommand<FontFamily>(AddNewFont, CanAddFont));
-        }
+            var option = new SelectDialogOption<FontFamily>
+            {
+                Instruction = "追加するフォントを選択してください",
+                Items = Fonts.SystemFontFamilies,
+                ItemTemplate = App.Current.TryFindResource("FontViewTemplate") as DataTemplate,
+            };
 
-        private void AddNewFont(FontFamily fontFamily)
-        {
-            ViewFonts.Insert(0, fontFamily);
-            UpdateFontUI();
-        }
+            this.DialogService.SelectDialog(option);
 
-        private bool CanAddFont(FontFamily fontFamily) => fontFamily != null;
+            if (option.IsSelected)
+            {
+                this.ViewFonts.Insert(0, option.SelectedItem);
+                this.UpdateFontUI();
+            }
+        }));
 
-        #endregion Command: AddFontCommand
-
-        #region Command: FontSelectCommand
-
-        private Command _fontSeelectCommand;
-        public Command FontSelectCommand
-        {
-            get => _fontSeelectCommand ?? (_fontSeelectCommand = RegisterCommand(SelectFontFile));
-        }
-
-        private static bool SupportedFont(FontFamily font)
-        {
-            return font.FamilyTypefaces.Any(face => face.Style == FontStyles.Normal);
-        }
-
-        private void SelectFontFile()
+        private Command _selectExternalFontCommand;
+        public Command SelectExternalFontCommand => this._selectExternalFontCommand ?? (this._selectExternalFontCommand = this.RegisterCommand(() =>
         {
             var ofd = new OpenFileDialog
             {
@@ -307,25 +261,29 @@ namespace Liberfy.ViewModel
                 CheckPathExists = true,
             };
 
-            if (DialogService.OpenModal(ofd))
+            if (this.DialogService.OpenModal(ofd))
             {
                 try
                 {
-                    var fontFamily = Fonts.GetFontFamilies(ofd.FileName)
+                    var fontFamily = Fonts
+                        .GetFontFamilies(ofd.FileName)
                         .FirstOrDefault(SupportedFont);
+
                     if (fontFamily != null)
                     {
-                        ViewFonts.Insert(0, fontFamily);
+                        this.ViewFonts.Insert(0, fontFamily);
                     }
-                }
-                catch (Exception)
-                {
 
+                    this.UpdateFontUI();
                 }
+                catch { /* pass */ }
             }
-        }
+        }));
 
-        #endregion Command: FontSelectCommand
+        private static bool SupportedFont(FontFamily font)
+        {
+            return font.FamilyTypefaces.Any(face => face.Style == FontStyles.Normal);
+        }
 
         #region Command: RemoveFontCommand
 
@@ -376,8 +334,8 @@ namespace Liberfy.ViewModel
 
         private void DecreaseFontPriority(FontFamily obj)
         {
-            ViewFonts.ItemIndexIncrement(obj);
-            UpdateFontUI();
+            this.ViewFonts.ItemIndexIncrement(obj);
+            this.UpdateFontUI();
         }
 
         private bool CanDecreaseFontPriority(FontFamily obj)

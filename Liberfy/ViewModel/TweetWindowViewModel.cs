@@ -28,13 +28,13 @@ namespace Liberfy.ViewModel
         private Account _selectedAccount;
         public Account SelectedAccount
         {
-            get => _selectedAccount;
-            set => SetProperty(ref _selectedAccount, value, _postCommand);
+            get => this._selectedAccount;
+            set => this.SetProperty(ref this._selectedAccount, value, this._postCommand);
         }
 
         public void SetPostAccount(Account account)
         {
-            SelectedAccount = account;
+            this.SelectedAccount = account;
         }
 
         private const int MaxTweetLength = 140;
@@ -44,31 +44,28 @@ namespace Liberfy.ViewModel
         {
             Media = new FluidCollection<UploadMedia>();
 
-            SelectedAccount = Accounts.First();
+            SelectedAccount = this.Accounts.First();
 
             UpdateCanPost();
         }
 
         public FluidCollection<UploadMedia> Media { get; }
 
-        private bool _canUpdateContent;
-        public bool CanUpdateContent => _canUpdateContent;
-
-        private int _remainingTweetLength = MaxTweetLength;
-        public int RemainingTweetLength => _remainingTweetLength;
+        public bool CanUpdateContent { get; private set; }
+        public int RemainingTweetLength { get; private set; } = MaxTweetLength;
 
         private string _uploadStatusText;
         public string UploadStatusText
         {
-            get => _uploadStatusText;
-            set => SetProperty(ref _uploadStatusText, value);
+            get => this._uploadStatusText;
+            set => this.SetProperty(ref this._uploadStatusText, value);
         }
 
         private bool _isTweetPosting;
         public bool IsTweetPosting
         {
-            get => _isTweetPosting;
-            set => SetProperty(ref _isTweetPosting, value);
+            get => this._isTweetPosting;
+            set => this.SetProperty(ref this._isTweetPosting, value);
         }
 
         private string _tweet = string.Empty;
@@ -78,9 +75,9 @@ namespace Liberfy.ViewModel
             set
             {
                 var newTweet = value?.Replace("\r\n", "\n") ?? string.Empty;
-                if (SetProperty(ref _tweet, newTweet))
+                if (this.SetProperty(ref _tweet, newTweet))
                 {
-                    UpdateCanPost();
+                    this.UpdateCanPost();
                 }
             }
         }
@@ -89,23 +86,25 @@ namespace Liberfy.ViewModel
         {
             // ツイート可能な残り文字数の算出
             int actualTweetLength = tweetValidator.GetTweetLength(_tweet);
-            if (Media.Count > 0)
-                actualTweetLength += MediaUrlLength;
 
-            _remainingTweetLength = MaxTweetLength - actualTweetLength;
+            if (this.Media.Count > 0)
+            {
+                actualTweetLength += MediaUrlLength;
+            }
+
+            this.RemainingTweetLength = MaxTweetLength - actualTweetLength;
 
             // アップロード可能かを判定
-            bool isTweetValiableLength =
-                _remainingTweetLength > 0 && _remainingTweetLength < MaxTweetLength;
-            bool isPostableMediaCount = Media.Count <= 4;
+            bool isTweetableLength = this.RemainingTweetLength > 0 && this.RemainingTweetLength < MaxTweetLength;
+            bool isPostableMediaCount = this.Media.Count <= 4;
 
-            _canUpdateContent = isTweetValiableLength && isPostableMediaCount;
+            this.CanUpdateContent = isTweetableLength && isPostableMediaCount;
 
             // プロパティの変更通知
-            RaisePropertyChanged(nameof(RemainingTweetLength));
-            RaisePropertyChanged(nameof(CanUpdateContent));
+            this.RaisePropertyChanged(nameof(this.RemainingTweetLength));
+            this.RaisePropertyChanged(nameof(this.CanUpdateContent));
 
-            PostCommand.RaiseCanExecute();
+            this.PostCommand.RaiseCanExecute();
         }
 
         private bool _isSensitiveMedia = Setting.NoticePostSensitiveMedia;
@@ -122,49 +121,50 @@ namespace Liberfy.ViewModel
             set => SetProperty(ref _closeOnPostComplated, value);
         }
 
-        private StatusInfo _replyToStatus;
-        public StatusInfo ReplyToStatus => _replyToStatus;
+        public StatusInfo ReplyToStatus { get; private set; }
         public bool HasReplyStatus { get; private set; } = false;
 
-        private UserInfo _replyUser;
-        public UserInfo ReplyUser => _replyUser;
+        public UserInfo ReplyUser { get; private set; }
         public bool HasReplyUser { get; private set; } = false;
 
         public void SetReplyToUser(UserInfo user)
         {
-            if (user == null)
-            {
-                HasReplyUser = false;
-                _replyUser = null;
-            }
+            this.ReplyUser = user;
+            this.HasReplyUser = user != null;
 
-            _replyUser = user;
-            HasReplyUser = true;
-
-            RaisePropertyChanged(nameof(ReplyUser));
-            RaisePropertyChanged(nameof(HasReplyUser));
+            this.RaisePropertyChanged(nameof(this.ReplyUser));
+            this.RaisePropertyChanged(nameof(this.HasReplyUser));
         }
+
+        private static string WrapReplyText(string screenName) => $"@{ screenName } ";
 
         public void SetReplyToStatus(StatusInfo status)
         {
-            _replyToStatus = status;
-            HasReplyStatus = _replyToStatus != null;
+            this.ReplyToStatus = status;
+            this.HasReplyStatus = status != null;
 
-            RaisePropertyChanged(nameof(HasReplyStatus));
-            RaisePropertyChanged(nameof(HasReplyStatus));
+            this.RaisePropertyChanged(nameof(this.ReplyToStatus));
+            this.RaisePropertyChanged(nameof(this.HasReplyStatus));
 
             var mentionEntity = status?.Entities?.UserMentions;
-            bool hasMentionEntity = Setting.IncludeOtherAtReply && mentionEntity != null;
 
-            var mentions = new List<string>((hasMentionEntity ? mentionEntity.Length : 0) + 1)
+            int mentionEntityCount = mentionEntity?.Length ?? 0;
+
+            if (mentionEntityCount == 0)
             {
-                status.User.ScreenName
-            };
-            if (hasMentionEntity)
-                mentions.AddRange(mentionEntity.Select(m => m.ScreenName));
+                this.Tweet = WrapReplyText(status.User.ScreenName);
+            }
+            else if (Setting.IncludeOtherAtReply)
+            {
+                var mentionUserList = new LinkedList<string>(mentionEntity.Select(m => m.ScreenName));
+                mentionUserList.AddFirst(status.User.ScreenName);
 
-            Tweet = string.Concat(mentions
-                .GroupBy(key => key, (key, elements) => $"@{elements.First()} ", _stringIgnroeCaseCompare));
+                var mentionList = mentionUserList
+                    .Distinct(_stringIgnroeCaseCompare)
+                    .Select(WrapReplyText);
+
+                this.Tweet = string.Concat(mentionList);
+            }
         }
 
         private static StringIgnoreCaseEqualityComparer _stringIgnroeCaseCompare = new StringIgnoreCaseEqualityComparer();
@@ -178,8 +178,7 @@ namespace Liberfy.ViewModel
             public int GetHashCode(string obj) => GetHashCode();
         }
 
-        private TextBoxController _textBoxController = new TextBoxController();
-        public TextBoxController TextBoxController => _textBoxController;
+        public TextBoxController TextBoxController { get; private set; } = new TextBoxController();
 
         #region NowPlaying
 
@@ -217,63 +216,64 @@ namespace Liberfy.ViewModel
         }
 
         private Tokens Tokens => SelectedAccount.Tokens;
-        private int _postTweetFase = -1;
+        private int _postTweetPhase = -1;
 
         public async void PostTweet()
         {
-            OnPostBegin();
+            this.OnPostBegin();
 
             var uploadPrams = new DictionaryEx<string, object>
             {
-                ["status"] = Tweet,
-                ["possibly_sensitive"] = IsSensitiveMedia,
+                ["status"] = this.Tweet,
+                ["possibly_sensitive"] = this.IsSensitiveMedia,
             };
 
-            if (_replyToStatus != null)
-                uploadPrams["in_reply_to_status_id"] = _replyToStatus.Id;
+            if (this.HasReplyStatus)
+                uploadPrams["in_reply_to_status_id"] = this.ReplyToStatus.Id;
 
             // 画像および動画のアップロード
-            var uploadableMedia = GetUploadableMedia(Media);
+            var uploadableMedia = this.GetUploadableMedia(Media);
             if (uploadableMedia.Any())
             {
-                _postTweetFase = 1;
+                _postTweetPhase = 1;
 
-                UploadStatusText = "メディアをアップロードしています...";
+                this.UploadStatusText = "メディアをアップロードしています...";
                 uploadableMedia.ForEach(m => m.SetIsTweetPosting(true));
 
-                if (await UploadMediaItems(Tokens, uploadableMedia).ConfigureAwait(true))
+                if (await this.UploadMediaItems(this.Tokens, uploadableMedia).ConfigureAwait(true))
                 {
-                    uploadPrams["media_ids"] = from m in Media where m.IsAvailableUploadId() select m.UploadId.Value;
+                    uploadPrams["media_ids"] = Media
+                        .Where(m => m.IsAvailableUploadId())
+                        .Select(m => m.UploadId.Value);
                 }
                 else
                 {
                     uploadableMedia.ForEach(m => m.SetIsTweetPosting(false));
-
-                    OnPostEnd();
+                    this.OnPostEnd();
                     return;
                 }
             }
 
             // ツイート
-            _postTweetFase = 2;
-            UploadStatusText = "ツイートしています...";
+            _postTweetPhase = 2;
+            this.UploadStatusText = "ツイートしています...";
 
             try
             {
-                await Tokens.Statuses.UpdateAsync(uploadPrams);
+                await this.Tokens.Statuses.UpdateAsync(uploadPrams);
 
-                OnPostComplated();
+                this.OnPostComplated();
             }
             catch (Exception ex)
             {
-                DialogService.MessageBox(ex.Message, null);
+                this.DialogService.MessageBox(ex.Message, null);
             }
 
-            OnPostEnd();
+            this.OnPostEnd();
 
             if (_closeOnPostComplated)
             {
-                DialogService.Invoke(ViewState.Close);
+                this.DialogService.Invoke(ViewState.Close);
             }
         }
 
@@ -284,20 +284,19 @@ namespace Liberfy.ViewModel
 
         private void ClearStatus()
         {
-            HasReplyUser = false;
-            _replyUser = null;
-            HasReplyStatus = false;
-            _replyToStatus = null;
+            this.HasReplyUser = false;
+            this.ReplyUser = null;
+            this.HasReplyStatus = false;
+            this.ReplyToStatus = null;
 
             var media = Media.ToArray();
-            Media.Clear();
+            this.Media.Clear();
 
-            for (int i = 0; i < media.Length; i++)
-                media[i].Dispose();
+            media.DisposeAll();
 
             media = null;
 
-            Tweet = string.Empty;
+            this.Tweet = string.Empty;
         }
 
         private IEnumerable<UploadMedia> GetUploadableMedia(IEnumerable<UploadMedia> media)
@@ -320,11 +319,11 @@ namespace Liberfy.ViewModel
 
             if (badResCount > 0)
             {
-                if (DialogService.MessageBox(
-                    $"{media.Count()}件中{badResCount}件 アップロードに失敗しました。\n再試行しますか？",
+                if (this.DialogService.MessageBox(
+                    $"{ media.Count() }件中{ badResCount }件 アップロードに失敗しました。\n再試行しますか？",
                     MsgBoxButtons.RetryCancel, MsgBoxIcon.Question) == MsgBoxResult.Retry)
                 {
-                    return await UploadMediaItems(token, GetUploadableMedia(media));
+                    return await this.UploadMediaItems(token, this.GetUploadableMedia(media));
                 }
                 else
                 {
@@ -337,32 +336,32 @@ namespace Liberfy.ViewModel
 
         public bool CanPostTweet()
         {
-            return _selectedAccount != null && !_isTweetPosting && IsEditable && _canUpdateContent;
+            return _selectedAccount != null && !_isTweetPosting && this.IsEditable && this.CanUpdateContent;
         }
 
         public bool IsEditable { get; private set; } = true;
 
         private void OnPostBegin()
         {
-            IsTweetPosting = true;
-            SetIsEditable(false);
-            _postTweetFase = 0;
+            this.IsTweetPosting = true;
+            this.SetIsEditable(false);
+            _postTweetPhase = 0;
         }
 
         private void OnPostEnd()
         {
-            IsTweetPosting = false;
-            SetIsEditable(true);
-            _postTweetFase = -1;
+            this.IsTweetPosting = false;
+            this.SetIsEditable(true);
+            _postTweetPhase = -1;
         }
 
         private void SetIsEditable(bool canEdit)
         {
-            IsEditable = canEdit;
-            RaisePropertyChanged(nameof(IsEditable));
+            this.IsEditable = canEdit;
+            this.RaisePropertyChanged(nameof(IsEditable));
 
-            AddImageCommand.RaiseCanExecute();
-            PostCommand.RaiseCanExecute();
+            this.AddImageCommand.RaiseCanExecute();
+            this.PostCommand.RaiseCanExecute();
         }
 
         #endregion
@@ -445,7 +444,6 @@ namespace Liberfy.ViewModel
         }
 
         #endregion
-
 
         #region Command: DragDropCommand
 
@@ -614,7 +612,7 @@ namespace Liberfy.ViewModel
         {
             var nowPlaying = new ViewModel.NowPlayingViewModel();
 
-            if (DialogService.OpenModal(nowPlaying, new ViewOption
+            if (this.DialogService.OpenModal(nowPlaying, new ViewOption
             {
                 ResizeMode = ResizeMode.NoResize,
                 StartupLocation = WindowStartupLocation.CenterOwner,
@@ -631,13 +629,13 @@ namespace Liberfy.ViewModel
                 ShowInTaskbar = false,
             }))
             {
-                TextBoxController.Insert(nowPlaying.InsertionText);
+                this.TextBoxController.Insert(nowPlaying.InsertionText);
 
                 foreach (var artwork in nowPlaying.Artworks)
                 {
                     if (artwork.Use)
                     {
-                        Media.Add(UploadMedia.FromArtwork(artwork));
+                        this.Media.Add(UploadMedia.FromArtwork(artwork));
                         artwork.Dispose(false);
                     }
                     else
@@ -659,12 +657,9 @@ namespace Liberfy.ViewModel
 
         internal override void OnClosed()
         {
-            _textBoxController = null;
-
-            foreach (var media in Media)
-            {
-                media.Dispose();
-            }
+            this.TextBoxController = null;
+            
+            this.Media.DisposeAll();
 
             base.OnClosed();
         }
@@ -675,12 +670,13 @@ namespace Liberfy.ViewModel
     {
         public ArtworkItem(Stream stream, bool? use)
         {
-            _image = new BitmapImage();
-            _image.BeginInit();
-            _image.StreamSource = stream;
-            _image.EndInit();
+            var img = new BitmapImage();
+            img.BeginInit();
+            img.StreamSource = stream;
+            img.EndInit();
+            this.Image = img;
 
-            _artStream = stream;
+            this.ArtStream = stream;
 
             this._use = use ?? false;
         }
@@ -692,26 +688,24 @@ namespace Liberfy.ViewModel
             set => SetProperty(ref _use, value);
         }
 
-        private BitmapImage _image;
-        public BitmapImage Image => _image;
+        public BitmapImage Image { get; private set; }
 
-        private Stream _artStream;
-        public Stream ArtStream => _artStream;
+        public Stream ArtStream { get; private set; }
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
         }
 
         public void Dispose(bool disposeStream)
         {
             if (disposeStream)
             {
-                _artStream?.Dispose();
+                this.ArtStream?.Dispose();
             }
 
-            _image = null;
-            _artStream = null;
+            this.Image = null;
+            this.ArtStream = null;
         }
     }
 }

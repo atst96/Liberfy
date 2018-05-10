@@ -740,4 +740,27 @@
         </Button>
     </DataTemplate>
 
+    <conv:LocalFontNameConverter x:Key="LocalFontNameConverter" />
+
+    <DataTemplate x:Key="FontViewTemplate" DataType="{x:Type FontFamily}">
+        <Grid Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <TextBlock
+                FontSize="16"
+                FontFamily="{Binding Mode=OneTime}"
+                Text="{Binding Converter={StaticResource LocalFontNameConverter}, Mode=OneTime}" />
+
+            <TextBlock
+                Grid.Row="1"
+                Margin="0 3 0 0"
+                Foreground="{DynamicResource DisabledForeground}">
+                <Run Text="{Binding Converter={StaticResource LocalFontNameConverter}, Mode=OneTime}" />
+                <Run />/ <Run Text="{Binding Source, Mode=OneWay}"/>
+            </TextBlock>
+        </Grid>
+    </DataTemplate>
+
 </ResourceDictionary>
