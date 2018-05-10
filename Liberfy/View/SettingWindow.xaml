@@ -79,77 +79,6 @@
             </Style.Resources>
         </Style>
 
-        <DataTemplate x:Key="AccountTemplate" DataType="{x:Type local:Account}">
-            <Border
-                x:Name="border"
-                Padding="12"
-                ClipToBounds="True"
-                Background="Transparent"
-                BorderBrush="#ddd"
-                d:DesignWidth="360">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <Image
-                        Margin="0 0 8 0" Width="42" Height="42"
-                        Source="{Binding Info.ProfileImageUrl, IsAsync=True, Mode=OneWay}" />
-
-                    <Path
-                        Grid.Column="1"
-                        Margin="0 4 4 4"
-                        Fill="#000"
-                        Width="20" Height="20"
-                        local:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=OneWay}"
-                        Stretch="Uniform"
-                        Data="{StaticResource FontAwesome.Icon.Lock}" />
-
-                    <StackPanel 
-                        Grid.Column="2" 
-                        VerticalAlignment="Center">
-                        <TextBlock Text="{Binding Info.Name, Mode=OneWay}" FontWeight="Bold" />
-                        <TextBlock Text="{Binding Info.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
-                    </StackPanel>
-
-                    <StackPanel
-                        Grid.Column="3"
-                        Opacity="0.6"
-                        x:Name="accountFuncPanel"
-                        Orientation="Horizontal"
-                        VerticalAlignment="Center">
-                        <Button
-                            Margin="0 0 4 0"
-                            Content="▲"
-                            CommandParameter="{Binding}"
-                            Command="{Binding DataContext.AccountMoveUpCommand, Mode=OneTime, 
-                                RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, AncestorLevel=1}}"
-                            Style="{StaticResource SimpleButtonStyle}" />
-
-                        <Button
-                            Margin="0 0 4 0"
-                            Content="▼"
-                            CommandParameter="{Binding}"
-                            Command="{Binding DataContext.AccountMoveDownCommand, Mode=OneTime,
-                                RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, AncestorLevel=1}}"
-                            Style="{StaticResource SimpleButtonStyle}" />
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <!--<DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True">
-                    <Setter TargetName="accountFuncPanel" Property="Opacity" Value="1.0" />
-                    <Setter TargetName="border" Property="Background" Value="#eee" />
-                    <Setter TargetName="border" Property="BorderBrush" Value="#ccc" />
-                </DataTrigger>
-            </DataTemplate.Triggers>-->
-        </DataTemplate>
-
-
         <!--#region TabControl Template-->
         <Style x:Key="tabItemStyle" TargetType="{x:Type TabItem}">
             <Setter Property="Padding" Value="14,8,30,8" />
@@ -370,27 +299,48 @@
                                         Style="{StaticResource {x:Type ListBox}}"
                                         ScrollViewer.VerticalScrollBarVisibility="Auto"
                                         ItemsSource="{Binding Accounts, Mode=OneTime}"
-                                        ItemTemplate="{StaticResource AccountTemplate}"
+                                        ItemTemplate="{StaticResource AccountItemTemplate}"
                                         SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"/>
                                 </DockPanel>
                             </Border>
 
-                            <ScrollViewer
-                                Grid.Column="1"
-                                ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                local:ElementBehavior.CollapseIsNull="{Binding SelectedAccount, Mode=OneWay}">
-                                <StackPanel 
-                                    Margin="6">
+                            <DockPanel
+                                Grid.Column="1">
+                                <ToolBar
+                                    DockPanel.Dock="Top"
+                                    ToolBarTray.IsLocked="True"
+                                    Style="{StaticResource ToolBarStyle}">
                                     <Button
-                                        Content="アカウントの削除"
                                         CommandParameter="{Binding SelectedAccount}"
-                                        Command="{Binding AccountDeleteCommand, Mode=OneTime}"
-                                        Width="180"
-                                        Style="{StaticResource Button.Danger}" />
-                                </StackPanel>
-                            </ScrollViewer>
-                        </Grid>
+                                        Command="{Binding AccountMoveUpCommand, Mode=OneTime}">
+                                        <app:GeometryIcon
+                                            Data="{StaticResource FontAwesome.Icon.ChevronUp}" />
+                                    </Button>
+                                    <Button
+                                        CommandParameter="{Binding SelectedAccount}"
+                                        Command="{Binding AccountMoveDownCommand, Mode=OneTime}">
+                                        <app:GeometryIcon
+                                            Data="{StaticResource FontAwesome.Icon.ChevronDown}" />
+                                    </Button>
+                                    <Separator />
+                                    <Button
+                                        Foreground="Red"
+                                        CommandParameter="{Binding SelectedAccount}"
+                                        Command="{Binding AccountDeleteCommand, Mode=OneTime}">
+                                        <app:GeometryIcon
+                                            Data="{StaticResource FontAwesome.Icon.Trash}" />
+                                    </Button>
+                                </ToolBar>
 
+                                <ScrollViewer
+                                    Grid.Column="1"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    local:ElementBehavior.CollapseIsNull="{Binding SelectedAccount, Mode=OneWay}">
+                                    <StackPanel 
+                                        Margin="6"/>
+                                </ScrollViewer>
+                            </DockPanel>
+                        </Grid>
                     </TabItem>
                     <TabItem Header="アカウントの初期設定">
                         <DockPanel>
@@ -424,7 +374,7 @@
                                     <app:GeometryIcon
                                         Data="{StaticResource FontAwesome.Icon.Pluse}" />
                                 </Button>
-                                
+
                                 <Button
                                     FontWeight="Normal"
                                     Padding="{StaticResource ToolBarIconPadding}"
@@ -894,13 +844,13 @@
                                                         Width="17"
                                                         Data="{StaticResource FontAwesome.Icon.Reply}"/>
                                                 </Button>
-                                                
+
                                                 <ToggleButton Style="{StaticResource RetweetActionToggleButton}">
                                                     <app:GeometryIcon
                                                         Margin="0" Width="24"
                                                         Data="{StaticResource FontAwesome.Icon.Retweet}"/>
                                                 </ToggleButton>
-                                                
+
                                                 <ToggleButton Style="{StaticResource FavoriteActionToggleButton}">
                                                     <app:GeometryIcon
                                                         Margin="0" Height="14"

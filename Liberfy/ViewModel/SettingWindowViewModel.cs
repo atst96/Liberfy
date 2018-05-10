@@ -384,7 +384,7 @@ namespace Liberfy.ViewModel
             {
                 if (this.SetProperty(ref this._selectedAccount, value))
                 {
-                    this._accountDeleteCommand?.RaiseCanExecute();
+                    this.RaiseCanExecuteAccountCommands();
                 }
             }
         }
@@ -455,47 +455,48 @@ namespace Liberfy.ViewModel
 
         #endregion
 
-        #region Command: AccountDeleteCommand
+        private void RaiseCanExecuteAccountCommands()
+        {
+            this._accountMoveUpCommand?.RaiseCanExecute();
+            this._accountMoveDownCommand?.RaiseCanExecute();
+            this._accountDeleteCommand?.RaiseCanExecute();
+        }
 
         private Command _accountDeleteCommand;
-        public Command AccountDeleteCommand => this._accountDeleteCommand ?? (this._accountDeleteCommand = this.RegisterCommand<Account>(this.AccountDelete, this.Accounts.Contains));
-
-        void AccountDelete(Account account)
-        {
-            if (this.DialogService.ShowQuestion(
-                $"本当にアカウントを一覧から削除しますか？\n {account.Info.Name }@{ account.Info.ScreenName }"))
+        public Command AccountDeleteCommand => this._accountDeleteCommand ?? (this._accountDeleteCommand = this.RegisterCommand(
+            DelegateCommand<Account>
+            .When(this.Accounts.Contains)
+            .Exec(a =>
             {
-                this.Accounts.Remove(account);
-                account.Unload();
-            }
-        }
+                if (this.DialogService.ShowQuestion(
+                    $"本当にアカウントを一覧から削除しますか？\n { a.Info.Name }@{ a.Info.ScreenName }"))
+                {
+                    this.Accounts.Remove(a);
+                    a.Unload();
+                }
 
-        #endregion
-
-        #region Command: AccountMoveUpCommand
+                this.RaiseCanExecuteAccountCommands();
+            })));
 
         private Command _accountMoveUpCommand;
-        public Command AccountMoveUpCommand => this._accountMoveUpCommand ?? (this._accountMoveUpCommand = this.RegisterCommand<Account>(this.AccountMoveUp, this.CanAccountMoveUp));
-
-        private bool CanAccountMoveUp(Account account) => this.Accounts.CanItemIndexDecrement(account);
-
-        private void AccountMoveUp(Account account) => this.Accounts.ItemIndexDecrement(account);
-
-        #endregion
-
-        #region Command: AccountMoveDownCommand
+        public Command AccountMoveUpCommand => this._accountMoveUpCommand ?? (this._accountMoveUpCommand = this.RegisterCommand(
+            DelegateCommand<Account>
+            .When(a => this.Accounts.CanItemIndexDecrement(a))
+            .Exec(a =>
+            {
+                this.Accounts.ItemIndexDecrement(a);
+                this.RaiseCanExecuteAccountCommands();
+            })));
 
         private Command _accountMoveDownCommand;
-        public Command AccountMoveDownCommand
-        {
-            get => _accountMoveDownCommand ?? (this._accountMoveDownCommand = this.RegisterCommand<Account>(this.AccountMoveDown, this.CanAccountMoveDown));
-        }
-
-        private bool CanAccountMoveDown(Account account) => this.Accounts.CanItemIndexIncrement(account);
-
-        private void AccountMoveDown(Account account) => this.Accounts.ItemIndexIncrement(account);
-
-        #endregion
+        public Command AccountMoveDownCommand => this._accountMoveDownCommand = (this._accountMoveDownCommand = this.RegisterCommand(
+            DelegateCommand<Account>
+            .When(a => this.Accounts.CanItemIndexIncrement(a))
+            .Exec(a =>
+            {
+                this.Accounts.ItemIndexIncrement(a);
+                this.RaiseCanExecuteAccountCommands();
+            })));
 
         #endregion Commands for account
 
