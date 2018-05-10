@@ -202,15 +202,9 @@
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
 
-                <md:PopupBox
-                    Margin="2"
-                    ClipToBounds="True"
-                    FontSize="{StaticResource UIFontSize}">
-                    <md:PopupBox.ToggleContent>
-                        <StackPanel
-                            Margin="12 0"
-                            Orientation="Horizontal">
-
+                <app:DropdownButton Padding="12 4" VerticalAlignment="Stretch">
+                    <app:DropdownButton.Content>
+                        <StackPanel Orientation="Horizontal">
                             <app:GeometryIcon
                                 Width="18" Height="18"
                                 VerticalAlignment="Center"
@@ -220,16 +214,15 @@
                                 VerticalAlignment="Center"
                                 Text="アカウント" Margin="4 0 0 0" />
                         </StackPanel>
-                    </md:PopupBox.ToggleContent>
-
-                    <ScrollViewer
-                        VerticalScrollBarVisibility="Auto">
-                        <ItemsControl
-                            Width="260" FontSize="{StaticResource UIFontSize}"
+                    </app:DropdownButton.Content>
+                    <app:DropdownButton.DropdownMenu>
+                        <ContextMenu
+                            Width="260"
+                            VerticalOffset="-1"
                             ItemsSource="{Binding Accounts, Mode=OneTime}"
-                            ItemTemplate="{StaticResource AccountTemplate}" />
-                    </ScrollViewer>
-                </md:PopupBox>
+                            ItemTemplate="{StaticResource AccountItemTemplate}" />
+                    </app:DropdownButton.DropdownMenu>
+                </app:DropdownButton>
 
                 <ToolBar Grid.Column="2" ToolBarTray.IsLocked="True" BorderThickness="0">
                     <Button

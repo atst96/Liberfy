@@ -702,42 +702,31 @@
     <!--#endregion-->
 
     <DataTemplate x:Key="AccountItemTemplate" DataType="{x:Type app:Account}">
-        <Button
-            x:Name="border"
-            Padding="12"
-            BorderBrush="#ddd"
-            ClipToBounds="True"
-            Background="Transparent"
-            BorderThickness="0 0 0 1"
-            HorizontalContentAlignment="Left"
-            CommandParameter="{Binding Mode=OneTime}"
-            Command="{Binding DataContext.SelectAccountCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
-            <Grid DataContext="{Binding Info, Mode=OneTime}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto" />
-                    <ColumnDefinition Width="auto" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+        <Grid DataContext="{Binding Info, Mode=OneTime}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
 
-                <Image
-                    Margin="0 0 8 0" Width="36" Height="36"
-                    Source="{Binding ProfileImageUrl, IsAsync=True}" />
+            <Image
+                Margin="0 0 8 0" Width="36" Height="36"
+                Source="{Binding ProfileImageUrl, IsAsync=True}" />
 
-                <app:GeometryIcon
-                    Grid.Column="1"
-                    Margin="0 4 4 4"
-                    Width="18" Height="18"
-                    app:ElementBehavior.Visible="{Binding IsProtected, Mode=OneWay}"
-                    Data="{StaticResource FontAwesome.Icon.Lock}" />
+            <app:GeometryIcon
+                Grid.Column="1"
+                Margin="0 4 4 4"
+                Width="18" Height="18"
+                app:ElementBehavior.Visible="{Binding IsProtected, Mode=OneWay}"
+                Data="{StaticResource FontAwesome.Icon.Lock}" />
 
-                <StackPanel 
-                    Grid.Column="2" 
-                    VerticalAlignment="Center">
-                    <TextBlock Text="{Binding Name, Mode=OneWay}" FontWeight="Bold" />
-                    <TextBlock Text="{Binding ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
-                </StackPanel>
-            </Grid>
-        </Button>
+            <StackPanel 
+                Grid.Column="2" 
+                VerticalAlignment="Center">
+                <TextBlock Text="{Binding Name, Mode=OneWay}" FontWeight="Bold" />
+                <TextBlock Text="{Binding ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+            </StackPanel>
+        </Grid>
     </DataTemplate>
 
     <conv:LocalFontNameConverter x:Key="LocalFontNameConverter" />
