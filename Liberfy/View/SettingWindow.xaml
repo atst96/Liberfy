@@ -1740,7 +1740,9 @@
                                                 Padding="6 6"
                                                 DockPanel.Dock="Left"
                                                 HorizontalAlignment="Left"
-                                                Foreground="#000">
+                                                Foreground="#000"
+                                                Background="Transparent"
+                                                BorderThickness="0">
                                                 <TextBlock>
                                                     <Run Text="リツイート" FontWeight="Bold" />
                                                     <Run Text="1,024" />
@@ -1751,7 +1753,9 @@
                                                 Padding="6 6"
                                                 DockPanel.Dock="Left"
                                                 HorizontalAlignment="Left"
-                                                Foreground="#000">
+                                                Foreground="#000"
+                                                Background="Transparent"
+                                                BorderThickness="0">
                                                 <TextBlock>
                                                     <Run Text="いいね" FontWeight="Bold" />
                                                     <Run Text="1,024" />
