@@ -84,7 +84,6 @@
                 x:Name="border"
                 Padding="12"
                 ClipToBounds="True"
-                BorderThickness="0 0 0 1"
                 Background="Transparent"
                 BorderBrush="#ddd"
                 d:DesignWidth="360">
@@ -98,7 +97,7 @@
 
                     <Image
                         Margin="0 0 8 0" Width="42" Height="42"
-                        Source="{Binding Info.ProfileImageUrl, IsAsync=True}" />
+                        Source="{Binding Info.ProfileImageUrl, IsAsync=True, Mode=OneWay}" />
 
                     <Path
                         Grid.Column="1"
@@ -142,7 +141,7 @@
             </Border>
 
             <!--<DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true">
+                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True">
                     <Setter TargetName="accountFuncPanel" Property="Opacity" Value="1.0" />
                     <Setter TargetName="border" Property="Background" Value="#eee" />
                     <Setter TargetName="border" Property="BorderBrush" Value="#ccc" />
@@ -278,18 +277,18 @@
                                     </Border>
 
                                     <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="true">
+                                        <Trigger Property="IsMouseOver" Value="True">
                                             <Setter TargetName="border" Property="Background" Value="#fafafa" />
                                             <Setter TargetName="border" Property="BorderBrush" Value="#aaa" />
                                         </Trigger>
 
-                                        <Trigger Property="IsSelected" Value="true">
+                                        <Trigger Property="IsSelected" Value="True">
                                             <Setter TargetName="border" Property="BorderThickness" Value="1 1 1 0" />
                                             <Setter TargetName="border" Property="Background" Value="#fff" />
                                             <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource SettingTabItemNormalBorderBrush}" />
                                         </Trigger>
 
-                                        <Trigger Property="IsSelected" Value="false">
+                                        <Trigger Property="IsSelected" Value="False">
                                             <Setter Property="Foreground" Value="#666" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
@@ -913,7 +912,7 @@
                                                 DockPanel.Dock="Left"
                                                 VerticalAlignment="Center"
                                                 TextTrimming="CharacterEllipsis"
-                                                app:ElementBehavior.Visible="{Binding Setting.IsShowTweetClientName, FallbackValue=true, Mode=OneWay}">
+                                                app:ElementBehavior.Visible="{Binding Setting.IsShowTweetClientName, FallbackValue=True, Mode=OneWay}">
                                                 <Hyperlink Style="{StaticResource MetadataLinkText}">
                                                     <Run Text="Liberfy" />
                                                 </Hyperlink>
@@ -931,7 +930,7 @@
                                                 Height="{Binding PreviewProfileImageWidth, Mode=OneWay, FallbackValue=40}"
                                                 CornerRadius="{Binding ProfileImageCornerRadius, Mode=OneWay}"
                                                 Background="#ccc"
-                                                app:ElementBehavior.Visible="{Binding Setting.IsShowTweetProfileImage, Mode=OneWay, FallbackValue=true}"/>
+                                                app:ElementBehavior.Visible="{Binding Setting.IsShowTweetProfileImage, Mode=OneWay, FallbackValue=True}"/>
                                         </Button>
 
                                         <DockPanel

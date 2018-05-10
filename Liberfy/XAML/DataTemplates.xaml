@@ -692,7 +692,7 @@
         </Grid>
 
         <DataTemplate.Triggers>
-            <DataTrigger Binding="{Binding HasMediaEntities, Mode=OneTime}" Value="false">
+            <DataTrigger Binding="{Binding HasMediaEntities, Mode=OneTime}" Value="False">
                 <Setter TargetName="media" Property="Visibility" Value="Collapsed" />
             </DataTrigger>
         </DataTemplate.Triggers>

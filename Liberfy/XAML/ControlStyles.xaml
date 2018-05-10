@@ -216,7 +216,7 @@
         <Setter Property="Foreground" Value="#000" />
         <Setter Property="TextDecorations" Value="None" />
         <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="true">
+            <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="{DynamicResource AccentColorBrush}" />
                 <Setter Property="TextDecorations" Value="Underline" />
             </Trigger>
@@ -227,7 +227,7 @@
         <Setter Property="Foreground" Value="#888" />
         <Setter Property="TextDecorations" Value="None" />
         <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="true">
+            <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="{DynamicResource AccentColorBrush}" />
                 <Setter Property="TextDecorations" Value="Underline" />
             </Trigger>
@@ -237,7 +237,7 @@
     <Style x:Key="HyperlinkText" TargetType="{x:Type Hyperlink}">
         <Setter Property="Foreground" Value="{DynamicResource AccentColorBrush}" />
         <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="true">
+            <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="Red" />
             </Trigger>
         </Style.Triggers>
@@ -298,17 +298,17 @@
                     </Border>
 
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="true">
+                        <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="#3777" />
                             <Setter TargetName="border" Property="Background" Value="#3fff" />
                         </Trigger>
 
-                        <Trigger Property="IsPressed" Value="true">
+                        <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="#3000" />
                             <Setter TargetName="border" Property="Background" Value="#3777" />
                         </Trigger>
 
-                        <Trigger Property="IsEnabled" Value="false">
+                        <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="border" Property="BorderBrush" Value="#4fff" />
                             <Setter TargetName="border" Property="Background" Value="#6fff" />
                             <Setter TargetName="content" Property="Opacity" Value="0.9" />
@@ -343,16 +343,16 @@
                     </Border>
 
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="true">
+                        <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="Background" Value="{DynamicResource TabItemHoverBackground}" />
                         </Trigger>
 
-                        <Trigger Property="IsSelected" Value="true">
+                        <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="border" Property="BorderThickness" Value="1 1 1 0" />
                             <Setter TargetName="border" Property="Background" Value="{DynamicResource TabItemSelectedBackground}" />
                         </Trigger>
 
-                        <Trigger Property="IsSelected" Value="true">
+                        <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Foreground" Value="{DynamicResource TabItemSelectedForeground}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -439,23 +439,6 @@
         <Setter Property="BorderBrush" Value="{DynamicResource ToolBarBorderBrush}" />
         <Setter Property="BorderThickness" Value="{StaticResource BottomThickness}" />
         <Setter Property="TextBlock.Foreground" Value="{DynamicResource ToolBarForeground}" />
-    </Style>
-
-    <Style x:Key="BoxItemBase" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-    </Style>
-
-    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource BoxItemBase}">
-        <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}" />
-    </Style>
-
-    <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource BoxItemBase}">
-        <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}" />
-    </Style>
-
-    <Style TargetType="{x:Type app:ListBoxItemEx}" BasedOn="{StaticResource BoxItemBase}">
-        <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}" />
     </Style>
 
     <Style x:Key="ToolBarStyle" TargetType="{x:Type ToolBar}" BasedOn="{StaticResource {x:Type ToolBar}}">
