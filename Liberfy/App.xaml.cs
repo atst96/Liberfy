@@ -1,4 +1,5 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
+using Microsoft.Win32;
 using Microsoft.Windows.Themes;
 using System;
 using System.Collections.Generic;
@@ -48,7 +49,24 @@ namespace Liberfy
         {
             base.OnStartup(e);
 
+            SystemEvents.SessionEnding += SystemEvents_SessionEnding;
+
             InitializeProgram();
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+
+            SystemEvents.SessionEnding -= SystemEvents_SessionEnding;
+        }
+
+        private void SystemEvents_SessionEnding(object sender, SessionEndingEventArgs e)
+        {
+            if (e.Reason == SessionEndReasons.Logoff)
+                e.Cancel = Setting.SystemCancelSignout;
+            else if (e.Reason == SessionEndReasons.SystemShutdown)
+                e.Cancel = Setting.SystemCancelShutdown;
         }
 
         private static void InitializeProgram()
@@ -89,7 +107,7 @@ namespace Liberfy
             RetweetFavoriteColor = GetAppResource<Brush>("RetweetFavoriteColor");
         }
 
-        private static T GetAppResource<T>(string resourceKey) => Current.Resources[resourceKey] is T val ? val : default(T);
+        public static T GetAppResource<T>(string resourceKey) => Current.Resources[resourceKey] is T val ? val : default(T);
 
         private static bool TryParseSettingFileOrDisplayError<T>(string filename, ref IEnumerable<T> setting)
         {
@@ -177,7 +195,7 @@ namespace Liberfy
 
         private static bool _appClsoing;
 
-        public static void Shutdown(bool saveSettings = true)
+        public static void Shutdown(bool saveSettings)
         {
             if (_appClsoing) return;
             _appClsoing = true;
@@ -252,12 +270,6 @@ namespace Liberfy
             }
 
             return false;
-        }
-
-        internal static void ForceExit()
-        {
-            // TODO: 仮処理
-            Environment.Exit(0);
         }
 
         internal static bool Open(string path)

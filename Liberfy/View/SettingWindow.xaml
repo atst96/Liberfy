@@ -490,16 +490,12 @@
                                 Style="{StaticResource HeaderLabelStyle2}" />
 
                             <CheckBox
-                                Content="ログオフを抑止する"
-                                IsChecked="{Binding Setting.SuppressShutdown}" />
-
+                                Content="システムのサインアウトをキャンセルする"
+                                IsChecked="{Binding Setting.SystemCancelSignout, Mode=TwoWay}" />
+                            
                             <CheckBox
-                                Content="スリープモードへの移行を抑止する"
-                                IsChecked="{Binding Setting.SuppressStandby}"/>
-
-                            <CheckBox
-                                Content="スクリーンセーバーの表示を抑止する"
-                                IsChecked="{Binding Setting.SuppressScreenSaver}"/>
+                                Content="システムのシャットダウンをキャンセルする"
+                                IsChecked="{Binding Setting.SystemCancelShutdown, Mode=TwoWay}" />
                         </StackPanel>
 
                     </TabItem>
@@ -659,16 +655,14 @@
                                 </StackPanel>
                             </Border>
 
-                            <ListView
+                            <ListBox
                                 Grid.Row="2"
-                                BorderThickness="1"
-                                BorderBrush="#ccc"
+                                Margin="1"
                                 FontSize="{StaticResource UIFontSize}"
                                 ItemTemplate="{StaticResource FontViewTemplate}"
                                 ItemsSource="{Binding ViewFonts, Mode=OneTime}"
                                 SelectedItem="{Binding SelectedFont, Mode=TwoWay}"
                                 SelectionMode="Single"
-                                Margin="1"
                                 TextOptions.TextFormattingMode="{Binding ViewFontRendering}" />
                         </DockPanel>
                     </TabItem>

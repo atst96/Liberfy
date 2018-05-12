@@ -65,32 +65,22 @@ namespace Liberfy
             set => SetProperty(ref _minimizeAtCloseButtonClick, value);
         }
 
-
-        [DataMember(Name = "system_suppress_shutdown")]
-        private bool _suppressShutdown;
+        [DataMember(Name = "system_signout_cancel")]
+        private bool _systemCancelSignout;
         [IgnoreDataMember]
-        public bool SuppressShutdown
+        public bool SystemCancelSignout
         {
-            get => _suppressShutdown;
-            set => SetProperty(ref _suppressShutdown, value);
+            get => this._systemCancelSignout;
+            set => this.SetProperty(ref this._systemCancelSignout, value);
         }
 
-        [DataMember(Name = "system_suppress_suspend")]
-        private bool _suppressSuspend;
+        [DataMember(Name = "system_shutdown_cancel")]
+        private bool _systemCacnelShutdown;
         [IgnoreDataMember]
-        public bool SuppressSuspend
+        public bool SystemCancelShutdown
         {
-            get => _suppressSuspend;
-            set => SetProperty(ref _suppressSuspend, value);
-        }
-
-        [DataMember(Name = "system_suppress_screensaver")]
-        private bool _suppressScreenSaver;
-        [IgnoreDataMember]
-        public bool SuppressScreenSaver
-        {
-            get => _suppressScreenSaver;
-            set => SetProperty(ref _suppressScreenSaver, value);
+            get => this._systemCacnelShutdown;
+            set => this.SetProperty(ref this._systemCacnelShutdown, value);
         }
 
         [DataMember(Name = "background_type")]
