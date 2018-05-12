@@ -567,11 +567,11 @@
                     DockPanel.Dock="Left"
                     VerticalAlignment="Top"
                     Style="{StaticResource ImageButton}"
-                    Clip="{DynamicResource TweetProfileImageClip}"
-                    Visibility="{DynamicResource TweetProfileImageVisibility}">
+                    Clip="{DynamicResource UI.Tweet.ProfileImage.Clip}"
+                    Visibility="{DynamicResource UI.Tweet.ProfileImage.Visibility}">
                     <Image
-                        Width="{DynamicResource TweetProfileImageWidth}"
-                        Height="{DynamicResource TweetProfileImageWidth}"
+                        Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
+                        Height="{DynamicResource UI.Tweet.ProfileImage.Width}"
                         Source="{Binding User.ProfileImageUrl, Mode=OneWay, IsAsync=True}" />
                 </Button>
 
@@ -632,7 +632,7 @@
                     x:Name="media"
                     ItemsSource="{Binding MediaEntities, Mode=OneTime}"
                     ItemTemplate="{StaticResource MediaItemTemplate}"
-                    Visibility="{DynamicResource TweetImagesVisibility}">
+                    Visibility="{DynamicResource UI.Tweet.Attachment.Images.Visibility}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <app:MediaPanel Spacing="4" />

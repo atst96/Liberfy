@@ -263,7 +263,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemContainerStyle>
                     <Style TargetType="{x:Type ContentPresenter}">
-                        <Setter Property="Width" Value="{DynamicResource ColumnWidth}" />
+                        <Setter Property="Width" Value="{DynamicResource UI.Column.Width}" />
                         <Setter Property="Margin" Value="2" />
                         <Setter Property="Focusable" Value="True" />
                     </Style>

@@ -15,13 +15,14 @@
     ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
         <ResourceDictionary>
-            <sys:Double x:Key="ColumnWidth">300</sys:Double>
-            <sys:Double x:Key="TweetProfileImageWidth">40</sys:Double>
-            <Visibility x:Key="TweetProfileImageVisibility">Visible</Visibility>
-            <Visibility x:Key="TweetImagesVisibility">Visible</Visibility>
-            <Visibility x:Key="TweetQuotedTweetVisibility">Visible</Visibility>
-            <Visibility x:Key="TweetClientNameVisibility">Visible</Visibility>
-            <x:Null x:Key="TweetProfileImageClip"></x:Null>
+            <sys:Double x:Key="UI.Column.Width">300</sys:Double>
+            
+            <sys:Double x:Key="UI.Tweet.ProfileImage.Width">40</sys:Double>
+            <Visibility x:Key="UI.Tweet.ProfileImage.Visibility">Visible</Visibility>
+            <Visibility x:Key="UI.Tweet.Attachment.Images.Visibility">Visible</Visibility>
+            <Visibility x:Key="UI.Tweet.Attachment.QuotedTweet.Visibility">Visible</Visibility>
+            <Visibility x:Key="UI.Tweet.ClientName.Visibility">Visible</Visibility>
+            <x:Null x:Key="UI.Tweet.ProfileImage.Clip"></x:Null>
 
             <Thickness x:Key="ToolBarItemPadding">8 6</Thickness>
             <Thickness x:Key="ToolBarIconPadding">4</Thickness>
@@ -29,14 +30,12 @@
             <sys:Double x:Key="UIFontSize">12</sys:Double>
             
             <FontFamily x:Key="UIFont">Meiryo</FontFamily>
-            
-            <SolidColorBrush x:Key="FavoriteColor" Color="Red" />
-            <SolidColorBrush x:Key="RetweetColor" Color="Green" />
+
+            <SolidColorBrush x:Key="Brush.Favorite" Color="Red" />
+            <SolidColorBrush x:Key="Brush.Retweet" Color="Green" />
 
             <LinearGradientBrush
-                x:Key="RetweetFavoriteColor"
-                StartPoint="1,0"
-                EndPoint="0,1">
+                x:Key="Brush.RetweetFavorite" StartPoint="1,0" EndPoint="0,1">
                 <GradientStop Offset="0.0" Color="Red" />
                 <GradientStop Offset="0.5" Color="Red" />
                 <GradientStop Offset="0.5" Color="Green" />

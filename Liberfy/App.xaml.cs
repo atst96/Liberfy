@@ -27,10 +27,6 @@ namespace Liberfy
         internal static readonly object CommonLockObject = new object();
 
         private static Setting _setting;
-
-        public static Brush RetweetColor;
-        public static Brush FavoriteColor;
-        public static Brush RetweetFavoriteColor;
         internal static Setting Setting => _setting;
 
         internal static FluidCollection<Account> Accounts { get; private set; }
@@ -97,17 +93,12 @@ namespace Liberfy
                 return;
             }
 
-            LoadUISettingsFromSetting();
+            ApplyUISettings();
 
             _setting.Mute.ForEach(m => m.Apply());
 
-            TaskbarIcon = GetAppResource<TaskbarIcon>("taskbarIcon");
-            RetweetColor = GetAppResource<Brush>("RetweetColor");
-            FavoriteColor = GetAppResource<Brush>("FavoriteColor");
-            RetweetFavoriteColor = GetAppResource<Brush>("RetweetFavoriteColor");
+            TaskbarIcon = GetResource<TaskbarIcon>("taskbarIcon");
         }
-
-        public static T GetAppResource<T>(string resourceKey) => Current.Resources[resourceKey] is T val ? val : default(T);
 
         private static bool TryParseSettingFileOrDisplayError<T>(string filename, ref IEnumerable<T> setting)
         {
@@ -208,51 +199,58 @@ namespace Liberfy
             Current.Shutdown();
         }
 
-        public static void LoadUISettingsFromSetting()
-        {
-            SetResources("ColumnWidth", Setting.ColumnWidth);
-            SetResources("TweetProfileImageWidth", Setting.TweetProfileImageWidth);
-            SetResources("TweetProfileImageVisibility", BoolToVisibility(Setting.IsShowTweetProfileImage));
-            SetResources("TweetImagesVisibility", BoolToVisibility(Setting.IsShowTweetImages));
-            SetResources("TweetQuotedTweetVisibility", BoolToVisibility(Setting.IsShowTweetQuotedTweet));
-            SetResources("TweetClientNameVisibility", BoolToVisibility(Setting.IsShowTweetClientName));
+        private static ProfileImageForm? _previousProfileImageForm = null;
 
-            Geometry clip;
-            switch (Setting.ProfileImageForm)
+        public static void ApplyUISettings()
+        {
+            SetResource("UI.Column.Width", Setting.ColumnWidth);
+            SetResource("UI.Tweet.ProfileImage.Width", Setting.TweetProfileImageWidth);
+            SetResource("UI.Tweet.ProfileImage.Visibility", BoolToVisibility(Setting.IsShowTweetProfileImage));
+            SetResource("UI.Tweet.Attachment.Images.Visibility", BoolToVisibility(Setting.IsShowTweetImages));
+            SetResource("UI.Tweet.Attachment.QuotedTweet.Visibility", BoolToVisibility(Setting.IsShowTweetQuotedTweet));
+            SetResource("UI.Tweet.ClientName.Visibility", BoolToVisibility(Setting.IsShowTweetClientName));
+
+            var profileImageForm = Setting.ProfileImageForm;
+            if (_previousProfileImageForm != profileImageForm)
             {
-                case ProfileImageForm.RoundedCorner:
-                    clip = new RectangleGeometry
-                    {
-                        RadiusX = 3.0d,
-                        RadiusY = 3.0d,
-                        Rect = new Rect
+                Geometry clip;
+                switch (profileImageForm)
+                {
+                    case ProfileImageForm.RoundedCorner:
+                        clip = new RectangleGeometry
+                        {
+                            RadiusX = 3.0d,
+                            RadiusY = 3.0d,
+                            Rect = new Rect
+                            {
+                                Width = Setting.TweetProfileImageWidth,
+                                Height = Setting.TweetProfileImageWidth,
+                            }
+                        };
+                        break;
+
+                    case ProfileImageForm.Ellipse:
+                        double halfWidth = Setting.TweetProfileImageWidth / 2.0d;
+                        clip = new EllipseGeometry
+                        {
+                            RadiusX = halfWidth,
+                            RadiusY = halfWidth,
+                            Center = new Point(halfWidth, halfWidth)
+                        };
+                        break;
+
+                    default:
+                        clip = new RectangleGeometry(new Rect
                         {
                             Width = Setting.TweetProfileImageWidth,
                             Height = Setting.TweetProfileImageWidth,
-                        }
-                    };
-                    break;
+                        });
+                        break;
+                }
 
-                case ProfileImageForm.Ellipse:
-                    double halfWidth = Setting.TweetProfileImageWidth / 2.0d;
-                    clip = new EllipseGeometry
-                    {
-                        RadiusX = halfWidth,
-                        RadiusY = halfWidth,
-                        Center = new Point(halfWidth, halfWidth)
-                    };
-                    break;
-
-                default:
-                    clip = new RectangleGeometry(new Rect
-                    {
-                        Width = Setting.TweetProfileImageWidth,
-                        Height = Setting.TweetProfileImageWidth,
-                    });
-                    break;
+                SetResource("UI.Tweet.ProfileImage.Clip", clip);
+                _previousProfileImageForm = profileImageForm;
             }
-
-            SetResources("TweetProfileImageClip", clip);
         }
 
         public static Visibility BoolToVisibility(bool isVisible)
@@ -260,7 +258,12 @@ namespace Liberfy
             return isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public static bool SetResources(string key, object value)
+        public static T GetResource<T>(object resourceKey)
+        {
+            return Current.TryFindResource(resourceKey) is T value ? value : default(T);
+        }
+
+        public static bool SetResource(object key, object value)
         {
             if (Current.TryFindResource(key) != value)
             {

@@ -817,7 +817,7 @@ namespace Liberfy.ViewModel
         internal override void OnClosed()
         {
             ApplyFontSetting();
-            App.LoadUISettingsFromSetting();
+            App.ApplyUISettings();
         }
     }
 }

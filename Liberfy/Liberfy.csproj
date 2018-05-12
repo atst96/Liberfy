@@ -124,6 +124,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="App.Brushes.cs" />
     <Compile Include="Behaviors\TimelineBehavior.cs" />
     <Compile Include="Component\CommandChain.cs" />
     <Compile Include="Component\DropDownButton.cs" />
