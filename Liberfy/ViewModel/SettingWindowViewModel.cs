@@ -369,13 +369,6 @@ namespace Liberfy.ViewModel
 
         #region Accounts
 
-        private ColumnType _tempColumnType;
-        public ColumnType TempColumnType
-        {
-            get => _tempColumnType;
-            set => SetProperty(ref _tempColumnType, value);
-        }
-
         private Account _selectedAccount;
         public Account SelectedAccount
         {
