@@ -39,67 +39,6 @@ namespace Liberfy.ViewModel
             }
         }
 
-        private bool _isTweetTimestampAbsolute = true;
-        public bool IsTweetTimestampAbsolute
-        {
-            get => _isTweetTimestampAbsolute;
-            set
-            {
-                if (SetProperty(ref _isTweetTimestampAbsolute, value))
-                {
-                    RaisePropertyChanged(nameof(PreviewTweetTimestampText));
-                }
-            }
-        }
-
-        private bool _isTweetTimestampRelative;
-        public bool IsTweetTimestampRelative
-        {
-            get => _isTweetTimestampRelative;
-            set => SetProperty(ref _isTweetTimestampRelative, value);
-        }
-
-
-
-        private bool _isPreviewTweetRetweeted;
-        public bool IsPreviewTweetRetweeted
-        {
-            get => _isPreviewTweetRetweeted;
-            set
-            {
-                if (SetProperty(ref _isPreviewTweetRetweeted, value))
-                {
-                    RefreshPreviewTweetActionColor();
-                }
-            }
-        }
-
-        private bool _isPreviewTweetFavorited;
-        public bool IsPreviewTweetFavorited
-        {
-            get => _isPreviewTweetFavorited;
-            set
-            {
-                if (SetProperty(ref _isPreviewTweetFavorited, value))
-                {
-                    RefreshPreviewTweetActionColor();
-                }
-            }
-        }
-
-        private Brush _previewTweetActionColor = null;
-        public Brush PreviewTweetActionColor
-        {
-            get => _previewTweetActionColor;
-            set => SetProperty(ref _previewTweetActionColor, value);
-        }
-
-        private void RefreshPreviewTweetActionColor()
-        {
-            PreviewTweetActionColor = GetTweetReactionColor(
-                _isPreviewTweetRetweeted, _isPreviewTweetFavorited);
-        }
-
         public static Brush GetTweetReactionColor(bool isRetweeted, bool isFavorited)
         {
             if (isRetweeted)
@@ -118,23 +57,6 @@ namespace Liberfy.ViewModel
                 return Brushes.Transparent;
             }
         }
-
-        public string PreviewTweetTimestampText
-        {
-            get
-            {
-                if (_isTweetTimestampAbsolute)
-                {
-                    return "2017年1月1日 0時0分";
-                }
-                else
-                {
-                    return "1時間前";
-                }
-            }
-        }
-
-
 
         private double _previewColumnWidth = App.Setting.ColumnWidth;
         public double PreviewColumnWidth

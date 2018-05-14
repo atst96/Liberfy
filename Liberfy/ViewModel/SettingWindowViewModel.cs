@@ -740,53 +740,88 @@ namespace Liberfy.ViewModel
 
         #endregion
 
-        #region Timeline
+        #region Timeline settings
 
-        public bool TimelineStatusShowRelativeTime
+        private const string SampleRelativeTime = "1分前";
+        private const string SampleAbsoluteTime = "2018年1月1日 0時0分";
+
+        public string TimelineStatusTimeText
         {
-            get => Setting.TimelineStatusShowRelativeTime;
-            set
+            get
             {
-                Setting.TimelineStatusShowRelativeTime = value;
-                RaisePropertyChanged(nameof(TimelineStatusShowAbsoluteTime));
-                RaisePropertyChanged(nameof(TimelineStatusShowRelativeTime));
+                if (this.Setting.TimelineStatusShowRelativeTime)
+                    return SampleRelativeTime;
+                else
+                    return SampleAbsoluteTime;
             }
         }
 
-        public bool TimelineStatusShowAbsoluteTime
+        public bool IsShowRelativeTimeTimelineStatus
         {
-            get => !Setting.TimelineStatusShowRelativeTime;
+            get => this.Setting.TimelineStatusShowRelativeTime;
             set
             {
-                Setting.TimelineStatusShowRelativeTime = !value;
-                RaisePropertyChanged(nameof(TimelineStatusShowAbsoluteTime));
-                RaisePropertyChanged(nameof(TimelineStatusShowRelativeTime));
+                this.Setting.TimelineStatusShowRelativeTime = value;
+                this.RaisePropertiesChanged(
+                    nameof(this.IsShowAbsoluteTimeDetailStatus),
+                    nameof(this.IsShowRelativeTimeDetailStatus),
+                    nameof(this.TimelineStatusTimeText));
             }
         }
 
-
-        public bool TimelineStatusShowRelativeTimeDetail
+        public bool IsShowAbsoluteTimeTimelineStatus
         {
-            get => Setting.TimelineStatusDetailShowRelativeTime;
+            get => !this.Setting.TimelineStatusShowRelativeTime;
             set
             {
-                Setting.TimelineStatusDetailShowRelativeTime = value;
-                RaisePropertyChanged(nameof(TimelineStatusShowAbsoluteTimeDetail));
-                RaisePropertyChanged(nameof(TimelineStatusShowRelativeTimeDetail));
+                this.Setting.TimelineStatusShowRelativeTime = !value;
+                this.RaisePropertiesChanged(
+                    nameof(this.IsShowAbsoluteTimeTimelineStatus), 
+                    nameof(this.IsShowAbsoluteTimeTimelineStatus),
+                    nameof(this.TimelineStatusTimeText));
             }
         }
 
-        public bool TimelineStatusShowAbsoluteTimeDetail
+        public string DetailStatusTimeText
         {
-            get => !Setting.TimelineStatusDetailShowRelativeTime;
-            set
+            get
             {
-                Setting.TimelineStatusDetailShowRelativeTime = !value;
-                RaisePropertyChanged(nameof(TimelineStatusShowAbsoluteTimeDetail));
-                RaisePropertyChanged(nameof(TimelineStatusShowRelativeTimeDetail));
+                if (this.Setting.TimelineStatusDetailShowRelativeTime)
+                    return SampleRelativeTime;
+                else
+                    return SampleAbsoluteTime;
             }
         }
-        #endregion
+
+        public bool IsShowRelativeTimeDetailStatus
+        {
+            get => this.Setting.TimelineStatusDetailShowRelativeTime;
+            set
+            {
+                this.Setting.TimelineStatusDetailShowRelativeTime = value;
+                this.RaisePropertiesChanged(
+                    nameof(this.IsShowAbsoluteTimeDetailStatus),
+                    nameof(this.IsShowRelativeTimeDetailStatus),
+                    nameof(this.DetailStatusTimeText));
+            }
+        }
+
+        public bool IsShowAbsoluteTimeDetailStatus
+        {
+            get => !this.Setting.TimelineStatusDetailShowRelativeTime;
+            set
+            {
+                this.Setting.TimelineStatusDetailShowRelativeTime = !value;
+                this.RaisePropertiesChanged(
+                    nameof(this.IsShowAbsoluteTimeDetailStatus),
+                    nameof(this.IsShowRelativeTimeDetailStatus),
+                    nameof(this.DetailStatusTimeText));
+            }
+        }
+
+        #endregion Timeline settings
+
+
 
         internal override bool CanClose()
         {
