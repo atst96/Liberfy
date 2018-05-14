@@ -93,14 +93,11 @@
 
                 <TabControl
                     Margin="16 16 16 8"
+                    Padding="0"
                     SelectedIndex="{Binding PageIndex, Mode=TwoWay}"
                     Background="{x:Static Brushes.Transparent}"
-                    BorderThickness="0" Padding="0">
-                    <TabControl.ItemContainerStyle>
-                        <Style TargetType="{x:Type TabItem}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </Style>
-                    </TabControl.ItemContainerStyle>
+                    BorderThickness="0"
+                    Style="{StaticResource HeaderlessTabControl}">
 
                     <TabItem>
                         <Grid>
