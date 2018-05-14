@@ -122,6 +122,17 @@ namespace Liberfy.ViewModel
         }
 
         /// <summary>
+        /// 複数のプロパティの変更通知を行います。
+        /// </summary>
+        /// <param name="propertyNames">変更を通知するプロパティ名の配列</param>
+        protected void RaisePropertiesChanged(params string[] propertyNames)
+        {
+            if (this.PropertyChanged != null)
+                foreach (var name in propertyNames)
+                    this.PropertyChanged(this, new PropertyChangedEventArgs(name));
+        }
+
+        /// <summary>
         /// ViewModelと同時に破棄されるコマンドを登録します。
         /// </summary>
         /// <param name="command">コマンド登録するコマンド</param>
