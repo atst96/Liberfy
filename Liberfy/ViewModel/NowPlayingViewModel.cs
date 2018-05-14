@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using NPLib = NowPlayingLib;
 
 namespace Liberfy.ViewModel
 {
@@ -34,7 +35,7 @@ namespace Liberfy.ViewModel
             .When(() =>
             {
                 return !string.IsNullOrEmpty(_player)
-                    && ViewModel.TweetWindow.NowPlayingPlayerList.ContainsKey(_player);
+                    && TweetWindow.NowPlayingPlayerList.ContainsKey(_player);
             })
             .Exec(async () =>
             {
@@ -57,15 +58,15 @@ namespace Liberfy.ViewModel
                     switch (this._player)
                     {
                         case "wmplayer":
-                            player = new WindowsMediaPlayer();
+                            player = new NPLib.WindowsMediaPlayer(registerEvents: false);
                             break;
 
                         case "itunes":
-                            player = new iTunes();
+                            player = new NPLib.iTunes(registerEvents: false);
                             break;
 
                         case "foobar2000":
-                            player = new NowPlayingLib.Foobar2000();
+                            player = new NPLib.Foobar2000(registerEvents: false);
                             break;
 
                         default:

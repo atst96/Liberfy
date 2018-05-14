@@ -1124,27 +1124,6 @@
             iTunes が終了された時に発生します。
             </summary>
         </member>
-        <member name="T:NowPlayingLib.LismoPort">
-            <summary>
-            LISMO Port (x-アプリ for LISMO) の機能を提供します。
-            </summary>
-        </member>
-        <member name="F:NowPlayingLib.LismoPort.ProcessName">
-            <summary>
-            LISMO Port (x-アプリ for LISMO) が使用するプロセス名。
-            </summary>
-        </member>
-        <member name="M:NowPlayingLib.LismoPort.#ctor">
-            <summary>
-            <see cref="T:NowPlayingLib.LismoPort"/> の新しいインスタンスを初期化します。
-            </summary>
-        </member>
-        <member name="P:NowPlayingLib.LismoPort.Player">
-            <summary>
-            LISMO Port (x-アプリ for LISMO) の <see cref="T:SonyMediaPlayerXLib.ISmpxPlayControls"/> のインスタンスを取得します。
-            </summary>
-            <exception cref="T:System.TypeInitializationException"/>
-        </member>
         <member name="T:NowPlayingLib.CurrentMediaChangedEventHandler">
             <summary>
             音楽プレーヤーで再生中の曲が変更されたときに発生する <see cref="E:NowPlayingLib.INotifyPlayerStateChanged.CurrentMediaChanged"/> イベントを処理するメソッドを表します。
@@ -1416,105 +1395,6 @@
             音楽プレーヤーは逆再生中です。
             </summary>
         </member>
-        <member name="T:NowPlayingLib.SonyDatabase.MediaManager">
-            <summary>
-            x-アプリのデータベースから曲情報を取得します。
-            </summary>
-        </member>
-        <member name="F:NowPlayingLib.SonyDatabase.MediaManager.DatabasePath">
-            <summary>
-            データベースのパス。
-            </summary>
-        </member>
-        <member name="M:NowPlayingLib.SonyDatabase.MediaManager.GetMediaEntry(SonyMediaPlayerXLib.ISmpxMediaDescriptor2)">
-            <summary>
-            メディア オブジェクトを指定して曲情報を取得します。
-            </summary>
-            <param name="media">メディア オブジェクト。</param>
-            <returns>データベースから得られた曲情報。</returns>
-        </member>
-        <member name="T:NowPlayingLib.SonyMediaPlayerX">
-            <summary>
-            SonyMediaPlayerX の基本実装を提供します。これは <c>abstract</c> クラスです。
-            </summary>
-        </member>
-        <member name="F:NowPlayingLib.SonyMediaPlayerX._player">
-            <summary>
-            SonyMediaPlayerX の <see cref="T:SonyMediaPlayerXLib.ISonyMediaPlayerX2"/> への COM ラッパーの静的フィールド。
-            </summary>
-        </member>
-        <member name="P:NowPlayingLib.SonyMediaPlayerX.Player">
-            <summary>
-            SonyMediaPlayerX の <see cref="T:SonyMediaPlayerXLib.ISonyMediaPlayerX2"/> への COM ラッパーを取得します。
-            </summary>
-            <exception cref="T:System.TypeInitializationException"/>
-        </member>
-        <member name="P:NowPlayingLib.SonyMediaPlayerX.Controls">
-            <summary>
-            SonyMediaPlayerX の <see cref="T:SonyMediaPlayerXLib.ISmpxPlayControls"/> への COM ラッパーを取得します。
-            </summary>
-            <exception cref="T:System.TypeInitializationException"/>
-        </member>
-        <member name="M:NowPlayingLib.SonyMediaPlayerX.GetCurrentMedia">
-            <summary>
-            非同期操作として現在 SonyMediaPlayerX で再生している曲を取得します。
-            </summary>
-            <returns>
-            <para>非同期操作を表すタスク オブジェクト。</para>
-            <para>タスク オブジェクトの <c>Result</c> プロパティは、<see cref="T:NowPlayingLib.MediaItem"/> を返します。</para>
-            </returns>
-        </member>
-        <member name="M:NowPlayingLib.SonyMediaPlayerX.Dispose(System.Boolean)">
-            <summary>
-            SonyMediaPlayerX に関連付けられたアンマネージ リソースを解放します。
-            </summary>
-            <param name="disposing">明示的な破棄要求元から呼び出された場合は true に設定します。それ以外の場合は false。</param>
-        </member>
-        <member name="P:NowPlayingLib.SonyMediaPlayerX.PlayerState">
-            <summary>
-            SonyMediaPlayerX の現在の再生状態を取得します。
-            </summary>
-        </member>
-        <member name="P:NowPlayingLib.SonyMediaPlayerX.CurrentPosition">
-            <summary>
-            SonyMediaPlayerX の現在の再生位置を取得または設定します。
-            </summary>
-        </member>
-        <member name="M:NowPlayingLib.SonyMediaPlayerX.Play">
-            <summary>
-            SonyMediaPlayerX で再生を実行します。
-            </summary>
-        </member>
-        <member name="M:NowPlayingLib.SonyMediaPlayerX.FastForward">
-            <summary>
-            SonyMediaPlayerX で早送りを実行します。
-            </summary>
-        </member>
-        <member name="M:NowPlayingLib.SonyMediaPlayerX.Rewind">
-            <summary>
-            SonyMediaPlayerX で巻戻しを実行します。
-            </summary>
-        </member>
-        <member name="M:NowPlayingLib.SonyMediaPlayerX.Stop">
-            <summary>
-            SonyMediaPlayerX で停止を実行します。
-            </summary>
-        </member>
-        <member name="M:NowPlayingLib.SonyMediaPlayerX.Pause">
-            <summary>
-            SonyMediaPlayerX で一時停止を実行します。
-            </summary>
-        </member>
-        <member name="M:NowPlayingLib.SonyMediaPlayerX.NextTrack">
-            <summary>
-            SonyMediaPlayerX で次の曲の再生を実行します。
-            </summary>
-        </member>
-        <member name="M:NowPlayingLib.SonyMediaPlayerX.PreviousTrack">
-            <summary>
-            SonyMediaPlayerX で前の曲の再生を実行します。
-            </summary>
-        </member>
         <member name="T:NowPlayingLib.Win32.INTERNET_CACHE_ENTRY_INFO">
             <summary>
             Contains information about an entry in the Internet cache.
@@ -1724,27 +1604,6 @@
             <summary>
             Windows Media Player が終了されたときに発生します。
             </summary>
-        </member>
-        <member name="T:NowPlayingLib.XApplication">
-            <summary>
-            x-アプリ の機能を提供します。
-            </summary>
-        </member>
-        <member name="F:NowPlayingLib.XApplication.ProcessName">
-            <summary>
-            x-アプリ が使用するプロセス名。
-            </summary>
-        </member>
-        <member name="M:NowPlayingLib.XApplication.#ctor">
-            <summary>
-            <see cref="T:NowPlayingLib.XApplication"/> の新しいインスタンスを初期化します。
-            </summary>
-        </member>
-        <member name="P:NowPlayingLib.XApplication.Player">
-            <summary>
-            x-アプリ の <see cref="T:SonyMediaPlayerXLib.ISonyMediaPlayerX2"/> のインスタンスを取得します。
-            </summary>
-            <exception cref="T:System.TypeInitializationException"/>
         </member>
     </members>
 </doc>
