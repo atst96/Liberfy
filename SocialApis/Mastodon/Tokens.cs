@@ -213,7 +213,7 @@ namespace SocialApis.Mastodon
                     var obj = await JsonSerializer.DeserializeAsync<T>(str, Utf8Json.Resolvers.StandardResolver.AllowPrivate);
 
                     if (obj is IRateLimit rObj)
-                        rObj.RateLimit.Set(webRes.Headers);
+                        rObj.RateLimit = RateLimit.FromHeaders(webRes.Headers);
 
                     return obj;
                 }
