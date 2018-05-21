@@ -21,7 +21,7 @@ namespace SocialApis.Twitter.Apis
 
         private const string _apiEndpoint = "https://upload.twitter.com/1.1/media/upload.json";
 
-        private static HttpWebRequest CreateRequester(Tokens tokens, out string boundary)
+        private static HttpWebRequest CreateMultipartRequester(Tokens tokens, out string boundary)
         {
             var req = tokens.CreatePostRequester(_apiEndpoint, null, false);
             boundary = OAuthHelper.GenerateNonce();
@@ -33,7 +33,7 @@ namespace SocialApis.Twitter.Apis
 
         public async Task<MediaResponse> Upload(Stream stream, long[] additionalOwners = null)
         {
-            var req = CreateRequester(this.Tokens, out var boundary);
+            var req = CreateMultipartRequester(this.Tokens, out var boundary);
 
             using (var reqStr = await req.GetRequestStreamAsync())
             using (var writer = new StreamWriter(reqStr, Encoding.UTF8))
@@ -63,6 +63,51 @@ namespace SocialApis.Twitter.Apis
             return await this.Tokens.SendRequest<MediaResponse>(req);
         }
 
+        public async Task<MediaResponse> ChunkedUpload(Stream media, string mediaType, long[] additionalOwners = null, IProgress<UploadProgressInfo> progressReceiver = null)
+        {
+            var initResposne = await this.ChunkedUploadInit(media.Length, mediaType, additionalOwners);
+
+            // 1MB
+            const int SegmentSize = 1024 * 1024 * 1; // 1MiB
+
+            int fileLength = (int)media.Length;
+            int segmentsCount = (int)((fileLength + SegmentSize - 1) / SegmentSize);
+
+            var progress = default(UploadProgressInfo);
+            if (progressReceiver != null)
+            {
+                progress = new UploadProgressInfo()
+                {
+                    TotalSize = fileLength,
+                };
+
+                progressReceiver.Report(progress);
+            }
+
+            if (media.Position != 0 && media.CanSeek)
+                media.Position = 0;
+
+            int dataRemaining = fileLength;
+
+            int dataSize = SegmentSize;
+
+            for (int segmentIndex = 0; dataRemaining > 0; ++segmentIndex)
+            {
+                if (SegmentSize > dataRemaining)
+                    dataSize = dataRemaining;
+
+                var res = await this.ChunkedUploadAppend(initResposne.MediaId, media, dataSize, segmentIndex, progressReceiver, progress);
+                if (!string.IsNullOrEmpty(res))
+                {
+                    throw new TwitterException(res);
+                }
+
+                dataRemaining -= dataSize;
+            }
+
+            return await this.ChunkedUploadFinalize(initResposne.MediaId);
+        }
+
         public Task<MediaResponse> ChunkedUploadInit(long totalBytes, string mediaType, long[] additionalOwners = null)
         {
             var query = new Query
@@ -78,40 +123,63 @@ namespace SocialApis.Twitter.Apis
             return this.Tokens.PostRequestAsync<MediaResponse>(_apiEndpoint, query);
         }
 
-        public async Task<string> ChunkedUploadAppend(long mediaId, byte[] media, long segmentIndex)
+        public async Task<string> ChunkedUploadAppend(long mediaId, Stream media, int segmentSize, long segmentIndex, IProgress<UploadProgressInfo> progressReceiver, UploadProgressInfo progress)
         {
-            var req = CreateRequester(this.Tokens, out var boundary);
+            var req = CreateMultipartRequester(this.Tokens, out var boundary);
 
-            using (var reqStr = await req.GetRequestStreamAsync())
-            using (var writer = new StreamWriter(reqStr))
+            // 送信データの準備
+            using (var dataStr = new MemoryStream())
             {
-                writer.WriteLine($"--{ boundary }");
-                writer.WriteLine("Content-Disposition: form-data; name=\"command\"");
-                writer.WriteLine();
-                writer.WriteLine("APPEND");
-
-                writer.WriteLine($"--{ boundary }");
-                writer.WriteLine("Content-Disposition: form-data; name=\"media_id\"");
-                writer.WriteLine();
-                writer.WriteLine(mediaId);
-
-                writer.WriteLine($"--{ boundary }");
-                writer.WriteLine("Content-Disposition: form-data; name=\"segment_index\"");
-                writer.WriteLine();
-                writer.WriteLine(segmentIndex);
-
-                writer.WriteLine($"--{ boundary }");
-                writer.WriteLine("Content-Disposition: form-data; name=\"media\"");
-                writer.WriteLine();
+                var writer = new BoundaryWriter(dataStr, boundary);
+                writer.WriteDisposition("command", "APPEND");
+                writer.WriteDisposition("media_id", mediaId);
+                writer.WriteDisposition("segment_index", segmentIndex);
+                writer.WriteDispositionBinary("media", media, segmentSize);
+                writer.CloseBoundary();
                 writer.Flush();
 
-                await reqStr.WriteAsync(media, 0, media.Length);
+                req.ContentLength = dataStr.Length;
+                req.SendChunked = false;
+                req.AllowWriteStreamBuffering = false;
 
-                writer.WriteLine();
+                // 128KB ずつコピー
+                const int SendBufferLength = 1024 * 128;
 
-                writer.WriteLine($"--{ boundary }--");
+                int dataSize = SendBufferLength;
+                int dataRemaining = (int)dataStr.Length;
 
-                writer.Flush();
+                dataStr.Position = 0;
+
+                byte[] data = new byte[SendBufferLength];
+
+                using (var stream = req.GetRequestStream())
+                {
+                    dataStr.Position = 0;
+
+                    int uploadedSize = progress.UploadedSize;
+
+                    while (dataRemaining > 0)
+                    {
+                        if (SendBufferLength > dataRemaining)
+                            dataSize = dataRemaining;
+
+                        dataStr.Read(data, 0, dataSize);
+                        stream.Write(data, 0, dataSize);
+
+                        dataRemaining -= dataSize;
+
+                        if (progressReceiver != null)
+                        {
+                            progress.UploadedSize = uploadedSize + (int)((1 - (dataRemaining / (double)dataStr.Length)) * segmentSize);
+                            progress.UploadPercentage = progress.UploadedSize / (double)progress.TotalSize;
+                            progressReceiver.Report(progress);
+                        }
+                    }
+                }
+
+                data = null;
+
+                writer.Close();
             }
 
             try
@@ -133,16 +201,16 @@ namespace SocialApis.Twitter.Apis
 
         public Task<UploadMediaInfo> ChunkedUploadStatus(long mediaId)
         {
-            return this.Tokens.PostRequestAsync<UploadMediaInfo>(_apiEndpoint, new Query
+            return this.Tokens.GetRequestAsync<UploadMediaInfo>(_apiEndpoint, new Query
             {
                 ["command"] = "STATUS",
                 ["media_id"] = mediaId,
             });
         }
 
-        public Task<UploadMediaInfo> ChunkedUploadFinalize(long mediaId)
+        public Task<MediaResponse> ChunkedUploadFinalize(long mediaId)
         {
-            return this.Tokens.PostRequestAsync<UploadMediaInfo>(_apiEndpoint, new Query
+            return this.Tokens.PostRequestAsync<MediaResponse>(_apiEndpoint, new Query
             {
                 ["command"] = "FINALIZE",
                 ["media_id"] = mediaId,

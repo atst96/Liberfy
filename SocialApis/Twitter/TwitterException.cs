@@ -9,6 +9,8 @@ namespace SocialApis.Twitter
 {
     public class TwitterException : Exception
     {
+        internal TwitterException(string errorText) : base(errorText) { }
+
         internal TwitterException(WebException wex, TwitterErrorContainer errorContainer) : base(wex.Message, wex)
         {
             this.Errors = errorContainer?.Errors ?? new TwitterError[0];
