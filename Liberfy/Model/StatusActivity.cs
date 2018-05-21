@@ -1,4 +1,4 @@
-﻿using CoreTweet;
+﻿using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace Liberfy
         public void SetAll(Status status)
         {
             this.IsFavorited = status?.IsFavorited ?? false;
-            this.IsRetweeted = status?.IsRetweeted ?? false;
+            this.IsRetweeted = status?.Retweeted ?? false;
         }
 
         public void SetAll(bool isFavorited, bool isRetweeted)

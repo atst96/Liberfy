@@ -1,5 +1,4 @@
-﻿using CoreTweet;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using Twitter.Text;
+using SocialApis.Twitter;
 
 namespace Liberfy.Behaviors
 {
@@ -29,11 +29,11 @@ namespace Liberfy.Behaviors
                 typeof(StatusInfo), typeof(TimelineBehavior),
                 new PropertyMetadata(null, StatusInfoChanged));
 
-        internal static IEnumerable<Entity> GetOrderedEntities(StatusInfo status)
+        internal static IEnumerable<EntityBase> GetOrderedEntities(StatusInfo status)
         {
-            return new Entity[][]
+            return new EntityBase[][]
             {
-                status.Entities.HashTags,
+                status.Entities.Hashtags,
                 status.Entities.Symbols,
                 status.Entities.Urls,
                 status.Entities.UserMentions,
@@ -74,9 +74,9 @@ namespace Liberfy.Behaviors
                     int endIndex;
                     var entity = entities[0];
 
-                    if (entity.StartIndex != 0)
+                    if (entity.IndexStart != 0)
                     {
-                        inlines.Add(text.Slice(0, entity.StartIndex));
+                        inlines.Add(text.Slice(0, entity.IndexStart));
                     }
 
                     for (int i = 0; i < entities.Length; i++)
@@ -85,11 +85,11 @@ namespace Liberfy.Behaviors
 
                         inlines.Add(CreateHyperlink(entity, text));
 
-                        endIndex = entity.EndIndex;
+                        endIndex = entity.IndexEnd;
                         if (endIndex <= textLength)
                         {
                             if (entities.Length > i + 1)
-                                inlines.Add(text.Slice(endIndex, entities[i + 1].StartIndex));
+                                inlines.Add(text.Slice(endIndex, entities[i + 1].IndexStart));
                             else
                                 inlines.Add(text.Slice(endIndex, textLength));
                         }
@@ -103,7 +103,7 @@ namespace Liberfy.Behaviors
             text = null;
         }
 
-        private static Hyperlink CreateHyperlink(Entity entity, TwStringInfo text)
+        private static Hyperlink CreateHyperlink(EntityBase entity, TwStringInfo text)
         {
             var link = new Hyperlink()
             {
@@ -114,7 +114,7 @@ namespace Liberfy.Behaviors
             switch (entity)
             {
                 case UserMentionEntity mention:
-                    link.Inlines.Add(text.Slice(mention.StartIndex, mention.EndIndex));
+                    link.Inlines.Add(text.Slice(mention.IndexStart, mention.IndexEnd));
                     break;
 
                 case MediaEntity media:
@@ -125,8 +125,8 @@ namespace Liberfy.Behaviors
                     link.Inlines.Add(url.DisplayUrl);
                     break;
 
-                case SymbolEntity symbol:
-                    link.Inlines.Add(text.Slice(symbol.StartIndex, symbol.EndIndex));
+                case HashtagEntity symbol:
+                    link.Inlines.Add(text.Slice(symbol.IndexStart, symbol.IndexEnd));
                     break;
             }
 

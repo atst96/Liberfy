@@ -1,5 +1,5 @@
-﻿using CoreTweet;
-using Liberfy.ViewModel;
+﻿using Liberfy.ViewModel;
+using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,16 +55,16 @@ namespace Liberfy
             return statuses.Select(s => new StatusItem(s, _account));
         }
 
-        private Task LoadHomeTimelineAsync() => Task.Run(() =>
+        private Task LoadHomeTimelineAsync() => Task.Run(async () =>
         {
             try
             {
-                var statuses = _tokens.Statuses.HomeTimeline();
+                var statuses = await _tokens.Statuses.HomeTimeline();
                 var items = this.GetStatusItem(statuses);
 
                 if (this.OnHomeStatusesLoaded != null)
                 {
-                    _dispatcher.InvokeAsync(() => this.OnHomeStatusesLoaded(this, items));
+                    await _dispatcher.InvokeAsync(() => this.OnHomeStatusesLoaded(this, items));
                 }
             }
             catch
@@ -73,16 +73,16 @@ namespace Liberfy
             }
         });
 
-        private Task LoadNotificationTimelineAsync() => Task.Run(() =>
+        private Task LoadNotificationTimelineAsync() => Task.Run(async () =>
         {
             try
             {
-                var statuses = _tokens.Statuses.MentionsTimeline();
+                var statuses = await _tokens.Statuses.MentionsTimeline();
                 var items = this.GetStatusItem(statuses);
 
                 if (this.OnNotificationsLoaded != null)
                 {
-                    _dispatcher.InvokeAsync(() => this.OnNotificationsLoaded(this, items));
+                    await _dispatcher.InvokeAsync(() => this.OnNotificationsLoaded(this, items));
                 }
             }
             catch

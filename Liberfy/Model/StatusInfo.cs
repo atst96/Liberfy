@@ -1,4 +1,4 @@
-﻿using CoreTweet;
+﻿using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,17 +12,17 @@ namespace Liberfy
     {
         public long Id { get; }
 
-        public Contributors[] Contributors { get; }
+        //public Contributors[] Contributors { get; }
 
-        public Coordinates Coordinates { get; }
+        public Coordinates<Point> Coordinates { get; }
 
         public DateTimeOffset CreatedAt { get; }
 
         public Entities Entities { get; }
 
-        public Entities ExtendedEntities { get; }
+        public ExtendedEntities ExtendedEntities { get; }
 
-        public FilterLevel FilterLevel { get; }
+        public string FilterLevel { get; }
 
         public string InReplyToScreenName { get; }
         public long InReplyToStatusId { get; }
@@ -30,10 +30,10 @@ namespace Liberfy
 
         public string Language { get; }
 
-        public Place Place { get; }
+        public Places Place { get; }
 
         public bool PossiblySensitive { get; }
-        public bool PossiblySensitiveAppealable { get; }
+        // public bool PossiblySensitiveAppealable { get; }
 
         public string Source { get; }
         public string SourceName { get; }
@@ -46,15 +46,15 @@ namespace Liberfy
 
         public UserInfo User { get; }
 
-        public bool WithheldCopyright { get; }
+        // public bool WithheldCopyright { get; }
 
-        public string WithheldInCountries { get; }
+        public string[] WithheldInCountries { get; }
 
-        public Dictionary<string, object> Scopes { get; }
+        // public Dictionary<string, object> Scopes { get; }
         public string WithheldScope { get; }
 
-        public int FavoriteCount { get; private set; }
-        public int RetweetCount { get; private set; }
+        public long FavoriteCount { get; private set; }
+        public long RetweetCount { get; private set; }
 
         long IObjectInfo<Status>.Id => this.Id;
 
@@ -65,36 +65,36 @@ namespace Liberfy
 
             this.Id = status.Id;
 
-            this.Contributors     = status.Contributors;
+            // this.Contributors     = status.Contributors;
             this.Coordinates      = status.Coordinates;
             this.CreatedAt        = status.CreatedAt;
             this.Entities         = status.Entities;
             this.ExtendedEntities = status.ExtendedEntities;
-            this.FilterLevel      = status.FilterLevel ?? FilterLevel.None;
+            this.FilterLevel      = status.FilterLevel;
 
             this.InReplyToScreenName = status.InReplyToScreenName;
             this.InReplyToStatusId   = status.InReplyToStatusId ?? -1;
             this.InReplyToUserId     = status.InReplyToUserId ?? -1;
 
-            this.IsQuotedStatus = (status.IsQuotedStatus ?? false) && status.QuotedStatus != null;
+            this.IsQuotedStatus = status.IsQuotedStatus && status.QuotedStatus != null;
 
             this.Language = status.Language;
 
             this.Place = status.Place;
 
-            this.PossiblySensitive = status.PossiblySensitive ?? false;
-            this.PossiblySensitiveAppealable = status.PossiblySensitiveAppealable ?? false;
+            this.PossiblySensitive = status.PossiblySensitive;
+            // this.PossiblySensitiveAppealable = status.PossiblySensitiveAppealable;
 
             if (this.IsQuotedStatus)
                 this.QuotedStatus = StatusAddOrUpdate(status.QuotedStatus);
 
-            this.Scopes = status.Scopes;
+            // this.Scopes = status.Scopes;
 
             this.Text = status.Text;
 
             this.User = UserAddOrUpdate(status.User);
 
-            this.WithheldCopyright = status.WithheldCopyright ?? false;
+            // this.WithheldCopyright = status.WithheldCopyright ?? false;
             this.WithheldInCountries = status.WithheldInCountries;
             this.WithheldScope = status.WithheldScope;
 
@@ -114,11 +114,11 @@ namespace Liberfy
             if ((item.RetweetedStatus ?? item).Id != Id)
                 throw new ArgumentException();
 
-            this.FavoriteCount = item.FavoriteCount ?? FavoriteCount;
-            this.RetweetCount = item.RetweetCount ?? RetweetCount;
+            this.FavoriteCount = item.FavoriteCount ?? this.FavoriteCount;
+            this.RetweetCount = item.RetweetCount ?? this.RetweetCount;
 
-            RaisePropertyChanged(nameof(FavoriteCount));
-            RaisePropertyChanged(nameof(RetweetCount));
+            this.RaisePropertyChanged(nameof(this.FavoriteCount));
+            this.RaisePropertyChanged(nameof(this.RetweetCount));
 
             return this;
         }

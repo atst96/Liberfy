@@ -1,32 +1,32 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace Liberfy
 {
-	[JsonObject]
+	[DataContract]
 	class WindowStatus
 	{
-		[JsonIgnore]
+		[IgnoreDataMember]
 		public bool IsEmpty => Width <= 0 && Height <= 0;
 
-		[JsonProperty("Top")]
+		[DataMember(Name = "Top")]
 		public double? Top { get; set; }
 
-		[JsonProperty("Left")]
+		[DataMember(Name = "Left")]
 		public double? Left { get; set; }
 
-		[JsonProperty("Width")]
+		[DataMember(Name = "Width")]
 		public double? Width { get; set; }
 
-		[JsonProperty("Height")]
+		[DataMember(Name = "Height")]
 		public double? Height { get; set; }
 
-		[JsonProperty("State")]
+		[DataMember(Name = "State")]
 		public WindowState? State { get; set; }
 	}
 }

@@ -1,5 +1,5 @@
-﻿using CoreTweet;
-using NowPlayingLib;
+﻿using NowPlayingLib;
+using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -146,7 +146,7 @@ namespace Liberfy.ViewModel
             this.RaisePropertyChanged(nameof(this.ReplyToStatus));
             this.RaisePropertyChanged(nameof(this.HasReplyStatus));
 
-            var mentionEntity = status?.Entities?.UserMentions;
+            var mentionEntity = status?.Entities.UserMentions;
 
             int mentionEntityCount = mentionEntity?.Length ?? 0;
 
@@ -222,7 +222,7 @@ namespace Liberfy.ViewModel
         {
             this.OnPostBegin();
 
-            var uploadPrams = new DictionaryEx<string, object>
+            var uploadPrams = new SocialApis.Query
             {
                 ["status"] = this.Tweet,
                 ["possibly_sensitive"] = this.IsSensitiveMedia,
@@ -260,7 +260,7 @@ namespace Liberfy.ViewModel
 
             try
             {
-                await this.Tokens.Statuses.UpdateAsync(uploadPrams);
+                await this.Tokens.Statuses.Update(uploadPrams);
 
                 this.OnPostComplated();
             }

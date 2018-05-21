@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -15,7 +14,7 @@ namespace Liberfy
 		private const StringComparison comparison = StringComparison.CurrentCultureIgnoreCase;
 		private const RegexOptions regexOptions = RegexOptions.IgnoreCase | RegexOptions.Compiled;
 
-		[JsonConstructor]
+		[Utf8Json.SerializationConstructor]
 		private Mute()
 		{
 		}

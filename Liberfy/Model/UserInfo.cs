@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CoreTweet;
 using System.Windows.Media;
+using SocialApis.Twitter;
 
 namespace Liberfy
 {
@@ -36,7 +36,7 @@ namespace Liberfy
         public bool IsProfileBackgroundTile { get; private set; }
         public string ProfileBannerUrl { get; private set; }
         public string ProfileImageUrl { get; private set; }
-        public Place ProfileLocation { get; private set; }
+        public Places ProfileLocation { get; private set; }
         public bool IsProfileUseBackgroundImage { get; private set; }
         public bool IsProtected { get; private set; }
         public string ScreenName { get; private set; }
@@ -78,31 +78,31 @@ namespace Liberfy
             this.IsDefaultProfileImage = item.IsDefaultProfileImage;
             this.Description = item.Description;
             this.Entities = item.Entities;
-            this.FavouritesCount = item.FavouritesCount;
-            this.IsFollowRequestSent = item.IsFollowRequestSent ?? IsFollowRequestSent;
+            this.FavouritesCount = item.FavoritesCount;
+            // this.IsFollowRequestSent = item.IsFollowRequestSent ?? this.IsFollowRequestSent;
             this.FollowersCount = item.FollowersCount;
             this.FriendsCount = item.FriendsCount;
-            // this.HasExtendedProfile = item.HasExtendedProfile ?? HasExtendedProfile;
+            // this.HasExtendedProfile = item.HasExtendedProfile ?? this.HasExtendedProfile;
             this.IsGeoEnabled = item.IsGeoEnabled;
-            this.IsTranslator = item.IsTranslator;
-            this.IsTranslationEnabled = item.IsTranslationEnabled;
+            // this.IsTranslator = item.IsTranslator;
+            // this.IsTranslationEnabled = item.IsTranslationEnabled;
             this.Language = item.Language;
-            this.ListedCount = item.ListedCount ?? ListedCount;
+            this.ListedCount = item.ListedCount ?? this.ListedCount;
             this.Location = item.Location;
-            this.IsMuting = item.IsMuting ?? IsMuting;
+            // this.IsMuting = item.IsMuting ?? IsMuting;
             this.Name = item.Name;
-            this.NeedsPhoneVerification = item.NeedsPhoneVerification ?? NeedsPhoneVerification;
+            // this.NeedsPhoneVerification = item.NeedsPhoneVerification ?? NeedsPhoneVerification;
             this.ProfileBackgroundImageUrl = item.ProfileBackgroundImageUrl;
-            this.IsProfileBackgroundTile = item.IsProfileBackgroundTile;
+            this.IsProfileBackgroundTile = item.ProfileBackgroundTile;
             this.ProfileBannerUrl = item.ProfileBannerUrl;
             this.ProfileImageUrl = item.ProfileImageUrl;
-            this.ProfileLocation = item.ProfileLocation;
+            // this.ProfileLocation = item.ProfileLocation;
             this.IsProfileUseBackgroundImage = item.IsProfileUseBackgroundImage;
             this.IsProtected = item.IsProtected;
             this.ScreenName = item.ScreenName;
-            this.IsShowAllInlineMedia = item.IsShowAllInlineMedia ?? IsShowAllInlineMedia;
+            // this.IsShowAllInlineMedia = item.IsShowAllInlineMedia ?? IsShowAllInlineMedia;
             this.StatusesCount = item.StatusesCount;
-            this.IsSuspended = item.IsSuspended ?? IsSuspended;
+            // this.IsSuspended = item.IsSuspended ?? IsSuspended;
             this.TimeZone = item.TimeZone;
             // this.TranslatorType = item.TranslatorType;
             this.Url = item.Url;

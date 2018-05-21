@@ -1,5 +1,4 @@
-﻿using CoreTweet;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,10 +8,12 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using static Liberfy.Defines;
 using System.Drawing;
+using SocialApis.Twitter;
+using SocialApis;
 
 namespace Liberfy.ViewModel
 {
-	internal class UploadMedia : NotificationObject, IProgress<UploadChunkedProgressInfo>, IDisposable
+	internal class UploadMedia : NotificationObject, IProgress<UploadProgressInfo>, IDisposable
 	{
 		private UploadMedia(BitmapSource bmpSource, MediaType mediaType, string ext)
 		{
@@ -156,8 +157,8 @@ namespace Liberfy.ViewModel
 			bool isVideoUpload = (MediaType & MediaType.Video) != 0;
 
 			var uploadType = isVideoUpload
-				? UploadMediaType.Video
-				: UploadMediaType.Image;
+				? MimeTypes.Video.Mp4
+				: MimeTypes.OctetStream;
 
 			this.CleanUploadState();
 
@@ -167,18 +168,18 @@ namespace Liberfy.ViewModel
 
 			try
 			{
-				Task<MediaUploadResult> task;
+				Task<MediaResponse> task;
 
 				if (isVideoUpload)
 				{
-					task = tokens.Media.UploadChunkedAsync(
+					task = tokens.Media.ChunkedUpload(
 						media: SourceStream,
 						mediaType: uploadType,
-						progress: this);
+						progressReceiver: this);
 				}
 				else
 				{
-					task = Task.Run(() => tokens.Media.Upload(SourceStream));
+					task = tokens.Media.Upload(SourceStream);
 				}
 
 				var result = await task.ConfigureAwait(true);
@@ -198,9 +199,9 @@ namespace Liberfy.ViewModel
 
 		public bool IsAvailableUploadId() => UploadId.HasValue && UploadId > 0;
 
-		public void Report(UploadChunkedProgressInfo info)
+		public void Report(UploadProgressInfo value)
 		{
-			UploadProgress = (double)info.BytesSent / info.TotalBytesToSend;
+			this.UploadProgress = value.UploadPercentage;
 		}
 
 		public void Dispose()

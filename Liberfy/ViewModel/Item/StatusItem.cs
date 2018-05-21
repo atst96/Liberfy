@@ -1,4 +1,4 @@
-﻿using CoreTweet;
+﻿using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +31,7 @@ namespace Liberfy
             this.Id = status.Id;
 
             var reaction = account.GetStatusActivity(status.GetSourceId());
-            reaction.SetAll(status.IsFavorited ?? false, status.IsRetweeted ?? false);
+            reaction.SetAll(status.IsFavorited ?? false, status.Retweeted ?? false);
 
             StatusInfo statusInfo;
 

@@ -1,4 +1,4 @@
-﻿using CoreTweet;
+﻿using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	public static class CoreTweetExtensions
+	public static class SocialApisExtensions
 	{
 		public static long GetSourceId(this Status status)
 		{
 			return (status.RetweetedStatus ?? status).Id;
 		}
 
-		internal static IEnumerable<Entity> GetEntities(this StatusInfo status)
+		internal static IEnumerable<EntityBase> GetEntities(this StatusInfo status)
 		{
-			return new Entity[][]
+			return new EntityBase[][]
 			{
-				status.Entities.HashTags,
+				status.Entities.Hashtags,
 				status.Entities.Symbols,
 				status.Entities.Urls,
 				status.Entities.UserMentions,

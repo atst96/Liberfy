@@ -42,7 +42,7 @@
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <Prefer32Bit>false</Prefer32Bit>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -69,10 +69,6 @@
     </Reference>
     <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Expression.Blend.Sdk.WPF.1.0.1\lib\net45\Microsoft.Expression.Interactions.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Newtonsoft.Json\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NowPlayingLib">
       <HintPath>..\NowPlayingLib\NowPlayingLib.dll</HintPath>
@@ -135,12 +131,10 @@
     <Compile Include="Component\ListBoxItemFocusBehavior.cs" />
     <Compile Include="Behaviors\DragDropBehavior.cs" />
     <Compile Include="DragDropHelper.cs" />
-    <Compile Include="EnumParser.cs" />
-    <Compile Include="Extensions\CoreTweetExtensions.cs" />
+    <Compile Include="Extensions\SocialApisExtensions.cs" />
     <Compile Include="Extensions\WpfBehavior.cs" />
     <Compile Include="Info\AppInfo.cs" />
     <Compile Include="ColumnOptionTemplateSelector.cs" />
-    <Compile Include="Component\ColumnOptions.cs" />
     <Compile Include="Component\Converters.cs" />
     <Compile Include="Component\FluidCollection.cs" />
     <Compile Include="Component\IdBaseCollection.cs" />
@@ -323,11 +317,10 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\CoreTweet\CoreTweet.net45\CoreTweet.net45.csproj">
-      <Project>{5ae5a341-5e2b-42af-946a-7043bad12817}</Project>
-      <Name>CoreTweet.net45</Name>
+    <ProjectReference Include="..\SocialApis\SocialApis.csproj">
+      <Project>{033aa2be-b09c-4442-b283-c4ba1ead8018}</Project>
+      <Name>SocialApis</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

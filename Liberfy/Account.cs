@@ -1,9 +1,9 @@
-﻿using CoreTweet;
-using Liberfy.ViewModel;
-using Newtonsoft.Json;
+﻿using Liberfy.ViewModel;
+using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
@@ -64,12 +64,12 @@ namespace Liberfy
         [DataMember(Name = "tokens")]
         public Tokens Tokens { get; private set; }
 
-        [IgnoreDataMember] private SortedSet<long> _following = new SortedSet<long>();
-        [IgnoreDataMember] private SortedSet<long> _follower = new SortedSet<long>();
-        [IgnoreDataMember] private SortedSet<long> _blocking = new SortedSet<long>();
-        [IgnoreDataMember] private SortedSet<long> _muting = new SortedSet<long>();
-        [IgnoreDataMember] private SortedSet<long> _incoming = new SortedSet<long>();
-        [IgnoreDataMember] private SortedSet<long> _outgoing = new SortedSet<long>();
+        [IgnoreDataMember] private HashSet<long> _following = new HashSet<long>();
+        [IgnoreDataMember] private HashSet<long> _follower = new HashSet<long>();
+        [IgnoreDataMember] private HashSet<long> _blocking = new HashSet<long>();
+        [IgnoreDataMember] private HashSet<long> _muting = new HashSet<long>();
+        [IgnoreDataMember] private HashSet<long> _incoming = new HashSet<long>();
+        [IgnoreDataMember] private HashSet<long> _outgoing = new HashSet<long>();
         [IgnoreDataMember] private SortedDictionary<long, StatusActivity> _statusReactions = new SortedDictionary<long, StatusActivity>();
 
         public StatusActivity GetStatusActivity(long user_id)
@@ -126,9 +126,13 @@ namespace Liberfy
             this.Timeline = new Timeline(this, columnOptions);
         }
 
-        public void SetTokens(Tokens tokens)
+        public void SetTokens(Tokens t)
         {
-            this.Tokens = new Tokens(tokens);
+            this.Tokens = new Tokens(
+                t.ConsumerKey,
+                t.ConsumerSecret,
+                t.AccessToken,
+                t.AccessTokenSecret);
         }
 
         [IgnoreDataMember]
@@ -158,11 +162,12 @@ namespace Liberfy
 
             try
             {
-                var user = await this.Tokens.Account.VerifyCredentialsAsync(
-                    include_entities: true,
-                    skip_status: true,
-                    include_email: false
-                );
+                var user = await this.Tokens.Account.VerifyCredentials(new SocialApis.Query
+                {
+                    ["include_entities"] = true,
+                    ["skip_status"] = true,
+                    ["include_email"] = false
+                });
 
                 this.Id = user.Id.Value;
 
@@ -175,10 +180,13 @@ namespace Liberfy
             }
             catch (TwitterException tex)
             {
-                switch (tex.Status)
+                if (tex.InnerException is WebException wex)
                 {
-                    case System.Net.HttpStatusCode.OK:
-                        break;
+                    switch (wex.Status)
+                    {
+                        case WebExceptionStatus.Success:
+                            break;
+                    }
                 }
             }
 
@@ -245,50 +253,38 @@ namespace Liberfy
 
         #region LoadDetailsメソッド郡
 
-        private Task LoadFollowing() => this.GetIdsFunc4(
-            this.Tokens.Friends.EnumerateIds, _following, "フォロー中一覧");
+        private Task LoadFollowing() => this.GetIdsList(this.Tokens.Friends.Ids, _follower, "フォロー中一覧");
 
-        private Task LoadFollower() => this.GetIdsFunc4(
-            this.Tokens.Followers.EnumerateIds, _follower, "フォロワー一覧");
+        private Task LoadFollower() => this.GetIdsList(this.Tokens.Followers.Ids, _follower, "フォロワー一覧");
 
-        private Task LoadBlock() => this.GetIdsFunc2(
-            this.Tokens.Blocks.EnumerateIds, _blocking, "ブロック中一覧");
+        private Task LoadBlock() => this.GetIdsList(this.Tokens.Blocks.Ids, _blocking, "ブロック中一覧");
 
-        private Task LoadMuting() => this.GetIdsFunc2(
-            this.Tokens.Mutes.Users.EnumerateIds, _muting, "ミュート中一覧");
+        private Task LoadMuting() => this.GetIdsList(this.Tokens.Mutes.Ids, _muting, "ミュート中一覧");
 
-        private Task LoadIncoming() => this.GetIdsFunc2(
-            this.Tokens.Friendships.EnumerateIncoming, _incoming, "フォロー申請一覧");
+        private Task LoadIncoming() => this.GetIdsList(this.Tokens.Friendships.Incoming, _incoming, "フォロー申請一覧");
 
-        private Task LoadOutgoing() => this.GetIdsFunc2(
-            this.Tokens.Friendships.EnumerateOutgoing, _outgoing, "フォロー申請中一覧");
+        private Task LoadOutgoing() => this.GetIdsList(this.Tokens.Friendships.Outgoing, _outgoing, "フォロー申請中一覧");
 
-        private delegate IEnumerable<T> EnumIdFunc2<T>(EnumerateMode mode, long? cursor = null);
-        private delegate IEnumerable<T> EnumIdFunc4<T>(EnumerateMode mode, long user_id, long? cursor = null, int? count = null);
-
-        private Task GetIdsFunc4<T>(EnumIdFunc4<T> enumFunc, SortedSet<T> idsList, string dataLabel) => Task.Run(() =>
+        private async Task GetIdsList(Func<int, Task<CursoredIdsResponse>> apiCallFunc, HashSet<long> hashSet, string dataLabel)
         {
             try
             {
-                idsList.UnionWith(enumFunc(EnumerateMode.Next, this.Id));
+                int cursor = -1;
+
+                do
+                {
+                    var ids = await apiCallFunc(cursor);
+                    cursor = ids.NextCursor ?? 0;
+
+                    hashSet.UnionWith(ids.Ids);
+                }
+                while (cursor != 0);
             }
             catch (Exception ex)
             {
                 this.SetLoadError(dataLabel, ex.Message);
             }
-        });
-
-        private Task GetIdsFunc2<T>(EnumIdFunc2<T> enumFunc, SortedSet<T> idsList, string dataLabel) => Task.Run(() =>
-        {
-            try
-            {
-                idsList.UnionWith(enumFunc(EnumerateMode.Next));
-            }
-            catch (Exception ex)
-            {
-                this.SetLoadError(dataLabel, ex.Message);
-            }
-        });
+        }
 
         #endregion LoadDetails
 
