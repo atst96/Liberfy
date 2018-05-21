@@ -9,19 +9,27 @@ using Utf8Json;
 
 namespace SocialApis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     internal static class WebUtility
     {
         private static readonly char[] UrlSpritCharacters = new[] { '?', '&', '#' };
 
-        public static HttpWebRequest CreateWebRequest(string endpoint, Query query, string method, WebHeaderCollection headers = null, bool autoSetting = true)
+        public static HttpWebRequest CreateWebRequest(string endpoint, IQuery query, string method, WebHeaderCollection headers = null, bool autoSetting = true)
         {
             query = query ?? new Query();
             method = method?.ToUpper() ?? "GET";
             endpoint = endpoint.Split(UrlSpritCharacters, 2)[0];
 
-            if (autoSetting && (method == "GET" || method == "DELETE"))
+            var queryString = default(string);
+            if (autoSetting)
             {
-                endpoint += $"?{ string.Join("&", query.GetRequestParameters()) }";
+                queryString = Query.GetQueryString(query);
+
+                if (method == "GET" || method == "DELETE")
+                {
+                    endpoint = string.Concat(endpoint, "?", queryString);
+                }
             }
 
             var webReq = WebRequest.CreateHttp(endpoint);
@@ -35,11 +43,10 @@ namespace SocialApis
                 {
                     webReq.ContentType = "application/x-www-form-urlencoded";
 
-                    if (query != null && query.Count > 0)
+                    if (!string.IsNullOrEmpty(queryString))
                     {
                         using (var str = webReq.GetRequestStream())
                         {
-                            var queryString = string.Join("&", query.GetRequestParameters());
                             var data = Encoding.UTF8.GetBytes(queryString);
                             str.Write(data, 0, data.Length);
 
@@ -52,7 +59,7 @@ namespace SocialApis
             return webReq;
         }
 
-        public static HttpWebRequest CreateOAuthWebRequest(string endpoint, ITokensBase tokens, Query query, string method, bool autoSetting = true)
+        public static HttpWebRequest CreateOAuthWebRequest(string endpoint, ITokensBase tokens, IQuery query, string method, bool autoSetting = true)
         {
             query = query ?? new Query();
 
@@ -92,7 +99,7 @@ namespace SocialApis
             }
         }
 
-        public static Task<T> OAuthGet<T>(string endpoint, ITokensBase tokens, Query query) where T : class
+        public static Task<T> OAuthGet<T>(string endpoint, ITokensBase tokens, IQuery query) where T : class
         {
             var webReq = CreateOAuthWebRequest(endpoint, tokens, query, "get");
             return SendRequest<T>(webReq);

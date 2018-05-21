@@ -9,19 +9,42 @@ using System.Web;
 
 namespace SocialApis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class Query : IDictionary<string, object>, ICloneable
     {
+        private const int DefaultCapacity = 14;
+
         private readonly IDictionary<string, object> _dictionary;
 
         public Query()
         {
-            this._dictionary = new Dictionary<string, object>();
+            this._dictionary = new Dictionary<string, object>(DefaultCapacity);
+        }
+
+        public Query(IEnumerable<KeyValuePair<string, object>> pairs)
+        {
+            this._dictionary = pairs?.ToDictionary(val => val.Key, val => val.Value)
+                ?? new Dictionary<string, object>(DefaultCapacity);
+
+            if (pairs == null)
+            {
+                this._dictionary = new Dictionary<string, object>();
+            }
+            else
+            {
+                this._dictionary = new Dictionary<string, object>(DefaultCapacity);
+                foreach (var kvp in pairs)
+                {
+                    this[kvp.Key] = kvp.Value;
+                }
+            }
         }
 
         public Query(IDictionary<string, object> dictionary)
         {
             this._dictionary = dictionary == null
-                ? new Dictionary<string, object>()
+                ? new Dictionary<string, object>(DefaultCapacity)
                 : new Dictionary<string, object>(dictionary);
         }
 
@@ -37,17 +60,48 @@ namespace SocialApis
             }
         }
 
-        public IOrderedEnumerable<KeyValuePair<string, object>> GetOrdered()
-        {
-            return this.OrderBy(kvp => kvp.Key, StringComparer.CurrentCulture);
-        }
+        public IQuery GetOrdered() => Sort(this);
 
         public IEnumerable<string> GetRequestParameters(bool sort = false)
         {
-            var values = sort ? (IEnumerable<KeyValuePair<string, object>>)this.GetOrdered() : this;
+            return sort
+                ? GetOrderedRequestParameters(this)
+                : GetRequestParameters(this);
+        }
 
-            return values
-                .Select(kvp => GetParameterPair(kvp.Key, kvp.Value));
+        public static string GetQueryString(IQuery query, string separator)
+        {
+            return string.Join(separator, GetRequestParameters(query));
+        }
+
+        public static string GetQueryString(IQuery query)
+        {
+            return GetQueryString(query, "&");
+        }
+
+        public static string GetOrderedQueryString(IQuery query, string separator)
+        {
+            return string.Join(separator, GetOrderedRequestParameters(query));
+        }
+
+        public static string GetOrderedQueryString(IQuery query)
+        {
+            return GetOrderedQueryString(query, "&");
+        }
+
+        public static IEnumerable<string> GetRequestParameters(IQuery values)
+        {
+            return values?.Select(kvp => GetParameterPair(kvp.Key, kvp.Value)) ?? Enumerable.Empty<string>();
+        }
+
+        public static IQuery Sort(IQuery values)
+        {
+            return values?.OrderBy(kvp => kvp.Key, StringComparer.CurrentCulture) ?? Enumerable.Empty<KeyValuePair<string, object>>();
+        }
+
+        public static IEnumerable<string> GetOrderedRequestParameters(IQuery values)
+        {
+            return GetRequestParameters(Sort(values));
         }
 
         private static string JoinParameterPais(string name, string value, string valueEnclosure = null)
@@ -79,7 +133,11 @@ namespace SocialApis
 
         public static string GetParameterPair(string name, object value) => GetParamPairString(name, value);
 
+        public static string GetParameterPair(KeyValuePair<string, object> kvp) => GetParamPairString(kvp.Key, kvp.Value);
+
         public static string GetParameterPairDq(string name, object value) => GetParamPairString(name, value, "\"");
+
+        public static string GetParameterPairDq(KeyValuePair<string, object> kvp) => GetParameterPairDq(kvp.Key, kvp.Value);
 
         private static readonly Hashtable _typeHandles = new Hashtable();
 

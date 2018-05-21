@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -8,12 +9,13 @@ using System.Web;
 
 namespace SocialApis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     internal static class OAuthHelper
     {
         public const string OAuthVersion = "1.0";
-        private const string OAuthParameterPrefix = "oauth_";
 
-        internal static class OAuthKeys
+        internal static class OAuthParameterKeys
         {
             public const string ConsumerKey = "oauth_consumer_key";
             public const string Callback = "oauth_callback";
@@ -56,16 +58,16 @@ namespace SocialApis
                 ? new Query(query)
                 : (query ?? new Query());
 
-            parameters[OAuthKeys.Version] = OAuthVersion;
-            parameters[OAuthKeys.Nonce] = nonce;
-            parameters[OAuthKeys.Timestamp] = timeStamp;
-            parameters[OAuthKeys.SignatureMethod] = HMACSHA1SignatureType;
-            parameters[OAuthKeys.ConsumerKey] = tokens.ConsumerKey;
+            parameters[OAuthParameterKeys.Version] = OAuthVersion;
+            parameters[OAuthParameterKeys.Nonce] = nonce;
+            parameters[OAuthParameterKeys.Timestamp] = timeStamp;
+            parameters[OAuthParameterKeys.SignatureMethod] = HMACSHA1SignatureType;
+            parameters[OAuthParameterKeys.ConsumerKey] = tokens.ConsumerKey;
 
             if (!string.IsNullOrEmpty(tokens.ApiToken))
-                parameters[OAuthKeys.Token] = tokens.ApiToken;
+                parameters[OAuthParameterKeys.Token] = tokens.ApiToken;
 
-            var normalizedRequestParameters = string.Join("&", parameters.GetRequestParameters(true));
+            var normalizedRequestParameters = Query.GetOrderedQueryString(parameters);
 
             var signatureBase = new[]
             {
@@ -82,24 +84,21 @@ namespace SocialApis
             return ComputeHash(hashAlgorithm, signatureBase);
         }
 
-        public static string GenerateSignature(string endpoint, ITokensBase tokens, Query query, string httpMethod, string timeStamp, string nonce)
+        public static string GenerateAuthenticationHeader(string endpoint, ITokensBase tokens, IQuery query, string httpMethod, string timeStamp, string nonce)
         {
-            return GenerateSignatureBase(tokens, endpoint, query, httpMethod, timeStamp, nonce);
+            var urlQuery = new Query(query);
+
+            var signatureBase = GenerateSignatureBase(tokens, endpoint, urlQuery, httpMethod, timeStamp, nonce, false);
+            urlQuery[OAuthParameterKeys.Signature] = HashHMACSHA1(tokens, signatureBase);
+
+            return string.Concat("OAuth ", string.Join(",", Query.Sort(urlQuery).Select(Query.GetParameterPairDq)));
         }
 
-        public static string GenerateAuthenticationHeader(string endpoint, ITokensBase tokens, Query query, string httpMethod, string timeStamp, string nonce)
-        {
-            query = new Query(query);
-            var signatureBase = GenerateSignatureBase(tokens, endpoint, query, httpMethod, timeStamp, nonce, false);
-
-            query[OAuthKeys.Signature] = HashHMACSHA1(tokens, signatureBase);
-
-            return $"OAuth { string.Join(",", query.GetOrdered().Select(kvp => Query.GetParameterPairDq(kvp.Key, kvp.Value))) }";
-        }
+        private static DateTime _utcBasedDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
 
         public static string GenerateTimeStamp()
         {
-            var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            var ts = DateTime.UtcNow - _utcBasedDateTime;
             return Convert.ToInt64(ts.TotalSeconds).ToString();
         }
 
@@ -110,10 +109,11 @@ namespace SocialApis
 
         public static string HashHMACSHA1(ITokensBase token, string signatureBase)
         {
-            var hashAlgo = new HMACSHA1();
-            hashAlgo.Key = Encoding.UTF8.GetBytes($"{ token.ConsumerSecret }&{ token.ApiTokenSecret }");
+            var algorythm = new HMACSHA1();
+            var key = string.Concat(token.ConsumerSecret, "&", token.ApiTokenSecret);
+            algorythm.Key = Encoding.UTF8.GetBytes(key);
 
-            return GenerateSignatureUsingHash(signatureBase, hashAlgo);
+            return GenerateSignatureUsingHash(signatureBase, algorythm);
         }
 
         public static string UrlEncode(string value)

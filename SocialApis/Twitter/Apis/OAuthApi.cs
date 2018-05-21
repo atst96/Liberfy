@@ -12,8 +12,6 @@ namespace SocialApis.Twitter.Apis
 {
     public class OAuthApi : TokenApiBase
     {
-        private Tokens _tokens;
-
         internal OAuthApi(Tokens tokens) : base(tokens) { }
 
         public async Task<RequestTokenResponse> RequestToken(string callbackUrl = null)
@@ -23,9 +21,9 @@ namespace SocialApis.Twitter.Apis
             var dic = new Query();
 
             if (!string.IsNullOrEmpty(callbackUrl))
-                dic[OAuthHelper.OAuthKeys.Callback] = callbackUrl;
+                dic[OAuthHelper.OAuthParameterKeys.Callback] = callbackUrl;
 
-            var webReq = WebUtility.CreateOAuthWebRequest(endpoint, _tokens, dic, "post");
+            var webReq = WebUtility.CreateOAuthWebRequest(endpoint, this.Tokens, dic, "post");
 
             using (var webRes = await webReq.GetResponseAsync())
             using (var sr = new StreamReader(webRes.GetResponseStream()))
@@ -54,11 +52,11 @@ namespace SocialApis.Twitter.Apis
 
             var dic = new Query()
             {
-                [OAuthHelper.OAuthKeys.Token] = requestToken,
-                [OAuthHelper.OAuthKeys.Verifier] = verifier,
+                [OAuthHelper.OAuthParameterKeys.Token] = requestToken,
+                [OAuthHelper.OAuthParameterKeys.Verifier] = verifier,
             };
 
-            var webReq = WebUtility.CreateOAuthWebRequest(endpoint, _tokens, dic, "post");
+            var webReq = WebUtility.CreateOAuthWebRequest(endpoint, this.Tokens, dic, "POST");
 
             using (var webRes = await webReq.GetResponseAsync())
             using (var sr = new StreamReader(webRes.GetResponseStream()))
@@ -72,20 +70,20 @@ namespace SocialApis.Twitter.Apis
                     switch (t[0])
                     {
                         case "oauth_token":
-                            this._tokens.AccessToken = t[1];  break;
+                            this.Tokens.AccessToken = t[1];  break;
 
                         case "oauth_token_secret":
-                            this._tokens.AccessTokenSecret = t[1]; break;
+                            this.Tokens.AccessTokenSecret = t[1]; break;
 
                         case "user_id":
-                            this._tokens.UserId = long.TryParse(t[1], out var b) ? b : -1; break;
+                            this.Tokens.UserId = long.TryParse(t[1], out var b) ? b : -1; break;
 
                         case "screen_name":
-                            this._tokens.ScreenName = t[1]; break;
+                            this.Tokens.ScreenName = t[1]; break;
                     }
                 }
 
-                return _tokens;
+                return Tokens;
             }
         }
     }

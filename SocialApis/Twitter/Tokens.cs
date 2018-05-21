@@ -4,9 +4,12 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Utf8Json;
+using System.Collections.Generic;
 
 namespace SocialApis.Twitter
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class Tokens : ITokensBase
     {
         private string _consumerKey;
@@ -33,19 +36,10 @@ namespace SocialApis.Twitter
             internal set => _accessTokenSecret = value;
         }
 
-        public string ApiToken => _accessToken ?? string.Empty;
-        public string ApiTokenSecret => _accessTokenSecret ?? string.Empty;
+        public string ApiToken => this._accessToken ?? string.Empty;
+        public string ApiTokenSecret => this._accessTokenSecret ?? string.Empty;
 
-        private Tokens()
-        {
-            OAuth = new OAuthApi(this);
-            Account = new AccountApi(this);
-            Statuses = new StatusesApi(this);
-            Favorites = new FavoritesApi(this);
-            Collections = new CollectionsApi(this);
-            Media = new MediaApi(this);
-            Stream = new StreamingApi(this);
-        }
+        private Tokens() { }
 
         public Tokens(string consumerKey, string consumerSecret, string accessToken = null, string accessTokenSecret = null) : this()
         {
@@ -55,47 +49,75 @@ namespace SocialApis.Twitter
             this._accessTokenSecret = accessTokenSecret;
         }
 
-        public OAuthApi OAuth { get; }
-        public AccountApi Account { get; }
-        public StatusesApi Statuses { get; }
-        public FavoritesApi Favorites { get; }
-        public CollectionsApi Collections { get; }
-        public MediaApi Media { get; }
-        public StreamingApi Stream { get; }
+        private OAuthApi _oauth;
+        public OAuthApi OAuth => this._oauth ?? (this._oauth = new OAuthApi(this));
+
+        private AccountApi _account;
+        public AccountApi Account => this._account ?? (this._account = new AccountApi(this));
+
+        private StatusesApi _statuses;
+        public StatusesApi Statuses => this._statuses ?? (this._statuses = new StatusesApi(this));
+
+        private FavoritesApi _favorites;
+        public FavoritesApi Favorites => this._favorites ?? (this._favorites = new FavoritesApi(this));
+
+        private CollectionsApi _collections;
+        public CollectionsApi Collections => this._collections ?? (this._collections = new CollectionsApi(this));
+
+        private MediaApi _mediaApi;
+        public MediaApi Media => this._mediaApi ?? (this._mediaApi = new MediaApi(this));
+
+        private BlocksApi _blocks;
+        public BlocksApi Blocks => this._blocks ?? (this._blocks = new BlocksApi(this));
+
+        private MutesApi _mutes;
+        public MutesApi Mutes => this._mutes ?? (this._mutes = new MutesApi(this));
+
+        private UsersApi _users;
+        public UsersApi Users => this._users ?? (this._users = new UsersApi(this));
+
+        private FollowersApi _followers;
+        public FollowersApi Followers => this._followers ?? (this._followers = new FollowersApi(this));
+
+        private FriendsApi _friends;
+        public FriendsApi Friends => this._friends ?? (this._friends = new FriendsApi(this));
+
+        private FriendshipsApi _friendships;
+        public FriendshipsApi Friendships => this._friendships ?? (this._friendships = new FriendshipsApi(this));
 
         private const string _restApiBaseUrl = "https://api.twitter.com/1.1/";
 
-        internal HttpWebRequest CreateRequester(string endpoint, Query query = null, string method = "GET", bool autoSetting = true)
+        internal HttpWebRequest CreateRequester(string endpoint, IQuery query = null, string method = "GET", bool autoSetting = true)
         {
             return WebUtility.CreateOAuthWebRequest(endpoint, this, query, method, autoSetting);
         }
 
-        internal HttpWebRequest CreateGetRequester(string endpoint, Query query = null, bool autoSetting = true)
+        internal HttpWebRequest CreateGetRequester(string endpoint, IQuery query = null, bool autoSetting = true)
         {
             return this.CreateRequester(endpoint, query, "GET", autoSetting);
         }
 
-        internal HttpWebRequest CreatePostRequester(string endpoint, Query query = null, bool autoSetting = true)
+        internal HttpWebRequest CreatePostRequester(string endpoint, IQuery query = null, bool autoSetting = true)
         {
             return this.CreateRequester(endpoint, query, "POST", autoSetting);
         }
 
-        internal HttpWebRequest CreateRequesterApi(string path, Query query = null, string method = "GET", bool autoSetting = true)
+        internal HttpWebRequest CreateRequesterApi(string path, IQuery query = null, string method = "GET", bool autoSetting = true)
         {
             return WebUtility.CreateOAuthWebRequest($"{_restApiBaseUrl}{path}.json", this, query, method, autoSetting);
         }
 
-        internal HttpWebRequest CreateGetRequesterApi(string path, Query query = null, bool autoSetting = true)
+        internal HttpWebRequest CreateGetRequesterApi(string path, IQuery query = null, bool autoSetting = true)
         {
             return this.CreateRequesterApi(path, query, "GET", autoSetting);
         }
 
-        internal HttpWebRequest CreatePostRequesterApi(string path, Query query = null, bool autoSetting = true)
+        internal HttpWebRequest CreatePostRequesterApi(string path, IQuery query = null, bool autoSetting = true)
         {
             return this.CreateRequesterApi(path, query, "POST", autoSetting);
         }
 
-        private Task<T> SendRequest<T>(string endpoint, Query query = null, string method = "GET") where T : class
+        private Task<T> SendRequest<T>(string endpoint, IQuery query = null, string method = "GET") where T : class
         {
             var webReq = WebUtility.CreateOAuthWebRequest(endpoint, this, query, method);
             return this.SendRequest<T>(webReq);
@@ -114,7 +136,7 @@ namespace SocialApis.Twitter
                     var obj = await JsonSerializer.DeserializeAsync<T>(str, Utf8Json.Resolvers.StandardResolver.AllowPrivate);
 
                     if (obj is IRateLimit rObj)
-                        rObj.RateLimit.Set(webRes.Headers);
+                        rObj.RateLimit = RateLimit.FromHeaders(webRes.Headers);
 
                     return obj;
                 }
@@ -128,29 +150,29 @@ namespace SocialApis.Twitter
             }
         }
 
-        private Task<T> SendApiRequestAsync<T>(string path, Query query, string method) where T : class
+        private Task<T> SendApiRequestAsync<T>(string path, IQuery query, string method) where T : class
         {
-            return SendRequest<T>($"{_restApiBaseUrl}{path}.json", query, method);
+            return this.SendRequest<T>($"{_restApiBaseUrl}{path}.json", query, method);
         }
 
-        internal Task<T> GetRequestAsync<T>(string endpoint, Query query) where T : class
+        internal Task<T> GetRequestAsync<T>(string endpoint, IQuery query) where T : class
         {
-            return SendRequest<T>(endpoint, query, "GET");
+            return this.SendRequest<T>(endpoint, query, "GET");
         }
 
-        internal Task<T> GetRequestRestApiAsync<T>(string path, Query query = null) where T : class
+        internal Task<T> GetRequestRestApiAsync<T>(string path, IQuery query = null) where T : class
         {
-            return SendApiRequestAsync<T>(path, query, "GET");
+            return this.SendApiRequestAsync<T>(path, query, "GET");
         }
 
-        internal Task<T> PostRequestAsync<T>(string endpoint, Query query = null) where T : class
+        internal Task<T> PostRequestAsync<T>(string endpoint, IQuery query = null) where T : class
         {
-            return SendRequest<T>(endpoint, query, "POST");
+            return this.SendRequest<T>(endpoint, query, "POST");
         }
 
-        internal Task<T> PostRequestRestApiAsync<T>(string path, Query query = null) where T : class
+        internal Task<T> PostRequestRestApiAsync<T>(string path, IQuery query = null) where T : class
         {
-            return SendApiRequestAsync<T>(path, query, "POST");
+            return this.SendApiRequestAsync<T>(path, query, "POST");
         }
     }
 }
