@@ -9,19 +9,23 @@ namespace SocialApis
 {
     public struct RateLimit
     {
-        internal void Set(WebHeaderCollection webHeader)
+        internal static RateLimit FromHeaders(WebHeaderCollection webHeader)
         {
+            var rateLimit = new RateLimit();
+
             var _limit = webHeader["x-rate-limit-limit"];
             if (int.TryParse(_limit, out var limit))
-                this.Limit = limit;
+                rateLimit.Limit = limit;
 
             var _remaining = webHeader["x-rate-limit-remaining"];
             if (int.TryParse(_remaining, out var remaining))
-                this.Remaining = remaining;
+                rateLimit.Remaining = remaining;
 
             var _reset = webHeader["x-rate-limit-reset"];
             if (int.TryParse(_reset, out var unixTime))
-                this.ResetDate = DateTimeOffset.FromUnixTimeSeconds(unixTime);
+                rateLimit.ResetDate = DateTimeOffset.FromUnixTimeSeconds(unixTime);
+
+            return rateLimit;
         }
 
         public int Limit { get; private set; }

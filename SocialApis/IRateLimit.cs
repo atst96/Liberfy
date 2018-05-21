@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SocialApis
 {
-    public interface IRateLimit
+    internal interface IRateLimit
     {
-        RateLimit RateLimit { get; }
+        RateLimit RateLimit { get; set; }
     }
 }
