@@ -11,9 +11,9 @@ namespace SocialApis.Mastodon
     public struct Tag
     {
         [DataMember(Name = "name")]
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         [DataMember(Name = "url")]
-        public string Url { get; private set; }
+        public string Url { get; set; }
     }
 }

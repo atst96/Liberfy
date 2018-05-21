@@ -6,28 +6,28 @@ namespace SocialApis.Twitter
     public class Places
     {
         [DataMember(Name = "id")]
-        public string Id { get; private set; }
+        public string Id { get; set; }
 
         [DataMember(Name = "url")]
-        public string Url { get; private set; }
+        public string Url { get; set; }
 
         [DataMember(Name = "place_type")]
-        public string PlaceType { get; private set; }
+        public string PlaceType { get; set; }
 
         [DataMember(Name = "name")]
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         [DataMember(Name = "full_name")]
-        public string FullName { get; private set; }
+        public string FullName { get; set; }
 
         [DataMember(Name = "country_code")]
-        public string CountryCode { get; private set; }
+        public string CountryCode { get; set; }
 
         [DataMember(Name = "country")]
-        public string Country { get; private set; }
+        public string Country { get; set; }
 
         [DataMember(Name = "bounding_box")]
-        public Coordinates<Point[][]> BoudingBox { get; private set; }
+        public Coordinates<Point[][]> BoudingBox { get; set; }
 
         // [DataMember(Name = "attributes")]
     }

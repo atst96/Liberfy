@@ -6,9 +6,9 @@ namespace SocialApis.Twitter
     public struct UserEntities
     {
         [DataMember(Name = "url")]
-        public Entities Url { get; private set; }
+        public Entities Url { get; set; }
 
         [DataMember(Name = "description")]
-        public Entities Description { get; private set; }
+        public Entities Description { get; set; }
     }
 }

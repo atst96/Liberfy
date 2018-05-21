@@ -8,6 +8,6 @@ namespace SocialApis.Twitter
 {
     public class MediaResponse : Media, IRateLimit
     {
-        public RateLimit RateLimit { get; }
+        public RateLimit RateLimit { get; set; }
     }
 }

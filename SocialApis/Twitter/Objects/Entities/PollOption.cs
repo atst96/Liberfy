@@ -11,9 +11,9 @@ namespace SocialApis.Twitter
     public struct PollOption
     {
         [DataMember(Name = "position")]
-        public int Position { get; private set; }
+        public int Position { get; set; }
 
         [DataMember(Name = "text")]
-        public string Text { get; private set; }
+        public string Text { get; set; }
     }
 }

@@ -12,6 +12,6 @@ namespace SocialApis.Twitter
     public class ListedResponse<T> : Collection<T>, IRateLimit
     {
         [IgnoreDataMember]
-        public RateLimit RateLimit { get; }
+        public RateLimit RateLimit { get; set; }
     }
 }

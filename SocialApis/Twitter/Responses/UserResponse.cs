@@ -5,6 +5,6 @@ namespace SocialApis.Twitter
     [DataContract]
     public class UserResponse : User, IRateLimit
     {
-        public RateLimit RateLimit { get; }
+        public RateLimit RateLimit { get; set; }
     }
 }

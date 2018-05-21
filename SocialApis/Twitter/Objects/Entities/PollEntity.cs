@@ -8,13 +8,13 @@ namespace SocialApis.Twitter
     public class PollEntity : EntityBase
     {
         [DataMember(Name = "options")]
-        public PollOption Options { get; private set; }
+        public PollOption Options { get; set; }
 
         [DataMember(Name = "end_datetime")]
         [JsonFormatter(typeof(DateTimeOffsetFormatter))]
-        public DateTimeOffset EndDateTime { get; private set; }
+        public DateTimeOffset EndDateTime { get; set; }
 
         [DataMember(Name = "duration_minutes")]
-        public int DurationMinutes { get; private set; }
+        public int DurationMinutes { get; set; }
     }
 }

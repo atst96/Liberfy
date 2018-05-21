@@ -12,114 +12,114 @@ namespace SocialApis.Twitter
     public class User
     {
         [DataMember(Name = "id")]
-        public long Id { get; private set; }
+        public long? Id { get; set; }
 
         [DataMember(Name = "name")]
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         [DataMember(Name = "screen_name")]
-        public string ScreenName { get; private set; }
+        public string ScreenName { get; set; }
 
         [DataMember(Name = "location")]
-        public string Location { get; private set; }
+        public string Location { get; set; }
 
         [DataMember(Name = "url")]
-        public string Url { get; private set; }
+        public string Url { get; set; }
 
         [DataMember(Name = "description")]
-        public string Description { get; private set; }
+        public string Description { get; set; }
 
         [DataMember(Name = "entities")]
-        public UserEntities Entities { get; private set; }
+        public UserEntities Entities { get; set; }
 
         // [DataMember(Name = "derived")]
 
         [DataMember(Name = "protected")]
-        public bool IsProtected { get; private set; }
+        public bool IsProtected { get; set; }
 
         [DataMember(Name = "verified")]
-        public bool IsVerified { get; private set; }
+        public bool IsVerified { get; set; }
 
         [DataMember(Name = "followers_count")]
-        public int FollowersCount { get; private set; }
+        public int FollowersCount { get; set; }
 
         [DataMember(Name = "friends_count")]
-        public int FriendsCount { get; private set; }
+        public int FriendsCount { get; set; }
 
         [DataMember(Name = "listed_count")]
-        public int ListedCount { get; private set; }
+        public int? ListedCount { get; set; }
 
         [DataMember(Name = "favourites_count")]
-        public int FavoritesCount { get; private set; }
+        public int FavoritesCount { get; set; }
 
         [DataMember(Name = "stauses_count")]
-        public int StatusesCount { get; private set; }
+        public int StatusesCount { get; set; }
 
         [DataMember(Name = "created_at")]
         [JsonFormatter(typeof(DateTimeOffsetFormatter))]
-        public DateTimeOffset CreatedAt { get; private set; }
+        public DateTimeOffset CreatedAt { get; set; }
 
         [DataMember(Name = "utc_offset")]
-        public int? UtcOffset { get; private set; }
+        public int? UtcOffset { get; set; }
 
         [DataMember(Name = "time_zone")]
-        public string TimeZone { get; private set; }
+        public string TimeZone { get; set; }
 
         [DataMember(Name = "geo_enabled")]
-        public bool IsGeoEnabled { get; private set; }
+        public bool IsGeoEnabled { get; set; }
 
         [DataMember(Name = "lang")]
-        public string Language { get; private set; }
+        public string Language { get; set; }
 
         [DataMember(Name = "contributors_enabled")]
-        public bool IsContributorsEnabled { get; private set; }
+        public bool IsContributorsEnabled { get; set; }
 
         [DataMember(Name = "profile_background_color")]
-        public string ProfileBackgroundColor { get; private set; }
+        public string ProfileBackgroundColor { get; set; }
 
         [DataMember(Name = "profile_background_image_url")]
-        public string ProfileBackgroundImageUrl { get; private set; }
+        public string ProfileBackgroundImageUrl { get; set; }
 
         [DataMember(Name = "profile_background_image_url_https")]
-        public string ProfileBackgroundImageUrlHttps { get; private set; }
+        public string ProfileBackgroundImageUrlHttps { get; set; }
 
         [DataMember(Name = "profile_background_tile")]
-        public bool ProfileBackgroundTile { get; private set; }
+        public bool ProfileBackgroundTile { get; set; }
 
         [DataMember(Name = "profile_banner_url")]
-        public string ProfileBannerUrl { get; private set; }
+        public string ProfileBannerUrl { get; set; }
 
         [DataMember(Name = "profile_image_url")]
-        public string ProfileImageUrl { get; private set; }
+        public string ProfileImageUrl { get; set; }
 
         [DataMember(Name = "profile_image_url_https")]
-        public string ProfileImageUrlHttps { get; private set; }
+        public string ProfileImageUrlHttps { get; set; }
 
         [DataMember(Name = "profile_link_color")]
-        public string ProfileLinkColor { get; private set; }
+        public string ProfileLinkColor { get; set; }
 
         [DataMember(Name = "profile_sidebar_border_color")]
-        public string ProfileSidebarBorderColor { get; private set; }
+        public string ProfileSidebarBorderColor { get; set; }
 
         [DataMember(Name = "profile_sidebar_fill_color")]
-        public string ProfileSidebarFillColor { get; private set; }
+        public string ProfileSidebarFillColor { get; set; }
 
         [DataMember(Name = "profile_text_color")]
-        public string ProfileTextColor { get; private set; }
+        public string ProfileTextColor { get; set; }
 
         [DataMember(Name = "profile_use_background_Image")]
-        public bool IsProfileUseBackgroundImage { get; private set; }
+        public bool IsProfileUseBackgroundImage { get; set; }
 
         [DataMember(Name = "default_profile")]
-        public bool IsDefaultProfile { get; private set; }
+        public bool IsDefaultProfile { get; set; }
 
         [DataMember(Name = "default_profile_image")]
-        public bool IsDefaultProfileImage { get; private set; }
+        public bool IsDefaultProfileImage { get; set; }
 
         [DataMember(Name = "withheld_in_countries")]
-        public string WithheldInCountries { get; private set; }
+        public string WithheldInCountries { get; set; }
 
         [DataMember(Name = "withheld_scope")]
-        public string WithheldScope { get; private set; }
+        public string WithheldScope { get; set; }
     }
 }

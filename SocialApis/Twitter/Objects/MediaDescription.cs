@@ -11,16 +11,16 @@ namespace SocialApis.Twitter
     public class MediaDescription
     {
         [DataMember(Name = "media_id")]
-        public long MediaId { get; private set; }
+        public long MediaId { get; set; }
 
         [DataMember(Name = "all_text")]
-        public MediaDescriptionText AllText { get; private set; }
+        public MediaDescriptionText AllText { get; set; }
 
         [DataContract]
         public class MediaDescriptionText
         {
             [DataMember(Name = "text")]
-            public string Text { get; private set; }
+            public string Text { get; set; }
         }
     }
 }

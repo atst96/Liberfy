@@ -6,15 +6,15 @@ namespace SocialApis.Twitter
     public class UploadMediaInfo
     {
         [DataMember(Name = "image_type")]
-        public string ImageType { get; private set; }
+        public string ImageType { get; set; }
 
         [DataMember(Name = "w")]
-        public int Width { get; private set; }
+        public int Width { get; set; }
 
         [DataMember(Name = "h")]
-        public int Height { get; private set; }
+        public int Height { get; set; }
 
         [DataMember(Name = "processing_info")]
-        public ProcessingInfo ProcessingInfo { get; private set; }
+        public ProcessingInfo ProcessingInfo { get; set; }
     }
 }

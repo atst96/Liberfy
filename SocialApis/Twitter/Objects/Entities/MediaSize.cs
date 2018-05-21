@@ -6,12 +6,12 @@ namespace SocialApis.Twitter
     public struct MediaSize
     {
         [DataMember(Name = "h")]
-        public long Height { get; private set; }
+        public long Height { get; set; }
 
         [DataMember(Name = "w")]
-        public long Width { get; private set; }
+        public long Width { get; set; }
 
         [DataMember(Name = "resize")]
-        public string Resize { get; private set; }
+        public string Resize { get; set; }
     }
 }

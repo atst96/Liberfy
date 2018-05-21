@@ -6,13 +6,13 @@ namespace SocialApis.Twitter
     public struct IdObject
     {
         [DataMember(Name = "id")]
-        public long Id { get; private set; }
+        public long Id { get; set; }
     }
 
     [DataContract]
     public struct IdObject<T>
     {
         [DataMember(Name = "id")]
-        public T Id { get; private set; }
+        public T Id { get; set; }
     }
 }

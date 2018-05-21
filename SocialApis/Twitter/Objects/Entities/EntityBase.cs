@@ -7,12 +7,12 @@ namespace SocialApis.Twitter
     public class EntityBase
     {
         [DataMember(Name = "indices")]
-        protected long[] _indices { get; }
+        public int[] Indices { get; set; }
 
         [IgnoreDataMember]
-        public long IndexStart => _indices?.ElementAt(0) ?? 0;
+        public int IndexStart => this.Indices[0];
 
         [IgnoreDataMember]
-        public long IndexEnd => _indices?.ElementAt(1) ?? 0;
+        public int IndexEnd => this.Indices[1];
     }
 }

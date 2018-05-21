@@ -6,6 +6,6 @@ namespace SocialApis.Twitter
     public class ExtendedEntities
     {
         [DataMember(Name = "media")]
-        public MediaEntity[] Media { get; private set; }
+        public MediaEntity[] Media { get; set; }
     }
 }

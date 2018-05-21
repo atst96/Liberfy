@@ -6,12 +6,12 @@ namespace SocialApis.Twitter
     public class UserMentionEntity : EntityBase
     {
         [DataMember(Name = "name")]
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         [DataMember(Name = "screen_name")]
-        public string ScreenName { get; private set; }
+        public string ScreenName { get; set; }
 
         [DataMember(Name = "id")]
-        public long Id { get; private set; }
+        public long Id { get; set; }
     }
 }

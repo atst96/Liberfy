@@ -11,28 +11,28 @@ namespace SocialApis.Twitter
     public class ProcessingInfo
     {
         [DataMember(Name = "state")]
-        public string State { get; private set; }
+        public string State { get; set; }
 
         [DataMember(Name = "check_after_secs")]
-        public int CheckAfterSecs { get; private set; }
+        public int CheckAfterSecs { get; set; }
 
         [DataMember(Name = "process_psercent")]
-        public int ProcessPercent { get; private set; }
+        public int ProcessPercent { get; set; }
 
         [DataMember(Name = "error")]
-        public ProcessingInfo Error { get; private set; }
+        public ProcessingInfo Error { get; set; }
 
         [DataContract]
         public class ProcessingError
         {
             [DataMember(Name = "code")]
-            public int Code { get; private set; }
+            public int Code { get; set; }
 
             [DataMember(Name = "name")]
-            public string Name { get; private set; }
+            public string Name { get; set; }
 
             [DataMember(Name = "message")]
-            public string Message { get; private set; }
+            public string Message { get; set; }
         }
     }
 }

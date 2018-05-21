@@ -11,6 +11,6 @@ namespace SocialApis.Twitter
     public class StatusResponse : Status, IRateLimit
     {
         [IgnoreDataMember]
-        public RateLimit RateLimit { get; }
+        public RateLimit RateLimit { get; set; }
     }
 }

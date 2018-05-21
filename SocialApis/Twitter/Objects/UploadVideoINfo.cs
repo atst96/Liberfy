@@ -6,6 +6,6 @@ namespace SocialApis.Twitter
     public class UploadVideoInfo
     {
         [DataMember(Name = "video_type")]
-        public string VideoType { get; private set; }
+        public string VideoType { get; set; }
     }
 }

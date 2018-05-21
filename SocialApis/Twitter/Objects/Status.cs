@@ -57,13 +57,13 @@ namespace SocialApis.Twitter
         public long? QuoteCount { get; set; }
 
         [DataMember(Name = "reply_count")]
-        public long ReplyCount { get; set; }
+        public long? ReplyCount { get; set; }
 
         [DataMember(Name = "retweet_count")]
-        public long RetweetCount { get; set; }
+        public long? RetweetCount { get; set; }
 
         [DataMember(Name = "favorite_count")]
-        public long FavoriteCount { get; set; }
+        public long? FavoriteCount { get; set; }
 
         [DataMember(Name = "entities")]
         public Entities Entities { get; set; }
@@ -72,10 +72,10 @@ namespace SocialApis.Twitter
         public ExtendedEntities ExtendedEntities { get; set; }
 
         [DataMember(Name = "favorited")]
-        public bool IsFavorited { get; set; }
+        public bool? IsFavorited { get; set; }
 
         [DataMember(Name = "retweeted")]
-        public bool Retweeted { get; set; }
+        public bool? Retweeted { get; set; }
 
         [DataMember(Name = "possibly_sensitive")]
         public bool PossiblySensitive { get; set; }

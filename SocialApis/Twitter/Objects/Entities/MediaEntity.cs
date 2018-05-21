@@ -6,18 +6,18 @@ namespace SocialApis.Twitter
     public class MediaEntity : UrlEntity
     {
         [DataMember(Name = "type")]
-        public string Type { get; private set; }
+        public string Type { get; set; }
 
         [DataMember(Name = "sizes")]
-        public MediaSizes Sizes { get; private set; }
+        public MediaSizes Sizes { get; set; }
 
         [DataMember(Name = "media_url")]
-        public string MediaUrl { get; private set; }
+        public string MediaUrl { get; set; }
 
         [DataMember(Name = "id")]
-        public long Id { get; private set; }
+        public long Id { get; set; }
 
         [DataMember(Name = "media_url_https")]
-        public string MediaUrlHttps { get; private set; }
+        public string MediaUrlHttps { get; set; }
     }
 }

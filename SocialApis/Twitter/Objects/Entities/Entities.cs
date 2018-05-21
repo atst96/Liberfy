@@ -6,18 +6,18 @@ namespace SocialApis.Twitter
     public struct Entities
     {
         [DataMember(Name = "hashtags")]
-        public HashtagEntity[] Hashtags { get; private set; }
+        public HashtagEntity[] Hashtags { get; set; }
 
         [DataMember(Name = "urls")]
-        public UrlEntity[] Urls { get; private set; }
+        public UrlEntity[] Urls { get; set; }
 
         [DataMember(Name = "user_mentions")]
-        public UserMentionEntity[] UserMentions { get; private set; }
+        public UserMentionEntity[] UserMentions { get; set; }
 
         [DataMember(Name = "symbols")]
-        public HashtagEntity[] Symbols { get; private set; }
+        public HashtagEntity[] Symbols { get; set; }
 
         [DataMember(Name = "media")]
-        public MediaEntity[] Media { get; private set; }
+        public MediaEntity[] Media { get; set; }
     }
 }
