@@ -14,5 +14,10 @@ namespace SocialApis.Twitter.Apis
         {
             return this.Tokens.GetRequestRestApiAsync<UserResponse>("account/verify_credentials");
         }
+
+        public Task<UserResponse> VerifyCredentials(Query query)
+        {
+            return this.Tokens.GetRequestRestApiAsync<UserResponse>("account/verify_credentials", query);
+        }
     }
 }

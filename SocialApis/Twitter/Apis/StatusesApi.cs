@@ -82,14 +82,14 @@ namespace SocialApis.Twitter.Apis
             return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/retweets", query);
         }
 
-        public Task<CursorResponse<long>> RetweetersIds(long statusId)
+        public Task<CursoredIdsResponse> RetweetersIds(long statusId)
         {
             return this.RetweetersIds(new Query { ["id"] = statusId });
         }
 
-        public Task<CursorResponse<long>> RetweetersIds(Query query)
+        public Task<CursoredIdsResponse> RetweetersIds(Query query)
         {
-            return this.Tokens.GetRequestRestApiAsync<CursorResponse<long>>("statuses/retweeters/ids", query);
+            return this.Tokens.GetRequestRestApiAsync<CursoredIdsResponse>("statuses/retweeters/ids", query);
         }
 
         public Task<ListedResponse<Status>> RetweetsOfMe(Query query = null)
