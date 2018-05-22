@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class StatusesApi : TokenApiBase
     {
         internal StatusesApi(Tokens tokens) : base(tokens) { }
@@ -25,17 +27,17 @@ namespace SocialApis.Mastodon.Apis
             return this.Tokens.GetRequestAsync<Card>($"statuses/{ statusId }/context");
         }
 
-        public Task<Account[]> GetRebloggedBy(long statusId, Query query = null)
+        public Task<Account[]> GetRebloggedBy(long statusId, IQuery query = null)
         {
             return this.Tokens.GetRequestAsync<Account[]>($"statuses/{ statusId }/reblogged_by", query);
         }
 
-        public Task<Account[]> GetFavouritedBy(long statusId, Query query = null)
+        public Task<Account[]> GetFavouritedBy(long statusId, IQuery query = null)
         {
             return this.Tokens.GetRequestAsync<Account[]>($"statuses/{ statusId }/favourited_by", query);
         }
 
-        public Task<Status> Post(Query query)
+        public Task<Status> Post(IQuery query)
         {
             return this.Tokens.PostRequestRestApiAsync<Status>("statuses", query);
         }

@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class AccountsApi : TokenApiBase
     {
         internal AccountsApi(Tokens tokens) : base(tokens) { }
 
-        public Task<Account> Account(long accountId, Query query = null)
+        public Task<Account> Account(long accountId, IQuery query = null)
         {
             return this.Tokens.GetRequestRestApiAsync<Account>($"accounts/{ accountId }", query);
         }
@@ -22,17 +24,17 @@ namespace SocialApis.Mastodon.Apis
 
         // Task<Account> UpdateCredentials() function is not implemented yet.
 
-        public Task<Account[]> Followers(long accountId, Query query = null)
+        public Task<Account[]> Followers(long accountId, IQuery query = null)
         {
             return this.Tokens.GetRequestRestApiAsync<Account[]>($"accounts/{ accountId }/followers", query);
         }
 
-        public Task<Account[]> Following(long accountId, Query query = null)
+        public Task<Account[]> Following(long accountId, IQuery query = null)
         {
             return this.Tokens.GetRequestRestApiAsync<Account[]>($"accounts/{ accountId }/following", query);
         }
 
-        public Task<Status[]> Statuses(long accountId, Query query = null)
+        public Task<Status[]> Statuses(long accountId, IQuery query = null)
         {
             return this.Tokens.GetRequestRestApiAsync<Status[]>($"accounts/{ accountId }/statuses", query);
         }
@@ -77,7 +79,7 @@ namespace SocialApis.Mastodon.Apis
             return this.Tokens.GetRequestRestApiAsync<Relationship[]>("accounts/relationships", query);
         }
 
-        public Task<Account[]> Search(Query query = null)
+        public Task<Account[]> Search(IQuery query = null)
         {
             return this.Tokens.GetRequestRestApiAsync<Account[]>("accounts/search", query);
         }

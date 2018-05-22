@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class InstancesApi : TokenApiBase
     {
         internal InstancesApi(Tokens tokens) : base(tokens) { }

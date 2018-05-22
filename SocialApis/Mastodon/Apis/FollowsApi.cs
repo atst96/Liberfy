@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class FollowsApi : TokenApiBase
     {
         internal FollowsApi(Tokens tokens) : base(tokens) { }

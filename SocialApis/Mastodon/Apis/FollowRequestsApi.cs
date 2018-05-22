@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class FollowRequestsApi : TokenApiBase
     {
         internal FollowRequestsApi(Tokens tokens) : base(tokens) { }
 
-        public Task<Account[]> GetFollowRequests(Query query = null)
+        public Task<Account[]> GetFollowRequests(IQuery query = null)
         {
             return this.Tokens.GetRequestRestApiAsync<Account[]>("follow_requests", query);
         }

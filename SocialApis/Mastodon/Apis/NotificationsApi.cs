@@ -6,14 +6,18 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class NotificationsApi : TokenApiBase
     {
         public NotificationsApi(Tokens tokens) : base(tokens) { }
 
-        public Task<Notification[]> GetNotifications(NotificationType excludeType, Query query = null)
+        public Task<Notification[]> GetNotifications(NotificationType excludeType, IQuery query = null)
         {
-            query = new Query { ["exclude_type"] = excludeType } + query;
-            return this.Tokens.GetRequestRestApiAsync<Notification[]>("notifications", query);
+            var _query = new Query(query);
+            _query["exclude_type"] = excludeType;
+
+            return this.Tokens.GetRequestRestApiAsync<Notification[]>("notifications", _query);
         }
 
         public Task<Notification[]> GetNotification(long id)

@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class OAuthApi : TokenApiBase
     {
         internal OAuthApi(Tokens tokens) : base(tokens)
