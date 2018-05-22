@@ -85,39 +85,39 @@ namespace SocialApis.Twitter
         private FriendshipsApi _friendships;
         public FriendshipsApi Friendships => this._friendships ?? (this._friendships = new FriendshipsApi(this));
 
-        private const string _restApiBaseUrl = "https://api.twitter.com/1.1/";
+        private const string RestApiBaseUrl = "https://api.twitter.com/1.1/";
 
-        internal HttpWebRequest CreateRequester(string endpoint, IQuery query = null, string method = "GET", bool autoSetting = true)
+        internal HttpWebRequest CreateRequester(string endpoint, IQuery query = null, string method = RESTfulAPIMethods.Get, bool autoSetting = true)
         {
             return WebUtility.CreateOAuthWebRequest(endpoint, this, query, method, autoSetting);
         }
 
         internal HttpWebRequest CreateGetRequester(string endpoint, IQuery query = null, bool autoSetting = true)
         {
-            return this.CreateRequester(endpoint, query, "GET", autoSetting);
+            return this.CreateRequester(endpoint, query, RESTfulAPIMethods.Get, autoSetting);
         }
 
         internal HttpWebRequest CreatePostRequester(string endpoint, IQuery query = null, bool autoSetting = true)
         {
-            return this.CreateRequester(endpoint, query, "POST", autoSetting);
+            return this.CreateRequester(endpoint, query, RESTfulAPIMethods.Post, autoSetting);
         }
 
-        internal HttpWebRequest CreateRequesterApi(string path, IQuery query = null, string method = "GET", bool autoSetting = true)
+        internal HttpWebRequest CreateRequesterApi(string path, IQuery query = null, string method = RESTfulAPIMethods.Get, bool autoSetting = true)
         {
-            return WebUtility.CreateOAuthWebRequest($"{_restApiBaseUrl}{path}.json", this, query, method, autoSetting);
+            return WebUtility.CreateOAuthWebRequest(string.Concat(RestApiBaseUrl, path, ".json"), this, query, method, autoSetting);
         }
 
         internal HttpWebRequest CreateGetRequesterApi(string path, IQuery query = null, bool autoSetting = true)
         {
-            return this.CreateRequesterApi(path, query, "GET", autoSetting);
+            return this.CreateRequesterApi(path, query, RESTfulAPIMethods.Get, autoSetting);
         }
 
         internal HttpWebRequest CreatePostRequesterApi(string path, IQuery query = null, bool autoSetting = true)
         {
-            return this.CreateRequesterApi(path, query, "POST", autoSetting);
+            return this.CreateRequesterApi(path, query, RESTfulAPIMethods.Post, autoSetting);
         }
 
-        private Task<T> SendRequest<T>(string endpoint, IQuery query = null, string method = "GET") where T : class
+        private Task<T> SendRequest<T>(string endpoint, IQuery query = null, string method = RESTfulAPIMethods.Get) where T : class
         {
             var webReq = WebUtility.CreateOAuthWebRequest(endpoint, this, query, method);
             return this.SendRequest<T>(webReq);
@@ -152,27 +152,27 @@ namespace SocialApis.Twitter
 
         private Task<T> SendApiRequestAsync<T>(string path, IQuery query, string method) where T : class
         {
-            return this.SendRequest<T>($"{_restApiBaseUrl}{path}.json", query, method);
+            return this.SendRequest<T>(string.Concat(RestApiBaseUrl, path, ".json"), query, method);
         }
 
         internal Task<T> GetRequestAsync<T>(string endpoint, IQuery query) where T : class
         {
-            return this.SendRequest<T>(endpoint, query, "GET");
+            return this.SendRequest<T>(endpoint, query, RESTfulAPIMethods.Get);
         }
 
         internal Task<T> GetRequestRestApiAsync<T>(string path, IQuery query = null) where T : class
         {
-            return this.SendApiRequestAsync<T>(path, query, "GET");
+            return this.SendApiRequestAsync<T>(path, query, RESTfulAPIMethods.Get);
         }
 
         internal Task<T> PostRequestAsync<T>(string endpoint, IQuery query = null) where T : class
         {
-            return this.SendRequest<T>(endpoint, query, "POST");
+            return this.SendRequest<T>(endpoint, query, RESTfulAPIMethods.Post);
         }
 
         internal Task<T> PostRequestRestApiAsync<T>(string path, IQuery query = null) where T : class
         {
-            return this.SendApiRequestAsync<T>(path, query, "POST");
+            return this.SendApiRequestAsync<T>(path, query, RESTfulAPIMethods.Post);
         }
     }
 }

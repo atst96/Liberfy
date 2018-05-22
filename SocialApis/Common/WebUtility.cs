@@ -18,15 +18,15 @@ namespace SocialApis
         public static HttpWebRequest CreateWebRequest(string endpoint, IQuery query, string method, WebHeaderCollection headers = null, bool autoSetting = true)
         {
             query = query ?? new Query();
-            method = method?.ToUpper() ?? "GET";
+            method = method?.ToUpper() ?? RESTfulAPIMethods.Get;
             endpoint = endpoint.Split(UrlSpritCharacters, 2)[0];
 
             var queryString = default(string);
             if (autoSetting)
             {
                 queryString = Query.GetQueryString(query);
-
-                if (method == "GET" || method == "DELETE")
+                
+                if (method == RESTfulAPIMethods.Get || method == RESTfulAPIMethods.Delete)
                 {
                     endpoint = string.Concat(endpoint, "?", queryString);
                 }
@@ -39,7 +39,7 @@ namespace SocialApis
 
             if (autoSetting)
             {
-                if (method == "POST" || method == "PUT")
+                if (method == RESTfulAPIMethods.Post || method == RESTfulAPIMethods.Put)
                 {
                     webReq.ContentType = "application/x-www-form-urlencoded";
 
@@ -97,12 +97,6 @@ namespace SocialApis
                 return await JsonSerializer.DeserializeAsync<T>(webRes.GetResponseStream(),
                     Utf8Json.Resolvers.StandardResolver.AllowPrivate);
             }
-        }
-
-        public static Task<T> OAuthGet<T>(string endpoint, ITokensBase tokens, IQuery query) where T : class
-        {
-            var webReq = CreateOAuthWebRequest(endpoint, tokens, query, "get");
-            return SendRequest<T>(webReq);
         }
     }
 }

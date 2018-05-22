@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\BoundaryWriter.cs" />
+    <Compile Include="Common\RESTfulAPIMethods.cs" />
     <Compile Include="Formatters\ToIntFormatter.cs" />
     <Compile Include="Formatters\ToLongFormatter.cs" />
     <Compile Include="Formatters\ToNullableLongFormatter.cs" />
