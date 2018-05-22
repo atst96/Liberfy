@@ -54,7 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoundaryWriter.cs" />
+    <Compile Include="Common\BoundaryWriter.cs" />
     <Compile Include="Formatters\ToIntFormatter.cs" />
     <Compile Include="Formatters\ToLongFormatter.cs" />
     <Compile Include="Formatters\ToNullableLongFormatter.cs" />
@@ -100,11 +100,11 @@
     <Compile Include="Mastodon\Objects\Status.cs" />
     <Compile Include="Mastodon\TokenApiBase.cs" />
     <Compile Include="Mastodon\Tokens.cs" />
-    <Compile Include="MimeTypes.cs" />
+    <Compile Include="Common\MimeTypes.cs" />
     <Compile Include="Twitter\Apis\AccountApi.cs" />
     <Compile Include="Formatters\DateTimeOffsetFormatter.cs" />
-    <Compile Include="IRateLimit.cs" />
-    <Compile Include="RateLimit.cs" />
+    <Compile Include="Common\IRateLimit.cs" />
+    <Compile Include="Common\RateLimit.cs" />
     <Compile Include="Twitter\Apis\BlocksApi.cs" />
     <Compile Include="Twitter\Apis\CollectionsApi.cs" />
     <Compile Include="Twitter\Apis\FavoritesApi.cs" />
@@ -155,19 +155,19 @@
     <Compile Include="Twitter\Objects\User.cs" />
     <Compile Include="Twitter\Objects\Entities\UserMentionEntity.cs" />
     <Compile Include="Twitter\TwitterErrorContainer.cs" />
-    <Compile Include="ITokensBase.cs" />
-    <Compile Include="OAuthHelper.cs" />
+    <Compile Include="Common\ITokensBase.cs" />
+    <Compile Include="Common\OAuthHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query.cs" />
+    <Compile Include="Common\Query.cs" />
     <Compile Include="Twitter\TwitterError.cs" />
     <Compile Include="Twitter\TwitterException.cs" />
     <Compile Include="Twitter\TwitterResponse.cs" />
     <Compile Include="Twitter\Apis\OAuthApi.cs" />
     <Compile Include="Twitter\RequestTokenResponse.cs" />
     <Compile Include="Twitter\Tokens.cs" />
-    <Compile Include="UploadProgressInfo.cs" />
-    <Compile Include="UrlArray.cs" />
-    <Compile Include="WebUtility.cs" />
+    <Compile Include="Common\UploadProgressInfo.cs" />
+    <Compile Include="Common\UrlArray.cs" />
+    <Compile Include="Common\WebUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
