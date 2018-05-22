@@ -58,7 +58,6 @@
     <Compile Include="Formatters\ToIntFormatter.cs" />
     <Compile Include="Formatters\ToLongFormatter.cs" />
     <Compile Include="Formatters\ToNullableLongFormatter.cs" />
-    <Compile Include="InternalQuery.cs" />
     <Compile Include="Mastodon\Apis\AccountsApi.cs" />
     <Compile Include="Mastodon\Apis\BlocksApi.cs" />
     <Compile Include="Mastodon\Apis\DomainBlocksApi.cs" />
