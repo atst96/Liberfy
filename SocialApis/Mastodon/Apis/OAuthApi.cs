@@ -47,7 +47,7 @@ namespace SocialApis.Mastodon.Apis
                 ["client_id"] = this.Tokens.ClientId,
             };
 
-            return $"{ url }?{ string.Join("&", query.GetRequestParameters()) }";
+            return $"{ url }?{ string.Join("&", Query.GetRequestParameters(query)) }";
         }
     }
 }
