@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter.Apis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class FollowersApi : TokenApiBase
     {
         internal FollowersApi(Tokens tokens) : base(tokens) { }
@@ -21,7 +23,7 @@ namespace SocialApis.Twitter.Apis
             return this.Tokens.GetRequestRestApiAsync<CursoredIdsResponse>("followers/ids", query);
         }
 
-        public Task<CursoredIdsResponse> Ids(Query query)
+        public Task<CursoredIdsResponse> Ids(IQuery query)
         {
             return this.Tokens.GetRequestRestApiAsync<CursoredIdsResponse>("followers/ids", query);
         }
@@ -31,7 +33,7 @@ namespace SocialApis.Twitter.Apis
             return this.Tokens.GetRequestRestApiAsync<CursoredUsersResponse>("followers/list");
         }
 
-        public Task<CursoredUsersResponse> List(Query query)
+        public Task<CursoredUsersResponse> List(IQuery query)
         {
             return this.Tokens.GetRequestRestApiAsync<CursoredUsersResponse>("followers/list", query);
         }

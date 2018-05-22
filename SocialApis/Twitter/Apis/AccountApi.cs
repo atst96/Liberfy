@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter.Apis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class AccountApi : TokenApiBase
     {
         internal AccountApi(Tokens tokens) : base(tokens) { }
@@ -15,7 +17,7 @@ namespace SocialApis.Twitter.Apis
             return this.Tokens.GetRequestRestApiAsync<UserResponse>("account/verify_credentials");
         }
 
-        public Task<UserResponse> VerifyCredentials(Query query)
+        public Task<UserResponse> VerifyCredentials(IQuery query)
         {
             return this.Tokens.GetRequestRestApiAsync<UserResponse>("account/verify_credentials", query);
         }

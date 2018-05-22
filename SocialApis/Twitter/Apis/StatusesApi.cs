@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter.Apis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class StatusesApi : TokenApiBase
     {
         internal StatusesApi(Tokens tokens) : base(tokens) { }
@@ -17,7 +19,7 @@ namespace SocialApis.Twitter.Apis
             return Update(new Query { ["status"] = status });
         }
 
-        public Task<StatusResponse> Update(Query query)
+        public Task<StatusResponse> Update(IQuery query)
         {
             return this.Tokens.PostRequestRestApiAsync<StatusResponse>("statuses/update", query);
         }
@@ -32,7 +34,7 @@ namespace SocialApis.Twitter.Apis
             return Show(new Query { ["id"] = statusId });
         }
 
-        public Task<StatusResponse> Show(Query query)
+        public Task<StatusResponse> Show(IQuery query)
         {
             return this.Tokens.GetRequestRestApiAsync<StatusResponse>("statuses/show", query);
         }
@@ -42,7 +44,7 @@ namespace SocialApis.Twitter.Apis
             return Lookup(new Query { ["id"] = statusIds });
         }
 
-        public Task<ListedResponse<Status>> Lookup(Query query)
+        public Task<ListedResponse<Status>> Lookup(IQuery query)
         {
             return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/lookup", query);
         }
@@ -52,7 +54,7 @@ namespace SocialApis.Twitter.Apis
             return Retweet(new Query { ["id"] = statusId });
         }
 
-        public Task<StatusResponse> Retweet(Query query)
+        public Task<StatusResponse> Retweet(IQuery query)
         {
             return this.Tokens.PostRequestRestApiAsync<StatusResponse>("statuses/retweet", query);
         }
@@ -62,7 +64,7 @@ namespace SocialApis.Twitter.Apis
             return Unretweet(new Query { ["id"] = statusId });
         }
 
-        public Task<StatusResponse> Unretweet(Query query)
+        public Task<StatusResponse> Unretweet(IQuery query)
         {
             return this.Tokens.PostRequestRestApiAsync<StatusResponse>("statuses/unretweet", query);
         }
@@ -77,7 +79,7 @@ namespace SocialApis.Twitter.Apis
             return Retweets(new Query { ["id"] = statusId, ["count"] = count });
         }
 
-        public Task<ListedResponse<Status>> Retweets(Query query)
+        public Task<ListedResponse<Status>> Retweets(IQuery query)
         {
             return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/retweets", query);
         }
@@ -87,12 +89,12 @@ namespace SocialApis.Twitter.Apis
             return this.RetweetersIds(new Query { ["id"] = statusId });
         }
 
-        public Task<CursoredIdsResponse> RetweetersIds(Query query)
+        public Task<CursoredIdsResponse> RetweetersIds(IQuery query)
         {
             return this.Tokens.GetRequestRestApiAsync<CursoredIdsResponse>("statuses/retweeters/ids", query);
         }
 
-        public Task<ListedResponse<Status>> RetweetsOfMe(Query query = null)
+        public Task<ListedResponse<Status>> RetweetsOfMe(IQuery query = null)
         {
             return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/retweets_of_me", query);
         }
@@ -101,17 +103,17 @@ namespace SocialApis.Twitter.Apis
 
         #region Get Tweet timelines
 
-        public Task<ListedResponse<Status>> HomeTimeline(Query query = null)
+        public Task<ListedResponse<Status>> HomeTimeline(IQuery query = null)
         {
             return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/home_timeline", query);
         }
 
-        public Task<ListedResponse<Status>> MentionsTimeline(Query query = null)
+        public Task<ListedResponse<Status>> MentionsTimeline(IQuery query = null)
         {
             return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/mentions_timeline", query);
         }
 
-        public Task<ListedResponse<Status>> UserTimeline(Query query = null)
+        public Task<ListedResponse<Status>> UserTimeline(IQuery query = null)
         {
             return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/user_timeline", query);
         }

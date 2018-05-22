@@ -10,6 +10,8 @@ using Utf8Json;
 
 namespace SocialApis.Twitter.Apis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class MediaApi : TokenApiBase
     {
         internal MediaApi(Tokens tokens) : base(tokens) { }

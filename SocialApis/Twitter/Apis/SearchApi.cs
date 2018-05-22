@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter.Apis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class SearchApi : TokenApiBase
     {
         internal SearchApi(Tokens tokens) : base(tokens) { }
@@ -15,7 +17,7 @@ namespace SocialApis.Twitter.Apis
             return this.Search(new Query { ["q"] = text });
         }
 
-        public Task<ListedResponse<Status>> Search(Query query)
+        public Task<ListedResponse<Status>> Search(IQuery query)
         {
             return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("search/tweets", query);
         }

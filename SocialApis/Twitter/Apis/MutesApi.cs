@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter.Apis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class MutesApi : TokenApiBase
     {
         internal MutesApi(Tokens tokens) : base(tokens)
@@ -41,9 +43,9 @@ namespace SocialApis.Twitter.Apis
             return this.Tokens.PostRequestRestApiAsync<UserResponse>("mutes/users/create", q);
         }
 
-        public Task<UserResponse> Create(long userId, Query query)
+        public Task<UserResponse> Create(long userId, IQuery query)
         {
-            var q = query?.Clone() ?? new Query();
+            var q = new Query(query);
             q["user_id"] = userId;
 
             return this.Tokens.PostRequestRestApiAsync<UserResponse>("mutes/users/create", q);
@@ -56,9 +58,9 @@ namespace SocialApis.Twitter.Apis
             return this.Tokens.PostRequestRestApiAsync<UserResponse>("mutes/users/destroy", q);
         }
 
-        public Task<UserResponse> Destroy(long userId, Query query)
+        public Task<UserResponse> Destroy(long userId, IQuery query)
         {
-            var q = query?.Clone() ?? new Query();
+            var q = new Query(query);
             q["user_id"] = userId;
 
             return this.Tokens.PostRequestRestApiAsync<UserResponse>("mutes/users/destroy", q);

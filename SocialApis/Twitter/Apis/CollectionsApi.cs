@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter.Apis
 {
+    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+
     public class CollectionsApi : TokenApiBase
     {
         internal CollectionsApi(Tokens tokens) : base(tokens) { }
