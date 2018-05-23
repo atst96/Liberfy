@@ -14,6 +14,7 @@
     Title="ツイート" Height="329" Width="453"
     FontFamily="Meiryo"
     DataContext="{app:ViewModelConnector vm:TweetWindow}"
+    d:DataContext="{d:DesignInstance {x:Type vm:TweetWindow}, IsDesignTimeCreatable=True}"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
     UseLayoutRounding="True">

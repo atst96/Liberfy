@@ -10,7 +10,8 @@
     mc:Ignorable="d" FontFamily="Meiryo"
     Title="MainWindow" Height="350" Width="525"
     xmlns:app="clr-namespace:Liberfy"
-    DataContext="{local:ViewModelConnector {x:Type vm:MainWindow}, IsMainView=True}">
+    DataContext="{local:ViewModelConnector {x:Type vm:MainWindow}, IsMainView=True}"
+    d:DataContext="{d:DesignInstance {x:Type vm:MainWindow}, IsDesignTimeCreatable=True}">
     <Window.Resources>
         <app:TimelineItemTemplateSelector x:Key="TimelineItemTemplateSelector" />
 

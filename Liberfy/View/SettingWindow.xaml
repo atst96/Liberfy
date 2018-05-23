@@ -19,7 +19,8 @@
     TextOptions.TextFormattingMode="Display"
     Title="設定" Height="540" Width="760"
     FontFamily="{StaticResource UIFont}"
-    DataContext="{local:ViewModelConnector {x:Type vm:SettingWindow}}">
+    DataContext="{local:ViewModelConnector {x:Type vm:SettingWindow}}"
+    d:DataContext="{d:DesignInstance {x:Type vm:SettingWindow}, IsDesignTimeCreatable=True}">
     <Window.Resources>
         <sys:Double x:Key="tabItemWidth">120</sys:Double>
         <conv:EnumBoolConverter x:Key="EnumBoolConverter" />
