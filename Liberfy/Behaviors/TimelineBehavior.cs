@@ -29,43 +29,101 @@ namespace Liberfy.Behaviors
                 typeof(StatusInfo), typeof(TimelineBehavior),
                 new PropertyMetadata(null, StatusInfoChanged));
 
-        internal static IEnumerable<EntityBase> GetOrderedEntities(StatusInfo status)
-        {
-            return new EntityBase[][]
-            {
-                status.Entities.Hashtags,
-                status.Entities.Symbols,
-                status.Entities.Urls,
-                status.Entities.UserMentions,
-                status.Entities.Media
-            }.Merge();
-        }
-
         private static async void StatusInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var textBlock = d as TextBlock;
             if (textBlock == null) return;
 
-            textBlock.Inlines.Clear();
-
             var status = e.NewValue as StatusInfo;
             if (status == null) return;
 
-            var entities = status.GetEntities()
-                .OrderBy(entity => entity.Indices[0])
+            await SetHyperlinkToPlainText(
+                status.Text,
+                status.Entities.GetAllEntities(),
+                textBlock.Inlines);
+        }
+
+
+        public static UserInfo GetUserDescription(DependencyObject obj)
+        {
+            return (UserInfo)obj.GetValue(UserDescriptionProperty);
+        }
+
+        public static void SetUserDescription(DependencyObject obj, UserInfo value)
+        {
+            obj.SetValue(UserDescriptionProperty, value);
+        }
+
+        public static readonly DependencyProperty UserDescriptionProperty =
+            DependencyProperty.RegisterAttached("UserDescription",
+                typeof(UserInfo), typeof(TimelineBehavior),
+                new PropertyMetadata(null, UserDescriptionChanged));
+
+        private static async void UserDescriptionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var textBlock = d as TextBlock;
+            if (textBlock == null) return;
+
+            var user = e.NewValue as UserInfo;
+            if (user == null) return;
+
+            await SetHyperlinkToPlainText(
+                user.Description,
+                user.Entities.Description.GetAllEntities(),
+                textBlock.Inlines);
+        }
+
+
+        public static UserInfo GetUserUrl(DependencyObject obj)
+        {
+            return (UserInfo)obj.GetValue(UserUrlProperty);
+        }
+
+        public static void SetUserUrl(DependencyObject obj, UserInfo value)
+        {
+            obj.SetValue(UserUrlProperty, value);
+        }
+
+        public static readonly DependencyProperty UserUrlProperty =
+            DependencyProperty.RegisterAttached("UserUrl",
+                typeof(UserInfo), typeof(TimelineBehavior),
+                new PropertyMetadata(null, UserUrlChanged));
+
+        private static async void UserUrlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var textBlock = d as TextBlock;
+            if (textBlock == null) return;
+
+            var user = e.NewValue as UserInfo;
+            if (user == null) return;
+
+            await SetHyperlinkToPlainText(
+                user.Url,
+                user.Entities.Url.GetAllEntities(),
+                textBlock.Inlines);
+        }
+
+
+        private static async Task SetHyperlinkToPlainText(string plainText, IEnumerable<EntityBase> allEntities, InlineCollection inlines)
+        {
+            var entities = allEntities
+                .OrderBy(entity => entity.IndexStart)
                 .ToArray();
 
-            var text = new TwStringInfo(status.Text);
-            int textLength = text.Length;
-
-            var inlines = textBlock.Inlines;
+            inlines.Clear();
 
             if (entities.Length == 0)
             {
-                inlines.Add(status.Text);
+                if (!string.IsNullOrEmpty(plainText))
+                {
+                    inlines.Add(plainText);
+                }
             }
             else
             {
+                var text = new TwStringInfo(plainText);
+                int textLength = text.Length;
+
                 await App.Current.Dispatcher.InvokeAsync(() =>
                 {
                     // リンク付きツイートの作成
@@ -97,10 +155,9 @@ namespace Liberfy.Behaviors
                             break;
                     }
                 });
-            }
 
-            // text.Dispose();
-            text = null;
+                text = null;
+            }
         }
 
         private static Hyperlink CreateHyperlink(EntityBase entity, TwStringInfo text)
