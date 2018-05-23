@@ -52,7 +52,7 @@ namespace SocialApis.Twitter
         [DataMember(Name = "favourites_count")]
         public int FavoritesCount { get; set; }
 
-        [DataMember(Name = "stauses_count")]
+        [DataMember(Name = "statuses_count")]
         public int StatusesCount { get; set; }
 
         [DataMember(Name = "created_at")]
