@@ -28,6 +28,7 @@ namespace Liberfy
 
         public StatusItem(Status status, Account account)
         {
+            this.Account = account;
             this.Id = status.Id;
 
             var reaction = account.GetStatusActivity(status.GetSourceId());

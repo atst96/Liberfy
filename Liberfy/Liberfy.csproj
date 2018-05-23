@@ -122,6 +122,9 @@
     <Compile Include="App.Brushes.cs" />
     <Compile Include="App.UI.cs" />
     <Compile Include="Behaviors\TimelineBehavior.cs" />
+    <Compile Include="Commands\AccountCommands.cs" />
+    <Compile Include="Commands\AppCommands.cs" />
+    <Compile Include="Commands\DisplayUserDetailsCommand.cs" />
     <Compile Include="Component\CommandChain.cs" />
     <Compile Include="Component\DropDownButton.cs" />
     <Compile Include="Component\GeometryIcon.cs" />
@@ -205,6 +208,7 @@
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\SettingWindowViewModel.cs" />
     <Compile Include="ViewModel\TweetWindowViewModel.cs" />
+    <Compile Include="ViewModel\UserWindowViewModel.cs" />
     <Compile Include="View\ContentWindow.xaml.cs">
       <DependentUpon>ContentWindow.xaml</DependentUpon>
     </Compile>
@@ -216,6 +220,9 @@
     </Compile>
     <Compile Include="View\TweetWindow.xaml.cs">
       <DependentUpon>TweetWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UserWindow.xaml.cs">
+      <DependentUpon>UserWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
@@ -247,6 +254,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\TweetWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\UserWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -323,6 +334,7 @@
       <Name>SocialApis</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

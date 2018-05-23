@@ -14,6 +14,18 @@ namespace Liberfy
 			return (status.RetweetedStatus ?? status).Id;
 		}
 
+        internal static IEnumerable<EntityBase> GetAllEntities(this Entities entities)
+        {
+            return new EntityBase[][]
+            {
+                entities.Hashtags,
+                entities.Symbols,
+                entities.Urls,
+                entities.UserMentions,
+                entities.Media
+            }.Merge();
+        }
+
 		internal static IEnumerable<EntityBase> GetEntities(this StatusInfo status)
 		{
 			return new EntityBase[][]

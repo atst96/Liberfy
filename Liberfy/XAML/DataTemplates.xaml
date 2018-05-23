@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:vm="clr-namespace:Liberfy.ViewModel"
     xmlns:app="clr-namespace:Liberfy"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -565,7 +566,9 @@
                     VerticalAlignment="Top"
                     Style="{StaticResource ImageButton}"
                     Clip="{DynamicResource UI.Tweet.ProfileImage.Clip}"
-                    Visibility="{DynamicResource UI.Tweet.ProfileImage.Visibility}">
+                    Visibility="{DynamicResource UI.Tweet.ProfileImage.Visibility}"
+                    CommandParameter="{Binding User, Mode=OneTime}"
+                    Command="{Binding Account.Commands.DisplayUserDetails, Mode=OneTime}">
                     <Image
                         Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
                         Height="{DynamicResource UI.Tweet.ProfileImage.Width}"
@@ -603,7 +606,10 @@
                         VerticalAlignment="Center"
                         HorizontalAlignment="Left"
                         TextTrimming="CharacterEllipsis">
-                        <Hyperlink Style="{StaticResource UserNameLinkText}">
+                        <Hyperlink
+                            Style="{StaticResource UserNameLinkText}"
+                            CommandParameter="{Binding User, Mode=OneTime}"
+                            Command="{Binding Account.Commands.DisplayUserDetails, Mode=OneTime}">
                             <Run Text="{Binding User.Name, Mode=OneWay}" />
                         </Hyperlink>
                     </TextBlock>
@@ -612,7 +618,10 @@
                         DockPanel.Dock="Left"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Left">
-                        <Hyperlink Style="{StaticResource UserNameLinkText}">
+                        <Hyperlink
+                            Style="{StaticResource UserNameLinkText}"
+                            CommandParameter="{Binding User, Mode=OneTime}"
+                            Command="{Binding Account.Commands.DisplayUserDetails, Mode=OneTime}">
                             <Run Text="{Binding User.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
                         </Hyperlink>
                     </TextBlock>

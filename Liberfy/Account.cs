@@ -1,4 +1,5 @@
-﻿using Liberfy.ViewModel;
+﻿using Liberfy.Commands;
+using Liberfy.ViewModel;
 using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
@@ -287,6 +288,9 @@ namespace Liberfy
         }
 
         #endregion LoadDetails
+
+        private AccountCommands _commands;
+        public AccountCommands Commands => this._commands ?? (this._commands = new AccountCommands(this));
 
         public void Unload()
         {
