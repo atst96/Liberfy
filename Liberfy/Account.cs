@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    // Jsonデータにシリアライズする変数にはJsonProperty属性が必要
     [DataContract]
     internal class Account : NotificationObject, IEquatable<Account>, IEquatable<User>
     {
