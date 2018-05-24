@@ -13,6 +13,7 @@ namespace Liberfy
         public static class UI
         {
             private static ProfileImageForm? _previousProfileImageForm = null;
+            private static double? _previousProfileImageWidth = null;
 
             public static void ApplyFromSettings()
             {
@@ -24,7 +25,8 @@ namespace Liberfy
                 SetResource("UI.Tweet.ClientName.Visibility", BoolToVisibility(Setting.IsShowTweetClientName));
 
                 var profileImageForm = Setting.ProfileImageForm;
-                if (_previousProfileImageForm != profileImageForm)
+                double profileImageWidth = Setting.TweetProfileImageWidth;
+                if (_previousProfileImageForm != profileImageForm || _previousProfileImageWidth != profileImageWidth)
                 {
                     Geometry clip;
                     switch (profileImageForm)
@@ -36,14 +38,14 @@ namespace Liberfy
                                 RadiusY = 3.0d,
                                 Rect = new Rect
                                 {
-                                    Width = Setting.TweetProfileImageWidth,
-                                    Height = Setting.TweetProfileImageWidth,
+                                    Width = profileImageWidth,
+                                    Height = profileImageWidth,
                                 }
                             };
                             break;
 
                         case ProfileImageForm.Ellipse:
-                            double halfWidth = Setting.TweetProfileImageWidth / 2.0d;
+                            double halfWidth = profileImageWidth / 2.0d;
                             clip = new EllipseGeometry
                             {
                                 RadiusX = halfWidth,
@@ -55,14 +57,15 @@ namespace Liberfy
                         default:
                             clip = new RectangleGeometry(new Rect
                             {
-                                Width = Setting.TweetProfileImageWidth,
-                                Height = Setting.TweetProfileImageWidth,
+                                Width = profileImageWidth,
+                                Height = profileImageWidth,
                             });
                             break;
                     }
 
                     SetResource("UI.Tweet.ProfileImage.Clip", clip);
                     _previousProfileImageForm = profileImageForm;
+                    _previousProfileImageWidth = profileImageWidth;
                 }
             }
         }
