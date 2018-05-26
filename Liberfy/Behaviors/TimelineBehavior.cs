@@ -103,16 +103,15 @@ namespace Liberfy.Behaviors
                 textBlock.Inlines);
         }
 
-
         private static async Task SetHyperlinkToPlainText(string plainText, IEnumerable<EntityBase> allEntities, InlineCollection inlines)
         {
             var entities = allEntities
                 .OrderBy(entity => entity.IndexStart)
-                .ToArray();
+                .GetEnumerator();
 
             inlines.Clear();
 
-            if (entities.Length == 0)
+            if (!entities.MoveNext())
             {
                 if (!string.IsNullOrEmpty(plainText))
                 {
@@ -121,42 +120,39 @@ namespace Liberfy.Behaviors
             }
             else
             {
-                var text = new TwStringInfo(plainText);
-                int textLength = text.Length;
+                var stringInfo = new TwStringInfo(plainText);
 
                 await App.Current.Dispatcher.InvokeAsync(() =>
                 {
                     // リンク付きツイートの作成
                     // ([PlainText])[Link][PlainText][Link][PlainText]....[Link]([PlainText]) の順に生成する
 
-                    int endIndex;
-                    var entity = entities[0];
+                    var entity = entities.Current;
 
                     if (entity.IndexStart != 0)
+                        inlines.Add(stringInfo.Slice(0, entity.IndexStart));
+
+                    while (entity != null)
                     {
-                        inlines.Add(text.Slice(0, entity.IndexStart));
-                    }
+                        inlines.Add(CreateHyperlink(entity, stringInfo));
 
-                    for (int i = 0; i < entities.Length; i++)
-                    {
-                        entity = entities[i];
-
-                        inlines.Add(CreateHyperlink(entity, text));
-
-                        endIndex = entity.IndexEnd;
-                        if (endIndex <= textLength)
+                        int textBeginPos = entity.IndexEnd;
+                        if (textBeginPos <= stringInfo.Length)
                         {
-                            if (entities.Length > i + 1)
-                                inlines.Add(text.Slice(endIndex, entities[i + 1].IndexStart));
-                            else
-                                inlines.Add(text.Slice(endIndex, textLength));
+                            // 次のエンティティ
+                            entity = entities.MoveNext() ? entities.Current : null;
+
+                            int textEndPos = entity?.IndexStart ?? stringInfo.Length;
+
+                            inlines.Add(stringInfo.Slice(textBeginPos, textEndPos));
                         }
                         else
                             break;
+
                     }
                 });
 
-                text = null;
+                stringInfo = null;
             }
         }
 
