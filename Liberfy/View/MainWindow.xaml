@@ -108,21 +108,21 @@
                         VirtualizingPanel.ScrollUnit="Pixel"
                         VirtualizingPanel.IsVirtualizing="True"
                         VirtualizingPanel.VirtualizationMode="Recycling"
+                        ScrollViewer.VerticalScrollBarVisibility="Visible"
                         ItemsSource="{Binding Items, Mode=OneTime}"
                         ItemsPanel="{StaticResource TimelinePanelTemplate}"
                         ItemTemplateSelector="{StaticResource TimelineItemTemplateSelector}">
                         <app:TimelineView.ItemContainerStyle>
-                            <Style TargetType="{x:Type TreeViewItem}">
-                                <Setter Property="Width" Value="{DynamicResource ItemWidth}" />
+                            <Style TargetType="{x:Type app:TimelineViewItem}">
                                 <Setter Property="Padding" Value="0" />
                                 <Setter Property="Margin" Value="0" />
                                 <Setter Property="Template">
                                     <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type TreeViewItem}">
+                                        <ControlTemplate TargetType="{x:Type app:TimelineViewItem}">
                                             <ContentPresenter
-                                                Content="{TemplateBinding Header}"
-                                                ContentTemplate="{TemplateBinding HeaderTemplate}"
-                                                ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"/>
+                                                Content="{TemplateBinding Content}"
+                                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"/>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>

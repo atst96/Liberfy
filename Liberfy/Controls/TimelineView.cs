@@ -9,31 +9,54 @@ using System.Windows.Controls.Primitives;
 
 namespace Liberfy
 {
-	internal sealed class TimelineView : TreeView
+    [StyleTypedProperty(Property = "ItemContainerStyle", StyleTargetType = typeof(TimelineViewItem))]
+    internal sealed class TimelineView : ListBox
 	{
 		private ScrollViewer _scrollContainer;
 		private VirtualizingPanel _itemsPanel;
 		private Thumb _scrollBarThumb;
+
+        public double ItemWidth { get; private set; }
 
 		public TimelineView() : base()
 		{
 			this.Loaded += OnLoaded;
 		}
 
-		private void OnLoaded(object sender, RoutedEventArgs e)
+        private void OnLoaded(object sender, RoutedEventArgs e)
 		{
-			_scrollContainer = this.FindVisualChild<ScrollViewer>();
-			_itemsPanel = _scrollContainer.FindVisualChild<VirtualizingPanel>();
+			this._scrollContainer = this.FindVisualChild<ScrollViewer>();
+			this._itemsPanel = this._scrollContainer.FindVisualChild<VirtualizingPanel>();
 
-			_itemsPanel.SizeChanged += OnItemsPanelSizeChanged;
+			this._itemsPanel.SizeChanged += this.OnItemsPanelSizeChanged;
+
+            this.ItemWidth = this._itemsPanel.ActualWidth;
 		}
 
 		private void OnItemsPanelSizeChanged(object sender, SizeChangedEventArgs e)
 		{
 			if(e.WidthChanged)
 			{
-				Resources["ItemWidth"] = e.NewSize.Width;
+                this.ItemWidth = e.NewSize.Width;
 			}
 		}
-	}
+
+        protected override bool IsItemItsOwnContainerOverride(object item)
+        {
+            return item is TimelineViewItem;
+        }
+
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            return new TimelineViewItem();
+        }
+
+        protected override void ClearContainerForItemOverride(DependencyObject element, object item)
+        {
+            base.ClearContainerForItemOverride(element, item);
+
+            var eItem = (TimelineViewItem)element;
+            eItem.ClearCachedLayout();
+        }
+    }
 }
