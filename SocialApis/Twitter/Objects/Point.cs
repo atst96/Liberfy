@@ -21,7 +21,7 @@ namespace SocialApis.Twitter
 
                 if (inputValues?.Length == 2)
                 {
-                    new Point
+                    return new Point
                     {
                         Latitude = inputValues[0],
                         Longitude = inputValues[1],
