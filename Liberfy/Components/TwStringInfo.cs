@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	public sealed class TwStringInfo : IDisposable
+	public sealed class TwStringInfo
 	{
-		private int[] _surrogatedIndices;
+		private short[] _surrogatedIndices;
 		private int _surrogateCount;
 
 		private string _string;
@@ -25,32 +25,32 @@ namespace Liberfy
 		{
 			if (text?.Length <= 0)
 			{
-				_string = string.Empty;
+				this._string = string.Empty;
 				return;
 			}
 
-			_string = text.Normalize(NormalizationForm.FormC);
-			_length = String.Length;
+			this._string = text.Normalize(NormalizationForm.FormC);
+			this._length = this._string.Length;
 
-			// サロゲートペア文字の文字位置をリストに格納する
-			var surrogateIndicesList = new LinkedList<int>();
+            // サロゲートペア文字の文字位置をリストに格納する
+            var surrogateIndicesList = new LinkedList<short>();
 
-			for (int charIndex = 0; charIndex < Length; charIndex++)
+			for (short charIndex = 0; charIndex < this._length; ++charIndex)
 			{
-				if (char.IsHighSurrogate(_string, charIndex))
+				if (char.IsSurrogate(this._string, charIndex))
 				{
 					surrogateIndicesList.AddLast(charIndex);
-					charIndex++;
+					++charIndex;
 				}
 			}
 
-			_surrogateCount = surrogateIndicesList.Count;
-			_hasSurrogatePairs = _surrogateCount > 0;
-			_length = String.Length - _surrogateCount;
+			this._surrogateCount = surrogateIndicesList.Count;
+			this._hasSurrogatePairs = this._surrogateCount > 0;
+			this._length = String.Length - this._surrogateCount;
 
-			if (_hasSurrogatePairs)
+			if (this._hasSurrogatePairs)
 			{
-				_surrogatedIndices = surrogateIndicesList.ToArray();
+				this._surrogatedIndices = surrogateIndicesList.ToArray();
 			}
 
 			surrogateIndicesList.Clear();
@@ -81,38 +81,41 @@ namespace Liberfy
 		{
 			int length = endIndex - startIndex;
 
-			if (_hasSurrogatePairs)
+			if (this._hasSurrogatePairs)
 			{
-				int startSurListIndex = 0;
-				int actualStartIndex = startIndex;
-				while (startSurListIndex < _surrogateCount && _surrogatedIndices[startSurListIndex] < actualStartIndex)
+                int surrogateListIndex = 0;
+                var surrogateList = this._surrogatedIndices;
+
+                // サロゲートペアを含めたstartIndexを計算する
+				int actStartIndex = startIndex;
+				while (surrogateListIndex < surrogateList.Length && surrogateList[surrogateListIndex] < actStartIndex)
 				{
-					actualStartIndex++;
-					startSurListIndex++;
+					++actStartIndex;
+                    ++surrogateListIndex;
 				}
 
-				int lenSurListIndex = startSurListIndex;
-				int actualEndIndex = actualStartIndex + length;
-				while (lenSurListIndex < _surrogateCount && _surrogatedIndices[lenSurListIndex] < actualEndIndex)
+                // サロゲートペアを含めたendIndexを計算する
+				int actEndIndex = actStartIndex + length;
+				while (surrogateListIndex < surrogateList.Length && surrogateList[surrogateListIndex] < actEndIndex)
 				{
-					actualEndIndex++;
-					lenSurListIndex++;
+					++actEndIndex;
+                    ++surrogateListIndex;
 				}
 
-				return String.Substring(actualStartIndex, actualEndIndex - actualStartIndex);
+				return this._string.Substring(actStartIndex, actEndIndex - actStartIndex);
 			}
 			else
 			{
-				return String.Substring(startIndex, length);
+				return this._string.Substring(startIndex, length);
 			}
 		}
 
-		public void Dispose()
+		~TwStringInfo()
 		{
-			_length = 0;
-			_string = null;
-			_hasSurrogatePairs = false;
-			_surrogatedIndices = null;
+			this._length = 0;
+			this._string = null;
+			this._hasSurrogatePairs = false;
+			this._surrogatedIndices = null;
 		}
 	}
 }
