@@ -50,13 +50,5 @@ namespace Liberfy
         {
             return new TimelineViewItem();
         }
-
-        protected override void ClearContainerForItemOverride(DependencyObject element, object item)
-        {
-            base.ClearContainerForItemOverride(element, item);
-
-            var eItem = (TimelineViewItem)element;
-            eItem.ClearCachedLayout();
-        }
     }
 }

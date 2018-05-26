@@ -18,26 +18,10 @@ namespace Liberfy
             this._container = ItemsControl.ItemsControlFromItemContainer(this) as TimelineView;
         }
 
-        private double? _cachedWidth;
-        private Size? _cachedSize;
-
         protected override Size MeasureOverride(Size constraint)
         {
-            double containerWidth = this._container.ItemWidth;
-            if (this._cachedWidth != containerWidth)
-            {
-                constraint.Width = containerWidth;
-                this._cachedWidth = containerWidth;
-                this._cachedSize = base.MeasureOverride(constraint);
-            }
-
-            return this._cachedSize.Value;
-        }
-
-        public void ClearCachedLayout()
-        {
-            this._cachedWidth = null;
-            this._cachedSize = null;
+            constraint.Width = this._container.ItemWidth;
+            return base.MeasureOverride(constraint);
         }
     }
 }
