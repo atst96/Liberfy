@@ -121,5 +121,20 @@ namespace SocialApis.Twitter
 
         [DataMember(Name = "withheld_scope")]
         public string WithheldScope { get; set; }
+
+        [DataMember(Name = "is_translation_enabled")]
+        public bool IsTranslationEnabled { get; set; }
+
+        [DataMember(Name = "profile_location")]
+        public Places ProfileLocation { get; set; }
+
+        [DataMember(Name = "suspended")]
+        public bool? IsSuspended { get; set; }
+
+        [DataMember(Name = "needs_phone_verification")]
+        public bool? NeedsPhoneVerification { get; set; }
+
+        [DataMember(Name = "translator_type")]
+        public string TranslatorType { get; set; }
     }
 }
