@@ -120,7 +120,9 @@
     <Compile Include="Twitter\Enums\CoordinateType.cs" />
     <Compile Include="Twitter\Enums\EventType.cs" />
     <Compile Include="Twitter\Enums\FriendshipConnection.cs" />
+    <Compile Include="Twitter\Enums\MediaType.cs" />
     <Compile Include="Twitter\Enums\StreamType.cs" />
+    <Compile Include="Twitter\Enums\TranslatorType.cs" />
     <Compile Include="Twitter\Objects\Coordinates.cs" />
     <Compile Include="Twitter\Objects\DirectMessage.cs" />
     <Compile Include="Twitter\Objects\Entities\Entities.cs" />
@@ -132,9 +134,11 @@
     <Compile Include="Twitter\Objects\Entities\PollEntity.cs" />
     <Compile Include="Twitter\Objects\Entities\MediaSize.cs" />
     <Compile Include="Twitter\Objects\Entities\PollOption.cs" />
+    <Compile Include="Twitter\Objects\ExtendedTweet.cs" />
     <Compile Include="Twitter\Objects\Friendship.cs" />
     <Compile Include="Twitter\Objects\List.cs" />
     <Compile Include="Twitter\Objects\MediaDescription.cs" />
+    <Compile Include="Twitter\Objects\MediaVideoInfo.cs" />
     <Compile Include="Twitter\Objects\Point.cs" />
     <Compile Include="Twitter\Objects\ProcessingInfo.cs" />
     <Compile Include="Twitter\Objects\UploadImageInfo.cs" />
@@ -143,6 +147,7 @@
     <Compile Include="Twitter\Objects\Places.cs" />
     <Compile Include="Twitter\Objects\UploadVideoInfo.cs" />
     <Compile Include="Twitter\Objects\Entities\UserEntities.cs" />
+    <Compile Include="Twitter\Objects\VideoVariant.cs" />
     <Compile Include="Twitter\Responses\CursoredIdsResponse.cs" />
     <Compile Include="Twitter\Responses\CursoredUsersResponse.cs" />
     <Compile Include="Twitter\Responses\ListedResponse.cs" />
