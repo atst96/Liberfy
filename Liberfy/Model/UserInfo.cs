@@ -18,18 +18,14 @@ namespace Liberfy
         public string Description { get; private set; }
         public UserEntities Entities { get; private set; }
         public int FavouritesCount { get; private set; }
-        public bool IsFollowRequestSent { get; private set; }
         public int FollowersCount { get; private set; }
         public int FriendsCount { get; private set; }
-        public bool HasExtendedProfile { get; private set; }
+        // public bool HasExtendedProfile { get; private set; }
         public bool IsGeoEnabled { get; private set; }
-        // public long Id { get; }
-        public bool IsTranslator { get; private set; }
         public bool IsTranslationEnabled { get; private set; }
         public string Language { get; private set; }
         public int ListedCount { get; private set; }
         public string Location { get; private set; }
-        public bool IsMuting { get; private set; }
         public string Name { get; private set; }
         public bool NeedsPhoneVerification { get; private set; }
         public string ProfileBackgroundImageUrl { get; private set; }
@@ -40,11 +36,11 @@ namespace Liberfy
         public bool IsProfileUseBackgroundImage { get; private set; }
         public bool IsProtected { get; private set; }
         public string ScreenName { get; private set; }
-        public bool IsShowAllInlineMedia { get; private set; }
+        // public bool IsShowAllInlineMedia { get; private set; }
         public int StatusesCount { get; private set; }
         public bool IsSuspended { get; private set; }
         public string TimeZone { get; private set; }
-        public string TranslatorType { get; private set; }
+        // public string TranslatorType { get; private set; }
         public string Url { get; private set; }
         public int UtcOffset { get; private set; }
         public bool IsVerified { get; private set; }
@@ -79,30 +75,27 @@ namespace Liberfy
             this.Description = item.Description;
             this.Entities = item.Entities;
             this.FavouritesCount = item.FavoritesCount;
-            // this.IsFollowRequestSent = item.IsFollowRequestSent ?? this.IsFollowRequestSent;
             this.FollowersCount = item.FollowersCount;
             this.FriendsCount = item.FriendsCount;
             // this.HasExtendedProfile = item.HasExtendedProfile ?? this.HasExtendedProfile;
             this.IsGeoEnabled = item.IsGeoEnabled;
-            // this.IsTranslator = item.IsTranslator;
-            // this.IsTranslationEnabled = item.IsTranslationEnabled;
+            this.IsTranslationEnabled = item.IsTranslationEnabled;
             this.Language = item.Language;
             this.ListedCount = item.ListedCount ?? this.ListedCount;
             this.Location = item.Location;
-            // this.IsMuting = item.IsMuting ?? IsMuting;
             this.Name = item.Name;
-            // this.NeedsPhoneVerification = item.NeedsPhoneVerification ?? NeedsPhoneVerification;
+            this.NeedsPhoneVerification = item.NeedsPhoneVerification ?? NeedsPhoneVerification;
             this.ProfileBackgroundImageUrl = item.ProfileBackgroundImageUrl;
             this.IsProfileBackgroundTile = item.ProfileBackgroundTile;
             this.ProfileBannerUrl = item.ProfileBannerUrl;
             this.ProfileImageUrl = item.ProfileImageUrl;
-            // this.ProfileLocation = item.ProfileLocation;
+            this.ProfileLocation = item.ProfileLocation;
             this.IsProfileUseBackgroundImage = item.IsProfileUseBackgroundImage;
             this.IsProtected = item.IsProtected;
             this.ScreenName = item.ScreenName;
             // this.IsShowAllInlineMedia = item.IsShowAllInlineMedia ?? IsShowAllInlineMedia;
             this.StatusesCount = item.StatusesCount;
-            // this.IsSuspended = item.IsSuspended ?? IsSuspended;
+            this.IsSuspended = item.IsSuspended ?? IsSuspended;
             this.TimeZone = item.TimeZone;
             // this.TranslatorType = item.TranslatorType;
             this.Url = item.Url;
