@@ -127,6 +127,7 @@
     <Compile Include="Commands\DisplayUserDetailsCommand.cs" />
     <Compile Include="Components\CommandChain.cs" />
     <Compile Include="Components\DropDownButton.cs" />
+    <Compile Include="Components\SequentialSurrogateTextReader.cs" />
     <Compile Include="Controls\GeometryIcon.cs" />
     <Compile Include="Controls\TimelineViewItem.cs" />
     <Compile Include="Converters\EnumBoolConverter.cs" />

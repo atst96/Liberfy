@@ -120,7 +120,7 @@ namespace Liberfy.Behaviors
             }
             else
             {
-                var stringInfo = new TwStringInfo(plainText);
+                var textReader = new SequentialSurrogateTextReader(plainText);
 
                 await App.Current.Dispatcher.InvokeAsync(() =>
                 {
@@ -130,33 +130,39 @@ namespace Liberfy.Behaviors
                     var entity = entities.Current;
 
                     if (entity.IndexStart != 0)
-                        inlines.Add(stringInfo.Slice(0, entity.IndexStart));
+                        inlines.Add(textReader.ReadLength(entity.IndexStart));
 
                     while (entity != null)
                     {
-                        inlines.Add(CreateHyperlink(entity, stringInfo));
+                        inlines.Add(CreateHyperlink(entity, textReader));
 
-                        int textBeginPos = entity.IndexEnd;
-                        if (textBeginPos <= stringInfo.Length)
+                        int prevEntityIndexEnd = entity.IndexEnd;
+                        //if (textBeginPos <= textReader.Length)
+                        //{
+                        // 次のエンティティ
+                        entity = entities.MoveNext() ? entities.Current : null;
+
+                        if (entity == null)
                         {
-                            // 次のエンティティ
-                            entity = entities.MoveNext() ? entities.Current : null;
-
-                            int textEndPos = entity?.IndexStart ?? stringInfo.Length;
-
-                            inlines.Add(stringInfo.Slice(textBeginPos, textEndPos));
+                            inlines.Add(textReader.ReadToEnd());
+                            break;
                         }
                         else
-                            break;
+                        {
+                            inlines.Add(textReader.ReadLength(entity.IndexStart - prevEntityIndexEnd));
+                        }
+                        //}
+                        //else
+                        //    break;
 
                     }
                 });
 
-                stringInfo = null;
+                textReader = null;
             }
         }
 
-        private static Hyperlink CreateHyperlink(EntityBase entity, TwStringInfo text)
+        private static Hyperlink CreateHyperlink(EntityBase entity, SequentialSurrogateTextReader text)
         {
             var link = new Hyperlink()
             {
@@ -164,22 +170,30 @@ namespace Liberfy.Behaviors
                 CommandParameter = entity,
             };
 
+            int length = entity.IndexEnd - entity.IndexStart;
+
             switch (entity)
             {
                 case UserMentionEntity mention:
-                    link.Inlines.Add(text.Slice(mention.IndexStart, mention.IndexEnd));
+                    link.Inlines.Add(text.ReadLength(length));
                     break;
 
                 case MediaEntity media:
                     link.Inlines.Add(media.DisplayUrl);
+                    text.SkipLength(length);
                     break;
 
                 case UrlEntity url:
                     link.Inlines.Add(url.DisplayUrl);
+                    text.SkipLength(length);
                     break;
 
                 case HashtagEntity symbol:
-                    link.Inlines.Add(text.Slice(symbol.IndexStart, symbol.IndexEnd));
+                    link.Inlines.Add(text.ReadLength(length));
+                    break;
+
+                default:
+                    text.SkipLength(length);
                     break;
             }
 
