@@ -90,7 +90,7 @@ namespace Liberfy
 
             // this.Scopes = status.Scopes;
 
-            this.Text = status.Text;
+            this.Text = status.FullText ?? status.Text;
 
             this.User = UserAddOrUpdate(status.User);
 
