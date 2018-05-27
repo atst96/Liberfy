@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Utf8Json;
 
@@ -16,6 +17,12 @@ namespace SocialApis.Twitter
 
         [DataMember(Name = "full_text")]
         public string FullText { get; set; }
+
+        [DataMember(Name = "display_text_range")]
+        public int[] DisplayTextRange { get; set; }
+
+        [DataMember(Name = "contributors")]
+        public long[] Contributors { get; set; }
 
         [DataMember(Name = "text")]
         public string Text { get; set; }
@@ -74,6 +81,9 @@ namespace SocialApis.Twitter
         [DataMember(Name = "extended_entities")]
         public ExtendedEntities ExtendedEntities { get; set; }
 
+        [DataMember(Name = "extended_tweet")]
+        public ExtendedTweet ExtendedTweet { get; set; }
+
         [DataMember(Name = "favorited")]
         public bool? IsFavorited { get; set; }
 
@@ -83,23 +93,28 @@ namespace SocialApis.Twitter
         [DataMember(Name = "possibly_sensitive")]
         public bool PossiblySensitive { get; set; }
 
+        [DataMember(Name = "possibly_sensitive_appealable")]
+        public bool PossiblySensitiveAppealable { get; set; }
+
         [DataMember(Name = "filter_level")]
         public string FilterLevel { get; set; }
 
         [DataMember(Name = "lang")]
         public string Language { get; set; }
 
-        // [DataMember(Name = "matching_rules")]
+        [DataMember(Name = "matching_rules")]
+        public string MatchingRules { get; set; }
 
         // Additional tweet attributes
 
         [DataMember(Name = "current_user_retweet")]
         public IdObject? CurrentUserRetweet { get; set; }
 
-        // [DataMember(Name = "scopes")]
+        [DataMember(Name = "scopes")]
+        public Dictionary<string, object> Scopes { get; set; }
 
         [DataMember(Name = "withheld_copyright")]
-        public bool IsWithheldCopyright { get; set; }
+        public bool? IsWithheldCopyright { get; set; }
 
         [DataMember(Name = "withheld_in_countries")]
         public string[] WithheldInCountries { get; set; }
