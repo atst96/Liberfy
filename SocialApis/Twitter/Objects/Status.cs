@@ -14,6 +14,9 @@ namespace SocialApis.Twitter
         [DataMember(Name = "id")]
         public long Id { get; set; }
 
+        [DataMember(Name = "full_text")]
+        public string FullText { get; set; }
+
         [DataMember(Name = "text")]
         public string Text { get; set; }
 
