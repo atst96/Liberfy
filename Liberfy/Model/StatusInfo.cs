@@ -12,7 +12,7 @@ namespace Liberfy
     {
         public long Id { get; }
 
-        //public Contributors[] Contributors { get; }
+        public long[] Contributors { get; }
 
         public Coordinates<Point> Coordinates { get; }
 
@@ -33,7 +33,7 @@ namespace Liberfy
         public Places Place { get; }
 
         public bool PossiblySensitive { get; }
-        // public bool PossiblySensitiveAppealable { get; }
+        public bool PossiblySensitiveAppealable { get; }
 
         public string Source { get; }
         public string SourceName { get; }
@@ -46,11 +46,11 @@ namespace Liberfy
 
         public UserInfo User { get; }
 
-        // public bool WithheldCopyright { get; }
+        public bool WithheldCopyright { get; }
 
         public string[] WithheldInCountries { get; }
 
-        // public Dictionary<string, object> Scopes { get; }
+        public Dictionary<string, object> Scopes { get; }
         public string WithheldScope { get; }
 
         public long FavoriteCount { get; private set; }
@@ -65,7 +65,7 @@ namespace Liberfy
 
             this.Id = status.Id;
 
-            // this.Contributors     = status.Contributors;
+            this.Contributors     = status.Contributors;
             this.Coordinates      = status.Coordinates;
             this.CreatedAt        = status.CreatedAt;
             this.Entities         = status.Entities;
@@ -83,18 +83,18 @@ namespace Liberfy
             this.Place = status.Place;
 
             this.PossiblySensitive = status.PossiblySensitive;
-            // this.PossiblySensitiveAppealable = status.PossiblySensitiveAppealable;
+            this.PossiblySensitiveAppealable = status.PossiblySensitiveAppealable;
 
             if (this.IsQuotedStatus)
                 this.QuotedStatus = StatusAddOrUpdate(status.QuotedStatus);
 
-            // this.Scopes = status.Scopes;
+            this.Scopes = status.Scopes;
 
             this.Text = status.FullText ?? status.Text;
 
             this.User = UserAddOrUpdate(status.User);
 
-            // this.WithheldCopyright = status.WithheldCopyright ?? false;
+            this.WithheldCopyright = status.IsWithheldCopyright ?? false;
             this.WithheldInCountries = status.WithheldInCountries;
             this.WithheldScope = status.WithheldScope;
 
