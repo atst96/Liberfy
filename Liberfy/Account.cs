@@ -13,6 +13,8 @@ namespace Liberfy
 {
     internal sealed class Account : NotificationObject, IEquatable<Account>, IEquatable<User>
     {
+        private Setting Setting => App.Setting;
+
         private bool _isLoading;
 
         #region Account info
@@ -50,8 +52,8 @@ namespace Liberfy
 
         private HashSet<long> _following = new HashSet<long>();
         private HashSet<long> _follower = new HashSet<long>();
-        private HashSet<long> _blocking = new HashSet<long>();
-        private HashSet<long> _muting = new HashSet<long>();
+        private HashSet<long> _blockedIds = new HashSet<long>();
+        private HashSet<long> _mutedIds = new HashSet<long>();
         private HashSet<long> _incoming = new HashSet<long>();
         private HashSet<long> _outgoing = new HashSet<long>();
         private SortedDictionary<long, StatusActivity> _statusReactions = new SortedDictionary<long, StatusActivity>();
@@ -83,6 +85,10 @@ namespace Liberfy
                 _ => new UserInfo(item.Id, item.Name, item.ScreenName, item.IsProtected, item.ProfileImageUrl));
 
             this.SetTokens(item.Token.ToTokens());
+
+            if (item.MutedIds?.Length > 0)
+                this._mutedIds.UnionWith(item.MutedIds);
+
             this.Timeline = new Timeline(this, item.Columns);
         }
 
@@ -191,8 +197,8 @@ namespace Liberfy
             return Task.WhenAll(
                 this.LoadFollower(),
                 this.LoadFollowing(),
-                this.LoadBlock(),
-                this.LoadMuting(),
+                this.LoadBlockedIds(),
+                this.LoadMutedIds(),
                 this.LoadOutgoing(),
                 this.LoadIncoming()
             );
@@ -235,9 +241,19 @@ namespace Liberfy
 
         private Task LoadFollower() => this.GetIdsList(this.Tokens.Followers.Ids, _follower, "フォロワー一覧");
 
-        private Task LoadBlock() => this.GetIdsList(this.Tokens.Blocks.Ids, _blocking, "ブロック中一覧");
+        private Task LoadBlockedIds()
+        {
+            return Setting.GetBlockedIdsAtLoadingAccount
+                ? this.GetIdsList(this.Tokens.Blocks.Ids, _blockedIds, "ブロック中一覧")
+                : Task.CompletedTask;
+        }
 
-        private Task LoadMuting() => this.GetIdsList(this.Tokens.Mutes.Ids, _muting, "ミュート中一覧");
+        private Task LoadMutedIds()
+        {
+            return Setting.GetMutedIdsAtLoadingAccount
+                ? this.GetIdsList(this.Tokens.Mutes.Ids, _mutedIds, "ミュート中一覧")
+                : Task.CompletedTask;
+        }
 
         private Task LoadIncoming() => this.GetIdsList(this.Tokens.Friendships.Incoming, _incoming, "フォロー申請一覧");
 
@@ -280,11 +296,11 @@ namespace Liberfy
             this._follower.Clear();
             this._follower = null;
 
-            this._blocking.Clear();
-            this._blocking = null;
+            this._blockedIds.Clear();
+            this._blockedIds = null;
 
-            this._muting.Clear();
-            this._muting = null;
+            this._mutedIds.Clear();
+            this._mutedIds = null;
 
             this._incoming.Clear();
             this._incoming = null;
@@ -309,6 +325,7 @@ namespace Liberfy
             AutomaticallyLogin = this.AutomaticallyLogin,
             AutomaticallyLoadTimeline = this.AutomaticallyLoadTimeline,
             Columns = this.Timeline.Columns.Select(c => c.GetOption()),
+            MutedIds = this._mutedIds.ToArray(),
         };
     }
 

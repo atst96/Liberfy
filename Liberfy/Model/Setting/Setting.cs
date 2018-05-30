@@ -185,6 +185,24 @@ namespace Liberfy
             set => SetProperty(ref _accountDefaultAutomaticallyLoadTimeline, value);
         }
 
+        [DataMember(Name = "account_loading_get_muted")]
+        private bool _getMutedIdsAtLoadingAccount = true;
+        [IgnoreDataMember]
+        public bool GetMutedIdsAtLoadingAccount
+        {
+            get => this._getMutedIdsAtLoadingAccount;
+            set => this.SetProperty(ref this._getMutedIdsAtLoadingAccount, value);
+        }
+
+        [DataMember(Name = "account_loading_get_blocked")]
+        private bool _getBlockedIdsAtLoadingAccount = true;
+        [IgnoreDataMember]
+        public bool GetBlockedIdsAtLoadingAccount
+        {
+            get => this._getBlockedIdsAtLoadingAccount;
+            set => this.SetProperty(ref this._getBlockedIdsAtLoadingAccount, value);
+        }
+
         #endregion
 
         #region View

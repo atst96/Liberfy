@@ -53,5 +53,8 @@ namespace Liberfy.Settings
             get => this._columns ?? Enumerable.Empty<ColumnOptionBase>();
             set => this._columns = value;
         }
+
+        [DataMember(Name = "muted_ids")]
+        public long[] MutedIds { get; set; }
     }
 }

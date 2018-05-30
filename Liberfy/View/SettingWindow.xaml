@@ -251,6 +251,26 @@
                         </StackPanel>
 
                     </TabItem>
+
+                    <TabItem Header="アカウント連携設定">
+                        <StackPanel Style="{StaticResource ElementsContainerStyle}">
+                            <Label
+                                Style="{StaticResource HeaderLabel}"
+                                Content="ミュート" />
+                            
+                            <CheckBox
+                                Content="ログイン時にミュート中のアカウント一覧を取得する"
+                                IsChecked="{Binding Setting.GetMutedIdsAtLoadingAccount, Mode=TwoWay}" />
+
+                            <Label
+                                Style="{StaticResource HeaderLabel}"
+                                Content="ブロック" />
+                            
+                            <CheckBox
+                                Content="ログイン時にブロック中のアカウント一覧を取得する"
+                                IsChecked="{Binding Setting.GetBlockedIdsAtLoadingAccount, Mode=TwoWay}" />
+                        </StackPanel>
+                    </TabItem>
                 </TabControl>
             </TabItem>
 
@@ -1613,20 +1633,6 @@
                                 </ListView.GroupStyle>
                             </ListView>
                         </DockPanel>
-                    </TabItem>
-
-                    <TabItem Header="その他の設定">
-                        <StackPanel Style="{StaticResource ElementsContainerStyle}">
-                            <CheckBox Content="Twitterのミュート設定を使用する" />
-                            <CheckBox Content="Twitterのブロック設定を使用する" />
-
-                            <Label
-                                Content="ミュートリスト"
-                                Style="{StaticResource HeaderLabelStyle2}"/>
-
-                            <RadioButton
-                                Content="ミュートしたアカウント一覧を起動時に読み込む" />
-                        </StackPanel>
                     </TabItem>
                 </TabControl>
             </TabItem>
