@@ -11,41 +11,217 @@ namespace Liberfy
     internal class UserInfo : NotificationObject, IObjectInfo<User>, IEquatable<UserInfo>, IEquatable<User>
     {
         public long Id { get; }
-        public bool IsContributorsEnabled { get; private set; }
+
         public DateTimeOffset CreatedAt { get; }
-        public bool IsDefaultProfile { get; private set; }
-        public bool IsDefaultProfileImage { get; private set; }
-        public string Description { get; private set; }
-        public UserEntities Entities { get; private set; }
-        public int FavouritesCount { get; private set; }
-        public int FollowersCount { get; private set; }
-        public int FriendsCount { get; private set; }
+
+        private bool _isContributorsEnabled;
+        public bool IsContributorsEnabled
+        {
+            get => this._isContributorsEnabled;
+            private set => this.SetProperty(ref this._isContributorsEnabled, value);
+        }
+
+        private bool _isDefaultProfile;
+        public bool IsDefaultProfile
+        {
+            get => this._isDefaultProfile;
+            private set => this.SetProperty(ref this._isDefaultProfile, value);
+        }
+
+        private bool _isDefaultProfileImage;
+        public bool IsDefaultProfileImage
+        {
+            get => this._isDefaultProfileImage;
+            private set => this.SetProperty(ref this._isDefaultProfileImage, value);
+        }
+
+        private string _description;
+        public string Description
+        {
+            get => this._description;
+            private set => this.SetProperty(ref this._description, value);
+        }
+
+        private UserEntities _entities;
+        public UserEntities Entities
+        {
+            get => this._entities;
+            private set => this.SetProperty(ref this._entities, value);
+        }
+
+        private int _favouritesCount;
+        public int FavouritesCount
+        {
+            get => this._favouritesCount;
+            private set => this.SetProperty(ref this._favouritesCount, value);
+        }
+
+        private int _followersCount;
+        public int FollowersCount
+        {
+            get => this._followersCount;
+            private set => this.SetProperty(ref this._followersCount, value);
+        }
+
+        private int _friendsCount;
+        public int FriendsCount
+        {
+            get => this._friendsCount;
+            private set => this.SetProperty(ref this._friendsCount, value);
+        }
         // public bool HasExtendedProfile { get; private set; }
-        public bool IsGeoEnabled { get; private set; }
-        public bool IsTranslationEnabled { get; private set; }
-        public string Language { get; private set; }
-        public int ListedCount { get; private set; }
-        public string Location { get; private set; }
-        public string Name { get; private set; }
-        public bool NeedsPhoneVerification { get; private set; }
-        public string ProfileBackgroundImageUrl { get; private set; }
-        public bool IsProfileBackgroundTile { get; private set; }
-        public string ProfileBannerUrl { get; private set; }
-        public string ProfileImageUrl { get; private set; }
-        public Places ProfileLocation { get; private set; }
-        public bool IsProfileUseBackgroundImage { get; private set; }
-        public bool IsProtected { get; private set; }
-        public string ScreenName { get; private set; }
+
+        private bool _isGeoEnabled;
+        public bool IsGeoEnabled
+        {
+            get => this._isGeoEnabled;
+            private set => this.SetProperty(ref this._isGeoEnabled, value);
+        }
+
+        private bool _isTranslationEnabled;
+        public bool IsTranslationEnabled
+        {
+            get => this._isTranslationEnabled;
+            private set => this.SetProperty(ref this._isTranslationEnabled, value);
+        }
+
+        private string _language;
+        public string Language
+        {
+            get => this._language;
+            private set => this.SetProperty(ref this._language, value);
+        }
+
+        private int _listCount;
+        public int ListedCount
+        {
+            get => this._listCount;
+            private set => this.SetProperty(ref this._listCount, value);
+        }
+
+        private string _location;
+        public string Location
+        {
+            get => this._location;
+            private set => this.SetProperty(ref this._location, value);
+        }
+
+        private string _name;
+        public string Name
+        {
+            get => this._name;
+            private set => this.SetProperty(ref this._name, value);
+        }
+
+        private bool _needsPhoneVerification;
+        public bool NeedsPhoneVerification
+        {
+            get => this._needsPhoneVerification;
+            private set => this.SetProperty(ref this._needsPhoneVerification, value);
+        }
+
+        private string _profileBackgroundImageUrl;
+        public string ProfileBackgroundImageUrl
+        {
+            get => this._profileBackgroundImageUrl;
+            private set => this.SetProperty(ref this._profileBackgroundImageUrl, value);
+        }
+
+        private string _profileBannerUrl;
+        public string ProfileBannerUrl
+        {
+            get => this._profileBannerUrl;
+            private set => this.SetProperty(ref this._profileBannerUrl, value);
+        }
+
+        private string _profileImageUrl;
+        public string ProfileImageUrl
+        {
+            get => this._profileImageUrl;
+            private set => this.SetProperty(ref this._profileImageUrl, value);
+        }
+
+        private Places _profileLocation;
+        public Places ProfileLocation
+        {
+            get => this._profileLocation;
+            private set => this.SetProperty(ref this._profileLocation, value);
+        }
+
+        private bool _isProfileUseBackgroundImage;
+        public bool IsProfileUseBackgroundImage
+        {
+            get => this._isProfileUseBackgroundImage;
+            private set => this.SetProperty(ref this._isProfileUseBackgroundImage, value);
+        }
+
+        private bool _isProtected;
+        public bool IsProtected
+        {
+            get => this._isProtected;
+            private set => this.SetProperty(ref this._isProtected, value);
+        }
+
+        private string _screenName;
+        public string ScreenName
+        {
+            get => this._screenName;
+            private set => this.SetProperty(ref this._screenName, value);
+        }
+
         // public bool IsShowAllInlineMedia { get; private set; }
-        public int StatusesCount { get; private set; }
-        public bool IsSuspended { get; private set; }
-        public string TimeZone { get; private set; }
+
+        private int _statusesCount;
+        public int StatusesCount
+        {
+            get => this._statusesCount;
+            private set => this.SetProperty(ref this._statusesCount, value);
+        }
+
+        private bool _isSuspended;
+        public bool IsSuspended
+        {
+            get => this._isSuspended;
+            private set => this.SetProperty(ref this._isSuspended, value);
+        }
+
+        private string _timeZone;
+        public string TimeZone
+        {
+            get => this._timeZone;
+            private set => this.SetProperty(ref this._timeZone, value);
+        }
+
         // public string TranslatorType { get; private set; }
-        public string Url { get; private set; }
-        public int UtcOffset { get; private set; }
-        public bool IsVerified { get; private set; }
-        public string WithheldInCountries { get; private set; }
-        public string WithheldScope { get; private set; }
+
+        private string _url;
+        public string Url
+        {
+            get => this._url;
+            private set => this.SetProperty(ref this._url, value);
+        }
+
+        private bool _isVerified;
+        public bool IsVerified
+        {
+            get => this._isVerified;
+            private set => this.SetProperty(ref this._isVerified, value);
+        }
+
+        private string _withheldInCountires;
+        public string WithheldInCountries
+        {
+            get => this._withheldInCountires;
+            private set => this.SetProperty(ref this._withheldInCountires, value);
+        }
+
+        private string _withheldScope;
+        public string WithheldScope
+        {
+            get => this._withheldScope;
+            private set => this.SetProperty(ref this._withheldScope, value);
+        }
+
         public DateTime UpdatedAt { get; private set; }
 
         public UserInfo(User user)
@@ -86,7 +262,6 @@ namespace Liberfy
             this.Name = item.Name;
             this.NeedsPhoneVerification = item.NeedsPhoneVerification ?? NeedsPhoneVerification;
             this.ProfileBackgroundImageUrl = item.ProfileBackgroundImageUrl;
-            this.IsProfileBackgroundTile = item.ProfileBackgroundTile;
             this.ProfileBannerUrl = item.ProfileBannerUrl;
             this.ProfileImageUrl = item.ProfileImageUrl;
             this.ProfileLocation = item.ProfileLocation;
@@ -99,30 +274,27 @@ namespace Liberfy
             this.TimeZone = item.TimeZone;
             // this.TranslatorType = item.TranslatorType;
             this.Url = item.Url;
-            this.UtcOffset = item.UtcOffset ?? UtcOffset;
             this.IsVerified = item.IsVerified;
             this.WithheldInCountries = item.WithheldInCountries;
             this.WithheldScope = item.WithheldScope;
 
             this.UpdatedAt = DateTime.Now;
 
-            this.RaisePropertyChanged("");
-
             return this;
         }
 
         void IObjectInfo<User>.Update(User item) => this.Update(item);
 
-        public bool Equals(UserInfo other) => Equals(Id, other?.Id);
+        public bool Equals(UserInfo other) => Equals(this.Id, other?.Id);
 
-        public bool Equals(User other) => Equals(Id, other?.Id);
+        public bool Equals(User other) => Equals(this.Id, other?.Id);
 
         public override bool Equals(object obj)
         {
-            return (obj is UserInfo userInfo && Equals(userInfo))
-                || (obj is User user && Equals(user));
+            return (obj is UserInfo userInfo && this.Equals(userInfo))
+                || (obj is User user && this.Equals(user));
         }
 
-        public override int GetHashCode() => Id.GetHashCode();
+        public override int GetHashCode() => this.Id.GetHashCode();
     }
 }
