@@ -9,13 +9,15 @@ namespace Liberfy
 {
 	public static class SocialApisExtensions
 	{
-		public static long GetSourceId(this Status status)
-		{
-			return (status.RetweetedStatus ?? status).Id;
-		}
+        public static Status GetSourceStatus(this Status status) => status.RetweetedStatus ?? status;
+
+        public static long GetSourceId(this Status status) => status.GetSourceStatus().Id;
 
         internal static IEnumerable<EntityBase> GetAllEntities(this Entities entities)
         {
+            if (entities == null)
+                return Enumerable.Empty<EntityBase>();
+
             return new EntityBase[][]
             {
                 entities.Hashtags,
