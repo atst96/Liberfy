@@ -14,6 +14,9 @@ namespace Liberfy.Settings
     [DataContract]
     internal class AccountItem
     {
+        [DataMember(Name = "service")]
+        public SocialService? Service { get; set; }
+
         [DataMember(Name = "user_id")]
         public long Id { get; set; }
 
@@ -47,7 +50,7 @@ namespace Liberfy.Settings
         [IgnoreDataMember]
         public IEnumerable<ColumnOptionBase> Columns
         {
-            get => _columns ?? Enumerable.Empty<ColumnOptionBase>();
+            get => this._columns ?? Enumerable.Empty<ColumnOptionBase>();
             set => this._columns = value;
         }
     }

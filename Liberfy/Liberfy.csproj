@@ -139,6 +139,7 @@
     <Compile Include="Extensions\SocialApisExtensions.cs" />
     <Compile Include="Extensions\WpfBehavior.cs" />
     <Compile Include="Data\Info\AppInfo.cs" />
+    <Compile Include="Model\Setting\Enum\SocialService.cs" />
     <Compile Include="TemplateSelectors\ColumnOptionTemplateSelector.cs" />
     <Compile Include="Components\FluidCollection.cs" />
     <Compile Include="Components\IdBaseCollection.cs" />
