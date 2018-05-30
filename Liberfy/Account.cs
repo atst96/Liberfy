@@ -1,46 +1,35 @@
 ﻿using Liberfy.Commands;
-using Liberfy.ViewModel;
+using Liberfy.Settings;
 using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    [DataContract]
-    internal class Account : NotificationObject, IEquatable<Account>, IEquatable<User>
+    internal sealed class Account : NotificationObject, IEquatable<Account>, IEquatable<User>
     {
-        [IgnoreDataMember]
         private bool _isLoading;
-
-
-        #region JsonSettings
 
         #region Account info
 
-        [DataMember(Name = "id")]
         public long Id { get; private set; }
 
         #endregion
 
         #region Account settings
-        [DataMember(Name = "autologin")]
         private bool _automaticallyLogin = true;
-        [IgnoreDataMember]
         public bool AutomaticallyLogin
         {
             get => this._automaticallyLogin;
             set => this.SetProperty(ref this._automaticallyLogin, value);
         }
 
-        [DataMember(Name = "load_timeline")]
         private bool _automaticallyLoadTimeline = true;
-        [IgnoreDataMember]
         public bool AutomaticallyLoadTimeline
         {
             get => this._automaticallyLoadTimeline;
@@ -49,28 +38,23 @@ namespace Liberfy
 
         #endregion
 
-        #endregion
-
-        [IgnoreDataMember]
         public bool IsLoading
         {
             get => this._isLoading;
             set => this.SetProperty(ref this._isLoading, value);
         }
 
-        [IgnoreDataMember]
         public UserInfo Info { get; private set; }
 
-        [DataMember(Name = "tokens")]
         public Tokens Tokens { get; private set; }
 
-        [IgnoreDataMember] private HashSet<long> _following = new HashSet<long>();
-        [IgnoreDataMember] private HashSet<long> _follower = new HashSet<long>();
-        [IgnoreDataMember] private HashSet<long> _blocking = new HashSet<long>();
-        [IgnoreDataMember] private HashSet<long> _muting = new HashSet<long>();
-        [IgnoreDataMember] private HashSet<long> _incoming = new HashSet<long>();
-        [IgnoreDataMember] private HashSet<long> _outgoing = new HashSet<long>();
-        [IgnoreDataMember] private SortedDictionary<long, StatusActivity> _statusReactions = new SortedDictionary<long, StatusActivity>();
+        private HashSet<long> _following = new HashSet<long>();
+        private HashSet<long> _follower = new HashSet<long>();
+        private HashSet<long> _blocking = new HashSet<long>();
+        private HashSet<long> _muting = new HashSet<long>();
+        private HashSet<long> _incoming = new HashSet<long>();
+        private HashSet<long> _outgoing = new HashSet<long>();
+        private SortedDictionary<long, StatusActivity> _statusReactions = new SortedDictionary<long, StatusActivity>();
 
         public StatusActivity GetStatusActivity(long user_id)
         {
@@ -85,10 +69,9 @@ namespace Liberfy
             return activity;
         }
 
-        [IgnoreDataMember]
         public Timeline Timeline { get; }
 
-        public Account(AccountItem item)
+        public Account(Settings.AccountItem item)
         {
             if (item == null)
                 throw new Exception();
@@ -99,7 +82,7 @@ namespace Liberfy
                 item.Id,
                 _ => new UserInfo(item.Id, item.Name, item.ScreenName, item.IsProtected, item.ProfileImageUrl));
 
-            this.SetTokens(item.Token.ToCoreTweetTokens());
+            this.SetTokens(item.Token.ToTokens());
             this.Timeline = new Timeline(this, item.Columns);
         }
 
@@ -135,21 +118,16 @@ namespace Liberfy
                 t.AccessTokenSecret);
         }
 
-        [IgnoreDataMember]
         private bool _isLoggedIn;
-        [IgnoreDataMember]
         public bool IsLoggedIn
         {
             get => this._isLoggedIn;
             set => this.SetProperty(ref _isLoggedIn, value);
         }
 
-        [IgnoreDataMember]
         public bool IsMetadataLoaded { get; set; }
 
-        [IgnoreDataMember]
         private AccountLoginStatus _loginStatus;
-        [IgnoreDataMember]
         public AccountLoginStatus LoginStatus
         {
             get => this._loginStatus;
@@ -327,7 +305,7 @@ namespace Liberfy
             ScreenName = this.Info.ScreenName,
             IsProtected = this.Info.IsProtected,
             ProfileImageUrl = this.Info.ProfileImageUrl,
-            Token = ApiTokenInfo.FromCoreTweetTokens(Tokens),
+            Token = ApiTokenInfo.FromTokens(Tokens),
             AutomaticallyLogin = this.AutomaticallyLogin,
             AutomaticallyLoadTimeline = this.AutomaticallyLoadTimeline,
             Columns = this.Timeline.Columns.Select(c => c.GetOption()),

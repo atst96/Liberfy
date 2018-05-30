@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Liberfy
+namespace Liberfy.Settings
 {
     /// <summary>
     /// アカウント設定をJsonデータに変換するためのクラス

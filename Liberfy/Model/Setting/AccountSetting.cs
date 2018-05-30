@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace Liberfy
+namespace Liberfy.Settings
 {
     [DataContract]
     internal class AccountSetting : NotificationObject

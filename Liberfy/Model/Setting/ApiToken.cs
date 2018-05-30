@@ -6,13 +6,13 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Liberfy
+namespace Liberfy.Settings
 {
     /// <summary>
     /// APIの利用に必要な認証情報を格納するクラス
     /// </summary>
     [DataContract]
-    internal class ApiTokenInfo
+    internal struct ApiTokenInfo
     {
         [DataMember(Name = "consumer_key")]
         public string ConsumerKey { get; set; }
@@ -26,14 +26,14 @@ namespace Liberfy
         [DataMember(Name = "access_token_secret")]
         public string AccessTokenSecret { get; set; }
 
-        public Tokens ToCoreTweetTokens()
+        public Tokens ToTokens()
             => new Tokens(
                 this.ConsumerKey,
                 this.ConsumerSecret,
                 this.AccessToken,
                 this.AccessTokenSecret);
 
-        public static ApiTokenInfo FromCoreTweetTokens(Tokens tokens)
+        public static ApiTokenInfo FromTokens(Tokens tokens)
             => new ApiTokenInfo
             {
                 ConsumerKey       = tokens.ConsumerKey,

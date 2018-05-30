@@ -67,7 +67,7 @@ namespace Liberfy
 
         private static void InitializeProgram()
         {
-            IEnumerable<AccountItem> accountsSetting = null;
+            IEnumerable<Settings.AccountItem> accountsSetting = null;
 
             // 作業ディレクトリの再指定（自動起動時に C:/Windows/system32になってしまうため）
 
