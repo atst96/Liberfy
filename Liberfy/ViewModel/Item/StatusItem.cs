@@ -31,7 +31,7 @@ namespace Liberfy
             this.Account = account;
             this.Id = status.Id;
 
-            var reaction = account.GetStatusActivity(status.GetSourceId());
+            var reaction = account.GetActivity(status.GetSourceId());
             reaction.SetAll(status.IsFavorited ?? false, status.Retweeted ?? false);
 
             StatusInfo statusInfo;

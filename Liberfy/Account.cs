@@ -15,15 +15,19 @@ namespace Liberfy
     {
         private Setting Setting => App.Setting;
 
-        private bool _isLoading;
+        private object _lockSharedObject = new object();
 
-        #region Account info
+        private AccountCommands _commands;
+        public AccountCommands Commands => this._commands ?? (this._commands = new AccountCommands(this));
 
         public long Id { get; private set; }
 
-        #endregion
+        public UserInfo Info { get; private set; }
 
-        #region Account settings
+        public Tokens Tokens { get; private set; }
+
+        public Timeline Timeline { get; }
+
         private bool _automaticallyLogin = true;
         public bool AutomaticallyLogin
         {
@@ -38,42 +42,22 @@ namespace Liberfy
             set => this.SetProperty(ref this._automaticallyLoadTimeline, value);
         }
 
-        #endregion
-
+        private bool _isLoading;
         public bool IsLoading
         {
             get => this._isLoading;
             set => this.SetProperty(ref this._isLoading, value);
         }
 
-        public UserInfo Info { get; private set; }
-
-        public Tokens Tokens { get; private set; }
-
-        private HashSet<long> _following = new HashSet<long>();
-        private HashSet<long> _follower = new HashSet<long>();
+        private HashSet<long> _followingIds = new HashSet<long>();
+        private HashSet<long> _followerIds = new HashSet<long>();
         private HashSet<long> _blockedIds = new HashSet<long>();
         private HashSet<long> _mutedIds = new HashSet<long>();
-        private HashSet<long> _incoming = new HashSet<long>();
-        private HashSet<long> _outgoing = new HashSet<long>();
+        private HashSet<long> _incomingIds = new HashSet<long>();
+        private HashSet<long> _outgoingIds = new HashSet<long>();
         private SortedDictionary<long, StatusActivity> _statusReactions = new SortedDictionary<long, StatusActivity>();
 
-        public StatusActivity GetStatusActivity(long user_id)
-        {
-            StatusActivity activity;
-
-            if (!this._statusReactions.TryGetValue(user_id, out activity))
-            {
-                activity = new StatusActivity();
-                this._statusReactions.Add(user_id, activity);
-            }
-
-            return activity;
-        }
-
-        public Timeline Timeline { get; }
-
-        public Account(Settings.AccountItem item)
+        public Account(AccountItem item)
         {
             if (item == null)
                 throw new Exception();
@@ -92,7 +76,10 @@ namespace Liberfy
             this.Timeline = new Timeline(this, item.Columns);
         }
 
-        public Account(Tokens tokens, IEnumerable<ColumnOptionBase> columnOptions = null) : this(tokens, null, columnOptions) { }
+        public Account(Tokens tokens, IEnumerable<ColumnOptionBase> columnOptions = null)
+            : this(tokens, null, columnOptions)
+        {
+        }
 
         public Account(Tokens tokens, User user, IEnumerable<ColumnOptionBase> columnOptions = null)
         {
@@ -100,7 +87,8 @@ namespace Liberfy
             {
                 this.Id = tokens.UserId;
                 this.Info = DataStore.Users.GetOrAdd(
-                    Id, _ => new UserInfo(Id, tokens.ScreenName, tokens.ScreenName, false, null));
+                    this.Id,
+                    id => new UserInfo(id, tokens.ScreenName, tokens.ScreenName, false, null));
             }
             else
             {
@@ -130,8 +118,6 @@ namespace Liberfy
             get => this._isLoggedIn;
             set => this.SetProperty(ref _isLoggedIn, value);
         }
-
-        public bool IsMetadataLoaded { get; set; }
 
         private AccountLoginStatus _loginStatus;
         public AccountLoginStatus LoginStatus
@@ -177,30 +163,28 @@ namespace Liberfy
             return false;
         }
 
-        public override bool Equals(object obj)
+        public StatusActivity GetActivity(long user_id)
         {
-            return (obj is Account account && this.Equals(account))
-                || (obj is User user && this.Equals(user));
-        }
+            StatusActivity activity;
 
-        public bool Equals(Account other) => other?.Id == this.Id;
+            if (!this._statusReactions.TryGetValue(user_id, out activity))
+            {
+                activity = new StatusActivity();
+                this._statusReactions.Add(user_id, activity);
+            }
 
-        public bool Equals(User other) => other?.Id == this.Id;
-
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode() + "Liberfy.Account".GetHashCode();
+            return activity;
         }
 
         public Task LoadAccountDetails()
         {
             return Task.WhenAll(
-                this.LoadFollower(),
-                this.LoadFollowing(),
+                this.LoadFollowerIds(),
+                this.LoadFollowingIds(),
                 this.LoadBlockedIds(),
                 this.LoadMutedIds(),
-                this.LoadOutgoing(),
-                this.LoadIncoming()
+                this.LoadOutgoingIds(),
+                this.LoadIncomingIds()
             );
         }
 
@@ -233,13 +217,13 @@ namespace Liberfy
             }
         }
 
-        public object _lockSharedObject = new object();
-
         #region LoadDetailsメソッド郡
 
-        private Task LoadFollowing() => this.GetIdsList(this.Tokens.Friends.Ids, _follower, "フォロー中一覧");
+        private Task LoadFollowingIds()
+            => this.GetIdsList(this.Tokens.Friends.Ids, _followerIds, "フォロー中一覧");
 
-        private Task LoadFollower() => this.GetIdsList(this.Tokens.Followers.Ids, _follower, "フォロワー一覧");
+        private Task LoadFollowerIds()
+            => this.GetIdsList(this.Tokens.Followers.Ids, _followerIds, "フォロワー一覧");
 
         private Task LoadBlockedIds()
         {
@@ -255,9 +239,15 @@ namespace Liberfy
                 : Task.CompletedTask;
         }
 
-        private Task LoadIncoming() => this.GetIdsList(this.Tokens.Friendships.Incoming, _incoming, "フォロー申請一覧");
+        private Task LoadIncomingIds()
+        {
+            return this.Info.IsProtected
+                ? this.GetIdsList(this.Tokens.Friendships.Incoming, _incomingIds, "フォロー申請一覧")
+                : Task.CompletedTask;
+        }
 
-        private Task LoadOutgoing() => this.GetIdsList(this.Tokens.Friendships.Outgoing, _outgoing, "フォロー申請中一覧");
+        private Task LoadOutgoingIds()
+            => this.GetIdsList(this.Tokens.Friendships.Outgoing, _outgoingIds, "フォロー申請中一覧");
 
         private async Task GetIdsList(Func<int, Task<CursoredIdsResponse>> apiCallFunc, HashSet<long> hashSet, string dataLabel)
         {
@@ -282,40 +272,9 @@ namespace Liberfy
 
         #endregion LoadDetails
 
-        private AccountCommands _commands;
-        public AccountCommands Commands => this._commands ?? (this._commands = new AccountCommands(this));
-
-        public void Unload()
-        {
-            this.Timeline.Unload();
-            this.Tokens = null;
-
-            this._following.Clear();
-            this._following = null;
-
-            this._follower.Clear();
-            this._follower = null;
-
-            this._blockedIds.Clear();
-            this._blockedIds = null;
-
-            this._mutedIds.Clear();
-            this._mutedIds = null;
-
-            this._incoming.Clear();
-            this._incoming = null;
-
-            this._outgoing.Clear();
-            this._outgoing = null;
-
-            this._statusReactions.Clear();
-            this._statusReactions = null;
-
-            this._lockSharedObject = null;
-        }
-
         public AccountItem ToSetting() => new AccountItem
         {
+            Service = SocialService.Twitter,
             Id = this.Id,
             Name = this.Info.Name,
             ScreenName = this.Info.ScreenName,
@@ -327,6 +286,46 @@ namespace Liberfy
             Columns = this.Timeline.Columns.Select(c => c.GetOption()),
             MutedIds = this._mutedIds.ToArray(),
         };
+
+        public void Unload()
+        {
+            this.Timeline.Unload();
+            this._followingIds.Clear();
+            this._followerIds.Clear();
+            this._blockedIds.Clear();
+            this._mutedIds.Clear();
+            this._incomingIds.Clear();
+            this._outgoingIds.Clear();
+            this._statusReactions.Clear();
+        }
+
+        ~Account()
+        {
+            this.Tokens = null;
+            this._followingIds = null;
+            this._followerIds = null;
+            this._blockedIds = null;
+            this._mutedIds = null;
+            this._incomingIds = null;
+            this._outgoingIds = null;
+            this._statusReactions = null;
+            this._lockSharedObject = null;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return (obj is Account account && this.Equals(account))
+                || (obj is User user && this.Equals(user));
+        }
+
+        public bool Equals(Account other) => other?.Id == this.Id;
+
+        public bool Equals(User other) => other?.Id == this.Id;
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode() + "Liberfy.Account".GetHashCode();
+        }
     }
 
     internal enum AccountLoginStatus

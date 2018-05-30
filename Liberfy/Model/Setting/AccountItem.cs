@@ -15,7 +15,7 @@ namespace Liberfy.Settings
     internal class AccountItem
     {
         [DataMember(Name = "service")]
-        public SocialService? Service { get; set; }
+        public SocialService Service { get; set; } = SocialService.Twitter;
 
         [DataMember(Name = "user_id")]
         public long Id { get; set; }
