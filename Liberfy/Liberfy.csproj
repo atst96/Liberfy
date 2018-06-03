@@ -131,7 +131,6 @@
     <Compile Include="Controls\GeometryIcon.cs" />
     <Compile Include="Controls\TimelineViewItem.cs" />
     <Compile Include="Converters\EnumBoolConverter.cs" />
-    <Compile Include="dev_*.cs" />
     <Compile Include="Behaviors\PasteImageBehavior.cs" />
     <Compile Include="Behaviors\ListBoxItemFocusBehavior.cs" />
     <Compile Include="Behaviors\DragDropBehavior.cs" />
@@ -139,7 +138,8 @@
     <Compile Include="Extensions\SocialApisExtensions.cs" />
     <Compile Include="Extensions\WpfBehavior.cs" />
     <Compile Include="Data\Info\AppInfo.cs" />
-    <Compile Include="Model\Setting\Enum\SocialService.cs" />
+    <Compile Include="IAccount.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="TemplateSelectors\ColumnOptionTemplateSelector.cs" />
     <Compile Include="Components\FluidCollection.cs" />
     <Compile Include="Components\IdBaseCollection.cs" />
@@ -166,6 +166,7 @@
     <Compile Include="TemplateSelectors\TimelineItemTemplateSelector.cs" />
     <Compile Include="Controls\TimelineView.cs" />
     <Compile Include="Components\TwStringInfo.cs" />
+    <Compile Include="ViewModel\Account\AccountBase.cs" />
     <Compile Include="ViewModel\Column\Base\IColumn.cs" />
     <Compile Include="ViewModel\Column\HomeColumn.cs" />
     <Compile Include="ViewModel\Column\NotificationColumn.cs" />
@@ -178,6 +179,8 @@
     <Compile Include="Model\Setting\Column\SearchColumnOptionBase.cs" />
     <Compile Include="ViewModel\NowPlayingViewModel.cs" />
     <Compile Include="ViewModel\SettingWindowViewModel.View.cs" />
+    <Compile Include="ViewModel\Account\TwitterAccount.cs" />
+    <Compile Include="ViewModel\Timeline\ITimeline.cs" />
     <Compile Include="ViewModel\UploadMedia.cs" />
     <Compile Include="Data\UILocalize.cs" />
     <Compile Include="ViewModel\Column\Base\ColumnBase.cs" />
@@ -192,7 +195,6 @@
     <Compile Include="ViewModel\Item\StatusItem.cs" />
     <Compile Include="Model\MediaEntityInfo.cs" />
     <Compile Include="Model\StatusActivity.cs" />
-    <Compile Include="Account.cs" />
     <Compile Include="Model\Setting\Mute.cs" />
     <Compile Include="Model\Setting\Setting.cs" />
     <Compile Include="Model\Setting\AccountSetting.cs" />
@@ -203,7 +205,7 @@
     <Compile Include="Components\NativeMethods\Values.cs" />
     <Compile Include="Model\StatusInfo.cs" />
     <Compile Include="Model\UserInfo.cs" />
-    <Compile Include="ViewModel\Timeline.cs" />
+    <Compile Include="ViewModel\Timeline\TwitterTimeline.cs" />
     <Compile Include="ViewModel\AuthenticationViewModel.cs" />
     <Compile Include="ViewModel\ContentWindowViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
@@ -300,6 +302,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.manifest" />
+    <Compile Include="Config.Develop.cs" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

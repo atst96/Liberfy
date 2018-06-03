@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Liberfy.ViewModel;
+using SocialApis;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
@@ -9,13 +11,16 @@ namespace Liberfy.Settings
     {
         public bool ContainsId(double id) => App.Accounts.Any(a => a.Id == id);
 
-        public bool TryGetAccount(long id, out Account account)
+        public bool TryGetAccount(SocialService service, long id, out AccountBase account)
         {
-            account = App.Accounts.FirstOrDefault(a => a.Id == id);
+            account = App.Accounts.FirstOrDefault(a => a.Service == service && a.Id == id);
             return account != null;
         }
 
-        public Account GetAccount(long id) => App.Accounts.FirstOrDefault(a => a.Id == id);
+        public AccountBase GetAccount(SocialService service, long id)
+        {
+            return App.Accounts.FirstOrDefault(a => a.Service == service && a.Id == id);
+        }
 
         [DataMember(Name = "accounts")]
         private IEnumerable<AccountItem> _accounts;
@@ -23,9 +28,7 @@ namespace Liberfy.Settings
         public IEnumerable<AccountItem> Accounts
         {
             get => this._accounts ?? Enumerable.Empty<AccountItem>();
-            set => _accounts = value;
+            set => this._accounts = value;
         }
-
-        
     }
 }

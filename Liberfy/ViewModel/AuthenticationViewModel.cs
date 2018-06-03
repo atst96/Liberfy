@@ -108,8 +108,8 @@ namespace Liberfy.ViewModel
                 }
                 else
                 {
-                    cKey = Defines.ConsumerKey;
-                    cSec = Defines.ConsumerSecret;
+                    cKey = Config.Twitter.ConsumerKey;
+                    cSec = Config.Twitter.ConsumerSecret;
                 }
 
                 try

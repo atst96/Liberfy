@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Liberfy.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,9 @@ namespace Liberfy.Commands
 {
     internal class AccountCommands
     {
-        private Account _account;
+        private AccountBase _account;
 
-        public AccountCommands(Account account)
+        public AccountCommands(AccountBase account)
         {
             this._account = account;
         }

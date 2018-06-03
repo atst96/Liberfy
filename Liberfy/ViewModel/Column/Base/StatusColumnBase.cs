@@ -9,7 +9,7 @@ namespace Liberfy
     internal abstract class StatusColumnBase<T> : ColumnBase<T>
         where T : ColumnOptionBase
     {
-        protected StatusColumnBase(Timeline timeline, ColumnType type, string title = null)
+        protected StatusColumnBase(TwitterTimeline timeline, ColumnType type, string title = null)
             : base(timeline, type, title)
         {
             if (type == ColumnType.Status || !type.HasFlag(ColumnType.Status))

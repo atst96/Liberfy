@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocialApis.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -9,7 +10,7 @@ using Utf8Json;
 namespace SocialApis.Twitter
 {
     [DataContract]
-    public class User
+    public class User : ICommonAccount
     {
         [DataMember(Name = "id")]
         public long? Id { get; set; }
@@ -136,5 +137,68 @@ namespace SocialApis.Twitter
 
         [DataMember(Name = "translator_type")]
         public string TranslatorType { get; set; }
+
+        [IgnoreDataMember]
+        public SocialService Service { get; } = SocialService.Twitter;
+
+        [IgnoreDataMember]
+        string ICommonAccount.DisplayName => this.Name;
+
+        [IgnoreDataMember]
+        string ICommonAccount.UserName => this.ScreenName;
+
+        [IgnoreDataMember]
+        string ICommonAccount.LongUserName => this.ScreenName;
+
+        [IgnoreDataMember]
+        int ICommonAccount.FollowingCount => this.FriendsCount;
+
+        [IgnoreDataMember]
+        string ICommonAccount.AvatarImageUrl => this.ProfileImageUrl;
+
+        [IgnoreDataMember]
+        string ICommonAccount.HeaderImageUrl => this.ProfileBannerUrl;
+
+        [IgnoreDataMember]
+        private Common.EntityBase[] _descriptionEntities;
+
+        [IgnoreDataMember]
+        Common.EntityBase[] ICommonAccount.DescriptionEntities
+        {
+            get
+            {
+                if (this._descriptionEntities == null)
+                {
+                    this._descriptionEntities = this.Entities?.Description
+                        .ToEntityList()
+                        .ToCommonEntities(this.Description)
+                        ?? new Common.EntityBase[0];
+                }
+
+                return this._descriptionEntities;
+            }
+        }
+        [IgnoreDataMember]
+        private Common.EntityBase[] _urlEntities;
+
+        [IgnoreDataMember]
+        Common.EntityBase[] ICommonAccount.UrlEntities
+        {
+            get
+            {
+                if (this._urlEntities == null)
+                {
+                    this._urlEntities = this.Entities?.Url
+                        .ToEntityList()
+                        .ToCommonEntities(this.Url)
+                        ?? new Common.EntityBase[0];
+                }
+
+                return this._urlEntities;
+            }
+        }
+
+        [IgnoreDataMember]
+        string ICommonAccount.RemoteUrl => "https://twitter.com/" + this.ScreenName;
     }
 }

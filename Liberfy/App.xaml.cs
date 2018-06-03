@@ -29,7 +29,7 @@ namespace Liberfy
         private static Setting _setting;
         internal static Setting Setting => _setting;
 
-        internal static FluidCollection<Account> Accounts { get; private set; }
+        internal static FluidCollection<AccountBase> Accounts { get; private set; }
 
         internal static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
 
@@ -78,8 +78,8 @@ namespace Liberfy
 
             if (TryParseSettingFileOrDisplayError(Defines.AccountsFile, ref accountsSetting))
             {
-                Accounts = new FluidCollection<Account>(
-                    accountsSetting.Distinct().Select(a => new Account(a)));
+                Accounts = new FluidCollection<AccountBase>(
+                    accountsSetting.Distinct().Select(a => AccountBase.FromSetting(a)));
             }
             else
             {

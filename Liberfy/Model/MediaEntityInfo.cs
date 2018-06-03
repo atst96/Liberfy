@@ -1,4 +1,6 @@
-﻿using SocialApis.Twitter;
+﻿using Liberfy.ViewModel;
+using SocialApis.Common;
+using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,30 +9,30 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	struct MediaEntityInfo
-	{
-		public Account Account { get; }
-		
-		public StatusItem Item { get; }
+    struct MediaEntityInfo
+    {
+        public AccountBase Account { get; }
 
-		public MediaEntity[] Entities { get; }
+        public StatusItem Item { get; }
 
-		public MediaEntity CurrentEntity { get; }
+        public Attachment[] Entities { get; }
 
-		public MediaEntityInfo(Account account, StatusItem item)
-		{
-			Account = account;
-			Item = item;
-			Entities = Item.Status.ExtendedEntities.Media;
-			CurrentEntity = Entities.First();
-		}
+        public Attachment CurrentEntity { get; }
 
-		public MediaEntityInfo(Account account, StatusItem item, MediaEntity currentEntity)
-		{
-			Account = account;
-			Item = item;
-			Entities = Item.Status.ExtendedEntities.Media;
-			CurrentEntity = currentEntity;
-		}
-	}
+        public MediaEntityInfo(AccountBase account, StatusItem item)
+        {
+            this.Account = account;
+            this.Item = item;
+            this.Entities = Item.Status.Attachments;
+            this.CurrentEntity = Entities.First();
+        }
+
+        public MediaEntityInfo(AccountBase account, StatusItem item, Attachment currentEntity)
+        {
+            this.Account = account;
+            this.Item = item;
+            this.Entities = Item.Status.Attachments;
+            this.CurrentEntity = currentEntity;
+        }
+    }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Liberfy.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,7 +29,7 @@ namespace Liberfy.View
 		{
 			var viewModel = DataContext as ViewModel.TweetWindow;
 
-			if (parameter is Account account)
+			if (parameter is AccountBase account)
 			{
 				viewModel?.SetPostAccount(account);
 			}

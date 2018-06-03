@@ -504,7 +504,7 @@
     <DataTemplate x:Key="MediaItemTemplate" DataType="{x:Type app:MediaEntityInfo}">
         <Button Style="{StaticResource TimelineImageButton}">
             <Image
-                Source="{Binding CurrentEntity.MediaUrl, Mode=OneTime, IsAsync=True}" 
+                Source="{Binding CurrentEntity.PreviewUrl, Mode=OneTime, IsAsync=True}" 
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Stretch="UniformToFill" />
@@ -704,7 +704,7 @@
 
     <!--#endregion-->
 
-    <DataTemplate x:Key="AccountItemTemplate" DataType="{x:Type app:Account}">
+    <DataTemplate x:Key="AccountItemTemplate" DataType="{x:Type app:AccountBase}">
         <Grid DataContext="{Binding Info, Mode=OneTime}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />

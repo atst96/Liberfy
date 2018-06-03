@@ -6,7 +6,7 @@
 
 ## ビルド方法
 1.  Liberfy.slnをVisual Studioで読み込む
-2.  Defines.cs (/Liberfy/Defines.cs) の編集
+2.  Keys.cs (/Liberfy/Keys.cs) の編集
     1. APIキー関連の定数が開発用にコメント化されているので解除する
     2. APIキー関連の定数を適宜、使用可能なものに換える
 3. Build!!!

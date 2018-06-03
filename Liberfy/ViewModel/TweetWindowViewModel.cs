@@ -23,16 +23,16 @@ namespace Liberfy.ViewModel
         private static readonly Validator tweetValidator = new Validator();
         protected static Setting Setting => App.Setting;
 
-        public FluidCollection<Account> Accounts => App.Accounts;
+        public FluidCollection<AccountBase> Accounts => App.Accounts;
 
-        private Account _selectedAccount;
-        public Account SelectedAccount
+        private AccountBase _selectedAccount;
+        public AccountBase SelectedAccount
         {
             get => this._selectedAccount;
             set => this.SetProperty(ref this._selectedAccount, value, this._postCommand);
         }
 
-        public void SetPostAccount(Account account)
+        public void SetPostAccount(AccountBase account)
         {
             this.SelectedAccount = account;
         }
@@ -140,31 +140,31 @@ namespace Liberfy.ViewModel
 
         public void SetReplyToStatus(StatusInfo status)
         {
-            this.ReplyToStatus = status;
-            this.HasReplyStatus = status != null;
+            //this.ReplyToStatus = status;
+            //this.HasReplyStatus = status != null;
 
-            this.RaisePropertyChanged(nameof(this.ReplyToStatus));
-            this.RaisePropertyChanged(nameof(this.HasReplyStatus));
+            //this.RaisePropertyChanged(nameof(this.ReplyToStatus));
+            //this.RaisePropertyChanged(nameof(this.HasReplyStatus));
 
-            var mentionEntity = status?.Entities.UserMentions;
+            //var mentionEntity = status?.Entities.UserMentions;
 
-            int mentionEntityCount = mentionEntity?.Length ?? 0;
+            //int mentionEntityCount = mentionEntity?.Length ?? 0;
 
-            if (mentionEntityCount == 0)
-            {
-                this.Tweet = WrapReplyText(status.User.ScreenName);
-            }
-            else if (Setting.IncludeOtherAtReply)
-            {
-                var mentionUserList = new LinkedList<string>(mentionEntity.Select(m => m.ScreenName));
-                mentionUserList.AddFirst(status.User.ScreenName);
+            //if (mentionEntityCount == 0)
+            //{
+            //    this.Tweet = WrapReplyText(status.User.ScreenName);
+            //}
+            //else if (Setting.IncludeOtherAtReply)
+            //{
+            //    var mentionUserList = new LinkedList<string>(mentionEntity.Select(m => m.ScreenName));
+            //    mentionUserList.AddFirst(status.User.ScreenName);
 
-                var mentionList = mentionUserList
-                    .Distinct(_stringIgnroeCaseCompare)
-                    .Select(WrapReplyText);
+            //    var mentionList = mentionUserList
+            //        .Distinct(_stringIgnroeCaseCompare)
+            //        .Select(WrapReplyText);
 
-                this.Tweet = string.Concat(mentionList);
-            }
+            //    this.Tweet = string.Concat(mentionList);
+            //}
         }
 
         private static StringIgnoreCaseEqualityComparer _stringIgnroeCaseCompare = new StringIgnoreCaseEqualityComparer();
@@ -215,7 +215,7 @@ namespace Liberfy.ViewModel
             get => _postCommand ?? (_postCommand = RegisterCommand(PostTweet, CanPostTweet));
         }
 
-        private Tokens Tokens => SelectedAccount.Tokens;
+        private Tokens Tokens => (Tokens)SelectedAccount.Tokens;
         private int _postTweetPhase = -1;
 
         public async void PostTweet()
@@ -599,7 +599,7 @@ namespace Liberfy.ViewModel
         private Command _selectAccountCommand;
         public Command SelectAccountCommand => this._selectAccountCommand ?? (this._selectAccountCommand = this.RegisterCommand(() =>
         {
-            var res = this.DialogService.SelectDialog(new SelectDialogOption<Account>
+            var res = this.DialogService.SelectDialog(new SelectDialogOption<AccountBase>
             {
                 Instruction = "ツイートするアカウントを選択してください",
                 Items = this.Accounts,

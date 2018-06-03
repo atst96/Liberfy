@@ -8,15 +8,6 @@ namespace Liberfy
 {
 	internal static partial class Defines
 	{
-		#region Keys
-		/*
-		public const string @ConsumerKey = "*** ConsumerKey ***";
-		public const string @ConsumerSecret = "*** ConsumerSecret ***";
-		public const string @Official_ConsumerKey = "*** ConsumerKey ***";
-		public const string @Official_ConsumerSecret = "*** ConsumerSecret ***";
-		*/
-		#endregion
-
 		#region Setting files
 		public const string @SettingFile = "settings.json";
 		public const string @WindowFile = "winconf.json";

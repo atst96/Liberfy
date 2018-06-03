@@ -1,12 +1,14 @@
-﻿using System;
+﻿using SocialApis.Common;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Utf8Json;
+using System.Linq;
 
 namespace SocialApis.Twitter
 {
     [DataContract]
-    public class Status
+    public class Status : ICommonStatus
     {
         [DataMember(Name = "created_at")]
         [JsonFormatter(typeof(DateTimeOffsetFormatter))]
@@ -64,16 +66,16 @@ namespace SocialApis.Twitter
         public Status RetweetedStatus { get; set; }
 
         [DataMember(Name = "quote_count")]
-        public long? QuoteCount { get; set; }
+        public int? QuoteCount { get; set; }
 
         [DataMember(Name = "reply_count")]
-        public long? ReplyCount { get; set; }
+        public int? ReplyCount { get; set; }
 
         [DataMember(Name = "retweet_count")]
-        public long? RetweetCount { get; set; }
+        public int? RetweetCount { get; set; }
 
         [DataMember(Name = "favorite_count")]
-        public long? FavoriteCount { get; set; }
+        public int? FavoriteCount { get; set; }
 
         [DataMember(Name = "entities")]
         public Entities Entities { get; set; }
@@ -88,7 +90,7 @@ namespace SocialApis.Twitter
         public bool? IsFavorited { get; set; }
 
         [DataMember(Name = "retweeted")]
-        public bool? Retweeted { get; set; }
+        public bool? IsRetweeted { get; set; }
 
         [DataMember(Name = "possibly_sensitive")]
         public bool PossiblySensitive { get; set; }
@@ -121,5 +123,68 @@ namespace SocialApis.Twitter
 
         [DataMember(Name = "withheld_scope")]
         public string WithheldScope { get; set; }
+
+        [IgnoreDataMember]
+        SocialService ICommonStatus.Service { get; } = SocialService.Twitter;
+
+        [IgnoreDataMember]
+        string ICommonStatus.Text => this.FullText ?? this.Text;
+
+        [IgnoreDataMember]
+        bool ICommonStatus.IsSensitive => this.PossiblySensitive;
+
+        [IgnoreDataMember]
+        Common.Visibility ICommonStatus.Visibility { get; } = Visibility.Public;
+
+        [IgnoreDataMember]
+        string ICommonStatus.SourceName => Common.Regexen.TwitterSourceHtml.Match(this.Source).Groups["name"].Value;
+
+        [IgnoreDataMember]
+        string ICommonStatus.SourceUrl => Common.Regexen.TwitterSourceHtml.Match(this.Source).Groups["url"].Value;
+
+        [IgnoreDataMember]
+        string ICommonStatus.SpoilerText { get; }
+
+        [IgnoreDataMember]
+        ICommonAccount ICommonStatus.User => this.User;
+
+        [IgnoreDataMember]
+        ICommonStatus ICommonStatus.RetweetedStatus => this.RetweetedStatus;
+
+        [IgnoreDataMember]
+        ICommonStatus ICommonStatus.QuotedStatus => this.QuotedStatus;
+
+        [IgnoreDataMember]
+        private Common.Attachment[] _attachments;
+        [IgnoreDataMember]
+        Common.Attachment[] ICommonStatus.Attachments
+        {
+            get
+            {
+                return this._attachments ?? (this._attachments = this.ExtendedEntities?.Media
+                    .Select(m => new Common.Attachment(m))
+                    .ToArray() ?? new Common.Attachment[0]);
+            }
+        }
+
+        [IgnoreDataMember]
+        private Common.EntityBase[] _entities;
+
+        [IgnoreDataMember]
+        Common.EntityBase[] ICommonStatus.Entities
+        {
+            get
+            {
+                if (this._entities == null)
+                {
+                    this._entities = this.Entities
+                        .ToEntityList()
+                        .ToCommonEntities(this.Text)
+                        ?? new Common.EntityBase[0];
+                }
+
+                return this._entities;
+            }
+        }
     }
 }

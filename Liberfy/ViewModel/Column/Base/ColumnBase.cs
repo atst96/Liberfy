@@ -30,7 +30,7 @@ namespace Liberfy
 
     internal static class ColumnBase
     {
-        private static IColumn FromType(Timeline timeline, ColumnType type)
+        private static IColumn FromType(TwitterTimeline timeline, ColumnType type)
         {
             switch (type)
             {
@@ -57,7 +57,7 @@ namespace Liberfy
             }
         }
 
-        public static bool TryFromSetting(ColumnOptionBase option, Timeline timeline, out IColumn column)
+        public static bool TryFromSetting(ColumnOptionBase option, TwitterTimeline timeline, out IColumn column)
         {
             column = option == null ? null : FromType(timeline, option.Type);
 
@@ -72,7 +72,7 @@ namespace Liberfy
             }
         }
 
-        public static IColumn FromSettings(ColumnOptionBase s, Timeline timeline)
+        public static IColumn FromSettings(ColumnOptionBase s, TwitterTimeline timeline)
         {
             return TryFromSetting(s, timeline, out var c) ? c : throw new NotSupportedException();
         }
@@ -103,7 +103,7 @@ namespace Liberfy
     internal abstract class ColumnBase<TOption> : NotificationObject, IColumn
         where TOption : ColumnOptionBase
     {
-        protected ColumnBase(Timeline timeline, ColumnType type, string title = null)
+        protected ColumnBase(TwitterTimeline timeline, ColumnType type, string title = null)
         {
             this.Type = type;
             this._title = title;
@@ -112,7 +112,7 @@ namespace Liberfy
 
         protected Dispatcher Dispatcher { get; } = App.Current.Dispatcher;
 
-        private readonly Timeline _timeline;
+        private readonly TwitterTimeline _timeline;
 
         public ColumnType Type { get; }
 

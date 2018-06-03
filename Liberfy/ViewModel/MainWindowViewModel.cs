@@ -9,7 +9,7 @@ namespace Liberfy.ViewModel
 {
     internal class MainWindow : ViewModelBase
     {
-        public FluidCollection<Account> Accounts => App.Accounts;
+        public FluidCollection<AccountBase> Accounts => App.Accounts;
 
         private bool _isAccountsLoaded;
         public bool IsAccountsLoaded
@@ -24,23 +24,19 @@ namespace Liberfy.ViewModel
             if (this._initialized) return;
             this._initialized = true;
 
-            if (Accounts.Count == 0 && !DialogService.OpenInitSettingView())
+            if (this.Accounts.Count == 0 && !this.DialogService.OpenInitSettingView())
             {
                 this.DialogService.Invoke(ViewState.Close);
                 return;
             }
 
-            foreach (var account in Accounts.Where(a => a.AutomaticallyLogin))
+            foreach (var account in this.Accounts.Where(a => a.AutomaticallyLogin))
             {
-                account.IsLoading = true;
-
-                if (await account.Login())
+                if (await account.TryLogin())
                 {
-                    await account.LoadAccountDetails();
+                    await account.TryLoadDetails();
                     account.StartTimeline();
                 }
-
-                account.IsLoading = false;
             }
 
             this.IsAccountsLoaded = true;
@@ -58,13 +54,13 @@ namespace Liberfy.ViewModel
             this.IsAccountMenuOpen = false;
         }
 
-        private Command<Account> _accountTweetCommand;
-        public Command<Account> AccountTweetCommand
+        private Command<AccountBase> _accountTweetCommand;
+        public Command<AccountBase> AccountTweetCommand
         {
-            get => this._accountTweetCommand ?? (this._accountTweetCommand = this.RegisterCommand<Account>(AccountTweet));
+            get => this._accountTweetCommand ?? (this._accountTweetCommand = this.RegisterCommand<AccountBase>(AccountTweet));
         }
 
-        private void AccountTweet(Account account)
+        private void AccountTweet(AccountBase account)
         {
             DialogService.Open(ViewType.TweetWindow, account);
         }

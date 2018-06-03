@@ -9,26 +9,26 @@ using System.Windows.Threading;
 
 namespace Liberfy
 {
-    internal class Timeline : NotificationObject
+    internal class TwitterTimeline : NotificationObject, ViewModel.Timeline.ITimeline
     {
         private static Dispatcher _dispatcher = App.Current.Dispatcher;
 
         private readonly long _userId;
-        private readonly Account _account;
-        private Tokens _tokens => _account.Tokens;
+        private readonly TwitterAccount _account;
+        public Tokens _tokens => (SocialApis.Twitter.Tokens)_account.InternalTokens;
         public FluidCollection<IColumn> Columns { get; } = new FluidCollection<IColumn>();
 
         public event EventHandler<IEnumerable<StatusItem>> OnHomeStatusesLoaded;
         public event EventHandler<IEnumerable<IItem>> OnNotificationsLoaded;
         public event EventHandler OnUnloading;
 
-        public Timeline(Account account)
+        public TwitterTimeline(TwitterAccount account)
         {
             this._account = account;
             this._userId = account.Id;
         }
 
-        public Timeline(Account account, IEnumerable<ColumnOptionBase> columnOptions)
+        public TwitterTimeline(TwitterAccount account, IEnumerable<ColumnOptionBase> columnOptions)
             : this(account)
         {
             this.LoadColumns(columnOptions);

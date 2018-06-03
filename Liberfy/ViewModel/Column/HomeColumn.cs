@@ -8,7 +8,7 @@ namespace Liberfy
 {
     internal class HomeColumn : StatusColumnBase<GeneralColumnOption>
     {
-        public HomeColumn(Timeline timeline)
+        public HomeColumn(TwitterTimeline timeline)
             : base(timeline, ColumnType.Home, "Home")
         {
             if (timeline != null)
@@ -21,7 +21,7 @@ namespace Liberfy
 
         private void OnHomeTimelineLoaded(object sender, IEnumerable<StatusItem> e)
         {
-            if (sender is Timeline timeline)
+            if (sender is TwitterTimeline timeline)
                 timeline.OnHomeStatusesLoaded -= OnHomeTimelineLoaded;
 
             this.Items.Reset(e);

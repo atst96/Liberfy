@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Media;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
+using Liberfy.Settings;
 
 namespace Liberfy.ViewModel
 {
@@ -21,7 +22,7 @@ namespace Liberfy.ViewModel
 
         public Setting Setting => App.Setting;
 
-        public FluidCollection<Account> Accounts => App.Accounts;
+        public FluidCollection<AccountBase> Accounts => App.Accounts;
 
         /*
          * [表示]タブ関連 → SettingWindowViewModel.View.cs
@@ -369,8 +370,8 @@ namespace Liberfy.ViewModel
 
         #region Accounts
 
-        private Account _selectedAccount;
-        public Account SelectedAccount
+        private AccountBase _selectedAccount;
+        public AccountBase SelectedAccount
         {
             get => this._selectedAccount;
             set
@@ -416,23 +417,21 @@ namespace Liberfy.ViewModel
 
                 if (account != null)
                 {
-                    account.SetTokens(tokens);
+                    account.SetTokens(ApiTokenInfo.FromTokens(tokens));
                 }
                 else
                 {
                     var columnOptions = this.DefaultColumns.Select(ColumnOptionBase.CreateFromDefault);
 
-                    account = new Account(tokens, columnOptions)
+                    account = new TwitterAccount(tokens, columnOptions)
                     {
                         AutomaticallyLogin = this.Setting.AccountDefaultAutomaticallyLogin,
                         AutomaticallyLoadTimeline = this.Setting.AccountDefaultAutomaticallyLoadTimeline
                     };
 
-                    account.IsLoading = true;
-
                     this.Accounts.Add(account);
 
-                    if (!await account.Login())
+                    if (!await account.TryLogin())
                     {
                         this.DialogService.MessageBox(
                             $"アカウント情報の取得に失敗しました:\n",
@@ -440,8 +439,6 @@ namespace Liberfy.ViewModel
 
                         this.Accounts.Remove(account);
                     }
-
-                    account.IsLoading = false;
                 }
             }
         }
@@ -457,7 +454,7 @@ namespace Liberfy.ViewModel
 
         private Command _accountDeleteCommand;
         public Command AccountDeleteCommand => this._accountDeleteCommand ?? (this._accountDeleteCommand = this.RegisterCommand(
-            DelegateCommand<Account>
+            DelegateCommand<AccountBase>
             .When(this.Accounts.Contains)
             .Exec(a =>
             {
@@ -473,7 +470,7 @@ namespace Liberfy.ViewModel
 
         private Command _accountMoveUpCommand;
         public Command AccountMoveUpCommand => this._accountMoveUpCommand ?? (this._accountMoveUpCommand = this.RegisterCommand(
-            DelegateCommand<Account>
+            DelegateCommand<AccountBase>
             .When(a => this.Accounts.CanItemIndexDecrement(a))
             .Exec(a =>
             {
@@ -483,7 +480,7 @@ namespace Liberfy.ViewModel
 
         private Command _accountMoveDownCommand;
         public Command AccountMoveDownCommand => this._accountMoveDownCommand = (this._accountMoveDownCommand = this.RegisterCommand(
-            DelegateCommand<Account>
+            DelegateCommand<AccountBase>
             .When(a => this.Accounts.CanItemIndexIncrement(a))
             .Exec(a =>
             {
@@ -776,7 +773,7 @@ namespace Liberfy.ViewModel
             {
                 this.Setting.TimelineStatusShowRelativeTime = !value;
                 this.RaisePropertiesChanged(
-                    nameof(this.IsShowAbsoluteTimeTimelineStatus), 
+                    nameof(this.IsShowAbsoluteTimeTimelineStatus),
                     nameof(this.IsShowAbsoluteTimeTimelineStatus),
                     nameof(this.TimelineStatusTimeText));
             }

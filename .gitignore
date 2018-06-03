@@ -12,3 +12,4 @@ obj/
 /packages
 /ApiTest
 /Liberfy/Component/DropDownButton.cs
+/Liberfy/Config.Develop.cs

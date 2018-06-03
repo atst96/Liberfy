@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocialApis.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -8,11 +9,16 @@ using System.Threading.Tasks;
 namespace SocialApis.Mastodon
 {
     [DataContract]
-    public class Account
+    public class Account : ICommonAccount
     {
+        [IgnoreDataMember]
+        public SocialService Service { get; } = SocialService.Mastodon;
+
         [DataMember(Name = "id")]
         [Utf8Json.JsonFormatter(typeof(Formatters.ToLongFormatter))]
         public long Id { get; private set; }
+        [IgnoreDataMember]
+        long? ICommonAccount.Id => this.Id;
 
         [DataMember(Name = "username")]
         public string UserName { get; private set; }
@@ -58,5 +64,41 @@ namespace SocialApis.Mastodon
 
         [DataMember(Name = "moved")]
         public bool? Moved { get; private set; }
+
+        [IgnoreDataMember]
+        string ICommonAccount.LongUserName => this.Acct;
+
+        [IgnoreDataMember]
+        bool ICommonAccount.IsProtected => this.IsLocked;
+
+        [IgnoreDataMember]
+        string ICommonAccount.AvatarImageUrl => this.Avatar;
+
+        [IgnoreDataMember]
+        string ICommonAccount.HeaderImageUrl => this.Header;
+
+        [IgnoreDataMember]
+        EntityBase[] ICommonAccount.UrlEntities { get; }
+
+        [IgnoreDataMember]
+        EntityBase[] ICommonAccount.DescriptionEntities { get; }
+
+        [IgnoreDataMember]
+        string ICommonAccount.Url { get; }
+
+        [IgnoreDataMember]
+        string ICommonAccount.RemoteUrl => this.Url;
+
+        [IgnoreDataMember]
+        bool? ICommonAccount.IsSuspended { get; }
+
+        [IgnoreDataMember]
+        string ICommonAccount.Language { get; }
+
+        [IgnoreDataMember]
+        string ICommonAccount.Location { get; }
+
+        [IgnoreDataMember]
+        string ICommonAccount.Description { get; }
     }
 }

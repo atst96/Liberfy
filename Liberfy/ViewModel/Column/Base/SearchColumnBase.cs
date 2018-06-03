@@ -10,7 +10,7 @@ namespace Liberfy
     internal abstract class SearchColumnBase<T> : StatusColumnBase<T>
         where T: ColumnOptionBase
     {
-        protected SearchColumnBase(Timeline timeline, ColumnType type) : base(timeline, type)
+        protected SearchColumnBase(TwitterTimeline timeline, ColumnType type) : base(timeline, type)
         {
         }
 

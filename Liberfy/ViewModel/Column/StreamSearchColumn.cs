@@ -8,7 +8,7 @@ namespace Liberfy
 {
     class StreamSearchColumn : SearchColumnBase<GeneralColumnOption>
     {
-        public StreamSearchColumn(Timeline timeline) : base(timeline, ColumnType.Stream)
+        public StreamSearchColumn(TwitterTimeline timeline) : base(timeline, ColumnType.Stream)
         {
         }
 

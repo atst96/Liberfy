@@ -8,13 +8,13 @@ namespace Liberfy.ViewModel
 {
     internal class UserWindowViewModel : ViewModelBase
     {
-        public UserWindowViewModel(UserInfo user, Account account)
+        public UserWindowViewModel(UserInfo user, AccountBase account)
         {
             this.User = user;
             this.Account = account;
         }
 
-        public Account Account { get; }
+        public AccountBase Account { get; }
 
         public UserInfo User { get; }
     }

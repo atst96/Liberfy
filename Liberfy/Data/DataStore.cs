@@ -1,4 +1,6 @@
-﻿using SocialApis.Twitter;
+﻿using SocialApis;
+using SocialApis.Common;
+using SocialApis.Twitter;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,40 +11,49 @@ using System.Windows.Data;
 
 namespace Liberfy
 {
-    static class DataStore
+    internal class DataStore
     {
-        static DataStore()
+        private static DataStore _twitter;
+        public static DataStore Twitter => _twitter ?? (_twitter = new DataStore());
+
+        private static DataStore _mastodon;
+        public static DataStore Mastodon => _mastodon ?? (_mastodon = new DataStore());
+
+        public DataStore()
         {
-            BindingOperations.EnableCollectionSynchronization(Statuses, App.CommonLockObject);
-            BindingOperations.EnableCollectionSynchronization(Users, App.CommonLockObject);
+            this.Statuses = new ConcurrentDictionary<long, StatusInfo>();
+            this.Users = new ConcurrentDictionary<long, UserInfo>();
+
+            BindingOperations.EnableCollectionSynchronization(this.Statuses, new object());
+            BindingOperations.EnableCollectionSynchronization(this.Users, new object());
         }
 
-        public static ConcurrentDictionary<long, StatusInfo> Statuses { get; } = new ConcurrentDictionary<long, StatusInfo>();
-        public static ConcurrentDictionary<long, UserInfo> Users { get; } = new ConcurrentDictionary<long, UserInfo>();
+        public ConcurrentDictionary<long, StatusInfo> Statuses { get; }
 
+        public ConcurrentDictionary<long, UserInfo> Users { get; }
 
-        public static UserInfo UserAddOrUpdate(User user)
+        public UserInfo UserAddOrUpdate(ICommonAccount account)
         {
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
+            if (account == null)
+                throw new ArgumentNullException(nameof(account));
 
-            if (user.Id.HasValue)
+            if (account.Id.HasValue)
             {
-                return Users.AddOrUpdate(
-                    user.Id.Value,
-                    (id) => new UserInfo(user),
-                    (id, info) => info.Update(user));
+                return this.Users.AddOrUpdate(
+                    account.Id.Value,
+                    (id) => new UserInfo(account),
+                    (id, info) => info.Update(account));
             }
 
             return null;
         }
 
-        public static StatusInfo StatusAddOrUpdate(Status status)
+        public StatusInfo StatusAddOrUpdate(ICommonStatus status)
         {
             if (status == null)
                 throw new ArgumentNullException(nameof(status));
 
-            return Statuses.AddOrUpdate(
+            return this.Statuses.AddOrUpdate(
                 status.Id,
                 (id) => new StatusInfo(status),
                 (id, info) => info.Update(status));

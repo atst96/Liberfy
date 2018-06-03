@@ -5,19 +5,14 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Liberfy.Settings
+namespace SocialApis
 {
-    internal enum SocialService
+    public enum SocialService
     {
-        Unknown,
-
         [EnumMember(Value = "twitter")]
         Twitter,
 
-        //[EnumMember(Value = "mastodon")]
-        //Mastodon,
-
-        //[EnumMember(Value = "frost")]
-        //Frost,
+        [EnumMember(Value = "mastodon")]
+        Mastodon,
     }
 }

@@ -1,4 +1,5 @@
-﻿using SocialApis.Twitter;
+﻿using SocialApis;
+using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,20 +27,13 @@ namespace Liberfy.Settings
         [DataMember(Name = "access_token_secret")]
         public string AccessTokenSecret { get; set; }
 
-        public Tokens ToTokens()
-            => new Tokens(
-                this.ConsumerKey,
-                this.ConsumerSecret,
-                this.AccessToken,
-                this.AccessTokenSecret);
-
-        public static ApiTokenInfo FromTokens(Tokens tokens)
+        public static ApiTokenInfo FromTokens(ITokensBase tokens)
             => new ApiTokenInfo
             {
                 ConsumerKey       = tokens.ConsumerKey,
                 ConsumerSecret    = tokens.ConsumerSecret,
-                AccessToken       = tokens.AccessToken,
-                AccessTokenSecret = tokens.AccessTokenSecret
+                AccessToken       = tokens.ApiToken,
+                AccessTokenSecret = tokens.ApiTokenSecret
             };
     }
 }

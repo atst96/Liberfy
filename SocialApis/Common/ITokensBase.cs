@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis
 {
-    interface ITokensBase
+    public interface ITokensBase
     {
         string ConsumerKey { get; }
         string ConsumerSecret { get; }

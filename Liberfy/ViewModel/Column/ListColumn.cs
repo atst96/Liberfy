@@ -13,7 +13,7 @@ namespace Liberfy
         private static string BaseTitle = "List";
         DispatcherTimer _listTimer;
 
-        public ListColumn(Timeline timeline) : base(timeline, ColumnType.List, BaseTitle)
+        public ListColumn(TwitterTimeline timeline) : base(timeline, ColumnType.List, BaseTitle)
         {
             _listTimer = new DispatcherTimer(
                 TimeSpan.FromSeconds(20),

@@ -3,7 +3,7 @@
 namespace SocialApis.Twitter
 {
     [DataContract]
-    public struct UserEntities
+    public class UserEntities
     {
         [DataMember(Name = "url")]
         public Entities Url { get; set; }

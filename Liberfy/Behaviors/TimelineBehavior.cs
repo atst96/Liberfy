@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocialApis.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,8 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using Twitter.Text;
-using SocialApis.Twitter;
 
 namespace Liberfy.Behaviors
 {
@@ -39,7 +38,7 @@ namespace Liberfy.Behaviors
 
             await SetHyperlinkToPlainText(
                 status.Text,
-                status.Entities.GetAllEntities(),
+                status.Entities,
                 textBlock.Inlines);
         }
 
@@ -69,7 +68,7 @@ namespace Liberfy.Behaviors
 
             await SetHyperlinkToPlainText(
                 user.Description,
-                user.Entities.Description.GetAllEntities(),
+                user.DescriptionEntities,
                 textBlock.Inlines);
         }
 
@@ -99,17 +98,114 @@ namespace Liberfy.Behaviors
 
             await SetHyperlinkToPlainText(
                 user.Url,
-                user.Entities.Url.GetAllEntities(),
+                user.UrlEntities,
                 textBlock.Inlines);
         }
 
-        private static async Task SetHyperlinkToPlainText(string plainText, IEnumerable<EntityBase> allEntities, InlineCollection inlines)
+        //private static async Task SetHyperlinkToPlainText(string plainText, IEnumerable<EntityBase> allEntities, InlineCollection inlines)
+        //{
+        //    var entities = allEntities
+        //        .OrderBy(entity => entity.IndexStart)
+        //        .GetEnumerator();
+
+        //    inlines.Clear();
+
+        //    if (!entities.MoveNext())
+        //    {
+        //        if (!string.IsNullOrEmpty(plainText))
+        //        {
+        //            inlines.Add(plainText);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        var textReader = new SequentialSurrogateTextReader(plainText);
+
+        //        await App.Current.Dispatcher.InvokeAsync(() =>
+        //        {
+        //            // リンク付きツイートの作成
+        //            // ([PlainText])[Link][PlainText][Link][PlainText]....[Link]([PlainText]) の順に生成する
+
+        //            var entity = entities.Current;
+
+        //            if (entity.IndexStart != 0)
+        //                inlines.Add(textReader.ReadLength(entity.IndexStart));
+
+        //            while (entity != null)
+        //            {
+        //                inlines.Add(CreateHyperlink(entity, textReader));
+
+        //                int prevEntityIndexEnd = entity.IndexEnd;
+        //                //if (textBeginPos <= textReader.Length)
+        //                //{
+        //                // 次のエンティティ
+        //                entity = entities.MoveNext() ? entities.Current : null;
+
+        //                if (entity == null)
+        //                {
+        //                    inlines.Add(textReader.ReadToEnd());
+        //                    break;
+        //                }
+        //                else
+        //                {
+        //                    inlines.Add(textReader.ReadLength(entity.IndexStart - prevEntityIndexEnd));
+        //                }
+        //                //}
+        //                //else
+        //                //    break;
+
+        //            }
+        //        });
+
+        //        textReader = null;
+        //    }
+        //}
+
+        //private static Hyperlink CreateHyperlink(EntityBase entity, SequentialSurrogateTextReader text)
+        //{
+        //    var link = new Hyperlink()
+        //    {
+        //        Cursor = Cursors.Hand,
+        //        CommandParameter = entity,
+        //    };
+
+        //    int length = entity.IndexEnd - entity.IndexStart;
+
+        //    switch (entity)
+        //    {
+        //        case UserMentionEntity mention:
+        //            link.Inlines.Add(text.ReadLength(length));
+        //            break;
+
+        //        case MediaEntity media:
+        //            link.Inlines.Add(media.DisplayUrl);
+        //            text.SkipLength(length);
+        //            break;
+
+        //        case UrlEntity url:
+        //            link.Inlines.Add(url.DisplayUrl);
+        //            text.SkipLength(length);
+        //            break;
+
+        //        case HashtagEntity symbol:
+        //            link.Inlines.Add(text.ReadLength(length));
+        //            break;
+
+        //        default:
+        //            text.SkipLength(length);
+        //            break;
+        //    }
+
+        //    return link;
+        //}
+
+        private static async Task SetHyperlinkToPlainText(string plainText, EntityBase[] allEntities, InlineCollection inlines)
         {
+            inlines.Clear();
+
             var entities = allEntities
                 .OrderBy(entity => entity.IndexStart)
                 .GetEnumerator();
-
-            inlines.Clear();
 
             if (!entities.MoveNext())
             {
@@ -120,7 +216,7 @@ namespace Liberfy.Behaviors
             }
             else
             {
-                var textReader = new SequentialSurrogateTextReader(plainText);
+                var text = plainText;
 
                 await App.Current.Dispatcher.InvokeAsync(() =>
                 {
@@ -130,13 +226,13 @@ namespace Liberfy.Behaviors
                     var entity = entities.Current;
 
                     if (entity.IndexStart != 0)
-                        inlines.Add(textReader.ReadLength(entity.IndexStart));
+                        inlines.Add(text.Substring(0, entity.ActualIndexStart));
 
                     while (entity != null)
                     {
-                        inlines.Add(CreateHyperlink(entity, textReader));
+                        inlines.Add(CreateHyperlink(entity, text.Substring(entity.ActualIndexStart, entity.ActualLength)));
 
-                        int prevEntityIndexEnd = entity.IndexEnd;
+                        int prevEntityIndexEnd = entity.ActualIndexStart + entity.ActualLength;
                         //if (textBeginPos <= textReader.Length)
                         //{
                         // 次のエンティティ
@@ -144,12 +240,14 @@ namespace Liberfy.Behaviors
 
                         if (entity == null)
                         {
-                            inlines.Add(textReader.ReadToEnd());
+                            inlines.Add(text.Substring(prevEntityIndexEnd));
                             break;
                         }
                         else
                         {
-                            inlines.Add(textReader.ReadLength(entity.IndexStart - prevEntityIndexEnd));
+                            inlines.Add(text.Substring(
+                                prevEntityIndexEnd,
+                                entity.IndexStart - prevEntityIndexEnd));
                         }
                         //}
                         //else
@@ -157,12 +255,10 @@ namespace Liberfy.Behaviors
 
                     }
                 });
-
-                textReader = null;
             }
         }
 
-        private static Hyperlink CreateHyperlink(EntityBase entity, SequentialSurrogateTextReader text)
+        private static Hyperlink CreateHyperlink(EntityBase entity, string text)
         {
             var link = new Hyperlink()
             {
@@ -170,30 +266,25 @@ namespace Liberfy.Behaviors
                 CommandParameter = entity,
             };
 
-            int length = entity.IndexEnd - entity.IndexStart;
-
             switch (entity)
             {
-                case UserMentionEntity mention:
-                    link.Inlines.Add(text.ReadLength(length));
+                case MentionEntity mention:
+                    link.Inlines.Add(text);
                     break;
 
                 case MediaEntity media:
                     link.Inlines.Add(media.DisplayUrl);
-                    text.SkipLength(length);
                     break;
 
                 case UrlEntity url:
                     link.Inlines.Add(url.DisplayUrl);
-                    text.SkipLength(length);
                     break;
 
                 case HashtagEntity symbol:
-                    link.Inlines.Add(text.ReadLength(length));
+                    link.Inlines.Add(text);
                     break;
 
                 default:
-                    text.SkipLength(length);
                     break;
             }
 
