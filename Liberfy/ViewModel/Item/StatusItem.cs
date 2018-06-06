@@ -27,6 +27,12 @@ namespace Liberfy
         public IEnumerable<MediaEntityInfo> MediaEntities { get; }
         public bool HasMediaEntities { get; }
 
+        public bool CanRetweet
+        {
+            // 公開ユーザまたは自身のアカウントの場合
+            get => !this.User.IsProtected || this.Account.Equals(this.User);
+        }
+
         public ItemType Type { get; }
 
         public StatusItem(TwitterStatus status, TwitterAccount account)
@@ -63,12 +69,22 @@ namespace Liberfy
 
             this.Reaction = reaction;
 
-            this.Status           = statusInfo;
-            this.User             = statusInfo.User;
-            this.CreatedAt        = statusInfo.CreatedAt;
-            this.MediaEntities    = statusInfo.Attachments.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
+            this.Status = statusInfo;
+            this.User = statusInfo.User;
+            this.CreatedAt = statusInfo.CreatedAt;
+            this.MediaEntities = statusInfo.Attachments.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
             this.HasMediaEntities = MediaEntities?.Any() ?? false;
             this.IsCurrentAccount = statusInfo.User.Id == account.Id;
+
+            this.User.PropertyChanged += UserPropertyChanged;
+        }
+
+        private void UserPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(this.User.IsProtected))
+            {
+                this.RaisePropertyChanged(nameof(CanRetweet));
+            }
         }
 
         //public StatusItem(MastodonStatus status, MastodonAccount account)

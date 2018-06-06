@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    internal abstract class AccountBase : NotificationObject, IEquatable<AccountBase>
+    internal abstract class AccountBase : NotificationObject, IEquatable<AccountBase>, IEquatable<UserInfo>
     {
         public abstract SocialService Service { get; }
 
@@ -243,15 +243,20 @@ namespace Liberfy
             this._statusReactions.Clear();
         }
 
+        public bool Equals(UserInfo user)
+        {
+            return this.Id == user.Id && this.Service == user.Service;
+        }
+
         public bool Equals(AccountBase other)
         {
-            return this.Id == other.Id
-                && this.Service == other.Service;
+            return this.Id == other.Id && this.Service == other.Service;
         }
 
         public override bool Equals(object obj)
         {
-            return (obj is AccountBase account && this.Equals(account));
+            return (obj is UserInfo user && this.Equals(user))
+                || (obj is AccountBase account && this.Equals(account));
         }
 
         public override int GetHashCode()

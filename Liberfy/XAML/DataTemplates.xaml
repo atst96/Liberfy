@@ -531,6 +531,7 @@
                         </Button>
 
                         <ToggleButton
+                            IsEnabled="{Binding CanRetweet, Mode=OneWay}"
                             IsChecked="{Binding Reaction.IsRetweeted, Mode=OneWay}"
                             Style="{StaticResource RetweetActionToggleButton}">
                             <app:GeometryIcon
