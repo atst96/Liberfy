@@ -247,7 +247,7 @@ namespace Liberfy.Behaviors
                         {
                             inlines.Add(text.Substring(
                                 prevEntityIndexEnd,
-                                entity.IndexStart - prevEntityIndexEnd));
+                                entity.ActualIndexStart - prevEntityIndexEnd));
                         }
                         //}
                         //else
