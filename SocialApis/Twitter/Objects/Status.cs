@@ -179,7 +179,7 @@ namespace SocialApis.Twitter
                 {
                     this._entities = this.Entities
                         .ToEntityList()
-                        .ToCommonEntities(this.Text)
+                        .ToCommonEntities(((ICommonStatus)this).Text)
                         ?? new Common.EntityBase[0];
                 }
 
