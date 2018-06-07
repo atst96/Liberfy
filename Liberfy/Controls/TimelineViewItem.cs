@@ -10,19 +10,19 @@ namespace Liberfy
 {
     internal sealed class TimelineViewItem : ListBoxItem
     {
-        private Panel _container;
+        private TimelineView _container;
 
         protected override void OnVisualParentChanged(DependencyObject oldParent)
         {
             base.OnVisualParentChanged(oldParent);
 
             if (this._container == null)
-                this._container = this.FindAncestor<VirtualizingPanel>();
+                this._container = ItemsControl.ItemsControlFromItemContainer(this) as TimelineView;
         }
 
         protected override Size MeasureOverride(Size constraint)
         {
-            constraint.Width = this._container.ActualWidth;
+            constraint.Width = this._container.ItemWidth;
             return base.MeasureOverride(constraint);
         }
     }
