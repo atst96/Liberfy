@@ -28,12 +28,7 @@ namespace Liberfy
         {
         }
 
-        public TwitterAccount(Tokens tokens, IEnumerable<ColumnOptionBase> columnOptions = null)
-            : this(tokens, null, columnOptions)
-        {
-        }
-
-        public TwitterAccount(Tokens tokens, User account, IEnumerable<ColumnOptionBase> columnOptions = null)
+        public TwitterAccount(Tokens tokens, User account, IEnumerable<ColumnSetting> columnOptions = null)
             : base(tokens, account, columnOptions)
         {
         }
@@ -47,7 +42,7 @@ namespace Liberfy
                 t.AccessTokenSecret);
         }
 
-        protected override ITimeline CreateTimeline(IEnumerable<ColumnOptionBase> columnOptions)
+        protected override ITimeline CreateTimeline(IEnumerable<ColumnSetting> columnOptions)
         {
             return new TwitterTimeline(this, columnOptions);
         }
