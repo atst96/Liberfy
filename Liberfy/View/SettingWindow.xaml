@@ -47,7 +47,6 @@
             x:Key="ColumnNameConverter"
             LocalizeDictionary="{x:Static app:ColumnBase.ColumnTypes}" />
         <conv:ListBoxIndexConverter x:Key="ListBoxIndexConverter" />
-        <conv:ColumnSettingToColumnConverter x:Key="ColumnSettingToColumnConverter" />
 
         <Style x:Key="HeaderLabel" TargetType="{x:Type Label}">
             <Setter Property="FontWeight" Value="Bold" />
@@ -426,7 +425,7 @@
                                 ItemsSource="{Binding DefaultColumns, Mode=OneTime}"
                                 SelectedItem="{Binding SelectedColumnSetting, Mode=TwoWay}">
                                 <ListBox.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type app:ColumnOptionBase}">
+                                    <DataTemplate DataType="{x:Type app:ColumnBase}">
                                         <TextBlock
                                             Margin="8"
                                             Text="{Binding Type, Mode=OneTime, Converter={StaticResource ColumnNameConverter}}" />
@@ -446,7 +445,7 @@
                                 <ContentPresenter
                                     Margin="14 4 14 8"
                                     VerticalAlignment="Top"
-                                    Content="{Binding SelectedColumnSetting, Converter={StaticResource ColumnSettingToColumnConverter}, Mode=OneWay}"
+                                    Content="{Binding SelectedColumnSetting, Mode=OneWay}"
                                     ContentTemplateSelector="{StaticResource ColumnOptionTemplateSelector}"/>
                             </ScrollViewer>
                         </DockPanel>

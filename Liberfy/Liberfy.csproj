@@ -140,6 +140,7 @@
     <Compile Include="Data\Info\AppInfo.cs" />
     <Compile Include="IAccount.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Model\Setting\ColumnSetting.cs" />
     <Compile Include="TemplateSelectors\ColumnOptionTemplateSelector.cs" />
     <Compile Include="Components\FluidCollection.cs" />
     <Compile Include="Components\IdBaseCollection.cs" />
@@ -167,16 +168,8 @@
     <Compile Include="Controls\TimelineView.cs" />
     <Compile Include="Components\TwStringInfo.cs" />
     <Compile Include="ViewModel\Account\AccountBase.cs" />
-    <Compile Include="ViewModel\Column\Base\IColumn.cs" />
     <Compile Include="ViewModel\Column\HomeColumn.cs" />
     <Compile Include="ViewModel\Column\NotificationColumn.cs" />
-    <Compile Include="JsonFormatters\ArrayColumnOptionFormatter.cs" />
-    <Compile Include="Model\Setting\Column\ColumnOptionBase.cs" />
-    <Compile Include="JsonFormatters\ColumnOptionJsonFormatter.cs" />
-    <Compile Include="Model\Setting\Column\GeneralColumnOption.cs" />
-    <Compile Include="Model\Setting\Column\ListColumnOption.cs" />
-    <Compile Include="Model\Setting\Column\SearchColumnOption.cs" />
-    <Compile Include="Model\Setting\Column\SearchColumnOptionBase.cs" />
     <Compile Include="ViewModel\NowPlayingViewModel.cs" />
     <Compile Include="ViewModel\SettingWindowViewModel.View.cs" />
     <Compile Include="ViewModel\Account\TwitterAccount.cs" />

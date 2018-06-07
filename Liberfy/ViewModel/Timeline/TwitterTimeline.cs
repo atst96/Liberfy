@@ -16,7 +16,7 @@ namespace Liberfy
         private readonly long _userId;
         private readonly TwitterAccount _account;
         public Tokens _tokens => (SocialApis.Twitter.Tokens)_account.InternalTokens;
-        public FluidCollection<IColumn> Columns { get; } = new FluidCollection<IColumn>();
+        public FluidCollection<ColumnBase> Columns { get; } = new FluidCollection<ColumnBase>();
 
         public event EventHandler<IEnumerable<StatusItem>> OnHomeStatusesLoaded;
         public event EventHandler<IEnumerable<IItem>> OnNotificationsLoaded;
@@ -28,17 +28,17 @@ namespace Liberfy
             this._userId = account.Id;
         }
 
-        public TwitterTimeline(TwitterAccount account, IEnumerable<ColumnOptionBase> columnOptions)
+        public TwitterTimeline(TwitterAccount account, IEnumerable<ColumnSetting> columnOptions)
             : this(account)
         {
             this.LoadColumns(columnOptions);
         }
 
-        public void LoadColumns(IEnumerable<ColumnOptionBase> columnOptions)
+        public void LoadColumns(IEnumerable<ColumnSetting> columnOptions)
         {
             foreach (var columnSetting in columnOptions)
             {
-                if (ColumnBase.TryFromSetting(columnSetting, this, out var column))
+                if (ColumnBase.FromSetting(columnSetting, this, out var column))
                     this.Columns.Add(column);
             }
         }

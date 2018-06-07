@@ -18,6 +18,9 @@ namespace Liberfy.ViewModel
         {
             ViewFonts = new FluidCollection<FontFamily>();
             SetFontSettings();
+
+            this.DefaultColumns = new FluidCollection<ColumnBase>(Setting.DefaultColumns
+                .Select(opt => ColumnBase.FromSetting(opt, null, out var column) ? column : ColumnBase.FromType(opt.Type)));
         }
 
         public Setting Setting => App.Setting;
@@ -421,9 +424,11 @@ namespace Liberfy.ViewModel
                 }
                 else
                 {
-                    var columnOptions = this.DefaultColumns.Select(ColumnOptionBase.CreateFromDefault);
+                    var user = await tokens.Account.VerifyCredentials();
 
-                    account = new TwitterAccount(tokens, columnOptions)
+                    var columnOptions = this.DefaultColumns.Select(c => c.GetOption());
+
+                    account = new TwitterAccount(tokens, user, columnOptions)
                     {
                         AutomaticallyLogin = this.Setting.AccountDefaultAutomaticallyLogin,
                         AutomaticallyLoadTimeline = this.Setting.AccountDefaultAutomaticallyLoadTimeline
@@ -491,12 +496,12 @@ namespace Liberfy.ViewModel
         #endregion Commands for account
 
 
-        public FluidCollection<ColumnOptionBase> DefaultColumns => this.Setting.DefaultColumns;
+        public FluidCollection<ColumnBase> DefaultColumns { get; }
 
         #region Commands for columns
 
-        private ColumnOptionBase _selectedColumnSetting;
-        public ColumnOptionBase SelectedColumnSetting
+        private ColumnBase _selectedColumnSetting;
+        public ColumnBase SelectedColumnSetting
         {
             get => this._selectedColumnSetting;
             set
@@ -524,7 +529,7 @@ namespace Liberfy.ViewModel
 
             if (res.IsSelected && res.SelectedValue is ColumnType columnType)
             {
-                this.DefaultColumns.Add(ColumnOptionBase.GetDefault(columnType));
+                this.DefaultColumns.Add(ColumnBase.FromType(columnType));
             }
         }));
 
@@ -535,12 +540,12 @@ namespace Liberfy.ViewModel
         private Command _columnRemoveCommand;
         public Command ColumnRemoveCommand
         {
-            get => _columnRemoveCommand ?? (_columnRemoveCommand = RegisterCommand<ColumnOptionBase>(ColumnRemove, CanColumnRemove));
+            get => _columnRemoveCommand ?? (_columnRemoveCommand = RegisterCommand<ColumnBase>(ColumnRemove, CanColumnRemove));
         }
 
-        private static bool CanColumnRemove(ColumnOptionBase column) => column != null;
+        private static bool CanColumnRemove(ColumnBase column) => column != null;
 
-        private void ColumnRemove(ColumnOptionBase column) => this.DefaultColumns.Remove(column);
+        private void ColumnRemove(ColumnBase column) => this.DefaultColumns.Remove(column);
 
         #endregion
 
@@ -549,15 +554,15 @@ namespace Liberfy.ViewModel
         private Command _columnMoveUpCommand;
         public Command ColumnMoveUpCommand
         {
-            get => this._columnMoveUpCommand ?? (this._columnMoveUpCommand = this.RegisterCommand<ColumnOptionBase>(this.ColumnMoveUp, this.CanColumnMoveUp));
+            get => this._columnMoveUpCommand ?? (this._columnMoveUpCommand = this.RegisterCommand<ColumnBase>(this.ColumnMoveUp, this.CanColumnMoveUp));
         }
 
-        private bool CanColumnMoveUp(ColumnOptionBase column)
+        private bool CanColumnMoveUp(ColumnBase column)
         {
             return column != null && DefaultColumns.CanItemIndexDecrement(column);
         }
 
-        private void ColumnMoveUp(ColumnOptionBase column)
+        private void ColumnMoveUp(ColumnBase column)
         {
             this.DefaultColumns.ItemIndexDecrement(column);
             this.ColumnMoveUpCommand.RaiseCanExecute();
@@ -571,15 +576,15 @@ namespace Liberfy.ViewModel
         private Command _columnMoveDownCommand;
         public Command ColumnMoveDownCommand
         {
-            get => this._columnMoveDownCommand ?? (this._columnMoveDownCommand = this.RegisterCommand<ColumnOptionBase>(this.ColumnMoveRight, this.CanColumnMoveRight));
+            get => this._columnMoveDownCommand ?? (this._columnMoveDownCommand = this.RegisterCommand<ColumnBase>(this.ColumnMoveRight, this.CanColumnMoveRight));
         }
 
-        private bool CanColumnMoveRight(ColumnOptionBase column)
+        private bool CanColumnMoveRight(ColumnBase column)
         {
             return column != null && DefaultColumns.CanItemIndexIncrement(column);
         }
 
-        private void ColumnMoveRight(ColumnOptionBase column)
+        private void ColumnMoveRight(ColumnBase column)
         {
             this.DefaultColumns.ItemIndexIncrement(column);
             this.ColumnMoveDownCommand?.RaiseCanExecute();
@@ -841,6 +846,9 @@ namespace Liberfy.ViewModel
 
         internal override void OnClosed()
         {
+            this.Setting.DefaultColumns.Reset(
+                this.DefaultColumns.Select(c => c.GetOption()));
+
             ApplyFontSetting();
             App.UI.ApplyFromSettings();
         }

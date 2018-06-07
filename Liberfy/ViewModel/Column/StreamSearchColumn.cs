@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    class StreamSearchColumn : SearchColumnBase<GeneralColumnOption>
+    class StreamSearchColumn : SearchColumnBase
     {
-        public StreamSearchColumn(TwitterTimeline timeline) : base(timeline, ColumnType.Stream)
+        public StreamSearchColumn(TwitterTimeline timeline)
+            : base(timeline, ColumnType.Stream)
         {
         }
-
-        protected override GeneralColumnOption CreateOption() => new GeneralColumnOption(this.Type);
     }
 }

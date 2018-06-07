@@ -142,10 +142,9 @@ namespace Liberfy
         #region Account
 
         [DataMember(Name = "account_column_defaults")]
-        [Utf8Json.JsonFormatter(typeof(JsonFormatter.FluidColumnOptionFormatter))]
-        private FluidCollection<ColumnOptionBase> _defaultColumns;
+        private FluidCollection<ColumnSetting> _defaultColumns;
         [IgnoreDataMember]
-        public FluidCollection<ColumnOptionBase> DefaultColumns
+        public FluidCollection<ColumnSetting> DefaultColumns
         {
             get
             {
@@ -157,12 +156,12 @@ namespace Liberfy
                 {
                     var defaultOptions = new[]
                     {
-                        new GeneralColumnOption(ColumnType.Home),
-                        new GeneralColumnOption(ColumnType.Notification),
-                        new GeneralColumnOption(ColumnType.Messages)
+                        new ColumnSetting{ Type = ColumnType.Home },
+                        new ColumnSetting{ Type = ColumnType.Notification },
+                        new ColumnSetting{ Type = ColumnType.Messages },
                     };
 
-                    return _defaultColumns = new FluidCollection<ColumnOptionBase>(defaultOptions);
+                    return _defaultColumns = new FluidCollection<ColumnSetting>(defaultOptions);
                 }
             }
         }

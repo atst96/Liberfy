@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    class MessageColumn : ColumnBase<GeneralColumnOption>
+    class MessageColumn : ColumnBase
     {
         public MessageColumn(TwitterTimeline timeline)
             : base(timeline, ColumnType.Messages, "Message")
         {
         }
-
-        protected override GeneralColumnOption CreateOption() => new GeneralColumnOption(this.Type);
 
         public override void OnShowDetails(IItem item) { }
     }

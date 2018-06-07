@@ -13,8 +13,10 @@ namespace Liberfy.Settings
     /// アカウント設定をJsonデータに変換するためのクラス
     /// </summary>
     [DataContract]
-    internal class AccountItem
+    internal class AccountItem : IEquatable<AccountItem>
     {
+        public AccountItem() { }
+
         [DataMember(Name = "service")]
         public SocialService Service { get; set; } = SocialService.Twitter;
 
@@ -46,16 +48,25 @@ namespace Liberfy.Settings
         public bool AutomaticallyLoadTimeline { get; set; }
 
         [DataMember(Name = "columns")]
-        [Utf8Json.JsonFormatter(typeof(JsonFormatter.ArrayColumnOptionFormatter))]
-        private IEnumerable<ColumnOptionBase> _columns;
+        private IEnumerable<ColumnSetting> _columns;
         [IgnoreDataMember]
-        public IEnumerable<ColumnOptionBase> Columns
+        public IEnumerable<ColumnSetting> Columns
         {
-            get => this._columns ?? Enumerable.Empty<ColumnOptionBase>();
+            get => this._columns ?? Enumerable.Empty<ColumnSetting>();
             set => this._columns = value;
         }
 
         [DataMember(Name = "muted_ids")]
         public long[] MutedIds { get; set; }
+
+        public bool Equals(AccountItem item)
+        {
+            return this.Service == item.Service && this.Id == item.Id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is AccountItem item ? this.Equals(item) : base.Equals(obj);
+        }
     }
 }

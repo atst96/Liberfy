@@ -60,7 +60,7 @@ namespace Liberfy
 
             this.SetTokens(item.Token);
 
-            if (item.MutedIds.Length > 0)
+            if (item.MutedIds?.Length > 0)
                 this.MutedIds.UnionWith(item.MutedIds);
 
             this.AutomaticallyLogin = item.AutomaticallyLogin;
@@ -69,29 +69,17 @@ namespace Liberfy
             this.Timeline = this.CreateTimeline(item.Columns);
         }
 
-        public AccountBase(ITokensBase tokens, IEnumerable<ColumnOptionBase> columnOptions = null)
-            : this(tokens, null, columnOptions)
+        public AccountBase(ITokensBase tokens, ICommonAccount account, IEnumerable<ColumnSetting> columnOptions = null)
         {
-        }
+            if (this.Service != account.Service)
+                throw new ArgumentException(nameof(account));
 
-        public AccountBase(ITokensBase tokens, ICommonAccount account, IEnumerable<ColumnOptionBase> columnOptions = null)
-        {
-            if (account == null)
-            {
-                throw new ArgumentNullException(nameof(account));
-                //this.Id = tokens.UserId;
-                //this.Info = Users.GetOrAdd(
-                //    this.Id,
-                //    id => new UserInfo(id, tokens.ScreenName, tokens.ScreenName, false, null));
-            }
-            else
-            {
-                this.Id = (long)account.Id;
-                this.Info = new UserInfo(account);
-                this.Info = this.DataStore.Users.AddOrUpdate(Id,
-                    _ => new UserInfo(account),
-                    (_, info) => info.Update(account));
-            }
+            this.Id = (long)account.Id;
+            this.Info = this.DataStore.Users.AddOrUpdate(this.Id,
+                (_) => new UserInfo(account),
+                (_, info) => info.Update(account));
+
+            this.IsLoggedIn = true;
 
             this.SetTokens(ApiTokenInfo.FromTokens(tokens));
             this.Timeline = this.CreateTimeline(columnOptions);
@@ -99,7 +87,7 @@ namespace Liberfy
 
         public abstract void SetTokens(ApiTokenInfo tokens);
 
-        protected abstract ITimeline CreateTimeline(IEnumerable<ColumnOptionBase> columnOptions);
+        protected abstract ITimeline CreateTimeline(IEnumerable<ColumnSetting> columnOptions);
 
         private bool _isLoading;
         public bool IsLoading
@@ -216,8 +204,8 @@ namespace Liberfy
             Token = ApiTokenInfo.FromTokens(this.Tokens),
             AutomaticallyLogin = this.AutomaticallyLogin,
             AutomaticallyLoadTimeline = this.AutomaticallyLoadTimeline,
-            Columns = this.Timeline.Columns.Select(c => c.GetOption()),
-            MutedIds = this._mutedIds.ToArray(),
+            Columns = this.Timeline.Columns?.Select(c => c.GetOption()),
+            MutedIds = this._mutedIds?.ToArray(),
         };
 
         public static AccountBase FromSetting(AccountItem item)

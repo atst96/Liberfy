@@ -103,20 +103,6 @@ namespace Liberfy.Converter
         }
     }
 
-    [ValueConversion(typeof(ColumnOptionBase), typeof(IColumn))]
-    internal class ColumnSettingToColumnConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return ColumnBase.TryFromSetting(value as ColumnOptionBase, null, out var column) ? column : null;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (value as IColumn)?.GetOption();
-        }
-    }
-
     [ValueConversion(typeof(DateTimeOffset), typeof(string))]
     public class LocalTimeConverter : IValueConverter
     {

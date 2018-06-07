@@ -7,13 +7,44 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    class SearchColumn : SearchColumnBase<SearchColumnOption>
+    class SearchColumn : SearchColumnBase
     {
-        public SearchColumn(TwitterTimeline timeline) : base(timeline, ColumnType.Search)
+        public SearchColumn(TwitterTimeline timeline)
+            : base(timeline, ColumnType.Search)
         {
         }
 
-        protected override SearchColumnOption CreateOption() => new SearchColumnOption();
+        private bool _useResultType;
+        public bool UseResultType
+        {
+            get => this._useResultType;
+            set => this.SetProperty(ref this._useResultType, value);
+        }
+
+        private string _resultType;
+        public string ResultType
+        {
+            get => this._resultType;
+            set => this.SetProperty(ref this._resultType, value);
+        }
+
+        public override ColumnSetting GetOption()
+        {
+            var opt = base.GetOption();
+
+            opt.SetValue("use_result_type", this._useResultType);
+            opt.SetValue("result_type", this._resultType);
+
+            return opt;
+        }
+
+        protected override void SetOption(ColumnSetting opt)
+        {
+            base.SetOption(opt);
+
+            this._useResultType = opt.GetValue<bool>("use_result_type");
+            this._resultType = opt.GetValue<string>("result_type");
+        }
 
         public static ReadOnlyDictionary<string, string> SearchTypes { get; } =
             new ReadOnlyDictionary<string, string>(new Dictionary<string, string>

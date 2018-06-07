@@ -2247,8 +2247,17 @@
                         BorderBrush="{TemplateBinding BorderBrush}">
                         <ContentPresenter
                             x:Name="PART_SelectedContentHost"
-                            ContentSource="SelectedContent" />
+                            Content="{TemplateBinding SelectedItem}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
+                        
                     </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ItemsSource" Value="{x:Null}">
+                            <Setter TargetName="PART_SelectedContentHost" Property="Content" Value="{Binding SelectedContent, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

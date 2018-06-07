@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    internal abstract class StatusColumnBase<T> : ColumnBase<T>
-        where T : ColumnOptionBase
+    internal abstract class StatusColumnBase : ColumnBase
     {
         protected StatusColumnBase(TwitterTimeline timeline, ColumnType type, string title = null)
             : base(timeline, type, title)
@@ -17,9 +16,6 @@ namespace Liberfy
         }
 
         public override bool IsStatusColumn { get; } = true;
-
-        public List<StatusItem> BeforeConversation { get; protected set; }
-        public List<StatusItem> AfterConversation { get; protected set; }
 
         private StatusItem _selectedStatus;
         public StatusItem SelectedStatus

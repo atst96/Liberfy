@@ -9,7 +9,7 @@ namespace Liberfy.ViewModel.Timeline
 {
     internal interface ITimeline
     {
-        FluidCollection<IColumn> Columns { get; }
+        FluidCollection<ColumnBase> Columns { get; }
         void Load();
         void Unload();
     }
