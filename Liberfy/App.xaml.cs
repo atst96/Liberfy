@@ -109,7 +109,7 @@ namespace Liberfy
             }
             catch (Exception e)
             {
-                DisplayException(e, $"設定ファイルの読み込みに失敗しました:\n{ filename }");
+                DisplayException(e, $"設定ファイルの読み込みに失敗しました:\n{ Path.GetFileName(filename) }");
                 return true;
             }
         }
@@ -130,10 +130,20 @@ namespace Liberfy
 
         public static void DisplayException(Exception exception, string instruction = null)
         {
-            MessageBox.Show(IntPtr.Zero,
-                (string.IsNullOrEmpty(instruction) ? "" : $"{ instruction }:\n")
-                + $"{ exception.Message }\n\nアプリケーションを終了します。",
-                caption: "エラー",
+            var sb = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(instruction))
+                sb.AppendLine(instruction);
+
+            sb.AppendLine();
+            sb.AppendLine(exception.Message);
+
+            sb.AppendLine();
+            sb.AppendLine(exception.StackTrace);
+
+            MessageBox.Show(
+                IntPtr.Zero,
+                sb.ToString(), "エラー",
                 icon: MsgBoxIcon.Error);
         }
 
@@ -157,8 +167,13 @@ namespace Liberfy
 
         private static void SaveSettingFile<T>(string filename, T TObj)
         {
+            byte[] data = JsonSerializer.Serialize(TObj, _jsonFormatterResolver);
+
             using (var fs = File.Open(filename, FileMode.Create))
-                JsonSerializer.Serialize(fs, TObj, _jsonFormatterResolver);
+            {
+                fs.Seek(0, SeekOrigin.Begin);
+                fs.Write(data, 0, data.Length);
+            }
         }
 
         private static void SaveSettings()
@@ -178,9 +193,27 @@ namespace Liberfy
             }
             catch (Exception e)
             {
-                MessageBox.Show(IntPtr.Zero,
-                    $"設定ファイルの保存に失敗しました。：\n{e.Message}",
-                    caption: "エラー", icon: MsgBoxIcon.Error);
+                var sb = new StringBuilder();
+
+                sb.AppendLine("設定ファイルの保存に失敗しました");
+
+                sb.Append("ファイル名：");
+                sb.AppendLine(Path.GetFileName(filename));
+
+                sb.AppendLine();
+
+                sb.AppendLine(e.Message);
+
+                sb.AppendLine();
+
+                sb.AppendLine(e.StackTrace);
+
+                MessageBox.Show(
+                    IntPtr.Zero,
+                    sb.ToString(), "エラー",
+                    icon: MsgBoxIcon.Error);
+
+                sb = null;
             }
         }
 
