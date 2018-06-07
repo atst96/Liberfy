@@ -1,4 +1,5 @@
 ﻿using Liberfy.ViewModel;
+using SocialApis;
 using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
@@ -59,7 +60,10 @@ namespace Liberfy
         {
             try
             {
-                var statuses = await _tokens.Statuses.HomeTimeline();
+                var statuses = await _tokens.Statuses.HomeTimeline(new Query
+                {
+                    ["tweet_mode"] = "extended",
+                });
                 var items = this.GetStatusItem(statuses);
 
                 if (this.OnHomeStatusesLoaded != null)
