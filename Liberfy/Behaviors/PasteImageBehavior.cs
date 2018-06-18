@@ -5,33 +5,32 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interactivity;
 
 namespace Liberfy.Behaviors
 {
-	internal class PasteImageBehavior : Behavior<FrameworkElement>, ICommandSource
+	internal class PasteImageBehavior : System.Windows.Interactivity.Behavior<FrameworkElement>, ICommandSource
 	{
 		public object CommandParameter => throw new NotImplementedException();
 
 		public IInputElement CommandTarget => throw new NotImplementedException();
 
-		private CommandBinding commandBinding;
+		private CommandBinding _commandBinding;
 
 		protected override void OnAttached()
 		{
-			commandBinding = new CommandBinding(
+			this._commandBinding = new CommandBinding(
 				ApplicationCommands.Paste,
-				OnPasteCommandExecuted,
-				CanPasteCommandExecute);
+				this.OnPasteCommandExecuted,
+				this.CanPasteCommandExecute);
 
-			AssociatedObject.CommandBindings.Add(commandBinding);
+			this.AssociatedObject.CommandBindings.Add(this._commandBinding);
 
 			base.OnAttached();
 		}
 
 		private void CanPasteCommandExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
-			if(Command?.CanExecute(e.Parameter) ?? false)
+			if(this.Command?.CanExecute(e.Parameter) ?? false)
 			{
 				e.CanExecute = true;
 				e.Handled = true;
@@ -40,26 +39,26 @@ namespace Liberfy.Behaviors
 
 		private void OnPasteCommandExecuted(object sender, ExecutedRoutedEventArgs e)
 		{
-			Command?.Execute(e.Parameter);
+			this.Command?.Execute(e.Parameter);
 		}
 
 		protected override void OnDetaching()
 		{
-			AssociatedObject.CommandBindings.Remove(commandBinding);
-			commandBinding.Executed -= OnPasteCommandExecuted;
-			commandBinding.CanExecute -= CanPasteCommandExecute;
-			commandBinding = null;
+			this.AssociatedObject.CommandBindings.Remove(this._commandBinding);
+			this._commandBinding.Executed -= this.OnPasteCommandExecuted;
+			this._commandBinding.CanExecute -= this.CanPasteCommandExecute;
+			this._commandBinding = null;
 
 			base.OnDetaching();
 		}
 
 		public ICommand Command
-		{
-			get { return (ICommand)GetValue(CommandProperty); }
-			set { SetValue(CommandProperty, value); }
-		}
+        {
+            get => (ICommand)GetValue(CommandProperty);
+            set => SetValue(CommandProperty, value);
+        }
 
-		public static readonly DependencyProperty CommandProperty =
+        public static readonly DependencyProperty CommandProperty =
 			DependencyProperty.Register("Command",
 				typeof(ICommand), typeof(PasteImageBehavior),
 				new PropertyMetadata(null));

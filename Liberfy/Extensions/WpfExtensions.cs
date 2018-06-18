@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 namespace Liberfy
 {
-	internal static class WpfBehavior
+	internal static class WpfExtensions
 	{
 		public static T FindAncestor<T>(this DependencyObject obj) where T : DependencyObject
 		{
