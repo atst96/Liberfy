@@ -9,7 +9,20 @@ namespace Liberfy.ViewModel
 {
     internal class MainWindow : ViewModelBase
     {
-        public FluidCollection<AccountBase> Accounts => App.Accounts;
+        public MainWindow() : base()
+        {
+            this.Accounts = App.Accounts;
+            this.SelectedAccount = this.Accounts.FirstOrDefault();
+        }
+
+        public FluidCollection<AccountBase> Accounts { get; }
+
+        private AccountBase _selectedAccount;
+        public AccountBase SelectedAccount
+        {
+            get => this._selectedAccount;
+            set => this.SetProperty(ref this._selectedAccount, value);
+        }
 
         private bool _isAccountsLoaded;
         public bool IsAccountsLoaded
@@ -79,7 +92,7 @@ namespace Liberfy.ViewModel
         private Command _showSettingDialog;
         public Command ShowSettingDialog
         {
-            get =>this. _showSettingDialog ?? (this._showSettingDialog = this.RegisterCommand(() => this.DialogService.OpenSetting()));
+            get => this._showSettingDialog ?? (this._showSettingDialog = this.RegisterCommand(() => this.DialogService.OpenSetting()));
         }
 
         internal override bool CanClose()

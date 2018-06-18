@@ -134,9 +134,18 @@
         </DataTemplate>
     </Window.Resources>
 
-    <DockPanel LastChildFill="True">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        
         <Border
-            DockPanel.Dock="Top"
+            Grid.ColumnSpan="2"
             Height="30" ToolBarTray.IsLocked="True"
             Style="{StaticResource ToolBarBorderStyle}">
             <Grid>
@@ -146,27 +155,14 @@
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
 
-                <app:DropdownButton Padding="12 4" VerticalAlignment="Stretch">
-                    <app:DropdownButton.Content>
-                        <StackPanel Orientation="Horizontal">
-                            <app:GeometryIcon
-                                Width="18" Height="18"
-                                VerticalAlignment="Center"
-                                Data="{StaticResource FontAwesome.Icon.UserCircle}" />
-
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Text="アカウント" Margin="4 0 0 0" />
-                        </StackPanel>
-                    </app:DropdownButton.Content>
-                    <app:DropdownButton.DropdownMenu>
-                        <ContextMenu
-                            Width="260"
-                            VerticalOffset="-1"
-                            ItemsSource="{Binding Accounts, Mode=OneTime}"
-                            ItemTemplate="{StaticResource AccountItemTemplate}" />
-                    </app:DropdownButton.DropdownMenu>
-                </app:DropdownButton>
+                <ComboBox
+                    Width="200"
+                    Padding="0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
+                    ItemsSource="{Binding Accounts, Mode=OneTime}"
+                    ItemTemplate="{StaticResource AccountItemTemplate}" />
 
                 <ToolBar Grid.Column="2" ToolBarTray.IsLocked="True" BorderThickness="0">
                     <Button
@@ -191,14 +187,33 @@
             </Grid>
         </Border>
 
+        <Border
+            Visibility="Collapsed"
+            Grid.Row="1"
+            Width="49"
+            Background="{DynamicResource ToolBar.Static.Background}"
+            BorderThickness="0 0 1 0"
+            BorderBrush="{DynamicResource ToolBar.Static.BorderBrush}">
+            <Grid>
+                <StackPanel>
+                    <ToggleButton
+                        Padding="0"
+                        BorderThickness="0"
+                        Style="{DynamicResource {x:Static ToolBar.ToggleButtonStyleKey}}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
         <ScrollViewer
+            Grid.Row="1"
+            Grid.Column="1"
             x:Name="timelineViewr"
             PanningMode="HorizontalOnly"
             VerticalScrollBarVisibility="Hidden"
             HorizontalScrollBarVisibility="Auto"
             Background="Transparent">
             <ItemsControl
-                ItemsSource="{Binding Columns, Mode=OneTime}"
+                ItemsSource="{Binding SelectedAccount.Timeline.Columns, Mode=OneWay}"
                 ItemTemplate="{StaticResource ColumnTemplate}"
                 Height="{Binding ViewportHeight, ElementName=timelineViewr, Mode=OneWay}">
                 <ItemsControl.ItemsPanel>
@@ -206,6 +221,7 @@
                         <StackPanel Orientation="Horizontal" Margin="3" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
+
                 <ItemsControl.ItemContainerStyle>
                     <Style TargetType="{x:Type ContentPresenter}">
                         <Setter Property="Width" Value="{DynamicResource UI.Column.Width}" />
@@ -215,6 +231,5 @@
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
         </ScrollViewer>
-
-    </DockPanel>
+    </Grid>
 </Window>
