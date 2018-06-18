@@ -57,16 +57,25 @@ namespace Liberfy
             if (status.Height.HasValue)
                 this.Height = status.Height.Value;
 
-            this.Loaded += (_s, _e) =>
+            if (App.Setting.MinimizeStartup)
+            {
+                this.WindowState = System.Windows.WindowState.Minimized;
+            }
+            else if (!status.State.HasValue && status.State != Liberfy.WindowState.Minimized)
             {
                 // WindowStateの設定はウィンドウ表示直後(Loadedイベント呼び出し後)に行う
                 // (マルチディスプレイ環境においてWindowState.Maximizedを元のディスプレイで復元させるため)
 
-                if (App.Setting.MinimizeStartup)
-                    this.WindowState = System.Windows.WindowState.Minimized;
-                else if (status.State.HasValue && status.State != Liberfy.WindowState.Minimized)
-                    this.WindowState = WindowStatus.ConvertWindowState(status.State.Value);
-            };
+                this.Loaded += this.MainWindowLoadedSetState;
+            }
+        }
+
+        private void MainWindowLoadedSetState(object sender, RoutedEventArgs e)
+        {
+            var status = App.Setting.Window.Main;
+
+            this.Loaded -= this.MainWindowLoadedSetState;
+            this.WindowState = WindowStatus.ConvertWindowState(status.State.Value);
         }
 
         protected override void OnClosing(CancelEventArgs e)
