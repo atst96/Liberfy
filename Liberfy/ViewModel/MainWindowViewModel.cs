@@ -102,5 +102,12 @@ namespace Liberfy.ViewModel
         {
             get => this.Accounts.First().Timeline.Columns;
         }
+
+        internal override void OnClosed()
+        {
+            base.OnClosed();
+
+            App.Shutdown(true);
+        }
     }
 }
