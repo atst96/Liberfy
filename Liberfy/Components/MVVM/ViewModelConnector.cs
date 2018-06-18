@@ -93,7 +93,7 @@ namespace Liberfy
 
         void OnViewClosing(object sender, CancelEventArgs e)
         {
-            e.Cancel = !this.ViewModel?.CanClose() ?? false;
+            e.Cancel = !(this.ViewModel?.CanClose() ?? false) || e.Cancel;
         }
 
         void OnViewClosed(object sender, EventArgs e)

@@ -139,6 +139,7 @@
     <Compile Include="IAccount.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Model\Setting\ColumnSetting.cs" />
+    <Compile Include="Model\Setting\WindowSettings.cs" />
     <Compile Include="TemplateSelectors\ColumnOptionTemplateSelector.cs" />
     <Compile Include="Components\FluidCollection.cs" />
     <Compile Include="Components\MessageBox.cs" />

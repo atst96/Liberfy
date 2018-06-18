@@ -12,7 +12,7 @@
     xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     StartupUri="View/MainWindow.xaml"
-    ShutdownMode="OnExplicitShutdown">
+    ShutdownMode="OnMainWindowClose">
     <Application.Resources>
         <ResourceDictionary>
             <sys:Double x:Key="UI.Column.Width">300</sys:Double>

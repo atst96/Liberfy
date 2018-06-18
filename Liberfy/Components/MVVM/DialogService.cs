@@ -156,15 +156,15 @@ namespace Liberfy
                     return;
 
                 case ViewState.Minimize:
-                    _view.WindowState = WindowState.Minimized;
+                    _view.WindowState = System.Windows.WindowState.Minimized;
                     return;
 
                 case ViewState.Maximize:
-                    _view.WindowState = WindowState.Maximized;
+                    _view.WindowState = System.Windows.WindowState.Maximized;
                     return;
 
                 case ViewState.Normal:
-                    _view.WindowState = WindowState.Normal;
+                    _view.WindowState = System.Windows.WindowState.Normal;
                     return;
             }
         }
@@ -324,7 +324,7 @@ namespace Liberfy
         TweetWindow,
     }
 
-    public struct ViewOption
+    internal struct ViewOption
     {
         public double? Width { get; set; }
         public double? Height { get; set; }

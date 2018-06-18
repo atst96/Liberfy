@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Liberfy.Settings;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Windows.Media;
@@ -588,6 +589,15 @@ namespace Liberfy
         }
 
         #endregion
+
+        #region Window
+
+        [DataMember(Name = "window")]
+        private WindowSettings _window;
+        [IgnoreDataMember]
+        public WindowSettings Window => this._window ?? (this._window = new WindowSettings());
+
+        #endregion Window
     }
 
     internal enum BackgroundType

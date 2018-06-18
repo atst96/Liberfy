@@ -9,10 +9,13 @@ namespace Liberfy.ViewModel
 {
     internal class MainWindow : ViewModelBase
     {
+        public WindowStatus WindowStatus { get; }
+
         public MainWindow() : base()
         {
             this.Accounts = App.Accounts;
             this.SelectedAccount = this.Accounts.FirstOrDefault();
+            this.WindowStatus = App.Setting.Window.Main;
         }
 
         public FluidCollection<AccountBase> Accounts { get; }
@@ -93,12 +96,6 @@ namespace Liberfy.ViewModel
         public Command ShowSettingDialog
         {
             get => this._showSettingDialog ?? (this._showSettingDialog = this.RegisterCommand(() => this.DialogService.OpenSetting()));
-        }
-
-        internal override bool CanClose()
-        {
-            App.Shutdown(true);
-            return true;
         }
 
         public IEnumerable<ColumnBase> Columns
