@@ -9,17 +9,35 @@ namespace Liberfy.Settings
     [DataContract]
     internal class AccountSetting : NotificationObject
     {
-        public bool ContainsId(double id) => App.Accounts.Any(a => a.Id == id);
+        public bool ContainsId(long id)
+        {
+            foreach (var account in App.Accounts)
+            {
+                if (account.Id == id)
+                    return true;
+            }
+
+            return false;
+        }
 
         public bool TryGetAccount(SocialService service, long id, out AccountBase account)
         {
-            account = App.Accounts.FirstOrDefault(a => a.Service == service && a.Id == id);
+            account = this.GetAccount(service, id);
+
             return account != null;
         }
 
         public AccountBase GetAccount(SocialService service, long id)
         {
-            return App.Accounts.FirstOrDefault(a => a.Service == service && a.Id == id);
+            foreach (var account in App.Accounts)
+            {
+                if (account.Service == service && account.Id == id)
+                {
+                    return account;
+                }
+            }
+
+            return null;
         }
 
         [DataMember(Name = "accounts")]

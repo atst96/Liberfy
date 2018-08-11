@@ -27,6 +27,7 @@ namespace Liberfy
             }
         }
 
+        [Obsolete]
         public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
         {
             if (action == null)
@@ -36,20 +37,6 @@ namespace Liberfy
             {
                 action(item);
             }
-        }
-
-        public static async void ForEach<T>(this IEnumerable<T> collection, Action<T> action, Dispatcher dispatcher)
-        {
-            if (action == null)
-                return;
-
-            await dispatcher.InvokeAsync(() =>
-            {
-                foreach (var item in collection)
-                {
-                    action(item);
-                }
-            });
         }
 
         public static IEnumerable<T> Distinct<T>(this IEnumerable<T> collection)

@@ -95,7 +95,8 @@ namespace Liberfy
 
             UI.ApplyFromSettings();
 
-            _setting.Mute.ForEach(m => m.Apply());
+            foreach (var muteItem in _setting.Mute)
+                muteItem.Apply();
 
             TaskbarIcon = GetResource<TaskbarIcon>("taskbarIcon");
         }

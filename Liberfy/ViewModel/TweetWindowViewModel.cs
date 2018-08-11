@@ -23,7 +23,7 @@ namespace Liberfy.ViewModel
         private static readonly Validator tweetValidator = new Validator();
         protected static Setting Setting => App.Setting;
 
-        public FluidCollection<AccountBase> Accounts => App.Accounts;
+        public FluidCollection<AccountBase> Accounts { get; } = App.Accounts;
 
         private AccountBase _selectedAccount;
         public AccountBase SelectedAccount
@@ -238,7 +238,8 @@ namespace Liberfy.ViewModel
                 _postTweetPhase = 1;
 
                 this.UploadStatusText = "メディアをアップロードしています...";
-                uploadableMedia.ForEach(m => m.SetIsTweetPosting(true));
+                foreach (var mediaItem in uploadableMedia)
+                    mediaItem.SetIsTweetPosting(true);
 
                 if (await this.UploadMediaItems(this.Tokens, uploadableMedia).ConfigureAwait(true))
                 {
@@ -248,8 +249,11 @@ namespace Liberfy.ViewModel
                 }
                 else
                 {
-                    uploadableMedia.ForEach(m => m.SetIsTweetPosting(false));
+                    foreach (var mediaItem in uploadableMedia)
+                        mediaItem.SetIsTweetPosting(false);
+
                     this.OnPostEnd();
+
                     return;
                 }
             }
@@ -387,7 +391,7 @@ namespace Liberfy.ViewModel
             if (DialogService.OpenModal(ofd)
                 && HasEnableMediaFiles(ofd.FileNames))
             {
-                Media.AddRange(ofd.FileNames.Select(UploadMedia.FromFile));
+                Media.AddRange(ofd.FileNames.Select(file => UploadMedia.FromFile(file)));
                 UpdateCanPost();
             }
 
@@ -542,7 +546,7 @@ namespace Liberfy.ViewModel
             if (data.GetDataPresent(DataFormats.FileDrop))
             {
                 var droppedFiles = (string[])data.GetData(DataFormats.FileDrop);
-                Media.AddRange(GetEnableMediaFiles(droppedFiles).Select(UploadMedia.FromFile));
+                Media.AddRange(GetEnableMediaFiles(droppedFiles).Select(file => UploadMedia.FromFile(file)));
                 UpdateCanPost();
             }
             else if (UrlDataPresets.Any(data.GetDataPresent))
@@ -590,7 +594,7 @@ namespace Liberfy.ViewModel
             {
                 Media.AddRange(
                     GetEnableMediaFiles(Clipboard.GetFileDropList())
-                    .Select(UploadMedia.FromFile));
+                    .Select(file => UploadMedia.FromFile(file)));
             }
         }
 
@@ -658,7 +662,7 @@ namespace Liberfy.ViewModel
         internal override void OnClosed()
         {
             this.TextBoxController = null;
-            
+
             this.Media.DisposeAll();
 
             base.OnClosed();

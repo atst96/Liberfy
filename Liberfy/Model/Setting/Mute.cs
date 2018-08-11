@@ -49,7 +49,7 @@ namespace Liberfy
 
 		public bool Apply()
 		{
-			if (IsAvailable(Type, Search, Text))
+			if (Mute.IsAvailable(Type, Search, Text))
 			{
 				if (Search == SearchMode.Regex)
 				{

@@ -25,7 +25,7 @@ namespace Liberfy.ViewModel
 
         public Setting Setting => App.Setting;
 
-        public FluidCollection<AccountBase> Accounts => App.Accounts;
+        public FluidCollection<AccountBase> Accounts { get; } = App.Accounts;
 
         /*
          * [表示]タブ関連 → SettingWindowViewModel.View.cs
@@ -128,7 +128,11 @@ namespace Liberfy.ViewModel
         {
             ViewFont = new FontFamily(string.Join(", ", Setting.TimelineFont));
             _viewFontSize = Setting.TimelineFontSize;
-            ViewFonts.Reset(Setting.TimelineFont.Select(f => new FontFamily(f)));
+
+            this.ViewFonts.Clear();
+            foreach (var f in Setting.TimelineFont)
+                this.ViewFonts.Add(new FontFamily(f));
+
             ViewFontRendering = Setting.TimelineFontRendering;
 
             RaisePropertyChanged(nameof(ViewFont));
@@ -655,7 +659,7 @@ namespace Liberfy.ViewModel
 
         #region Mute
 
-        public FluidCollection<Mute> MuteList => App.Setting.Mute;
+        public FluidCollection<Mute> MuteList { get; } = App.Setting.Mute;
 
         private MuteType _tempMuteType;
         public MuteType TempMuteType
