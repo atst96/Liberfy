@@ -121,6 +121,7 @@
     </ApplicationDefinition>
     <Compile Include="App.Brushes.cs" />
     <Compile Include="App.UI.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\TimelineBehavior.cs" />
     <Compile Include="Commands\AccountCommands.cs" />
     <Compile Include="Commands\AppCommands.cs" />
