@@ -46,14 +46,44 @@ namespace Liberfy.ViewModel
                 return;
             }
 
+            var accounts = this.Accounts
+                .Where(a => a.AutomaticallyLogin);
+
+            bool
+                foundTwitterAccount = false,
+                foundMastodonAccount = false;
+
+            var foundServicesDataStore = new LinkedList<DataStore>(); 
+
             foreach (var account in this.Accounts.Where(a => a.AutomaticallyLogin))
             {
+                if (account.Service == SocialApis.SocialService.Twitter && !foundTwitterAccount)
+                {
+                    foundTwitterAccount = true;
+                    DataStore.Twitter.BeginAddCollectionMode();
+                    foundServicesDataStore.AddLast(DataStore.Twitter);
+                }
+                else if (account.Service == SocialApis.SocialService.Mastodon && !foundMastodonAccount)
+                {
+                    foundMastodonAccount = true;
+                    DataStore.Mastodon.BeginAddCollectionMode();
+                    foundServicesDataStore.AddLast(DataStore.Mastodon);
+                }
+
                 if (await account.TryLogin())
                 {
                     await account.TryLoadDetails();
                     account.StartTimeline();
                 }
             }
+
+            foreach (var dataStore in foundServicesDataStore)
+            {
+                dataStore.EndAddCollectionMode();
+            }
+
+            foundServicesDataStore.Clear();
+            foundServicesDataStore = null;
 
             this.IsAccountsLoaded = true;
         }
