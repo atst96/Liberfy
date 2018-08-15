@@ -69,7 +69,7 @@ namespace Liberfy
             this.Timeline = this.CreateTimeline(item.Columns);
         }
 
-        public AccountBase(ITokensBase tokens, ICommonAccount account, IEnumerable<ColumnSetting> columnOptions = null)
+        public AccountBase(ITokensBase tokens, IAccount account, IEnumerable<ColumnSetting> columnOptions = null)
         {
             if (this.Service != account.Service)
                 throw new ArgumentException(nameof(account));

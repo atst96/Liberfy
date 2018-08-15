@@ -1,29 +1,34 @@
-﻿using SocialApis.Twitter;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitterStatus = SocialApis.Twitter.Status;
 using MastodonStatus = SocialApis.Mastodon.Status;
+using System.ComponentModel;
+using Liberfy.Model;
+
+using TwitterApi = SocialApis.Twitter;
 using SocialApis;
 using SocialApis.Common;
 
 namespace Liberfy
 {
-    internal class StatusInfo : NotificationObject, IEquatable<StatusInfo>, IEquatable<Status>
+    internal class StatusInfo : NotificationObject, IEquatable<StatusInfo>, IEquatable<TwitterStatus>
     {
+        public SocialService Service { get; }
+
         public long Id { get; }
 
         public long[] Contributors { get; }
 
-        public Coordinates<Point> Coordinates { get; }
+        public TwitterApi.Coordinates<TwitterApi.Point> Coordinates { get; }
 
         public DateTimeOffset CreatedAt { get; }
 
-        public SocialApis.Common.EntityBase[] Entities { get; }
+        public EntityBase[] Entities { get; }
 
-        public SocialApis.Common.Attachment[] Attachments { get; }
+        public Attachment[] Attachments { get; }
 
         public string FilterLevel { get; }
 
@@ -32,7 +37,7 @@ namespace Liberfy
 
         public string Language { get; }
 
-        public Places Place { get; }
+        public TwitterApi.Places Place { get; }
 
         public bool PossiblySensitive { get; }
 
@@ -48,60 +53,90 @@ namespace Liberfy
 
         public UserInfo User { get; }
 
-        public long FavoriteCount { get; private set; }
-        public long RetweetCount { get; private set; }
+        private long _favoriteCount;
+        private static readonly PropertyChangedEventArgs _favoriteCountPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(StatusInfo.FavoriteCount));
+        public long FavoriteCount
+        {
+            get => this._favoriteCount;
+            private set => this.SetProperty(ref this._favoriteCount, value, _favoriteCountPropertyChangedEventArgs);
+        }
+
+        private long _retweetCount;
+        private static readonly PropertyChangedEventArgs _retweetCountPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(StatusInfo.RetweetCount));
+        public long RetweetCount
+        {
+            get => this._retweetCount;
+            private set => this.SetProperty(ref this._retweetCount, value, _retweetCountPropertyChangedEventArgs);
+        }
 
         public SocialApis.Mastodon.StatusVisibility Visibility { get; }
 
-        public StatusInfo(ICommonStatus status)
+        #region Begin: Twitter process
+
+        private StatusInfo(TwitterStatus status)
         {
+            this.Service = SocialService.Twitter;
+
             if (status.RetweetedStatus != null)
                 throw new ArgumentException();
 
             this.Id = status.Id;
-
             this.CreatedAt = status.CreatedAt;
             this.FilterLevel = status.FilterLevel;
-
             this.InReplyToStatusId = status.InReplyToStatusId ?? -1;
             this.InReplyToUserId = status.InReplyToUserId ?? -1;
 
             this.IsQuotedStatus = status.IsQuotedStatus && status.QuotedStatus != null;
-
             this.Language = status.Language;
-
-
-            this.PossiblySensitive = status.IsSensitive;
+            this.PossiblySensitive = status.PossiblySensitive;
 
             if (this.IsQuotedStatus)
                 this.QuotedStatus = DataStore.Twitter.StatusAddOrUpdate(status.QuotedStatus);
 
-            this.Text = status.Text;
+            this.Text = status.FullText ?? status.Text;
 
             this.User = DataStore.Twitter.UserAddOrUpdate(status.User);
 
-            this.SourceName = status.SourceName;
-            this.SourceUrl = status.SourceUrl;
+            (this.SourceUrl, this.SourceName) = status.ParseSource();
 
-            this.Entities = status.Entities;
+            this.Entities = status.Entities
+                .ToEntityList()
+                .ToCommonEntities(this.Text) ?? new EntityBase[0];
 
-            this.Attachments = status.Attachments;
+            this.Attachments = status.ExtendedEntities?.Media
+                .Select(m => new Attachment(m))
+                .ToArray() ?? new Attachment[0];
 
             this.Update(status);
         }
 
-        public StatusInfo Update(ICommonStatus item)
+        public StatusInfo Update(TwitterStatus status)
         {
-            if ((item.RetweetedStatus ?? item).Id != Id)
+            if ((status.RetweetedStatus ?? status).Id != this.Id)
                 throw new ArgumentException();
 
-            this.FavoriteCount = item.FavoriteCount ?? this.FavoriteCount;
-            this.RetweetCount = item.RetweetCount ?? this.RetweetCount;
-
-            this.RaisePropertyChanged(nameof(this.FavoriteCount));
-            this.RaisePropertyChanged(nameof(this.RetweetCount));
+            this.FavoriteCount = status.FavoriteCount ?? this.FavoriteCount;
+            this.RetweetCount = status.RetweetCount ?? this.RetweetCount;
 
             return this;
+        }
+
+        #endregion End: Twitter process
+
+        public StatusInfo Update(IStatus item)
+        {
+            if (item is TwitterStatus twitterStatus)
+                return this.Update(twitterStatus);
+            else
+                throw new NotImplementedException();
+        }
+
+        public static StatusInfo Create(IStatus commonStatus)
+        {
+            if (commonStatus is TwitterStatus twitterStatus)
+                return new StatusInfo(twitterStatus);
+            else
+                throw new NotImplementedException();
         }
 
         //void IObjectInfo<Status>.Update(Status item) => this.Update(item);
@@ -109,12 +144,12 @@ namespace Liberfy
         public override bool Equals(object obj)
         {
             return (obj is StatusInfo statusInfo && this.Equals(statusInfo))
-                || (obj is Status status && this.Equals(status));
+                || (obj is TwitterStatus status && this.Equals(status));
         }
 
         public bool Equals(StatusInfo other) => object.Equals(Id, other?.Id);
 
-        public bool Equals(Status other) => object.Equals(Id, other?.Id);
+        public bool Equals(TwitterStatus other) => object.Equals(Id, other?.Id);
 
         public override int GetHashCode() => Id.GetHashCode();
     }

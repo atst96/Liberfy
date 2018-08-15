@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Liberfy.Model;
 using SocialApis;
 using SocialApis.Common;
 
@@ -14,8 +15,8 @@ namespace Liberfy
         public SocialService Service { get; }
 
         public long Id { get; }
-
-        public DateTimeOffset CreatedAt { get; }
+        
+        public DateTimeOffset CreatedAt { get; private set; }
 
         private string _longUserName;
         public string LongUserName
@@ -108,8 +109,6 @@ namespace Liberfy
             private set => this.SetProperty(ref this._screenName, value);
         }
 
-        // public bool IsShowAllInlineMedia { get; private set; }
-
         private int _statusesCount;
         public int StatusesCount
         {
@@ -140,7 +139,7 @@ namespace Liberfy
 
         public DateTime UpdatedAt { get; private set; }
 
-        public UserInfo(ICommonAccount account)
+        public UserInfo(IAccount account)
         {
             this.Service = account.Service;
 
@@ -161,32 +160,50 @@ namespace Liberfy
             this.UpdatedAt = DateTime.Now;
         }
 
-        public UserInfo Update(ICommonAccount item)
+        public UserInfo Update(SocialApis.Twitter.User item)
         {
-            this.LongUserName = item.LongUserName;
+            const string RemoteUrlBase = "https://twitter.com/";
+
+            this.CreatedAt = item.CreatedAt;
+            this.LongUserName = item.ScreenName;
             this.Description = item.Description;
-            this.DescriptionEntities = item.DescriptionEntities;
+
+            this.DescriptionEntities = item.Entities?.Description?
+                .ToEntityList()
+                .ToCommonEntities(item.Description)
+                ?? new EntityBase[0];
+
             this.Url = item.Url;
-            this.UrlEntities = item.UrlEntities;
+
+            this.UrlEntities = item.Entities?.Url?
+                .ToEntityList()
+                .ToCommonEntities(item.Url)
+                ?? new EntityBase[0];
+
             this.FollowersCount = item.FollowersCount;
-            this.FriendsCount = item.FollowingCount;
+            this.FriendsCount = item.FriendsCount;
             this.Language = item.Language;
             this.Location = item.Location;
-            this.Name = item.DisplayName;
-            this.ProfileBannerUrl = item.HeaderImageUrl;
-            this.ProfileImageUrl = item.AvatarImageUrl;
+            this.Name = item.Name;
+            this.ProfileBannerUrl = item.ProfileBannerUrl;
+            this.ProfileImageUrl = item.ProfileImageUrl;
             this.IsProtected = item.IsProtected;
-            this.ScreenName = item.UserName;
+            this.ScreenName = item.ScreenName;
             this.StatusesCount = item.StatusesCount;
-            this.IsSuspended = item.IsSuspended ?? IsSuspended;
-            this.RemoteUrl = item.RemoteUrl;
+            this.RemoteUrl = RemoteUrlBase + item.ScreenName;
 
             this.UpdatedAt = DateTime.Now;
 
             return this;
         }
 
-        //void IObjectInfo<User>.Update(User item) => this.Update(item);
+        public UserInfo Update(IAccount item)
+        {
+            if (item is SocialApis.Twitter.User twUser)
+                return this.Update(twUser);
+            else
+                throw new NotImplementedException();
+        }
 
         public bool Equals(UserInfo other) => Equals(this.Id, other?.Id) && this.Service == other.Service;
 

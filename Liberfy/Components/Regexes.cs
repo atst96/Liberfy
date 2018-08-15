@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	static class Regexes
-	{
-		internal static readonly Regex ATagSource = new Regex("<a\\s+href=\"(?<url>.+?)\".*?>(?<name>.+?)</a>", RegexOptions.Compiled);
-	}
+    static class Regexes
+    {
+        private static Regex _twitterSourceHtml;
+        public static Regex TwitterSourceHtml => _twitterSourceHtml ?? (_twitterSourceHtml = new Regex("<a\\s+href=\"(?<url>.+?)\".*?>(?<name>.+?)</a>", RegexOptions.Compiled));
+    }
 }

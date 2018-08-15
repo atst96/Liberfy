@@ -10,8 +10,11 @@ using Utf8Json;
 namespace SocialApis.Mastodon
 {
     [DataContract]
-    public class Status : ICommonStatus
+    public class Status : IStatus
     {
+        [IgnoreDataMember]
+        SocialService IStatus.Service { get; } = SocialService.Mastodon;
+
         [DataMember(Name = "id")]
         [JsonFormatter(typeof(Formatters.ToLongFormatter))]
         public long Id { get; private set; }
@@ -86,100 +89,5 @@ namespace SocialApis.Mastodon
 
         [DataMember(Name = "pinned")]
         public bool? Pinned { get; private set; }
-
-        [IgnoreDataMember]
-        SocialService ICommonStatus.Service { get; } = SocialService.Mastodon;
-
-        [IgnoreDataMember]
-        string ICommonStatus.Text => this.Content;
-
-        [IgnoreDataMember]
-        string ICommonStatus.FilterLevel { get; }
-
-        [IgnoreDataMember]
-        long? ICommonStatus.InReplyToUserId => this.InReplyToId;
-
-        [IgnoreDataMember]
-        bool ICommonStatus.IsSensitive => this.Sensitive;
-
-        [IgnoreDataMember]
-        string ICommonStatus.SourceName => this.Application?.Name;
-
-        [IgnoreDataMember]
-        string ICommonStatus.SourceUrl => this.Application?.Website;
-
-        [IgnoreDataMember]
-        ICommonStatus ICommonStatus.RetweetedStatus => this.Reblog;
-
-        [IgnoreDataMember]
-        bool ICommonStatus.IsQuotedStatus { get; }
-
-        [IgnoreDataMember]
-        ICommonStatus ICommonStatus.QuotedStatus { get; }
-
-        [IgnoreDataMember]
-        string ICommonStatus.SpoilerText => this.SpoilerText;
-
-        [IgnoreDataMember]
-        ICommonAccount ICommonStatus.User => this.Account;
-
-        [IgnoreDataMember]
-        int? ICommonStatus.FavoriteCount => this.FavouritesCount;
-
-        [IgnoreDataMember]
-        int? ICommonStatus.RetweetCount => this.ReblogsCount;
-
-        [IgnoreDataMember]
-        bool? ICommonStatus.IsRetweeted => this.Rebloged;
-
-        [IgnoreDataMember]
-        bool? ICommonStatus.IsFavorited => this.Favourited;
-
-        [IgnoreDataMember]
-        private Common.Attachment[] _attachments;
-
-        [IgnoreDataMember]
-        Common.Attachment[] ICommonStatus.Attachments
-        {
-            get
-            {
-                if (this._attachments == null)
-                {
-                    this._attachments = this.MediaAttachments?
-                        .Select(ma => new Common.Attachment(ma))
-                        .ToArray() ?? new Common.Attachment[0];
-                }
-
-                return this._attachments;
-            }
-        }
-
-        [IgnoreDataMember]
-        Common.EntityBase[] ICommonStatus.Entities { get; } = new Common.EntityBase[0];
-
-        [IgnoreDataMember]
-        Common.Visibility ICommonStatus.Visibility
-        {
-            get
-            {
-                switch (this.Visibility)
-                {
-                    case StatusVisibility.Direct:
-                        return Common.Visibility.Direct;
-
-                    case StatusVisibility.Private:
-                        return Common.Visibility.Private;
-
-                    case StatusVisibility.Public:
-                        return Common.Visibility.Public;
-
-                    case StatusVisibility.Unlisted:
-                        return Common.Visibility.Unlisted;
-
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
-        }
     }
 }

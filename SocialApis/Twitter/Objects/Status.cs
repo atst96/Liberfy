@@ -8,8 +8,11 @@ using System.Linq;
 namespace SocialApis.Twitter
 {
     [DataContract]
-    public class Status : ICommonStatus
+    public class Status : IStatus
     {
+        [IgnoreDataMember]
+        SocialService IStatus.Service { get; } = SocialService.Twitter;
+
         [DataMember(Name = "created_at")]
         [JsonFormatter(typeof(DateTimeOffsetFormatter))]
         public DateTimeOffset CreatedAt { get; set; }
@@ -123,68 +126,5 @@ namespace SocialApis.Twitter
 
         [DataMember(Name = "withheld_scope")]
         public string WithheldScope { get; set; }
-
-        [IgnoreDataMember]
-        SocialService ICommonStatus.Service { get; } = SocialService.Twitter;
-
-        [IgnoreDataMember]
-        string ICommonStatus.Text => this.FullText ?? this.Text;
-
-        [IgnoreDataMember]
-        bool ICommonStatus.IsSensitive => this.PossiblySensitive;
-
-        [IgnoreDataMember]
-        Common.Visibility ICommonStatus.Visibility { get; } = Visibility.Public;
-
-        [IgnoreDataMember]
-        string ICommonStatus.SourceName => Common.Regexen.TwitterSourceHtml.Match(this.Source).Groups["name"].Value;
-
-        [IgnoreDataMember]
-        string ICommonStatus.SourceUrl => Common.Regexen.TwitterSourceHtml.Match(this.Source).Groups["url"].Value;
-
-        [IgnoreDataMember]
-        string ICommonStatus.SpoilerText { get; }
-
-        [IgnoreDataMember]
-        ICommonAccount ICommonStatus.User => this.User;
-
-        [IgnoreDataMember]
-        ICommonStatus ICommonStatus.RetweetedStatus => this.RetweetedStatus;
-
-        [IgnoreDataMember]
-        ICommonStatus ICommonStatus.QuotedStatus => this.QuotedStatus;
-
-        [IgnoreDataMember]
-        private Common.Attachment[] _attachments;
-        [IgnoreDataMember]
-        Common.Attachment[] ICommonStatus.Attachments
-        {
-            get
-            {
-                return this._attachments ?? (this._attachments = this.ExtendedEntities?.Media
-                    .Select(m => new Common.Attachment(m))
-                    .ToArray() ?? new Common.Attachment[0]);
-            }
-        }
-
-        [IgnoreDataMember]
-        private Common.EntityBase[] _entities;
-
-        [IgnoreDataMember]
-        Common.EntityBase[] ICommonStatus.Entities
-        {
-            get
-            {
-                if (this._entities == null)
-                {
-                    this._entities = this.Entities
-                        .ToEntityList()
-                        .ToCommonEntities(((ICommonStatus)this).Text)
-                        ?? new Common.EntityBase[0];
-                }
-
-                return this._entities;
-            }
-        }
     }
 }

@@ -54,13 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\BoundaryWriter.cs" />
-    <Compile Include="Common\Objects\Entity\EntityBase.cs" />
-    <Compile Include="Common\Objects\Entity\EntityHelper.cs" />
-    <Compile Include="Common\Objects\Enum\Visibility.cs" />
-    <Compile Include="Common\Objects\ICommonStatus.cs" />
+    <Compile Include="Common\Objects\IStatus.cs" />
     <Compile Include="Common\Enums\SocialService.cs" />
-    <Compile Include="Common\Objects\ICommonAccount.cs" />
-    <Compile Include="Common\Objects\Attachment.cs" />
+    <Compile Include="Common\Objects\IAccount.cs" />
     <Compile Include="Common\Regex.cs" />
     <Compile Include="Common\RESTfulAPIMethods.cs" />
     <Compile Include="Common\SequentialSurrogateTextReader.cs" />
@@ -189,8 +185,6 @@
     </None>
     <None Include="README.md" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Common\Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
