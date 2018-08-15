@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Liberfy
 {
@@ -8,28 +10,83 @@ namespace Liberfy
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected bool SetProperty<T>(ref T refVal, T value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+        private static bool IsEquals<T>(ref T oldValue, ref T newValue)
         {
-            if (!Equals(refVal, value))
+            return EqualityComparer<T>.Default.Equals(oldValue, newValue);
+        }
+
+        protected bool SetProperty<T>(ref T storage, T value, PropertyChangedEventArgs e)
+        {
+            if (!NotificationObject.IsEquals(ref storage, ref value))
             {
-                refVal = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+                storage = value;
+                this.RaisePropertyChanged(e);
 
                 return true;
             }
-            else
-                return false;
+
+            return false;
         }
 
-        protected void SetPropertyForce<T>(ref T refValue, T value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+        protected bool SetProperty<T>(ref T storage, ref T value, PropertyChangedEventArgs e)
         {
-            refValue = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (!NotificationObject.IsEquals(ref storage, ref value))
+            {
+                storage = value;
+                this.RaisePropertyChanged(e);
+
+                return true;
+            }
+
+            return false;
         }
 
-        protected void RaisePropertyChanged(string propertyName)
+        protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = "")
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (!NotificationObject.IsEquals(ref storage, ref value))
+            {
+                storage = value;
+                this.RaisePropertyChanged(propertyName);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        protected bool SetProperty<T>(ref T storage, ref T value, [CallerMemberName] string propertyName = "")
+        {
+            if (!NotificationObject.IsEquals(ref storage, ref value))
+            {
+                storage = value;
+                this.RaisePropertyChanged(propertyName);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        protected void SetPropertyForce<T>(ref T storage, T value, PropertyChangedEventArgs e)
+        {
+            storage = value;
+            this.RaisePropertyChanged(e);
+        }
+
+        protected void SetPropertyForce<T>(ref T storage, T value, [CallerMemberName] string propertyName = "")
+        {
+            storage = value;
+            this.RaisePropertyChanged(propertyName);
+        }
+
+        protected void RaisePropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected void RaisePropertyChanged(PropertyChangedEventArgs e)
+        {
+            this.PropertyChanged?.Invoke(this, e);
         }
     }
 }
