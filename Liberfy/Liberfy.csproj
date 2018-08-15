@@ -121,6 +121,7 @@
     </ApplicationDefinition>
     <Compile Include="App.Brushes.cs" />
     <Compile Include="App.UI.cs" />
+    <Compile Include="Enums\StatusVisibility.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\TimelineBehavior.cs" />
     <Compile Include="Commands\AccountCommands.cs" />
@@ -139,6 +140,8 @@
     <Compile Include="Data\Info\AppInfo.cs" />
     <Compile Include="IAccount.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Model\Attachment.cs" />
+    <Compile Include="Model\EntityBase.cs" />
     <Compile Include="Model\Setting\ColumnSetting.cs" />
     <Compile Include="Model\Setting\WindowSettings.cs" />
     <Compile Include="TemplateSelectors\ColumnOptionTemplateSelector.cs" />

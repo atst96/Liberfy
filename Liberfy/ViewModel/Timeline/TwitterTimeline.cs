@@ -53,7 +53,10 @@ namespace Liberfy
 
         private IEnumerable<StatusItem> GetStatusItem(IEnumerable<Status> statuses)
         {
-            return statuses.Select(s => new StatusItem(s, _account));
+            foreach (var status in statuses)
+            {
+                yield return new StatusItem(status, this._account);
+            }
         }
 
         private Task LoadHomeTimelineAsync() => Task.Run(async () =>
