@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitterApi = SocialApis.Twitter;
+using MastodonApi = SocialApis.Mastodon;
 
-namespace SocialApis.Common
+namespace Liberfy.Model
 {
-    public class Attachment
+    internal class Attachment
     {
         public long Id { get; }
         public AttachmentItemType Type { get; }
@@ -15,7 +17,7 @@ namespace SocialApis.Common
         public string PreviewUrl { get; }
         public string Description { get; }
 
-        public Attachment(Twitter.MediaEntity media)
+        public Attachment(TwitterApi.MediaEntity media)
         {
             this.Id = media.Id;
             this.Url = media.Url;
@@ -25,21 +27,21 @@ namespace SocialApis.Common
 
             switch (media.Type)
             {
-                case Twitter.MediaType.Photo:
+                case TwitterApi.MediaType.Photo:
                     this.Type = AttachmentItemType.Photo;
                     break;
 
-                case Twitter.MediaType.AnimatedGif:
+                case TwitterApi.MediaType.AnimatedGif:
                     this.Type = AttachmentItemType.Gif;
                     break;
 
-                case Twitter.MediaType.Video:
+                case TwitterApi.MediaType.Video:
                     this.Type = AttachmentItemType.Video;
                     break;
             }
         }
 
-        public Attachment(Mastodon.Attachment attachment)
+        public Attachment(MastodonApi.Attachment attachment)
         {
             this.Id = attachment.Id;
             this.Url = attachment.PreviewUrl;
@@ -48,15 +50,15 @@ namespace SocialApis.Common
 
             switch (attachment.Type)
             {
-                case Mastodon.AttachmentType.Image:
+                case MastodonApi.AttachmentType.Image:
                     this.Type = AttachmentItemType.Photo;
                     break;
 
-                case Mastodon.AttachmentType.GifVideo:
+                case MastodonApi.AttachmentType.GifVideo:
                     this.Type = AttachmentItemType.Gif;
                     break;
 
-                case Mastodon.AttachmentType.Video:
+                case MastodonApi.AttachmentType.Video:
                     this.Type = AttachmentItemType.Video;
                     break;
             }

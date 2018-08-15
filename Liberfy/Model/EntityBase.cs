@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocialApis.Common
+namespace Liberfy.Model
 {
     public abstract class EntityBase
     {

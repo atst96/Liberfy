@@ -1,4 +1,5 @@
-﻿using Liberfy.ViewModel;
+﻿using Liberfy.Model;
+using Liberfy.ViewModel;
 using SocialApis.Common;
 using SocialApis.Twitter;
 using System;
@@ -23,15 +24,15 @@ namespace Liberfy
         {
             this.Account = account;
             this.Item = item;
-            this.Entities = Item.Status.Attachments;
-            this.CurrentEntity = Entities.First();
+            this.Entities = this.Item.Status.Attachments;
+            this.CurrentEntity = this.Entities.First();
         }
 
         public MediaEntityInfo(AccountBase account, StatusItem item, Attachment currentEntity)
         {
             this.Account = account;
             this.Item = item;
-            this.Entities = Item.Status.Attachments;
+            this.Entities = this.Item.Status.Attachments;
             this.CurrentEntity = currentEntity;
         }
     }
