@@ -95,6 +95,7 @@
     <Compile Include="Mastodon\Objects\Context.cs" />
     <Compile Include="Mastodon\Objects\Emoji.cs" />
     <Compile Include="Mastodon\Objects\Instance.cs" />
+    <Compile Include="Mastodon\Objects\InstanceUrls.cs" />
     <Compile Include="Mastodon\Objects\List.cs" />
     <Compile Include="Mastodon\Objects\Mention.cs" />
     <Compile Include="Mastodon\Objects\Notification.cs" />

@@ -22,7 +22,16 @@ namespace SocialApis.Mastodon
         [DataMember(Name = "email")]
         public string Email { get; private set; }
 
+        [DataMember(Name = "version")]
+        public string Version { get; private set; }
+
         [DataMember(Name = "urls")]
-        public string Urls { get; private set; }
+        public InstanceUrls Urls { get; private set; }
+
+        [DataMember(Name = "languages")]
+        public string[] Language { get; private set; }
+
+        [DataMember(Name = "contact_account")]
+        public Account ContactAccount { get; private set; }
     }
 }
