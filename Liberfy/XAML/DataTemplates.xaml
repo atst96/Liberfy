@@ -515,11 +515,11 @@
 
     <DataTemplate x:Key="StatusItemTemplate" DataType="{x:Type app:StatusItem}">
         <Grid Background="Transparent">
-            <DockPanel Margin="4">
+            <DockPanel>
                 <!-- Bottom elements -->
                 <DockPanel
                     DockPanel.Dock="Bottom"
-                    Margin="8 4 8 8">
+                    Margin="0 4 0 0">
                     <UniformGrid
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
@@ -560,7 +560,7 @@
 
                 <!-- Profile image -->
                 <Button
-                    Margin="4"
+                    Margin="0,0,4,4"
                     DockPanel.Dock="Left"
                     VerticalAlignment="Top"
                     Style="{StaticResource ImageButton}"
@@ -576,7 +576,7 @@
 
                 <!-- Right contents -->
                 <DockPanel
-                    Margin="4"
+                    Margin="4 0 0 4"
                     DockPanel.Dock="Top">
                     <Border
                         app:ElementBehavior.Visible="{Binding User.IsProtected}"
@@ -651,7 +651,7 @@
                     DockPanel.Dock="Top"
                     BorderThickness="0 1"
                     BorderBrush="#bbb"
-                    Padding="4 6"
+                    Padding="4 6 0 2"
                     app:ElementBehavior.Visible="{Binding IsRetweet, Mode=OneTime}"
                     Margin="{StaticResource TimelineItemEntityMargin}">
                     <DockPanel>

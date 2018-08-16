@@ -11,12 +11,13 @@
     xmlns:vm="clr-namespace:Liberfy.ViewModel"
     xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:app="clr-namespace:Liberfy"
     StartupUri="View/MainWindow.xaml"
     ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
         <ResourceDictionary>
             <sys:Double x:Key="UI.Column.Width">300</sys:Double>
-            
+
             <sys:Double x:Key="UI.Tweet.ProfileImage.Width">40</sys:Double>
             <Visibility x:Key="UI.Tweet.ProfileImage.Visibility">Visible</Visibility>
             <Visibility x:Key="UI.Tweet.Attachment.Images.Visibility">Visible</Visibility>
@@ -28,7 +29,7 @@
             <Thickness x:Key="ToolBarIconPadding">4</Thickness>
 
             <sys:Double x:Key="UIFontSize">12</sys:Double>
-            
+
             <FontFamily x:Key="UIFont">Meiryo</FontFamily>
 
             <SolidColorBrush x:Key="Brush.Favorite" Color="Red" />
@@ -48,14 +49,75 @@
                 x:Key="taskbarIcon"
                 Visibility="Collapsed"
                 IconSource="Icons/app_tasktray.ico" />
-            
+
             <!--#region Converters -->
-            
+
             <conv:BoolInverter x:Key="BoolInverter" />
             <conv:IsNotNullConverter x:Key="IsNotNullConverter" />
 
             <!--#endregion-->
-            
+
+            <Style x:Key="GeneralTimelineViewItemStyle" TargetType="{x:Type app:TimelineViewItem}">
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="IsRetweetedItem" Value="{Binding IsRetweet, Mode=OneTime}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type app:TimelineViewItem}">
+                            <Border
+                                x:Name="border"
+                                Padding="8"
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                BorderThickness="0 0 0 1">
+                                <ContentPresenter
+                                    Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
+                            </Border>
+
+                            <ControlTemplate.Triggers>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsRetweetedItem" Value="False" />
+                                        <Condition Property="IsMouseOver" Value="False" />
+                                    </MultiTrigger.Conditions>
+                                    <Setter TargetName="border" Property="Background" Value="Transparent" />
+                                    <Setter TargetName="border" Property="BorderBrush" Value="#27B3B3B3" />
+                                </MultiTrigger>
+
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsRetweetedItem" Value="False" />
+                                        <Condition Property="IsMouseOver" Value="True" />
+                                    </MultiTrigger.Conditions>
+                                    <Setter TargetName="border" Property="Background" Value="#27B3B3B3" />
+                                    <Setter TargetName="border" Property="BorderBrush" Value="#27B3B3B3" />
+                                </MultiTrigger>
+
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="False" />
+                                        <Condition Property="IsRetweetedItem" Value="True" />
+                                    </MultiTrigger.Conditions>
+                                    <Setter TargetName="border" Property="Background" Value="#10008F23" />
+                                    <Setter TargetName="border" Property="BorderBrush" Value="#27008F23" />
+                                </MultiTrigger>
+
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="True" />
+                                        <Condition Property="IsRetweetedItem" Value="True" />
+                                    </MultiTrigger.Conditions>
+                                    <Setter TargetName="border" Property="Background" Value="#27008F23" />
+                                    <Setter TargetName="border" Property="BorderBrush" Value="#27008F23" />
+                                </MultiTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="XAML\Icons.xaml" />
                 <ResourceDictionary Source="Themes\Generic.xaml" />
