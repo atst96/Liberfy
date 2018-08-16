@@ -113,6 +113,7 @@
     <Compile Include="Common\RateLimit.cs" />
     <Compile Include="Twitter\Apis\BlocksApi.cs" />
     <Compile Include="Twitter\Apis\CollectionsApi.cs" />
+    <Compile Include="Twitter\Apis\DirectMessageApi.cs" />
     <Compile Include="Twitter\Apis\FavoritesApi.cs" />
     <Compile Include="Twitter\Apis\FollowersApi.cs" />
     <Compile Include="Twitter\Apis\FriendsApi.cs" />
@@ -124,13 +125,19 @@
     <Compile Include="Twitter\Apis\TokenApiBase.cs" />
     <Compile Include="Twitter\Apis\UsersApi.cs" />
     <Compile Include="Twitter\Enums\CoordinateType.cs" />
+    <Compile Include="Twitter\Enums\DirectMessageEventType.cs" />
     <Compile Include="Twitter\Enums\EventType.cs" />
     <Compile Include="Twitter\Enums\FriendshipConnection.cs" />
     <Compile Include="Twitter\Enums\MediaType.cs" />
     <Compile Include="Twitter\Enums\StreamType.cs" />
     <Compile Include="Twitter\Enums\TranslatorType.cs" />
+    <Compile Include="Twitter\Objects\App.cs" />
     <Compile Include="Twitter\Objects\Coordinates.cs" />
     <Compile Include="Twitter\Objects\DirectMessage.cs" />
+    <Compile Include="Twitter\Objects\DirectMessageCreate.cs" />
+    <Compile Include="Twitter\Objects\DirectMessageData.cs" />
+    <Compile Include="Twitter\Objects\DirectMessageEvent.cs" />
+    <Compile Include="Twitter\Objects\DirectMessageTarget.cs" />
     <Compile Include="Twitter\Objects\Entities\Entities.cs" />
     <Compile Include="Twitter\Objects\Entities\EntityBase.cs" />
     <Compile Include="Twitter\Objects\Entities\ExtendedEntities.cs" />
@@ -156,6 +163,8 @@
     <Compile Include="Twitter\Objects\VideoVariant.cs" />
     <Compile Include="Twitter\Responses\CursoredIdsResponse.cs" />
     <Compile Include="Twitter\Responses\CursoredUsersResponse.cs" />
+    <Compile Include="Twitter\Responses\DirectMessageListResponse.cs" />
+    <Compile Include="Twitter\Responses\DirectMessageSingleResponse.cs" />
     <Compile Include="Twitter\Responses\ListedResponse.cs" />
     <Compile Include="Twitter\Responses\MediaResponse.cs" />
     <Compile Include="Twitter\Responses\StatusResponse.cs" />

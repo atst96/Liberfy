@@ -59,7 +59,7 @@ namespace SocialApis.Twitter
         public StatusesApi Statuses => this._statuses ?? (this._statuses = new StatusesApi(this));
 
         private DirectMessageApi _directMessageApi;
-        public DirectMessageApi DirectMessage => this._directMessageApi ?? (this._directMessageApi = new DirectMessageApi(this)));
+        public DirectMessageApi DirectMessage => this._directMessageApi ?? (this._directMessageApi = new DirectMessageApi(this));
 
         private FavoritesApi _favorites;
         public FavoritesApi Favorites => this._favorites ?? (this._favorites = new FavoritesApi(this));
