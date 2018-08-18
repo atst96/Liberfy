@@ -8,8 +8,8 @@ namespace Liberfy
 {
     class StreamSearchColumn : SearchColumnBase
     {
-        public StreamSearchColumn(TwitterTimeline timeline)
-            : base(timeline, ColumnType.Stream)
+        public StreamSearchColumn(AccountBase account)
+            : base(account, ColumnType.Stream)
         {
         }
     }

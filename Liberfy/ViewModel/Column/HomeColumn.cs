@@ -8,21 +8,9 @@ namespace Liberfy
 {
     internal class HomeColumn : StatusColumnBase
     {
-        public HomeColumn(TwitterTimeline timeline)
-            : base(timeline, ColumnType.Home, "Home")
+        public HomeColumn(AccountBase account)
+            : base(account, ColumnType.Home, "Home")
         {
-            if (timeline != null)
-            {
-                timeline.OnHomeStatusesLoaded += OnHomeTimelineLoaded;
-            }
-        }
-
-        private void OnHomeTimelineLoaded(object sender, IEnumerable<StatusItem> e)
-        {
-            if (sender is TwitterTimeline timeline)
-                timeline.OnHomeStatusesLoaded -= OnHomeTimelineLoaded;
-
-            this.Items.Reset(e);
         }
     }
 }

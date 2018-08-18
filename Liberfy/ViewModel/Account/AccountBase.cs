@@ -1,6 +1,5 @@
 ﻿using Liberfy.Commands;
 using Liberfy.Settings;
-using Liberfy.ViewModel.Timeline;
 using SocialApis;
 using SocialApis.Common;
 using System;
@@ -31,7 +30,7 @@ namespace Liberfy
 
         public abstract ITokensBase Tokens { get; }
 
-        public ITimeline Timeline { get; }
+        public TimelineBase Timeline { get; }
 
         private bool _automaticallyLogin;
         public bool AutomaticallyLogin
@@ -66,10 +65,10 @@ namespace Liberfy
             this.AutomaticallyLogin = item.AutomaticallyLogin;
             this.AutomaticallyLoadTimeline = item.AutomaticallyLoadTimeline;
 
-            this.Timeline = this.CreateTimeline(item.Columns);
+            this.Timeline = this.CreateTimeline();
         }
 
-        public AccountBase(ITokensBase tokens, IAccount account, IEnumerable<ColumnSetting> columnOptions = null)
+        public AccountBase(ITokensBase tokens, IAccount account)
         {
             if (this.Service != account.Service)
                 throw new ArgumentException(nameof(account));
@@ -82,12 +81,12 @@ namespace Liberfy
             this.IsLoggedIn = true;
 
             this.SetTokens(ApiTokenInfo.FromTokens(tokens));
-            this.Timeline = this.CreateTimeline(columnOptions);
+            this.Timeline = this.CreateTimeline();
         }
 
         public abstract void SetTokens(ApiTokenInfo tokens);
 
-        protected abstract ITimeline CreateTimeline(IEnumerable<ColumnSetting> columnOptions);
+        protected abstract TimelineBase CreateTimeline();
 
         private bool _isLoading;
         public bool IsLoading
@@ -102,6 +101,8 @@ namespace Liberfy
             get => this._isLoggedIn;
             private set => this.SetProperty(ref this._isLoggedIn, value);
         }
+
+        public abstract Task Load();
 
         public async ValueTask<bool> TryLogin()
         {
@@ -204,7 +205,7 @@ namespace Liberfy
             Token = ApiTokenInfo.FromTokens(this.Tokens),
             AutomaticallyLogin = this.AutomaticallyLogin,
             AutomaticallyLoadTimeline = this.AutomaticallyLoadTimeline,
-            Columns = this.Timeline.Columns?.Select(c => c.GetOption()),
+            //Columns = this.Timeline.Columns?.Select(c => c.GetOption()),
             MutedIds = this._mutedIds?.ToArray(),
         };
 

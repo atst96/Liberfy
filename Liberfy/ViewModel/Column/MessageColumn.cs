@@ -8,8 +8,8 @@ namespace Liberfy
 {
     class MessageColumn : ColumnBase
     {
-        public MessageColumn(TwitterTimeline timeline)
-            : base(timeline, ColumnType.Messages, "Message")
+        public MessageColumn(AccountBase account)
+            : base(account, ColumnType.Messages, "Message")
         {
         }
 

@@ -13,12 +13,12 @@ namespace Liberfy.ViewModel
 
         public MainWindow() : base()
         {
-            this.Accounts = App.Accounts;
+            this.Accounts = AccountManager.Accounts;
             this.SelectedAccount = this.Accounts.FirstOrDefault();
             this.WindowStatus = App.Setting.Window.Main;
         }
 
-        public FluidCollection<AccountBase> Accounts { get; }
+        public IEnumerable<AccountBase> Accounts { get; }
 
         private AccountBase _selectedAccount;
         public AccountBase SelectedAccount
@@ -40,7 +40,7 @@ namespace Liberfy.ViewModel
             if (this._initialized) return;
             this._initialized = true;
 
-            if (this.Accounts.Count == 0 && !this.DialogService.OpenInitSettingView())
+            if (AccountManager.Count == 0 && !this.DialogService.OpenInitSettingView())
             {
                 this.DialogService.Invoke(ViewState.Close);
                 return;
@@ -53,7 +53,9 @@ namespace Liberfy.ViewModel
                 foundTwitterAccount = false,
                 foundMastodonAccount = false;
 
-            var foundServicesDataStore = new LinkedList<DataStore>(); 
+            var foundServicesDataStore = new LinkedList<DataStore>();
+
+            var loadingTasks = new LinkedList<Task>();
 
             foreach (var account in this.Accounts.Where(a => a.AutomaticallyLogin))
             {
@@ -70,12 +72,11 @@ namespace Liberfy.ViewModel
                     foundServicesDataStore.AddLast(DataStore.Mastodon);
                 }
 
-                if (await account.TryLogin())
-                {
-                    await account.TryLoadDetails();
-                    account.StartTimeline();
-                }
+                var task = account.Load();
+                loadingTasks.AddLast(task);
             }
+
+            await Task.WhenAll(loadingTasks);
 
             foreach (var dataStore in foundServicesDataStore)
             {
@@ -128,10 +129,7 @@ namespace Liberfy.ViewModel
             get => this._showSettingDialog ?? (this._showSettingDialog = this.RegisterCommand(() => this.DialogService.OpenSetting()));
         }
 
-        public IEnumerable<ColumnBase> Columns
-        {
-            get => this.Accounts.First().Timeline.Columns;
-        }
+        public IEnumerable<ColumnBase> Columns { get; } = TimelineBase.Columns;
 
         internal override void OnClosed()
         {

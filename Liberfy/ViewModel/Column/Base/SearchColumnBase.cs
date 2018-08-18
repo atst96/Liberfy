@@ -9,8 +9,8 @@ namespace Liberfy
 {
     internal abstract class SearchColumnBase : StatusColumnBase
     {
-        protected SearchColumnBase(TwitterTimeline timeline, ColumnType type)
-            : base(timeline, type)
+        protected SearchColumnBase(AccountBase account, ColumnType type)
+            : base(account, type)
         {
         }
 

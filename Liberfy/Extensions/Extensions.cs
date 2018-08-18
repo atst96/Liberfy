@@ -43,9 +43,11 @@ namespace Liberfy
         {
             var list = new List<T>(collection.Count());
 
+            var compare = EqualityComparer<T>.Default;
+
             foreach (var item in collection)
             {
-                if (!list.Contains(item))
+                if (!list.Contains(item, compare))
                 {
                     list.Add(item);
                 }

@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using Liberfy.Settings;
+using SocialApis;
 
 namespace Liberfy.ViewModel
 {
@@ -24,8 +25,6 @@ namespace Liberfy.ViewModel
         }
 
         public Setting Setting => App.Setting;
-
-        public FluidCollection<AccountBase> Accounts { get; } = App.Accounts;
 
         /*
          * [表示]タブ関連 → SettingWindowViewModel.View.cs
@@ -420,7 +419,7 @@ namespace Liberfy.ViewModel
             {
                 var tokens = auth.Tokens;
 
-                var account = this.Accounts.FirstOrDefault((a) => a.Id == tokens.UserId);
+                var account = AccountManager.Get(SocialService.Twitter, tokens.UserId);
 
                 if (account != null)
                 {
@@ -430,23 +429,29 @@ namespace Liberfy.ViewModel
                 {
                     var user = await tokens.Account.VerifyCredentials();
 
-                    var columnOptions = this.DefaultColumns.Select(c => c.GetOption());
-
-                    account = new TwitterAccount(tokens, user, columnOptions)
+                    account = new TwitterAccount(tokens, user)
                     {
                         AutomaticallyLogin = this.Setting.AccountDefaultAutomaticallyLogin,
                         AutomaticallyLoadTimeline = this.Setting.AccountDefaultAutomaticallyLoadTimeline
                     };
+                    
+                    AccountManager.Add(account);
 
-                    this.Accounts.Add(account);
+                    foreach (var columnOptions in this.DefaultColumns.Select(c => c.GetOption()))
+                    {
+                        if (ColumnBase.FromSetting(columnOptions, account, out var column))
+                        {
+                            TimelineBase.Columns.Add(column);
+                        }
+                    }
 
                     if (!await account.TryLogin())
                     {
                         this.DialogService.MessageBox(
                             $"アカウント情報の取得に失敗しました:\n",
                             MsgBoxButtons.Ok, MsgBoxIcon.Information);
-
-                        this.Accounts.Remove(account);
+                        
+                        AccountManager.Remove(account);
                     }
                 }
             }
@@ -464,13 +469,13 @@ namespace Liberfy.ViewModel
         private Command _accountDeleteCommand;
         public Command AccountDeleteCommand => this._accountDeleteCommand ?? (this._accountDeleteCommand = this.RegisterCommand(
             DelegateCommand<AccountBase>
-            .When(this.Accounts.Contains)
+            .When(a => AccountManager.Contains(a))
             .Exec(a =>
             {
                 if (this.DialogService.ShowQuestion(
                     $"本当にアカウントを一覧から削除しますか？\n { a.Info.Name }@{ a.Info.ScreenName }"))
                 {
-                    this.Accounts.Remove(a);
+                    AccountManager.Remove(a);
                     a.Unload();
                 }
 
@@ -480,20 +485,24 @@ namespace Liberfy.ViewModel
         private Command _accountMoveUpCommand;
         public Command AccountMoveUpCommand => this._accountMoveUpCommand ?? (this._accountMoveUpCommand = this.RegisterCommand(
             DelegateCommand<AccountBase>
-            .When(a => this.Accounts.CanItemIndexDecrement(a))
+            .When(a => AccountManager.IndexOf(a) > 1)
             .Exec(a =>
             {
-                this.Accounts.ItemIndexDecrement(a);
+                int index = AccountManager.IndexOf(a);
+                AccountManager.Move(index, index - 1);
+
                 this.RaiseCanExecuteAccountCommands();
             })));
 
         private Command _accountMoveDownCommand;
         public Command AccountMoveDownCommand => this._accountMoveDownCommand = (this._accountMoveDownCommand = this.RegisterCommand(
             DelegateCommand<AccountBase>
-            .When(a => this.Accounts.CanItemIndexIncrement(a))
+            .When(a => AccountManager.IndexOf(a) < AccountManager.Count - 1)
             .Exec(a =>
             {
-                this.Accounts.ItemIndexIncrement(a);
+                int index = AccountManager.IndexOf(a);
+                AccountManager.Move(index, index + 1);
+
                 this.RaiseCanExecuteAccountCommands();
             })));
 
@@ -831,7 +840,7 @@ namespace Liberfy.ViewModel
 
         internal override bool CanClose()
         {
-            if (Accounts.Count == 0)
+            if (AccountManager.Count == 0)
             {
                 return DialogService.MessageBox(
                     "アカウントが登録されていません。終了しますか？", "Liberfy",

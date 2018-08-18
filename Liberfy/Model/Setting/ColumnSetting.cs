@@ -10,6 +10,12 @@ namespace Liberfy
     [DataContract]
     internal class ColumnSetting : ICloneable
     {
+        [DataMember(Name = "service")]
+        public SocialApis.SocialService Service { get; set; }
+
+        [DataMember(Name = "user_id")]
+        public long UserId { get; set; }
+
         [DataMember(Name = "type")]
         public ColumnType Type { get; set; }
 
@@ -18,6 +24,8 @@ namespace Liberfy
 
         public ColumnSetting Clone() => new ColumnSetting
         {
+            Service = this.Service,
+            UserId = this.UserId,
             Type = this.Type,
             Options = this.Options == null ? null : new Dictionary<string, IConvertible>(this.Options),
         };

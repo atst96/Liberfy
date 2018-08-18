@@ -172,7 +172,7 @@ namespace Liberfy
         public bool OpenInitSettingView()
         {
             OpenSetting(0, true);
-            return App.Accounts.Count > 0;
+            return AccountManager.Count > 0;
         }
 
         public void OpenSetting(int? page = null, bool isModal = false)

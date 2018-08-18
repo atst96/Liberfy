@@ -197,7 +197,7 @@
             HorizontalScrollBarVisibility="Auto"
             Background="Transparent">
             <ItemsControl
-                ItemsSource="{Binding SelectedAccount.Timeline.Columns, Mode=OneWay}"
+                ItemsSource="{Binding Columns, Mode=OneTime}"
                 ItemTemplate="{StaticResource ColumnTemplate}"
                 Height="{Binding ViewportHeight, ElementName=timelineViewr, Mode=OneWay}">
                 <ItemsControl.ItemsPanel>

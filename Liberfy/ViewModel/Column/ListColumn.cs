@@ -12,7 +12,8 @@ namespace Liberfy
     {
         private static string BaseTitle = "List";
 
-        public ListColumn(TwitterTimeline timeline) : base(timeline, ColumnType.List, BaseTitle)
+        public ListColumn(AccountBase account)
+            : base(account, ColumnType.List, BaseTitle)
         {
         }
 

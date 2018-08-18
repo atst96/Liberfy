@@ -8,23 +8,9 @@ namespace Liberfy
 {
     internal class NotificationColumn : StatusColumnBase
     {
-        public NotificationColumn(TwitterTimeline timeline)
-            : base(timeline, ColumnType.Notification, "Notification")
+        public NotificationColumn(AccountBase account)
+            : base(account, ColumnType.Notification, "Notification")
         {
-            if (timeline != null)
-            {
-                timeline.OnNotificationsLoaded += OnNotificationLoaded;
-            }
-        }
-
-        private void OnNotificationLoaded(object sender, IEnumerable<IItem> e)
-        {
-            if (sender is TwitterTimeline timeline)
-            {
-                timeline.OnNotificationsLoaded -= OnNotificationLoaded;
-            }
-
-            this.Items.Reset(e);
         }
     }
 }

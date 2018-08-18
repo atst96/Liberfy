@@ -29,8 +29,6 @@ namespace Liberfy
         private static Setting _setting;
         internal static Setting Setting => _setting;
 
-        internal static FluidCollection<AccountBase> Accounts { get; private set; }
-
         internal static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
 
         public const string AppName = "Liberfy";
@@ -67,7 +65,7 @@ namespace Liberfy
 
         private static void InitializeProgram()
         {
-            IEnumerable<Settings.AccountItem> accountsSetting = null;
+            Settings.AccountSetting accountsSetting = null;
 
             // 作業ディレクトリの再指定（自動起動時に C:/Windows/system32になってしまうため）
 
@@ -78,8 +76,27 @@ namespace Liberfy
 
             if (TryParseSettingFileOrDisplayError(Defines.AccountsFile, ref accountsSetting))
             {
-                Accounts = new FluidCollection<AccountBase>(
-                    accountsSetting.Distinct().Select(a => AccountBase.FromSetting(a)));
+                if (accountsSetting.Accounts?.Any() ?? false)
+                {
+                    AccountManager.InitializeAccounts(accountsSetting.Accounts);
+                }
+
+                if (accountsSetting.Columns?.Any() ?? false)
+                {
+                    var columns = new LinkedList<ColumnBase>();
+
+                    foreach (var columnSetting in accountsSetting.Columns)
+                    {
+                        var account = AccountManager.Get(columnSetting.Service, columnSetting.UserId);
+
+                        if (account != null && ColumnBase.FromSetting(columnSetting, account, out var column))
+                        {
+                            columns.AddLast(column);
+                        }
+                    }
+
+                    TimelineBase.Columns.Reset(columns);
+                }
             }
             else
             {
@@ -179,7 +196,11 @@ namespace Liberfy
 
         private static void SaveSettings()
         {
-            var accountsSetting = Accounts.Select(a => a.ToSetting());
+            var accountsSetting = new Settings.AccountSetting
+            {
+                Accounts = AccountManager.Accounts.Select(a => a.ToSetting()),
+                Columns = TimelineBase.Columns.Select(c => c.GetOption()),
+            };
 
             // 設定をファイルに保存
             SaveSettingWithErrorDialog(Defines.SettingFile, Setting);

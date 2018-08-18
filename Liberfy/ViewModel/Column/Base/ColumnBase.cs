@@ -32,36 +32,36 @@ namespace Liberfy
     {
         internal static ColumnBase FromType(ColumnType type) => FromType(null, type);
 
-        private static ColumnBase FromType(TwitterTimeline timeline, ColumnType type)
+        private static ColumnBase FromType(AccountBase account, ColumnType type)
         {
             switch (type)
             {
                 case ColumnType.Home:
-                    return new HomeColumn(timeline);
+                    return new HomeColumn(account);
 
                 case ColumnType.Notification:
-                    return new NotificationColumn(timeline);
+                    return new NotificationColumn(account);
 
                 case ColumnType.Search:
-                    return new SearchColumn(timeline);
+                    return new SearchColumn(account);
 
                 case ColumnType.List:
-                    return new ListColumn(timeline);
+                    return new ListColumn(account);
 
                 case ColumnType.Stream:
-                    return new StreamSearchColumn(timeline);
+                    return new StreamSearchColumn(account);
 
                 case ColumnType.Messages:
-                    return new MessageColumn(timeline);
+                    return new MessageColumn(account);
 
                 default:
                     return null;
             }
         }
 
-        public static bool FromSetting(ColumnSetting option, TwitterTimeline timeline, out ColumnBase column)
+        public static bool FromSetting(ColumnSetting option, AccountBase account, out ColumnBase column)
         {
-            column = option == null ? null : FromType(timeline, option.Type);
+            column = option == null ? null : ColumnBase.FromType(account, option.Type);
 
             if (column == null)
             {
@@ -101,22 +101,31 @@ namespace Liberfy
 
     internal abstract partial class ColumnBase : NotificationObject
     {
-        protected ColumnBase(TwitterTimeline timeline, ColumnType type, string title = null)
+        protected ColumnBase(AccountBase account, ColumnType type, string title = null)
         {
             this.Type = type;
             this._title = title;
-            this._timeline = timeline;
+            this.Account = account;
         }
 
         protected Dispatcher Dispatcher { get; } = App.Current.Dispatcher;
-
-        private readonly TwitterTimeline _timeline;
 
         public ColumnType Type { get; }
 
         public virtual ColumnSetting GetOption()
         {
-            return new ColumnSetting { Type = this.Type };
+            var setting = new ColumnSetting
+            {
+                Type = this.Type,
+            };
+
+            if (this.Account != null)
+            {
+                setting.Service = Account.Service;
+                setting.UserId = Account.Id;
+            }
+
+            return setting;
         }
 
         protected virtual void SetOption(ColumnSetting option)
@@ -124,6 +133,8 @@ namespace Liberfy
         }
 
         public FluidCollection<IItem> Items { get; } = new FluidCollection<IItem>();
+
+        public AccountBase Account { get; }
 
         private string _title;
         public string Title

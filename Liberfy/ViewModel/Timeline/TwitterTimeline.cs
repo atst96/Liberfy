@@ -10,17 +10,14 @@ using System.Windows.Threading;
 
 namespace Liberfy
 {
-    internal class TwitterTimeline : NotificationObject, ViewModel.Timeline.ITimeline
+    internal class TwitterTimeline : TimelineBase
     {
         private static Dispatcher _dispatcher = App.Current.Dispatcher;
 
         private readonly long _userId;
         private readonly TwitterAccount _account;
-        public Tokens _tokens => (SocialApis.Twitter.Tokens)_account.InternalTokens;
-        public FluidCollection<ColumnBase> Columns { get; } = new FluidCollection<ColumnBase>();
+        public Tokens _tokens => (Tokens)_account.InternalTokens;
 
-        public event EventHandler<IEnumerable<StatusItem>> OnHomeStatusesLoaded;
-        public event EventHandler<IEnumerable<IItem>> OnNotificationsLoaded;
         public event EventHandler OnUnloading;
 
         public TwitterTimeline(TwitterAccount account)
@@ -29,22 +26,7 @@ namespace Liberfy
             this._userId = account.Id;
         }
 
-        public TwitterTimeline(TwitterAccount account, IEnumerable<ColumnSetting> columnOptions)
-            : this(account)
-        {
-            this.LoadColumns(columnOptions);
-        }
-
-        public void LoadColumns(IEnumerable<ColumnSetting> columnOptions)
-        {
-            foreach (var columnSetting in columnOptions)
-            {
-                if (ColumnBase.FromSetting(columnSetting, this, out var column))
-                    this.Columns.Add(column);
-            }
-        }
-
-        public void Load()
+        public override void Load()
         {
             this.LoadHomeTimelineAsync();
             this.LoadNotificationTimelineAsync();
@@ -59,6 +41,15 @@ namespace Liberfy
             }
         }
 
+        private IEnumerable<ColumnBase> GetCurrentAccountColumns()
+        {
+            foreach (var column in TimelineBase.Columns)
+            {
+                if (column.Account?.Equals(this._account) ?? false)
+                    yield return column;
+            }
+        }
+
         private Task LoadHomeTimelineAsync() => Task.Run(async () =>
         {
             try
@@ -69,9 +60,9 @@ namespace Liberfy
                 });
                 var items = this.GetStatusItem(statuses);
 
-                if (this.OnHomeStatusesLoaded != null)
+                foreach (var column in this.GetCurrentAccountColumns().Where(c => c.Type == ColumnType.Home))
                 {
-                    await _dispatcher.InvokeAsync(() => this.OnHomeStatusesLoaded(this, items));
+                    await _dispatcher.InvokeAsync(() => column.Items.Reset(items));
                 }
             }
             catch
@@ -87,9 +78,9 @@ namespace Liberfy
                 var statuses = await _tokens.Statuses.MentionsTimeline();
                 var items = this.GetStatusItem(statuses);
 
-                if (this.OnNotificationsLoaded != null)
+                foreach (var column in this.GetCurrentAccountColumns().Where(c => c.Type == ColumnType.Notification))
                 {
-                    await _dispatcher.InvokeAsync(() => this.OnNotificationsLoaded(this, items));
+                    await _dispatcher.InvokeAsync(() => column.Items.Reset(items));
                 }
             }
             catch
@@ -110,10 +101,10 @@ namespace Liberfy
             }
         });
 
-        public void Unload()
+        public override void Unload()
         {
             this.OnUnloading?.Invoke(this, EventArgs.Empty);
-            this.Columns.Clear();
+            //this.Columns.Clear();
         }
     }
 }

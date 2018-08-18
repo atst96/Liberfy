@@ -140,6 +140,7 @@
     <Compile Include="Data\Info\AppInfo.cs" />
     <Compile Include="IAccount.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Model\AccountManager.cs" />
     <Compile Include="Model\Attachment.cs" />
     <Compile Include="Model\EntityBase.cs" />
     <Compile Include="Model\Setting\ColumnSetting.cs" />
@@ -173,7 +174,7 @@
     <Compile Include="ViewModel\NowPlayingViewModel.cs" />
     <Compile Include="ViewModel\SettingWindowViewModel.View.cs" />
     <Compile Include="ViewModel\Account\TwitterAccount.cs" />
-    <Compile Include="ViewModel\Timeline\ITimeline.cs" />
+    <Compile Include="ViewModel\Timeline\TimelineBase.cs" />
     <Compile Include="ViewModel\UploadMedia.cs" />
     <Compile Include="Data\UILocalize.cs" />
     <Compile Include="ViewModel\Column\Base\ColumnBase.cs" />

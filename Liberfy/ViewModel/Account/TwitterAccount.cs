@@ -1,5 +1,4 @@
 ﻿using Liberfy.Settings;
-using Liberfy.ViewModel.Timeline;
 using SocialApis;
 using SocialApis.Twitter;
 using System;
@@ -13,23 +12,23 @@ namespace Liberfy
 {
     internal class TwitterAccount : AccountBase, IAccount<Tokens>
     {
-        protected override DataStore DataStore => DataStore.Twitter;
+        public override long Id { get; protected set; }
+
+        public override SocialService Service { get; } = SocialService.Twitter;
+
+        protected override DataStore DataStore { get; } = DataStore.Twitter;
 
         public Tokens InternalTokens { get; private set; }
 
         public override ITokensBase Tokens => this.InternalTokens;
-
-        public override long Id { get; protected set; }
-
-        public override SocialService Service { get; } = SocialService.Twitter;
 
         public TwitterAccount(AccountItem accountItem) 
             : base(accountItem)
         {
         }
 
-        public TwitterAccount(Tokens tokens, User account, IEnumerable<ColumnSetting> columnOptions = null)
-            : base(tokens, account, columnOptions)
+        public TwitterAccount(Tokens tokens, User account)
+            : base(tokens, account)
         {
         }
 
@@ -42,16 +41,25 @@ namespace Liberfy
                 t.AccessTokenSecret);
         }
 
-        protected override ITimeline CreateTimeline(IEnumerable<ColumnSetting> columnOptions)
+        protected override TimelineBase CreateTimeline()
         {
-            return new TwitterTimeline(this, columnOptions);
+            return new TwitterTimeline(this);
+        }
+
+        public override async Task Load()
+        {
+            if (await base.TryLogin())
+            {
+                await this.LoadDetails();
+                this.StartTimeline();
+            }
         }
 
         protected override async Task<bool> Login()
         {
             try
             {
-                var user = await this.InternalTokens.Account.VerifyCredentials(new SocialApis.Query
+                var user = await this.InternalTokens.Account.VerifyCredentials(new Query
                 {
                     ["include_entities"] = true,
                     ["skip_status"] = true,

@@ -9,8 +9,8 @@ namespace Liberfy
 {
     class SearchColumn : SearchColumnBase
     {
-        public SearchColumn(TwitterTimeline timeline)
-            : base(timeline, ColumnType.Search)
+        public SearchColumn(AccountBase account)
+            : base(account, ColumnType.Search)
         {
         }
 
