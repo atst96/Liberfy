@@ -228,7 +228,7 @@ namespace Liberfy
             }.Show();
         }
 
-        public void Open(ContentWindowViewModel viewModel, ViewOption option, string templateKey)
+        public void Open(ContentWindowViewModel viewModel, ViewOption option, object templateKey)
         {
             new ContentWindow(viewModel, option, app.TryFindResource(templateKey) as DataTemplate)
             {
@@ -252,7 +252,7 @@ namespace Liberfy
             }.ShowDialog() ?? false;
         }
 
-        public bool OpenModal(ContentWindowViewModel viewModel, ViewOption option, string templateKey)
+        public bool OpenModal(ContentWindowViewModel viewModel, ViewOption option, object templateKey)
         {
             return new ContentWindow(viewModel, option, app.TryFindResource(templateKey) as DataTemplate)
             {
