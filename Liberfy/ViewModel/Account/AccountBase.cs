@@ -53,9 +53,14 @@ namespace Liberfy
 
             this.Id = item.Id;
 
-            this.Info = this.DataStore.Users.GetOrAdd(
-                item.Id,
-                _ => new UserInfo(item.Id, item.Name, item.ScreenName, item.IsProtected, item.ProfileImageUrl));
+            UserInfo userInfo;
+            if (!this.DataStore.Users.TryGetValue(item.Id, out userInfo))
+            {
+                userInfo = new UserInfo(item.Id, item.Name, item.ScreenName, item.IsProtected, item.ProfileImageUrl);
+                this.DataStore.Users.TryAdd(item.Id, userInfo);
+            }
+
+            this.Info = userInfo;
 
             this.SetTokens(item.Token);
 
@@ -74,9 +79,7 @@ namespace Liberfy
                 throw new ArgumentException(nameof(account));
 
             this.Id = (long)account.Id;
-            this.Info = this.DataStore.Users.AddOrUpdate(this.Id,
-                (_) => new UserInfo(account),
-                (_, info) => info.Update(account));
+            this.Info = this.DataStore.UserAddOrUpdate(account);
 
             this.IsLoggedIn = true;
 

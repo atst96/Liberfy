@@ -26,6 +26,8 @@ namespace Liberfy.ViewModel
 
         public Setting Setting => App.Setting;
 
+        public IEnumerable<AccountBase> Accounts { get; } = AccountManager.Accounts;
+
         /*
          * [表示]タブ関連 → SettingWindowViewModel.View.cs
          * 
