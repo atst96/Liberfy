@@ -41,7 +41,7 @@ namespace Liberfy
                 return (match.Groups["url"].Value, match.Groups["name"].Value);
         }
 
-        public static IEnumerable<TwitterApi.EntityBase> ToEntityList(this TwitterApi.Entities entities)
+        public static IEnumerable<TwitterApi.EntityBase> EnumerateEntity(this TwitterApi.Entities entities)
         {
             if (entities == null)
                 yield break;
@@ -56,71 +56,17 @@ namespace Liberfy
             };
 
             foreach (var _entities in entitiesList.Where(es => es?.Length > 0))
+            {
                 foreach (var entity in _entities)
+                {
                     yield return entity;
+                }
+            }
         }
 
-        public static EntityBase[] ToCommonEntities(this IEnumerable<TwitterApi.EntityBase> allEntities, string plainText)
+        public static IEnumerable<TwitterApi.EntityBase> SortByStartIndex(this IEnumerable<TwitterApi.EntityBase> collection)
         {
-            var entities = allEntities
-                .OrderBy(e => e.IndexStart)
-                .GetEnumerator();
-
-            if (!entities.MoveNext())
-                return new EntityBase[0];
-
-            var entityList = new LinkedList<EntityBase>();
-
-            var textReader = new SequentialSurrogateTextReader(plainText);
-
-            var entity = entities.Current;
-
-            if (entity.IndexStart != 0)
-                textReader.SkipLength(entity.IndexStart);
-
-            while (entity != null)
-            {
-                var newEntity = default(EntityBase);
-
-                switch (entity)
-                {
-                    case TwitterApi.HashtagEntity hashtag:
-                        newEntity = new HashtagEntity(hashtag);
-                        break;
-
-                    case TwitterApi.MediaEntity media:
-                        newEntity = new MediaEntity(media);
-                        break;
-
-                    case TwitterApi.UrlEntity url:
-                        newEntity = new UrlEntity(url);
-                        break;
-
-                    case TwitterApi.UserMentionEntity user:
-                        newEntity = new MentionEntity(user);
-                        break;
-
-                    default:
-                        continue;
-                }
-
-                newEntity.ActualIndexStart = textReader.Cursor;
-                newEntity.ActualLength = textReader.GetNextLength(newEntity.Length);
-                entityList.AddLast(newEntity);
-
-                int prevEntityIndexEnd = entity.IndexEnd;
-
-                entity = entities.MoveNext() ? entities.Current : null;
-
-                if (entity == null)
-                    break;
-                else
-                    textReader.SkipLength(entity.IndexStart - prevEntityIndexEnd);
-            }
-
-            textReader = null;
-
-            return entityList.ToArray();
+            return collection.OrderBy(e => e.IndexStart);
         }
     }
 }

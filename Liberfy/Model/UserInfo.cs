@@ -32,18 +32,30 @@ namespace Liberfy
             private set => this.SetProperty(ref this._description, value);
         }
 
-        private EntityBase[] _descriptionEntities;
-        public EntityBase[] DescriptionEntities
+        private ITextEntityBuilder _descriptionEntitiesBuilder;
+        private IEnumerable<EntityBase> _descriptionEntities;
+        public IEnumerable<EntityBase> DescriptionEntities
         {
-            get => this._descriptionEntities;
-            private set => this.SetProperty(ref this._descriptionEntities, value);
+            get
+            {
+                if (this._descriptionEntities == null)
+                    this._descriptionEntities = this._descriptionEntitiesBuilder.Build();
+
+                return this._descriptionEntities;
+            }
         }
 
-        private EntityBase[] _urlEntities;
-        public EntityBase[] UrlEntities
+        private ITextEntityBuilder _urlEntitiesBuilder;
+        public IEnumerable<EntityBase> _urlEntities;
+        public IEnumerable<EntityBase> UrlEntities
         {
-            get => this._urlEntities;
-            private set => this.SetProperty(ref this._urlEntities, value);
+            get
+            {
+                if (this._urlEntities == null)
+                    this._urlEntities = this._urlEntitiesBuilder.Build();
+
+                return this._urlEntities;
+            }
         }
 
         private int _followersCount;
@@ -168,17 +180,10 @@ namespace Liberfy
             this.LongUserName = item.ScreenName;
             this.Description = item.Description;
 
-            this.DescriptionEntities = item.Entities?.Description?
-                .ToEntityList()
-                .ToCommonEntities(item.Description)
-                ?? new EntityBase[0];
+            this._descriptionEntitiesBuilder = new TwitterTextTokenBuilder(item.Description ?? "", item.Entities?.Description);
+            this._urlEntitiesBuilder = new TwitterTextTokenBuilder(item.Url ?? "", item.Entities?.Url);
 
             this.Url = item.Url;
-
-            this.UrlEntities = item.Entities?.Url?
-                .ToEntityList()
-                .ToCommonEntities(item.Url)
-                ?? new EntityBase[0];
 
             this.FollowersCount = item.FollowersCount;
             this.FriendsCount = item.FriendsCount;
@@ -203,11 +208,11 @@ namespace Liberfy
             this.LongUserName = item.Acct;
             this.Description = item.Note;
 
-            this.DescriptionEntities = new EntityBase[0];
+            this._descriptionEntities = new EntityBase[0];
 
             this.Url = item.Url;
 
-            this.UrlEntities = new EntityBase[0];
+            this._urlEntities = new[] { new PlainTextEntity(item.Url, 0, item.Url.Length) };
 
             this.FollowersCount = item.FollowersCount;
             this.FriendsCount = item.FollowersCount;

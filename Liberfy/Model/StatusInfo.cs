@@ -26,7 +26,18 @@ namespace Liberfy
 
         public DateTimeOffset CreatedAt { get; }
 
-        public EntityBase[] Entities { get; }
+        private ITextEntityBuilder _textEntitiesBuilder;
+        private IEnumerable<EntityBase> _entities;
+        public IEnumerable<EntityBase> Entities
+        {
+            get
+            {
+                if (this._entities == null)
+                    this._entities = this._textEntitiesBuilder.Build();
+
+                return this._entities;
+            }
+        }
 
         public Attachment[] Attachments { get; }
 
@@ -98,10 +109,8 @@ namespace Liberfy
             this.User = DataStore.Twitter.UserAddOrUpdate(status.User);
 
             (this.SourceUrl, this.SourceName) = status.ParseSource();
-
-            this.Entities = status.Entities
-                .ToEntityList()
-                .ToCommonEntities(this.Text) ?? new EntityBase[0];
+            
+            this._textEntitiesBuilder = new TwitterTextTokenBuilder(this.Text ?? "", status.Entities);
 
             this.Attachments = status.ExtendedEntities?.Media
                 .Select(m => new Attachment(m))

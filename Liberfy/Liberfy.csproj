@@ -140,6 +140,7 @@
     <Compile Include="Data\Info\AppInfo.cs" />
     <Compile Include="IAccount.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Helper\ITextTokenBuilder.cs" />
     <Compile Include="Model\AccountManager.cs" />
     <Compile Include="Model\Attachment.cs" />
     <Compile Include="Model\EntityBase.cs" />
@@ -172,6 +173,7 @@
     <Compile Include="TemplateSelectors\TimelineItemTemplateSelector.cs" />
     <Compile Include="Controls\TimelineView.cs" />
     <Compile Include="Components\TwStringInfo.cs" />
+    <Compile Include="Helper\TwitterTextTokenBuilder.cs" />
     <Compile Include="ViewModel\Account\AccountBase.cs" />
     <Compile Include="ViewModel\Account\MastodonAccount.cs" />
     <Compile Include="ViewModel\Column\HomeColumn.cs" />
