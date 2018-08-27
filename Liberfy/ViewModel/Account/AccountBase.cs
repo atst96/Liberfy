@@ -217,8 +217,7 @@ namespace Liberfy
             if (item.Service == SocialService.Twitter)
                 return new TwitterAccount(item);
             else if (item.Service == SocialService.Mastodon)
-                // return new MastodonAccount(item);
-                throw new NotImplementedException();
+                return new MastodonAccount(item);
             else
                 throw new NotImplementedException();
         }
