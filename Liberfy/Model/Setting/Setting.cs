@@ -5,6 +5,8 @@ using System.Runtime.Serialization;
 using System.Windows.Media;
 using static Liberfy.Defines;
 
+using Mastodon = SocialApis.Mastodon;
+
 namespace Liberfy
 {
     [DataContract]
@@ -394,6 +396,18 @@ namespace Liberfy
         {
             get => _profileImageForm;
             set => SetProperty(ref _profileImageForm, value);
+        }
+
+        #endregion
+
+        #region Apis
+
+        [DataMember(Name = "mastodon_apis")]
+        private FluidCollection<ClientKeyCache> _clientKeys;
+        [IgnoreDataMember]
+        public FluidCollection<ClientKeyCache> ClientKeys
+        {
+            get => this._clientKeys ?? (this._clientKeys = new FluidCollection<ClientKeyCache>());
         }
 
         #endregion

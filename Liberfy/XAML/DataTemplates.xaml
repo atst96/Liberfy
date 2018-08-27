@@ -61,7 +61,7 @@
         </Setter>
     </Style>
 
-    <DataTemplate DataType="{x:Type vm:AuthenticationViewModel}">
+    <DataTemplate x:Key="{x:Type vm:AuthenticationViewModel}" DataType="{x:Type vm:AuthenticationViewModel}">
         <Border
             BorderThickness="2"
             BorderBrush="#ccc">
@@ -99,45 +99,60 @@
                     Style="{StaticResource HeaderlessTabControl}">
 
                     <TabItem>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock
-                                Grid.Row="1" TextWrapping="Wrap"
-                                Foreground="Red" FontWeight="Bold"
-                                Text="{Binding Error, Mode=OneWay}" />
-
+                        <StackPanel>
                             <Label
                                 Grid.ColumnSpan="2"
                                 Padding="0" FontSize="20"
                                 Content="アカウントの追加" />
 
+                            <Grid Margin="0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="4*" />
+                                    <ColumnDefinition Width="6*" />
+                                </Grid.ColumnDefinitions>
+
+                                <HeaderedContentControl
+                                    Margin="0,4" Grid.Column="0"
+                                    Header="サービス名">
+                                    <ComboBox
+                                        ItemsSource="{Binding ServiceNameList, Mode=OneTime}"
+                                        DisplayMemberPath="Value"
+                                        SelectedValuePath="Key"
+                                        SelectedValue="{Binding SelectedService, Mode=TwoWay}" />
+                                </HeaderedContentControl>
+
+                                <HeaderedContentControl
+                                    Margin="-1,4,0,4" Grid.Column="1"
+                                    Header="URL"
+                                    app:ElementBehavior.Show="{Binding ServiceConfig.IsVariableDomain, Mode=OneWay}">
+                                    <TextBox Text="{Binding InstanceUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </HeaderedContentControl>
+                            </Grid>
+
                             <CheckBox 
-                                Margin="0 0 0 6"
-                                Grid.Row="2"
+                                Margin="0,0,0,6"
                                 IsChecked="{Binding OverrideKey,Mode=TwoWay}"
                                 Content="Liberfy以外のAPIキーを使用する" />
 
                             <HeaderedContentControl
-                                Margin="0 4" Grid.Row="3"
-                                Header="ConsumerKey"
+                                Margin="0,4"
+                                Header="{Binding ServiceConfig.ClientKeyName, Mode=OneWay}"
                                 app:ElementBehavior.Show="{Binding OverrideKey, Mode=OneWay}">
                                 <TextBox Text="{Binding ConsumerKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             </HeaderedContentControl>
 
                             <HeaderedContentControl
-                                Margin="0 4" Grid.Row="4"
-                                Header="ConsumerSecret"
+                                Margin="0,4"
+                                Header="{Binding ServiceConfig.ClientSecretKeyName, Mode=OneWay}"
                                 app:ElementBehavior.Show="{Binding OverrideKey, Mode=OneWay}">
                                 <TextBox Text="{Binding ConsumerSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             </HeaderedContentControl>
-                        </Grid>
+
+                            <TextBlock
+                                TextWrapping="WrapWithOverflow"
+                                Foreground="Red" FontWeight="Bold"
+                                Text="{Binding Error, Mode=OneWay}" />
+                        </StackPanel>
                     </TabItem>
 
                     <TabItem>

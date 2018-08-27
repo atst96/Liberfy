@@ -408,7 +408,7 @@ namespace Liberfy.ViewModel
                 StartupLocation = WindowStartupLocation.CenterOwner,
                 SizeToContent = SizeToContent.Manual,
                 Width = 400,
-                Height = 280,
+                Height = 320,
                 WindowChrome = new System.Windows.Shell.WindowChrome
                 {
                     GlassFrameThickness = new Thickness(0),
@@ -417,26 +417,60 @@ namespace Liberfy.ViewModel
                     CaptionHeight = 0,
                 },
                 ShowInTaskbar = false,
-            }))
+            }, typeof(AuthenticationViewModel)))
             {
-                var tokens = auth.Tokens;
-
-                var account = AccountManager.Get(SocialService.Twitter, tokens.UserId);
-
-                if (account != null)
+                if (auth.SelectedService == SocialService.Twitter)
                 {
-                    account.SetTokens(ApiTokenInfo.FromTokens(tokens));
+                    var tokens = auth.TwitterTokens;
+
+                    var account = AccountManager.Get(SocialService.Twitter, tokens.UserId);
+
+                    if (account != null)
+                    {
+                        account.SetTokens(ApiTokenInfo.FromTokens(tokens));
+                    }
+                    else
+                    {
+                        var user = await tokens.Account.VerifyCredentials();
+
+                        account = new TwitterAccount(tokens, user)
+                        {
+                            AutomaticallyLogin = this.Setting.AccountDefaultAutomaticallyLogin,
+                            AutomaticallyLoadTimeline = this.Setting.AccountDefaultAutomaticallyLoadTimeline
+                        };
+
+                        AccountManager.Add(account);
+
+                        foreach (var columnOptions in this.DefaultColumns.Select(c => c.GetOption()))
+                        {
+                            if (ColumnBase.FromSetting(columnOptions, account, out var column))
+                            {
+                                TimelineBase.Columns.Add(column);
+                            }
+                        }
+
+                        if (!await account.TryLogin())
+                        {
+                            this.DialogService.MessageBox(
+                                $"アカウント情報の取得に失敗しました:\n",
+                                MsgBoxButtons.Ok, MsgBoxIcon.Information);
+
+                            AccountManager.Remove(account);
+                        }
+                    }
                 }
-                else
+                else if (auth.SelectedService == SocialService.Mastodon)
                 {
-                    var user = await tokens.Account.VerifyCredentials();
+                    var tokens = auth.MastodonTokens;
 
-                    account = new TwitterAccount(tokens, user)
+                    var user = await tokens.Accounts.VerifyCredentials();
+
+                    var account = new MastodonAccount(tokens, user)
                     {
                         AutomaticallyLogin = this.Setting.AccountDefaultAutomaticallyLogin,
                         AutomaticallyLoadTimeline = this.Setting.AccountDefaultAutomaticallyLoadTimeline
                     };
-                    
+
                     AccountManager.Add(account);
 
                     foreach (var columnOptions in this.DefaultColumns.Select(c => c.GetOption()))
@@ -452,7 +486,7 @@ namespace Liberfy.ViewModel
                         this.DialogService.MessageBox(
                             $"アカウント情報の取得に失敗しました:\n",
                             MsgBoxButtons.Ok, MsgBoxIcon.Information);
-                        
+
                         AccountManager.Remove(account);
                     }
                 }

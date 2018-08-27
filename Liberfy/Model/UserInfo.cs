@@ -15,7 +15,7 @@ namespace Liberfy
         public SocialService Service { get; }
 
         public long Id { get; }
-        
+
         public DateTimeOffset CreatedAt { get; private set; }
 
         private string _longUserName;
@@ -197,12 +197,49 @@ namespace Liberfy
             return this;
         }
 
+        public UserInfo Update(SocialApis.Mastodon.Account item)
+        {
+            this.CreatedAt = item.CreatedAt;
+            this.LongUserName = item.Acct;
+            this.Description = item.Note;
+
+            this.DescriptionEntities = new EntityBase[0];
+
+            this.Url = item.Url;
+
+            this.UrlEntities = new EntityBase[0];
+
+            this.FollowersCount = item.FollowersCount;
+            this.FriendsCount = item.FollowersCount;
+            //this.Language = item.Language;
+            //this.Location = item.Location;
+            this.Name = item.DisplayName;
+            this.ProfileBannerUrl = item.Header;
+            this.ProfileImageUrl = item.Avatar;
+            this.IsProtected = item.IsLocked;
+            this.ScreenName = item.UserName;
+            this.StatusesCount = item.StatusesCount;
+            this.RemoteUrl = item.Url;
+
+            this.UpdatedAt = DateTime.Now;
+
+            return this;
+        }
+
         public UserInfo Update(IAccount item)
         {
             if (item is SocialApis.Twitter.User twUser)
+            {
                 return this.Update(twUser);
+            }
+            else if (item is SocialApis.Mastodon.Account mdUser)
+            {
+                return this.Update(mdUser);
+            }
             else
+            {
                 throw new NotImplementedException();
+            }
         }
 
         public bool Equals(UserInfo other) => Equals(this.Id, other?.Id) && this.Service == other.Service;

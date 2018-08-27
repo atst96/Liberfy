@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace SocialApis
 {
-    public enum SocialService
+    public enum SocialService : ushort
     {
         [EnumMember(Value = "twitter")]
-        Twitter,
+        Twitter = 1,
 
         [EnumMember(Value = "mastodon")]
-        Mastodon,
+        Mastodon = 2,
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using Mastodon = SocialApis.Mastodon;
 
 namespace Liberfy.Settings
 {
@@ -15,6 +16,9 @@ namespace Liberfy.Settings
     [DataContract]
     internal struct ApiTokenInfo
     {
+        [DataMember(Name = "host")]
+        public string Host { get; set; }
+
         [DataMember(Name = "consumer_key")]
         public string ConsumerKey { get; set; }
 
@@ -28,11 +32,30 @@ namespace Liberfy.Settings
         public string AccessTokenSecret { get; set; }
 
         public static ApiTokenInfo FromTokens(ITokensBase tokens)
+        {
+            if (tokens is Mastodon.Tokens mTokens)
+            {
+                return ApiTokenInfo.FromTokens(mTokens);
+            }
+            else
+            {
+                return new ApiTokenInfo
+                {
+                    ConsumerKey = tokens.ConsumerKey,
+                    ConsumerSecret = tokens.ConsumerSecret,
+                    AccessToken = tokens.ApiToken,
+                    AccessTokenSecret = tokens.ApiTokenSecret
+                };
+            }
+        }
+
+        public static ApiTokenInfo FromTokens(Mastodon.Tokens tokens)
             => new ApiTokenInfo
             {
-                ConsumerKey       = tokens.ConsumerKey,
-                ConsumerSecret    = tokens.ConsumerSecret,
-                AccessToken       = tokens.ApiToken,
+                Host = tokens.HostUrl.AbsoluteUri.ToString(),
+                ConsumerKey = tokens.ClientId,
+                ConsumerSecret = tokens.ClientSecret,
+                AccessToken = tokens.ApiToken,
                 AccessTokenSecret = tokens.ApiTokenSecret
             };
     }

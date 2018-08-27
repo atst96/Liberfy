@@ -143,8 +143,12 @@
     <Compile Include="Model\AccountManager.cs" />
     <Compile Include="Model\Attachment.cs" />
     <Compile Include="Model\EntityBase.cs" />
+    <Compile Include="Model\Setting\ClientKeyCache.cs" />
     <Compile Include="Model\Setting\ColumnSetting.cs" />
     <Compile Include="Model\Setting\WindowSettings.cs" />
+    <Compile Include="SocialServices\Config\ISocialConfig.cs" />
+    <Compile Include="SocialServices\Config\MastodonConfig.cs" />
+    <Compile Include="SocialServices\Config\TwitterConfig.cs" />
     <Compile Include="TemplateSelectors\ColumnOptionTemplateSelector.cs" />
     <Compile Include="Components\FluidCollection.cs" />
     <Compile Include="Components\MessageBox.cs" />
@@ -169,11 +173,13 @@
     <Compile Include="Controls\TimelineView.cs" />
     <Compile Include="Components\TwStringInfo.cs" />
     <Compile Include="ViewModel\Account\AccountBase.cs" />
+    <Compile Include="ViewModel\Account\MastodonAccount.cs" />
     <Compile Include="ViewModel\Column\HomeColumn.cs" />
     <Compile Include="ViewModel\Column\NotificationColumn.cs" />
     <Compile Include="ViewModel\NowPlayingViewModel.cs" />
     <Compile Include="ViewModel\SettingWindowViewModel.View.cs" />
     <Compile Include="ViewModel\Account\TwitterAccount.cs" />
+    <Compile Include="ViewModel\Timeline\MastodonTimeline.cs" />
     <Compile Include="ViewModel\Timeline\TimelineBase.cs" />
     <Compile Include="ViewModel\UploadMedia.cs" />
     <Compile Include="Data\UILocalize.cs" />
