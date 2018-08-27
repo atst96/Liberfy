@@ -65,5 +65,11 @@ namespace SocialApis.Mastodon
 
         [DataMember(Name = "moved")]
         public bool? Moved { get; private set; }
+
+        [DataMember(Name = "fields")]
+        public FieldItem[] Fields { get; private set; }
+
+        [DataMember(Name = "bot")]
+        public bool? Bot { get; private set; }
     }
 }

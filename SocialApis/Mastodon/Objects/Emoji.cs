@@ -18,5 +18,8 @@ namespace SocialApis.Mastodon
 
         [DataMember(Name = "url")]
         public string Url { get; private set; }
+
+        [DataMember(Name = "visible_in_picker")]
+        public bool VisibleInPicker { get; private set; }
     }
 }

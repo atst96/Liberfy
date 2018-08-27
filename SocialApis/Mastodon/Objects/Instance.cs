@@ -29,7 +29,7 @@ namespace SocialApis.Mastodon
         public InstanceUrls Urls { get; private set; }
 
         [DataMember(Name = "languages")]
-        public string[] Language { get; private set; }
+        public string[] Languages { get; private set; }
 
         [DataMember(Name = "contact_account")]
         public Account ContactAccount { get; private set; }

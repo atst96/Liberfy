@@ -15,24 +15,27 @@ namespace SocialApis.Mastodon
         public long Id { get; private set; }
 
         [DataMember(Name = "following")]
-        public bool IsFollowing { get; private set; }
+        public bool Following { get; private set; }
 
         [DataMember(Name = "followed_by")]
-        public bool IsFollowedBy { get; private set; }
+        public bool FollowedBy { get; private set; }
 
         [DataMember(Name = "blocking")]
-        public bool IsBlocking { get; private set; }
+        public bool Blocking { get; private set; }
 
         [DataMember(Name = "muting")]
-        public bool IsMuting { get; private set; }
+        public bool Muting { get; private set; }
 
         [DataMember(Name = "muting_notifications")]
-        public bool IsMutingNotifications { get; private set; }
+        public bool MutingNotifications { get; private set; }
 
         [DataMember(Name = "requested")]
-        public bool IsRequested { get; private set; }
+        public bool Requested { get; private set; }
 
         [DataMember(Name = "domain_blocking")]
-        public bool IsDomainBlocking { get; private set; }
+        public bool DomainBlocking { get; private set; }
+
+        [DataMember(Name = "showing_reblogs")]
+        public bool ShowingReblogs { get; private set; }
     }
 }

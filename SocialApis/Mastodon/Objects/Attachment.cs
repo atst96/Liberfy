@@ -17,6 +17,9 @@ namespace SocialApis.Mastodon
         [DataMember(Name = "type")]
         public AttachmentType Type { get; private set; }
 
+        [DataMember(Name = "url")]
+        public string Url { get; private set; }
+
         [DataMember(Name = "remote_url")]
         public string RemoteUrl { get; private set; }
 
