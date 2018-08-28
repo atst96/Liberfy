@@ -99,7 +99,7 @@ namespace Liberfy.Behaviors
                 user.UrlEntities,
                 textBlock.Inlines);
         }
-        private static async Task SetHyperlinkToPlainText(IEnumerable<EntityBase> entities, InlineCollection inlines)
+        private static async Task SetHyperlinkToPlainText(IEnumerable<IEntity> entities, InlineCollection inlines)
         {
             await App.Current.Dispatcher.InvokeAsync(() =>
             {

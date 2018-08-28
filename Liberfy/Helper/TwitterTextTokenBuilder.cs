@@ -19,7 +19,7 @@ namespace Liberfy
             this._entities = entities;
         }
 
-        public IEnumerable<EntityBase> Build()
+        public IEnumerable<IEntity> Build()
         {
             var text = this._text;
 
@@ -33,23 +33,23 @@ namespace Liberfy
             if (entities == null || !entities.MoveNext())
             {
                 return string.IsNullOrEmpty(text)
-                    ? new EntityBase[0]
-                    : new EntityBase[1] { new PlainTextEntity(text, 0, text.Length) };
+                    ? new IEntity[0]
+                    : new IEntity[1] { new PlainTextEntity(text) };
             }
 
-            var entityList = new LinkedList<EntityBase>();
+            var entityList = new LinkedList<IEntity>();
             var textReader = new SequentialSurrogateTextReader(text);
 
             var entity = entities.Current;
 
             if (entity.IndexStart != 0)
             {
-                entityList.AddLast(new PlainTextEntity(textReader.ReadLength(entity.IndexStart), 0, entity.IndexStart - 1));
+                entityList.AddLast(new PlainTextEntity(textReader.ReadLength(entity.IndexStart)));
             }
 
             while (entity != null)
             {
-                var newEntity = default(EntityBase);
+                var newEntity = default(IEntity);
 
                 int indexStart = textReader.Cursor;
                 int length = textReader.GetNextLength(entity.IndexEnd - entity.IndexStart);
@@ -76,12 +76,9 @@ namespace Liberfy
                         throw new NotImplementedException();
                 }
 
-                newEntity.ActualIndexStart = indexStart;
-                newEntity.ActualLength = length;
-
                 if (newEntity.DisplayText == null)
                 {
-                    newEntity.DisplayText = text.Substring(newEntity.ActualIndexStart, newEntity.ActualLength);
+                    newEntity.DisplayText = text.Substring(indexStart, length);
                 }
 
                 entityList.AddLast(newEntity);
@@ -94,14 +91,14 @@ namespace Liberfy
                 {
                     if (prevEntityIndexEnd < text.Length)
                     {
-                        entityList.AddLast(new PlainTextEntity(textReader.ReadToEnd(), prevEntityIndexEnd, text.Length - prevEntityIndexEnd));
+                        entityList.AddLast(new PlainTextEntity(textReader.ReadToEnd()));
                     }
 
                     break;
                 }
                 else
                 {
-                    entityList.AddLast(new PlainTextEntity(textReader.ReadLength(entity.IndexStart - prevEntityIndexEnd), prevEntityIndexEnd, entity.IndexStart - prevEntityIndexEnd));
+                    entityList.AddLast(new PlainTextEntity(textReader.ReadLength(entity.IndexStart - prevEntityIndexEnd)));
                 }
             }
 

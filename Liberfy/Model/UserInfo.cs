@@ -33,8 +33,8 @@ namespace Liberfy
         }
 
         private ITextEntityBuilder _descriptionEntitiesBuilder;
-        private IEnumerable<EntityBase> _descriptionEntities;
-        public IEnumerable<EntityBase> DescriptionEntities
+        private IEnumerable<IEntity> _descriptionEntities;
+        public IEnumerable<IEntity> DescriptionEntities
         {
             get
             {
@@ -46,8 +46,8 @@ namespace Liberfy
         }
 
         private ITextEntityBuilder _urlEntitiesBuilder;
-        public IEnumerable<EntityBase> _urlEntities;
-        public IEnumerable<EntityBase> UrlEntities
+        public IEnumerable<IEntity> _urlEntities;
+        public IEnumerable<IEntity> UrlEntities
         {
             get
             {
@@ -208,11 +208,11 @@ namespace Liberfy
             this.LongUserName = item.Acct;
             this.Description = item.Note;
 
-            this._descriptionEntities = new EntityBase[0];
+            this._descriptionEntities = new IEntity[0];
 
             this.Url = item.Url;
 
-            this._urlEntities = new[] { new PlainTextEntity(item.Url, 0, item.Url.Length) };
+            this._urlEntities = new[] { new PlainTextEntity(item.Url) };
 
             this.FollowersCount = item.FollowersCount;
             this.FriendsCount = item.FollowersCount;

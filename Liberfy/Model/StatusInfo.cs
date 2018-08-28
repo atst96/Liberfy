@@ -27,8 +27,8 @@ namespace Liberfy
         public DateTimeOffset CreatedAt { get; }
 
         private ITextEntityBuilder _textEntitiesBuilder;
-        private IEnumerable<EntityBase> _entities;
-        public IEnumerable<EntityBase> Entities
+        private IEnumerable<IEntity> _entities;
+        public IEnumerable<IEntity> Entities
         {
             get
             {
@@ -162,8 +162,7 @@ namespace Liberfy
                 this.SourceUrl = status.Application.Website;
             }
 
-            // this._textEntitiesBuilder = new TwitterTextTokenBuilder(this.Text ?? "", status.Entities);
-            this._entities = new[] { new PlainTextEntity(this.Text ?? "", 0, this.Text?.Length ?? 0) };
+            this._textEntitiesBuilder = new MastodonTextEntityBuilder(this.Text ?? "");
 
             this.Attachments = status.MediaAttachments
                 .Select(m => new Attachment(m))
