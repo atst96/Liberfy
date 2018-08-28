@@ -104,6 +104,16 @@ namespace Liberfy
         public override void Unload()
         {
             this.OnUnloading?.Invoke(this, EventArgs.Empty);
+
+            var accountColumns = Columns
+                .Where(c => c.Account == this._account)
+                .ToArray();
+
+            foreach (var c in accountColumns)
+            {
+                Columns.Remove(c);
+            }
+
             //this.Columns.Clear();
         }
     }

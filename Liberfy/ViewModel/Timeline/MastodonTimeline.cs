@@ -31,6 +31,14 @@ namespace Liberfy
 
         public override void Unload()
         {
+            var accountColumns = Columns
+                .Where(c => c.Account == this._account)
+                .ToArray();
+
+            foreach (var c in accountColumns)
+            {
+                Columns.Remove(c);
+            }
         }
 
         private IEnumerable<StatusItem> GetStatusItem(IEnumerable<Status> statuses)
