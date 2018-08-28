@@ -79,6 +79,49 @@ namespace Liberfy
             this.User.PropertyChanged += UserPropertyChanged;
         }
 
+        public StatusItem(MastodonStatus status, MastodonAccount account)
+        {
+            this.Account = account;
+            this.Id = status.Id;
+
+            var reaction = account.GetActivity((status.Reblog??status).Id);
+            reaction.SetAll(status.Favourited ?? false, status.Reblogged ?? false);
+
+            StatusInfo statusInfo;
+
+            this.IsRetweet = status.Reblog != null;
+            if (this.IsRetweet)
+            {
+                this.Type = ItemType.Retweet;
+
+                statusInfo = DataStore.Mastodon.StatusAddOrUpdate(status.Reblog);
+                this.RetweetUser = DataStore.Mastodon.UserAddOrUpdate(status.Account);
+
+                if (status.Account.Id == account.Id)
+                    reaction.IsRetweeted = true;
+            }
+            else
+            {
+                this.Type = ItemType.Status;
+                statusInfo = DataStore.Mastodon.StatusAddOrUpdate(status);
+
+                this.IsReply = status.InReplyToId.HasValue;
+                if (this.IsReply)
+                    this.InReplyToScreenName = status.Account.Acct;
+            }
+
+            this.Reaction = reaction;
+
+            this.Status = statusInfo;
+            this.User = statusInfo.User;
+            this.CreatedAt = statusInfo.CreatedAt;
+            this.MediaEntities = statusInfo.Attachments.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
+            this.HasMediaEntities = MediaEntities?.Any() ?? false;
+            this.IsCurrentAccount = statusInfo.User.Id == account.Id;
+
+            this.User.PropertyChanged += UserPropertyChanged;
+        }
+
         private void UserPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(this.User.IsProtected))
@@ -86,48 +129,6 @@ namespace Liberfy
                 this.RaisePropertyChanged(nameof(CanRetweet));
             }
         }
-
-        //public StatusItem(MastodonStatus status, MastodonAccount account)
-        //{
-        //    this.Account = account;
-        //    this.Id = status.Id;
-
-        //    var reaction = account.GetActivity(status.GetSourceId());
-        //    reaction.SetAll(status.IsFavorited ?? false, status.Retweeted ?? false);
-
-        //    StatusInfo statusInfo;
-
-        //    this.IsRetweet = status.RetweetedStatus != null;
-        //    if (this.IsRetweet)
-        //    {
-        //        this.Type = ItemType.Retweet;
-
-        //        statusInfo = account.StatusAddOrUpdate(status.RetweetedStatus);
-        //        this.RetweetUser = account.UserAddOrUpdate(status.User);
-
-        //        if (status.User.Id == account.Id)
-        //            reaction.IsRetweeted = true;
-        //    }
-        //    else
-        //    {
-        //        this.Type = ItemType.Status;
-        //        statusInfo = account.StatusAddOrUpdate(status);
-
-        //        this.IsReply = status.InReplyToStatusId.HasValue;
-        //        if (this.IsReply)
-        //            this.InReplyToScreenName = status.InReplyToScreenName;
-        //    }
-
-
-        //    this.Reaction = reaction;
-
-        //    this.Status = statusInfo;
-        //    this.User = statusInfo.User;
-        //    this.CreatedAt = statusInfo.CreatedAt;
-        //    this.MediaEntities = statusInfo.ExtendedEntities?.Media?.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
-        //    this.HasMediaEntities = MediaEntities?.Any() ?? false;
-        //    this.IsCurrentAccount = statusInfo.User.Id == account.Id;
-        //}
 
         // TODO: 何のために作ったメソッドかを忘れた
         // public void RaiseCreatedAtProeprtyChanged() => this.RaisePropertyChanged(nameof(CreatedAt));

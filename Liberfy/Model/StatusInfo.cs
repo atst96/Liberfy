@@ -14,7 +14,7 @@ using SocialApis.Common;
 
 namespace Liberfy
 {
-    internal class StatusInfo : NotificationObject, IEquatable<StatusInfo>, IEquatable<TwitterStatus>
+    internal class StatusInfo : NotificationObject
     {
         public SocialService Service { get; }
 
@@ -109,7 +109,7 @@ namespace Liberfy
             this.User = DataStore.Twitter.UserAddOrUpdate(status.User);
 
             (this.SourceUrl, this.SourceName) = status.ParseSource();
-            
+
             this._textEntitiesBuilder = new TwitterTextTokenBuilder(this.Text ?? "", status.Entities);
 
             this.Attachments = status.ExtendedEntities?.Media
@@ -132,34 +132,87 @@ namespace Liberfy
 
         #endregion End: Twitter process
 
+        #region Mastodon process
+
+        private StatusInfo(MastodonStatus status)
+        {
+            this.Service = SocialService.Twitter;
+
+            if (status.Reblog != null)
+                throw new ArgumentException();
+
+            this.Id = status.Id;
+            this.CreatedAt = status.CreatedAt;
+            // this.FilterLevel = status.FilterLevel;
+            this.InReplyToStatusId = status.InReplyToId ?? -1;
+            this.InReplyToUserId = status.InReplyToAccountId ?? -1;
+
+            // this.IsQuotedStatus = status.IsQuotedStatus && status.QuotedStatus != null;
+            this.Language = status.Language;
+            this.PossiblySensitive = status.Sensitive;
+
+            this.SpoilerText = status.SpoilerText;
+            this.Text = status.Content;
+
+            this.User = DataStore.Mastodon.UserAddOrUpdate(status.Account);
+
+            if (status.Application != null)
+            {
+                this.SourceName = status.Application.Name;
+                this.SourceUrl = status.Application.Website;
+            }
+
+            // this._textEntitiesBuilder = new TwitterTextTokenBuilder(this.Text ?? "", status.Entities);
+            this._entities = new[] { new PlainTextEntity(this.Text ?? "", 0, this.Text?.Length ?? 0) };
+
+            this.Attachments = status.MediaAttachments
+                .Select(m => new Attachment(m))
+                .ToArray() ?? new Attachment[0];
+
+            this.Update(status);
+        }
+
+        public StatusInfo Update(MastodonStatus status)
+        {
+            if ((status.Reblog ?? status).Id != this.Id)
+                throw new ArgumentException();
+
+            this.FavoriteCount = status.FavouritesCount;
+            this.RetweetCount = status.ReblogsCount;
+
+            return this;
+        }
+
+        #endregion
+
         public StatusInfo Update(IStatus item)
         {
-            if (item is TwitterStatus twitterStatus)
-                return this.Update(twitterStatus);
-            else
-                throw new NotImplementedException();
+            switch (item)
+            {
+                case TwitterStatus twStatus:
+                    return this.Update(twStatus);
+
+                case MastodonStatus mdStatus:
+                    return this.Update(mdStatus);
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         public static StatusInfo Create(IStatus commonStatus)
         {
-            if (commonStatus is TwitterStatus twitterStatus)
-                return new StatusInfo(twitterStatus);
-            else
-                throw new NotImplementedException();
+            switch (commonStatus)
+            {
+                case TwitterStatus twStatus:
+                    return new StatusInfo(twStatus);
+
+                case MastodonStatus mdStatus:
+                    return new StatusInfo(mdStatus);
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
-
-        //void IObjectInfo<Status>.Update(Status item) => this.Update(item);
-
-        public override bool Equals(object obj)
-        {
-            return (obj is StatusInfo statusInfo && this.Equals(statusInfo))
-                || (obj is TwitterStatus status && this.Equals(status));
-        }
-
-        public bool Equals(StatusInfo other) => object.Equals(Id, other?.Id);
-
-        public bool Equals(TwitterStatus other) => object.Equals(Id, other?.Id);
-
-        public override int GetHashCode() => Id.GetHashCode();
     }
 }
