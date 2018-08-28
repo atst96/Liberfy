@@ -448,15 +448,15 @@ namespace Liberfy.ViewModel
                                 TimelineBase.Columns.Add(column);
                             }
                         }
+                    }
 
-                        if (!await account.TryLogin())
-                        {
-                            this.DialogService.MessageBox(
-                                $"アカウント情報の取得に失敗しました:\n",
-                                MsgBoxButtons.Ok, MsgBoxIcon.Information);
+                    if (!await account.TryLogin())
+                    {
+                        this.DialogService.MessageBox(
+                            $"アカウント情報の取得に失敗しました:\n",
+                            MsgBoxButtons.Ok, MsgBoxIcon.Information);
 
-                            AccountManager.Remove(account);
-                        }
+                        AccountManager.Remove(account);
                     }
                 }
                 else if (auth.SelectedService == SocialService.Mastodon)
@@ -465,19 +465,29 @@ namespace Liberfy.ViewModel
 
                     var user = await tokens.Accounts.VerifyCredentials();
 
-                    var account = new MastodonAccount(tokens, user)
-                    {
-                        AutomaticallyLogin = this.Setting.AccountDefaultAutomaticallyLogin,
-                        AutomaticallyLoadTimeline = this.Setting.AccountDefaultAutomaticallyLoadTimeline
-                    };
 
-                    AccountManager.Add(account);
+                    var account = AccountManager.Get(SocialService.Mastodon, user.Id);
 
-                    foreach (var columnOptions in this.DefaultColumns.Select(c => c.GetOption()))
+                    if (account != null)
                     {
-                        if (ColumnBase.FromSetting(columnOptions, account, out var column))
+                        account.SetTokens(ApiTokenInfo.FromTokens(tokens));
+                    }
+                    else
+                    {
+                        account = new MastodonAccount(tokens, user)
                         {
-                            TimelineBase.Columns.Add(column);
+                            AutomaticallyLogin = this.Setting.AccountDefaultAutomaticallyLogin,
+                            AutomaticallyLoadTimeline = this.Setting.AccountDefaultAutomaticallyLoadTimeline
+                        };
+
+                        AccountManager.Add(account);
+
+                        foreach (var columnOptions in this.DefaultColumns.Select(c => c.GetOption()))
+                        {
+                            if (ColumnBase.FromSetting(columnOptions, account, out var column))
+                            {
+                                TimelineBase.Columns.Add(column);
+                            }
                         }
                     }
 
