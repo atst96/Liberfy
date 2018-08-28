@@ -64,7 +64,7 @@ namespace SocialApis.Mastodon
         public string HeaderStatic { get; private set; }
 
         [DataMember(Name = "moved")]
-        public bool? Moved { get; private set; }
+        public Account Moved { get; private set; }
 
         [DataMember(Name = "fields")]
         public FieldItem[] Fields { get; private set; }

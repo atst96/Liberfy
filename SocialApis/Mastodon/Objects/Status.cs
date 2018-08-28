@@ -34,7 +34,7 @@ namespace SocialApis.Mastodon
 
         [DataMember(Name = "in_reply_to_account_id")]
         [JsonFormatter(typeof(Formatters.ToNullableLongFormatter))]
-        public long? InReplyToStatusId { get; private set; }
+        public long? InReplyToAccountId { get; private set; }
 
         [DataMember(Name = "reblog")]
         public Status Reblog { get; private set; }
@@ -55,7 +55,7 @@ namespace SocialApis.Mastodon
         public int FavouritesCount { get; private set; }
 
         [DataMember(Name = "reblogged")]
-        public bool? Rebloged { get; private set; }
+        public bool? Reblogged { get; private set; }
 
         [DataMember(Name = "favourited")]
         public bool? Favourited { get; private set; }
