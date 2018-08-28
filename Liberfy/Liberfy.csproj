@@ -126,6 +126,7 @@
     <Compile Include="App.UI.cs" />
     <Compile Include="Enums\StatusVisibility.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
+    <Compile Include="Extensions\LinqToXmlHtmlExtensions.cs" />
     <Compile Include="Extensions\TimelineBehavior.cs" />
     <Compile Include="Commands\AccountCommands.cs" />
     <Compile Include="Commands\AppCommands.cs" />
@@ -141,12 +142,13 @@
     <Compile Include="Extensions\SocialApisExtensions.cs" />
     <Compile Include="Extensions\WpfExtensions.cs" />
     <Compile Include="Data\Info\AppInfo.cs" />
+    <Compile Include="Helper\MastodonTextEntityBuilder.cs" />
     <Compile Include="IAccount.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Helper\ITextTokenBuilder.cs" />
     <Compile Include="Model\AccountManager.cs" />
     <Compile Include="Model\Attachment.cs" />
-    <Compile Include="Model\EntityBase.cs" />
+    <Compile Include="Model\Entities.cs" />
     <Compile Include="Model\Setting\ClientKeyCache.cs" />
     <Compile Include="Model\Setting\ColumnSetting.cs" />
     <Compile Include="Model\Setting\WindowSettings.cs" />
