@@ -55,8 +55,7 @@ namespace Liberfy.Settings
                 Host = tokens.HostUrl.AbsoluteUri.ToString(),
                 ConsumerKey = tokens.ClientId,
                 ConsumerSecret = tokens.ClientSecret,
-                AccessToken = tokens.ApiToken,
-                AccessTokenSecret = tokens.ApiTokenSecret
+                AccessToken = tokens.AccessToken,
             };
     }
 }
