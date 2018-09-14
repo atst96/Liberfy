@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Liberfy.Model;
 using Sgml;
+using SocialApis.Mastodon;
 
 namespace Liberfy
 {
@@ -16,13 +17,17 @@ namespace Liberfy
         private static Regex _brTagReplaceRegex { get; } = new Regex("<br>", RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
         private string _content;
+        private Emoji[] _emojis;
 
-        public MastodonTextEntityBuilder(string content)
+        private static Regex _emojiRegex = new Regex(":(?<code>[a-zA-Z0-9_\\-]+):", RegexOptions.Multiline);
+
+        public MastodonTextEntityBuilder(string content, Emoji[] emojis)
         {
             this._content = content;
+            this._emojis = emojis;
         }
 
-        public static void AddText(LinkedList<IEntity> entities, string text)
+        private static void AddText(LinkedList<IEntity> entities, string text)
         {
             if (entities.Last?.Value is PlainTextEntity textEntity)
             {
@@ -31,6 +36,63 @@ namespace Liberfy
             else
             {
                 entities.AddLast(new PlainTextEntity(text));
+            }
+        }
+
+        private static void AddText(LinkedList<IEntity> entities, string text, Emoji[] emojis)
+        {
+            if (emojis?.Length == 0)
+            {
+                AddText(entities, text);
+                return;
+            }
+
+            var matches = _emojiRegex.Matches(text);
+            if (matches.Count == 0)
+            {
+                AddText(entities, text);
+                return;
+            }
+
+            if (matches[0].Index != 0)
+            {
+                AddText(entities, text.Substring(0, matches[0].Index));
+            }
+
+            for (int i = 0; i < matches.Count; ++i)
+            {
+                var m = matches[i];
+
+                var shortCode = m.Groups["code"].Value;
+
+                Emoji emoji = default;
+                foreach (var e in emojis)
+                {
+                    if (e.ShortCode == shortCode)
+                    {
+                        emoji = e;
+                        break;
+                    }
+                }
+
+                if (emoji == default)
+                {
+                    AddText(entities, m.Value);
+                }
+                else
+                {
+                    entities.AddLast(new EmojiEntity(emoji));
+                }
+
+                if (i < matches.Count - 1)
+                {
+                    var nextMatch = matches[i + 1];
+                    AddText(entities, text.Substring(m.Index + m.Value.Length, nextMatch.Index - m.Index - m.Value.Length));
+                }
+                else if (m.Index + m.Value.Length != text.Length)
+                {
+                    AddText(entities, text.Substring(m.Index + m.Value.Length));
+                }
             }
         }
 
@@ -64,7 +126,7 @@ namespace Liberfy
 
                     if (entities.Count > 0)
                     {
-                        AddText(entities, "\n");
+                        AddText(entities, "\n", this._emojis);
                     }
 
                     foreach (var secLvNode in topParagraphElement.Nodes())
@@ -72,7 +134,7 @@ namespace Liberfy
                         if (secLvNode is XText secLvTextNode)
                         {
                             var value = secLvTextNode.Value;
-                            AddText(entities, value);
+                            AddText(entities, value, this._emojis);
                         }
                         else if (secLvNode.NodeType == System.Xml.XmlNodeType.Element)
                         {

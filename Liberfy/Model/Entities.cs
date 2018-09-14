@@ -91,4 +91,20 @@ namespace Liberfy.Model
             this.DisplayText = text;
         }
     }
+
+    public class EmojiEntity : IEntity
+    {
+        public string DisplayText { get; set; }
+        
+        public string ShortCode { get; set; }
+
+        public string ImageUrl { get; set; }
+
+        public EmojiEntity(SocialApis.Mastodon.Emoji emoji)
+        {
+            this.DisplayText = $":{ emoji.ShortCode }:";
+            this.ShortCode = emoji.ShortCode;
+            this.ImageUrl = emoji.Url;
+        }
+    }
 }

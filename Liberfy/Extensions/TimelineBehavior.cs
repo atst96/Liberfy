@@ -7,8 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Liberfy.Behaviors
 {
@@ -110,6 +113,37 @@ namespace Liberfy.Behaviors
                     if (entity is PlainTextEntity)
                     {
                         inlines.Add(entity.DisplayText);
+                    }
+                    else if (entity is EmojiEntity emojiEntity)
+                    {
+                        var src = new BitmapImage();
+                        src.BeginInit();
+                        src.UriSource = new Uri(emojiEntity.ImageUrl, UriKind.Absolute);
+                        src.EndInit();
+
+                        var img = new Image
+                        {
+                            Margin = new Thickness(0, 0, 0, 0),
+                            Stretch = Stretch.Uniform,
+                            Source = src,
+                        };
+
+                        img.SetBinding(Image.HeightProperty, new Binding
+                        {
+                            Path = new PropertyPath("FontSize"),
+                            RelativeSource = new RelativeSource
+                            {
+                                AncestorType = typeof(TextBlock),
+                            }
+                        });
+
+                        img.ToolTip = emojiEntity.DisplayText;
+
+                        img.SetValue(RenderOptions.BitmapScalingModeProperty, BitmapScalingMode.HighQuality);
+
+                        var container = new InlineUIContainer(img);
+
+                        inlines.Add(container);
                     }
                     else
                     {

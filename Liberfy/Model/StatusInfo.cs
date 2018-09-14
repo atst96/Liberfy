@@ -162,7 +162,7 @@ namespace Liberfy
                 this.SourceUrl = status.Application.Website;
             }
 
-            this._textEntitiesBuilder = new MastodonTextEntityBuilder(this.Text ?? "");
+            this._textEntitiesBuilder = new MastodonTextEntityBuilder(this.Text ?? "", status.Emojis);
 
             this.Attachments = status.MediaAttachments
                 .Select(m => new Attachment(m))
