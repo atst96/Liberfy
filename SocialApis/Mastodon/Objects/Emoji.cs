@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SocialApis.Mastodon
 {
     [DataContract]
-    public struct Emoji
+    public class Emoji
     {
         [DataMember(Name = "shortcode")]
         public string ShortCode { get; private set; }
