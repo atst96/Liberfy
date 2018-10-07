@@ -58,9 +58,13 @@ namespace Liberfy
         private void SystemEvents_SessionEnding(object sender, SessionEndingEventArgs e)
         {
             if (e.Reason == SessionEndReasons.Logoff)
+            {
                 e.Cancel = Setting.SystemCancelSignout;
+            }
             else if (e.Reason == SessionEndReasons.SystemShutdown)
+            {
                 e.Cancel = Setting.SystemCancelShutdown;
+            }
         }
 
         private static void InitializeProgram()
@@ -78,7 +82,7 @@ namespace Liberfy
             {
                 if (accountsSetting.Accounts?.Any() ?? false)
                 {
-                    AccountManager.InitializeAccounts(accountsSetting.Accounts);
+                    AccountManager.Load(accountsSetting.Accounts);
                 }
 
                 if (accountsSetting.Columns?.Any() ?? false)
@@ -113,7 +117,9 @@ namespace Liberfy
             UI.ApplyFromSettings();
 
             foreach (var muteItem in _setting.Mute)
+            {
                 muteItem.Apply();
+            }
 
             TaskbarIcon = GetResource<TaskbarIcon>("taskbarIcon");
         }
@@ -146,23 +152,17 @@ namespace Liberfy
             }
         }
 
-        public static void DisplayException(Exception exception, string instruction = null)
+        public static void DisplayException(Exception ex, string instruction = null)
         {
-            var sb = new StringBuilder();
+            const string NewLine = "\n";
 
-            if (!string.IsNullOrEmpty(instruction))
-                sb.AppendLine(instruction);
+            var message = string.IsNullOrEmpty(instruction)
+                ? string.Empty
+                : instruction + NewLine;
 
-            sb.AppendLine();
-            sb.AppendLine(exception.Message);
+            message += string.Join(NewLine, ex.Message, ex.StackTrace);
 
-            sb.AppendLine();
-            sb.AppendLine(exception.StackTrace);
-
-            MessageBox.Show(
-                IntPtr.Zero,
-                sb.ToString(), "エラー",
-                icon: MsgBoxIcon.Error);
+            MessageBox.Show(IntPtr.Zero, message, "エラー", icon: MsgBoxIcon.Error);
         }
 
         private static void SaveSettings()
@@ -186,27 +186,10 @@ namespace Liberfy
             }
             catch (Exception e)
             {
-                var sb = new StringBuilder();
+                var message = string.Join("\n",
+                    "設定ファイルの保存に失敗しました\nファイル名：", Path.GetFileName(filename), e.Message, e.StackTrace);
 
-                sb.AppendLine("設定ファイルの保存に失敗しました");
-
-                sb.Append("ファイル名：");
-                sb.AppendLine(Path.GetFileName(filename));
-
-                sb.AppendLine();
-
-                sb.AppendLine(e.Message);
-
-                sb.AppendLine();
-
-                sb.AppendLine(e.StackTrace);
-
-                MessageBox.Show(
-                    IntPtr.Zero,
-                    sb.ToString(), "エラー",
-                    icon: MsgBoxIcon.Error);
-
-                sb = null;
+                MessageBox.Show(IntPtr.Zero, message, "エラー", icon: MsgBoxIcon.Error);
             }
         }
 
@@ -232,7 +215,7 @@ namespace Liberfy
 
         public static T GetResource<T>(object resourceKey)
         {
-            return Current.TryFindResource(resourceKey) is T value ? value : default(T);
+            return Current.TryFindResource(resourceKey) is T value ? value : default;
         }
 
         public static bool SetResource(object key, object value)
