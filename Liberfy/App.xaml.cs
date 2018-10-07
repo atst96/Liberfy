@@ -122,7 +122,7 @@ namespace Liberfy
         {
             try
             {
-                setting = SettingFromFile<IEnumerable<T>>(filename) ?? Enumerable.Empty<T>();
+                setting = FileContentUtility.DeserializeJsonFromFile<IEnumerable<T>>(filename) ?? Enumerable.Empty<T>();
                 return true;
             }
             catch (Exception e)
@@ -136,7 +136,7 @@ namespace Liberfy
         {
             try
             {
-                setting = SettingFromFile<T>(filename) ?? new T();
+                setting = FileContentUtility.DeserializeJsonFromFile<T>(filename) ?? new T();
                 return true;
             }
             catch (Exception e)
@@ -165,35 +165,6 @@ namespace Liberfy
                 icon: MsgBoxIcon.Error);
         }
 
-        private static IJsonFormatterResolver _jsonFormatterResolver = Utf8Json.Resolvers.StandardResolver.AllowPrivate;
-
-        private static T SettingFromFile<T>(string filename)
-        {
-            try
-            {
-                using (var fs = File.OpenRead(filename))
-                    if (fs.Length > 0)
-                        return JsonSerializer.Deserialize<T>(fs, _jsonFormatterResolver);
-            }
-            catch (FileNotFoundException)
-            {
-                // pass
-            }
-
-            return default(T);
-        }
-
-        private static void SaveSettingFile<T>(string filename, T TObj)
-        {
-            byte[] data = JsonSerializer.Serialize(TObj, _jsonFormatterResolver);
-
-            using (var fs = File.Open(filename, FileMode.Create))
-            {
-                fs.Seek(0, SeekOrigin.Begin);
-                fs.Write(data, 0, data.Length);
-            }
-        }
-
         private static void SaveSettings()
         {
             var accountsSetting = new Settings.AccountSetting
@@ -211,7 +182,7 @@ namespace Liberfy
         {
             try
             {
-                SaveSettingFile(filename, setting);
+                FileContentUtility.SerializeJsonToFile(setting, filename);
             }
             catch (Exception e)
             {

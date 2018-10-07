@@ -16,6 +16,7 @@
 - Liberfy では以下のライセンスが含まれるソフトウェアを使用しています。ライセンスについては[NOTICE.md](https://github.com/atst1996/Liberfy/blob/master/NOTICE.md)に記載しています。
   - Extended WPF Toolkit™ Community Edition
   - Font Awesome
+  - MessagePack for C#
   - NowPlayingLib
   - SgmlReader
   - tweet-text-cs
