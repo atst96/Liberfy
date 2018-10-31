@@ -6,27 +6,41 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace Liberfy
 {
-    public class FluidCollection<T> : IList<T>, INotifyCollectionChanged, INotifyPropertyChanged
+    public class NotifiableCollection<T> : IList<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         private List<T> _list;
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public FluidCollection()
+        public NotifiableCollection()
         {
             this._list = new List<T>();
 
             this.ApplyItemsCount();
         }
 
-        public FluidCollection(IEnumerable<T> collection)
+        public NotifiableCollection(int capacity)
+        {
+            this._list = new List<T>(capacity);
+
+            this.ApplyItemsCount();
+        }
+
+        public NotifiableCollection(IEnumerable<T> collection)
         {
             this._list = collection?.ToList() ?? new List<T>();
+
+            this.ApplyItemsCount();
+        }
+
+        public NotifiableCollection(IEnumerable<T> collection, int capacity)
+        {
+            this._list = new List<T>(capacity);
+            this._list.AddRange(collection);
 
             this.ApplyItemsCount();
         }

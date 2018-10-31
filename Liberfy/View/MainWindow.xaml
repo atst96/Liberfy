@@ -79,18 +79,39 @@
                                 IsChecked="{Binding IsDetailOpen, Mode=TwoWay}"
                                 Style="{StaticResource ColumnPanelToggleButton}" />
 
-                            <Grid
+                            <StackPanel
                                 Grid.Row="1" Grid.ColumnSpan="5"
-                                app:ElementBehavior.Visible="{Binding IsChecked, ElementName=paneToggle}">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto" />
-                                    <RowDefinition Height="auto" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="auto" />
-                                </Grid.ColumnDefinitions>
-                            </Grid>
+                                app:ElementBehavior.Visible="{Binding IsDetailOpen, Mode=OneWay}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button
+                                        Grid.Column="0"
+                                        FontSize="12"
+                                        Content="＜"
+                                        Command="{Binding MoveLeftCommand, Mode=OneTime}"
+                                        CommandParameter="{Binding Mode=OneTime}" />
+                                    
+                                    <Button
+                                        Grid.Column="1"
+                                        FontSize="12"
+                                        Content="＞"
+                                        Command="{Binding MoveRightCommand, Mode=OneTime}"
+                                        CommandParameter="{Binding Mode=OneTime}" />
+                                    
+                                    <Button
+                                        Grid.Column="3"
+                                        FontSize="12"
+                                        Content="✕"
+                                        Command="{Binding RemoveCommand, Mode=OneTime}"
+                                        CommandParameter="{Binding Mode=OneTime}" />
+                                </Grid>
+                            </StackPanel>
                         </Grid>
                     </Border>
 

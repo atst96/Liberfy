@@ -17,10 +17,10 @@ namespace Liberfy.ViewModel
     {
         public SettingWindow() : base()
         {
-            ViewFonts = new FluidCollection<FontFamily>();
+            ViewFonts = new NotifiableCollection<FontFamily>();
             SetFontSettings();
 
-            this.DefaultColumns = new FluidCollection<ColumnBase>(Setting.DefaultColumns
+            this.DefaultColumns = new NotifiableCollection<ColumnBase>(Setting.DefaultColumns
                 .Select(opt => ColumnBase.FromSetting(opt, null, out var column) ? column : ColumnBase.FromType(opt.Type)));
         }
 
@@ -216,7 +216,7 @@ namespace Liberfy.ViewModel
             }
         }
 
-        public FluidCollection<FontFamily> ViewFonts { get; }
+        public NotifiableCollection<FontFamily> ViewFonts { get; }
 
         private void ReloadViewFont()
         {
@@ -512,24 +512,25 @@ namespace Liberfy.ViewModel
             this._accountDeleteCommand?.RaiseCanExecute();
         }
 
-        private Command _accountDeleteCommand;
-        public Command AccountDeleteCommand => this._accountDeleteCommand ?? (this._accountDeleteCommand = this.RegisterCommand(
-            DelegateCommand<AccountBase>
-            .When(a => AccountManager.Contains(a))
-            .Exec(a =>
-            {
-                if (this.DialogService.ShowQuestion(
-                    $"本当にアカウントを一覧から削除しますか？\n { a.Info.Name }@{ a.Info.ScreenName }"))
+        private Command<AccountBase> _accountDeleteCommand;
+        public Command<AccountBase> AccountDeleteCommand => this._accountDeleteCommand
+            ?? (this._accountDeleteCommand = this.RegisterCommand(
+                DelegateCommand<AccountBase>
+                .When(a => AccountManager.Contains(a))
+                .Exec(a =>
                 {
-                    AccountManager.Remove(a);
-                    a.Unload();
-                }
+                    if (this.DialogService.ShowQuestion(
+                    $"本当にアカウントを一覧から削除しますか？\n { a.Info.Name }@{ a.Info.ScreenName }"))
+                    {
+                        AccountManager.Remove(a);
+                        a.Unload();
+                    }
 
-                this.RaiseCanExecuteAccountCommands();
-            })));
+                    this.RaiseCanExecuteAccountCommands();
+                })));
 
-        private Command _accountMoveUpCommand;
-        public Command AccountMoveUpCommand => this._accountMoveUpCommand ?? (this._accountMoveUpCommand = this.RegisterCommand(
+        private Command<AccountBase> _accountMoveUpCommand;
+        public Command<AccountBase> AccountMoveUpCommand => this._accountMoveUpCommand ?? (this._accountMoveUpCommand = this.RegisterCommand<AccountBase>(
             DelegateCommand<AccountBase>
             .When(a => AccountManager.IndexOf(a) > 1)
             .Exec(a =>
@@ -540,8 +541,8 @@ namespace Liberfy.ViewModel
                 this.RaiseCanExecuteAccountCommands();
             })));
 
-        private Command _accountMoveDownCommand;
-        public Command AccountMoveDownCommand => this._accountMoveDownCommand = (this._accountMoveDownCommand = this.RegisterCommand(
+        private Command<AccountBase> _accountMoveDownCommand;
+        public Command<AccountBase> AccountMoveDownCommand => this._accountMoveDownCommand = (this._accountMoveDownCommand = this.RegisterCommand<AccountBase>(
             DelegateCommand<AccountBase>
             .When(a => AccountManager.IndexOf(a) < AccountManager.Count - 1)
             .Exec(a =>
@@ -555,7 +556,7 @@ namespace Liberfy.ViewModel
         #endregion Commands for account
 
 
-        public FluidCollection<ColumnBase> DefaultColumns { get; }
+        public NotifiableCollection<ColumnBase> DefaultColumns { get; }
 
         #region Commands for columns
 
@@ -596,8 +597,8 @@ namespace Liberfy.ViewModel
 
         #region Command: ColumnRemoveCommand
 
-        private Command _columnRemoveCommand;
-        public Command ColumnRemoveCommand
+        private Command<ColumnBase> _columnRemoveCommand;
+        public Command<ColumnBase> ColumnRemoveCommand
         {
             get => _columnRemoveCommand ?? (_columnRemoveCommand = RegisterCommand<ColumnBase>(ColumnRemove, CanColumnRemove));
         }
@@ -610,8 +611,8 @@ namespace Liberfy.ViewModel
 
         #region Command: ColumnMoveUpCommand
 
-        private Command _columnMoveUpCommand;
-        public Command ColumnMoveUpCommand
+        private Command<ColumnBase> _columnMoveUpCommand;
+        public Command<ColumnBase> ColumnMoveUpCommand
         {
             get => this._columnMoveUpCommand ?? (this._columnMoveUpCommand = this.RegisterCommand<ColumnBase>(this.ColumnMoveUp, this.CanColumnMoveUp));
         }
@@ -632,8 +633,8 @@ namespace Liberfy.ViewModel
 
         #region Command: ColumnMoveDownCommand
 
-        private Command _columnMoveDownCommand;
-        public Command ColumnMoveDownCommand
+        private Command<ColumnBase> _columnMoveDownCommand;
+        public Command<ColumnBase> ColumnMoveDownCommand
         {
             get => this._columnMoveDownCommand ?? (this._columnMoveDownCommand = this.RegisterCommand<ColumnBase>(this.ColumnMoveRight, this.CanColumnMoveRight));
         }
@@ -684,8 +685,8 @@ namespace Liberfy.ViewModel
             }
         }
 
-        private Command _insertNowPlayingCommand;
-        public Command InsertNowPlayingParamCommand
+        private Command<string> _insertNowPlayingCommand;
+        public Command<string> InsertNowPlayingParamCommand
         {
             get => _insertNowPlayingCommand ?? (_insertNowPlayingCommand = RegisterCommand<string>(InsertNowPlaying));
         }
@@ -714,7 +715,7 @@ namespace Liberfy.ViewModel
 
         #region Mute
 
-        public FluidCollection<Mute> MuteList { get; } = App.Setting.Mute;
+        public NotifiableCollection<Mute> MuteList { get; } = App.Setting.Mute;
 
         private MuteType _tempMuteType;
         public MuteType TempMuteType
@@ -773,8 +774,8 @@ namespace Liberfy.ViewModel
 
         #region Command: RemoveMuteCommand
 
-        private Command _removeMuteCommand;
-        public Command RemoveMuteCommand
+        private Command<Mute> _removeMuteCommand;
+        public Command<Mute> RemoveMuteCommand
         {
             get => _removeMuteCommand ?? (_removeMuteCommand = RegisterCommand<Mute>(RemoveMute, IsAvailableMuteItem));
         }
@@ -905,8 +906,11 @@ namespace Liberfy.ViewModel
 
         internal override void OnClosed()
         {
-            this.Setting.DefaultColumns.Reset(
-                this.DefaultColumns.Select(c => c.GetOption()));
+            this.Setting.DefaultColumns.Clear();
+            foreach (var column in this.DefaultColumns)
+            {
+                this.Setting.DefaultColumns.Add(column.GetOption());
+            }
 
             ApplyFontSetting();
             App.UI.ApplyFromSettings();

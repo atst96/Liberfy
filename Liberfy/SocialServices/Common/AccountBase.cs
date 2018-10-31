@@ -21,10 +21,12 @@ namespace Liberfy
 
         protected object _lockSharedObject = new object();
 
-        private AccountCommands _commands;
-        public AccountCommands Commands => this._commands ?? (this._commands = new AccountCommands(this));
+        private IAccountCommandGroup _commands;
+        public IAccountCommandGroup Commands => this._commands = (this._commands = this.CreateCommands());
 
         public abstract long Id { get; protected set; }
+
+        protected abstract IAccountCommandGroup CreateCommands();
 
         public UserInfo Info { get; protected set; }
 
@@ -131,12 +133,12 @@ namespace Liberfy
         {
             this.IsLoading = true;
 
-            await this.LoadDetails();
+            await this.GetDetails();
 
             this.IsLoading = false;
         }
 
-        protected abstract Task LoadDetails();
+        protected abstract Task GetDetails();
 
         public virtual void StartTimeline() => this.Timeline.Load();
 
@@ -151,16 +153,9 @@ namespace Liberfy
         {
             lock (this._lockSharedObject)
             {
-                var sb = new StringBuilder(this.ErrorMessage);
+                var beforeStr = string.IsNullOrEmpty(this.ErrorMessage) ? string.Empty : "\n";
 
-                if (sb.Length != 0)
-                    sb.AppendLine();
-
-                sb.AppendLine($"{ name }の取得に失敗しました：");
-                sb.AppendLine(message);
-
-                this.ErrorMessage = sb.ToString();
-                sb = null;
+                this.ErrorMessage += $"{ beforeStr }{ name }の取得に失敗しました：\n{ message }";
             }
         }
 

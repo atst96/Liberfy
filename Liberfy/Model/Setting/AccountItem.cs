@@ -68,5 +68,10 @@ namespace Liberfy.Settings
         {
             return obj is AccountItem item ? this.Equals(item) : base.Equals(obj);
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

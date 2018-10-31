@@ -30,7 +30,7 @@ namespace Liberfy.Component
 
         public Predicate<T> CanExecute { get; }
 
-        public Command Exec(Action<T> action)
+        public Command<T> Exec(Action<T> action)
         {
             return new DelegateCommand<T>(action, this.CanExecute);
         }

@@ -19,5 +19,6 @@
 	interface IItem
 	{
 		ItemType Type { get; }
+		bool IsAnimatable { get; }
 	}
 }

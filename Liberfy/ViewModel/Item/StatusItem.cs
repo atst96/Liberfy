@@ -35,6 +35,8 @@ namespace Liberfy
 
         public ItemType Type { get; }
 
+        public bool IsAnimatable { get; }
+
         public StatusItem(TwitterStatus status, TwitterAccount account)
         {
             this.Account = account;

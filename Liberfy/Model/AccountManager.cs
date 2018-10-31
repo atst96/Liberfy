@@ -10,7 +10,7 @@ namespace Liberfy
 {
     internal static class AccountManager
     {
-        private static readonly FluidCollection<AccountBase> _accounts = new FluidCollection<AccountBase>();
+        private static readonly NotifiableCollection<AccountBase> _accounts = new NotifiableCollection<AccountBase>();
         public static IEnumerable<AccountBase> Accounts { get; } = _accounts;
 
         public static readonly IDictionary<SocialService, IDictionary<long, AccountBase>> _serviceAccountMap = new Dictionary<SocialService, IDictionary<long, AccountBase>>();

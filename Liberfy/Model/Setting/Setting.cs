@@ -1,6 +1,7 @@
 ﻿using Liberfy.Settings;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Windows.Media;
 using static Liberfy.Defines;
@@ -145,9 +146,9 @@ namespace Liberfy
         #region Account
 
         [DataMember(Name = "account_column_defaults")]
-        private FluidCollection<ColumnSetting> _defaultColumns;
+        private NotifiableCollection<ColumnSetting> _defaultColumns;
         [IgnoreDataMember]
-        public FluidCollection<ColumnSetting> DefaultColumns
+        public NotifiableCollection<ColumnSetting> DefaultColumns
         {
             get
             {
@@ -164,7 +165,7 @@ namespace Liberfy
                         new ColumnSetting{ Type = ColumnType.Messages },
                     };
 
-                    return _defaultColumns = new FluidCollection<ColumnSetting>(defaultOptions);
+                    return _defaultColumns = new NotifiableCollection<ColumnSetting>(defaultOptions);
                 }
             }
         }
@@ -403,17 +404,16 @@ namespace Liberfy
         #region Apis
 
         [DataMember(Name = "mastodon_apis")]
-        private FluidCollection<ClientKeyCache> _clientKeys;
+        private NotifiableCollection<ClientKeyCache> _clientKeys;
         [IgnoreDataMember]
-        public FluidCollection<ClientKeyCache> ClientKeys
+        public NotifiableCollection<ClientKeyCache> ClientKeys
         {
-            get => this._clientKeys ?? (this._clientKeys = new FluidCollection<ClientKeyCache>());
+            get => this._clientKeys ?? (this._clientKeys = new NotifiableCollection<ClientKeyCache>());
         }
 
         #endregion
 
         #region NowPlaying
-
 
         [DataMember(Name = "now_playing_default_player")]
         private string _nowPlayingDefaultPlayer;
@@ -554,9 +554,9 @@ namespace Liberfy
         #region Mute
 
         [DataMember(Name = "mute")]
-        private FluidCollection<Mute> _mute;
+        private NotifiableCollection<Mute> _mute;
         [IgnoreDataMember]
-        public FluidCollection<Mute> Mute => _mute ?? (_mute = new FluidCollection<Mute>());
+        public NotifiableCollection<Mute> Mute => _mute ?? (_mute = new NotifiableCollection<Mute>());
 
         #endregion
 

@@ -28,7 +28,7 @@ namespace Liberfy.ViewModel
             set => this.SetProperty(ref this._insertinText, value);
         }
 
-        public FluidCollection<ArtworkItem> Artworks { get; } = new FluidCollection<ArtworkItem>();
+        public NotifiableCollection<ArtworkItem> Artworks { get; } = new NotifiableCollection<ArtworkItem>();
 
         private Command _getPlayingDataCommand;
         public Command GetPlayingDataCommand => this._getPlayingDataCommand ?? (this._getPlayingDataCommand = this.RegisterCommand(DelegateCommand

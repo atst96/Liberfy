@@ -7,16 +7,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using Liberfy.SocialServices.Twitter;
 
 namespace Liberfy
 {
-    internal class TwitterTimeline : TimelineBase
+    internal class TwitterTimeline : TimelineBase, IObserver<IItem>
     {
         private static Dispatcher _dispatcher = App.Current.Dispatcher;
 
         private readonly long _userId;
         private readonly TwitterAccount _account;
         public Tokens _tokens => (Tokens)_account.InternalTokens;
+
+        private FakeStreaming _streaming;
 
         public event EventHandler OnUnloading;
 
@@ -26,11 +29,37 @@ namespace Liberfy
             this._userId = account.Id;
         }
 
-        public override void Load()
+        public override async void Load()
         {
-            this.LoadHomeTimelineAsync();
-            this.LoadNotificationTimelineAsync();
-            this.LoadMessageTimelineAsync();
+            var waitingTasks = new[]
+            {
+                this.GetHomeTimeline(),
+                this.GetNotificationTimeline(),
+                this.GetMessageTimeline()
+            };
+
+            await Task.WhenAll(waitingTasks);
+
+            this.StartStream();
+        }
+
+        private void StartStream()
+        {
+            this._streaming = new FakeStreaming(this._account);
+
+            var accountColumn = Columns
+                .Where(a => a.Type == ColumnType.Home && a.Account == this._account)
+                .FirstOrDefault();
+
+            var topItem = accountColumn?.Items?.FirstOrDefault();
+
+            if (topItem is StatusItem item)
+            {
+                this._streaming.LatestHomeStatusId = item.Id;
+            }
+
+            this._streaming.Subscribe(this);
+            this._streaming.Start();
         }
 
         private IEnumerable<StatusItem> GetStatusItem(IEnumerable<Status> statuses)
@@ -46,11 +75,13 @@ namespace Liberfy
             foreach (var column in TimelineBase.Columns)
             {
                 if (column.Account?.Equals(this._account) ?? false)
+                {
                     yield return column;
+                }
             }
         }
 
-        private Task LoadHomeTimelineAsync() => Task.Run(async () =>
+        private Task GetHomeTimeline() => Task.Run(async () =>
         {
             try
             {
@@ -58,11 +89,12 @@ namespace Liberfy
                 {
                     ["tweet_mode"] = "extended",
                 });
+
                 var items = this.GetStatusItem(statuses);
 
                 foreach (var column in this.GetCurrentAccountColumns().Where(c => c.Type == ColumnType.Home))
                 {
-                    await _dispatcher.InvokeAsync(() => column.Items.Reset(items));
+                    _dispatcher.Invoke(() => column.Items.Reset(items));
                 }
             }
             catch
@@ -71,7 +103,7 @@ namespace Liberfy
             }
         });
 
-        private Task LoadNotificationTimelineAsync() => Task.Run(async () =>
+        private Task GetNotificationTimeline() => Task.Run(async () =>
         {
             try
             {
@@ -80,7 +112,7 @@ namespace Liberfy
 
                 foreach (var column in this.GetCurrentAccountColumns().Where(c => c.Type == ColumnType.Notification))
                 {
-                    await _dispatcher.InvokeAsync(() => column.Items.Reset(items));
+                    _dispatcher.Invoke(() => column.Items.Reset(items));
                 }
             }
             catch
@@ -89,7 +121,7 @@ namespace Liberfy
             }
         });
 
-        private Task LoadMessageTimelineAsync() => Task.Run(() =>
+        private Task GetMessageTimeline() => Task.Run(() =>
         {
             try
             {
@@ -114,7 +146,27 @@ namespace Liberfy
                 Columns.Remove(c);
             }
 
+            this._streaming?.Stop();
+
             //this.Columns.Clear();
+        }
+
+        public void OnNext(IItem value)
+        {
+            var columns = Columns.Where(a => a.Type == ColumnType.Home && a.Account == this._account);
+
+            foreach (var column in columns)
+            {
+                column.Items.Insert(0, value);
+            }
+        }
+
+        public void OnError(Exception error)
+        {
+        }
+
+        public void OnCompleted()
+        {
         }
     }
 }

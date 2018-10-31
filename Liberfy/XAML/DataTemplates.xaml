@@ -8,6 +8,7 @@
     xmlns:conv="clr-namespace:Liberfy.Converter"
     xmlns:b="clr-namespace:Liberfy.Behaviors">
 
+    <conv:DummyConverter x:Key="DummyConverter" />
     <conv:LocalTimeConverter x:Key="LocalTimeConverter" />
 
     <!--#region Template selectors-->
@@ -548,7 +549,9 @@
                         <ToggleButton
                             IsEnabled="{Binding CanRetweet, Mode=OneWay}"
                             IsChecked="{Binding Reaction.IsRetweeted, Mode=OneWay}"
-                            Style="{StaticResource RetweetActionToggleButton}">
+                            Style="{StaticResource RetweetActionToggleButton}"
+                            Command="{Binding Account.Commands.Repost, Mode=OneTime}"
+                            CommandParameter="{Binding Mode=OneTime}">
                             <app:GeometryIcon
                                 Margin="0" Width="24"
                                 Data="{StaticResource FontAwesome.Icon.Retweet}" />
@@ -556,7 +559,9 @@
 
                         <ToggleButton
                             IsChecked="{Binding Reaction.IsFavorited, Mode=OneWay}"
-                            Style="{StaticResource FavoriteActionToggleButton}">
+                            Style="{StaticResource FavoriteActionToggleButton}"
+                            Command="{Binding Account.Commands.Like, Mode=OneTime}"
+                            CommandParameter="{Binding Mode=OneTime}">
                             <app:GeometryIcon
                                 Height="14"
                                 Data="{StaticResource FontAwesome.Icon.Heart}" />

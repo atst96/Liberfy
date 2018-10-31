@@ -69,8 +69,10 @@
                                 Padding="8"
                                 Background="Transparent"
                                 BorderBrush="Transparent"
-                                BorderThickness="0 0 0 1">
+                                BorderThickness="0 0 0 1"
+                                VerticalAlignment="Bottom">
                                 <ContentPresenter
+                                    VerticalAlignment="Top"
                                     Content="{TemplateBinding Content}"
                                     ContentTemplate="{TemplateBinding ContentTemplate}"
                                     ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />

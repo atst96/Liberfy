@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace Liberfy
@@ -132,7 +133,7 @@ namespace Liberfy
         {
         }
 
-        public FluidCollection<IItem> Items { get; } = new FluidCollection<IItem>();
+        public NotifiableCollection<IItem> Items { get; } = new NotifiableCollection<IItem>();
 
         public AccountBase Account { get; }
 
@@ -170,6 +171,15 @@ namespace Liberfy
                 }
             }
         }
+
+        private ICommand _moveLeftCommand;
+        public ICommand MoveLeftCommand => this._moveLeftCommand ?? (this._moveLeftCommand = new ColumnMoveLeftCommand());
+
+        private ICommand _moveRightCommand;
+        public ICommand MoveRightCommand => this._moveRightCommand ?? (this._moveRightCommand = new ColumnMoveRightCommand());
+
+        private ICommand _removeCommand;
+        public ICommand RemoveCommand => this._removeCommand ?? (this._removeCommand = new ColumnRemoveCommand());
 
         private bool _hasStatus;
         public bool HasStatus => _hasStatus;

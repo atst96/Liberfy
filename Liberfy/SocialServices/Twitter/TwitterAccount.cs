@@ -22,7 +22,7 @@ namespace Liberfy
 
         public override ITokensBase Tokens => this.InternalTokens;
 
-        public TwitterAccount(AccountItem accountItem) 
+        public TwitterAccount(AccountItem accountItem)
             : base(accountItem)
         {
         }
@@ -50,7 +50,7 @@ namespace Liberfy
         {
             if (await base.TryLogin())
             {
-                await this.LoadDetails();
+                await this.GetDetails();
                 this.StartTimeline();
             }
         }
@@ -87,64 +87,73 @@ namespace Liberfy
             return false;
         }
 
-        protected override Task LoadDetails()
+        protected override Task GetDetails()
         {
-            return Task.WhenAll(
-                this.LoadFollowerIds(),
-                this.LoadFollowingIds(),
-                this.LoadBlockedIds(),
-                this.LoadMutedIds(),
-                this.LoadOutgoingIds(),
-                this.LoadIncomingIds()
-            );
+            var tasks = new[]
+            {
+                this.GetFollowingIds(),
+                this.GetFollowerIds(),
+                this.GetBlockedIds(),
+                this.GetMutedIds(),
+                this.GetOutgoingIds(),
+                this.GetIncomingIds()
+            };
+
+            return Task.WhenAll(tasks);
         }
 
-        #region LoadDetailsメソッド郡
+        #region GetDetailsメソッド郡
 
-        private Task LoadFollowingIds()
-            => this.GetIdsList(this.InternalTokens.Friends.Ids, this.FollowingIds, "フォロー中一覧");
+        private Task GetFollowingIds()
+        {
+            return this.GetIdsAndSetList(this.InternalTokens.Friends.Ids, this.FollowingIds, "フォロー中一覧");
+        }
 
-        private Task LoadFollowerIds()
-            => this.GetIdsList(this.InternalTokens.Followers.Ids, this.FollowersIds, "フォロワー一覧");
+        private Task GetFollowerIds()
+        {
+            return this.GetIdsAndSetList(this.InternalTokens.Followers.Ids, this.FollowersIds, "フォロワー一覧");
+        }
 
-        private Task LoadBlockedIds()
+        private Task GetBlockedIds()
         {
             return Setting.GetBlockedIdsAtLoadingAccount
-                ? this.GetIdsList(this.InternalTokens.Blocks.Ids, this.BlockedIds, "ブロック中一覧")
+                ? this.GetIdsAndSetList(this.InternalTokens.Blocks.Ids, this.BlockedIds, "ブロック中一覧")
                 : Task.CompletedTask;
         }
 
-        private Task LoadMutedIds()
+        private Task GetMutedIds()
         {
             return Setting.GetMutedIdsAtLoadingAccount
-                ? this.GetIdsList(this.InternalTokens.Mutes.Ids, this.MutedIds, "ミュート中一覧")
+                ? this.GetIdsAndSetList(this.InternalTokens.Mutes.Ids, this.MutedIds, "ミュート中一覧")
                 : Task.CompletedTask;
         }
 
-        private Task LoadIncomingIds()
+        private Task GetIncomingIds()
         {
             return this.Info.IsProtected
-                ? this.GetIdsList(this.InternalTokens.Friendships.Incoming, this.IncomingIds, "フォロー申請一覧")
+                ? this.GetIdsAndSetList(this.InternalTokens.Friendships.Incoming, this.IncomingIds, "フォロー申請一覧")
                 : Task.CompletedTask;
         }
 
-        private Task LoadOutgoingIds()
-            => this.GetIdsList(this.InternalTokens.Friendships.Outgoing, this.OutgoingIds, "フォロー申請中一覧");
+        private Task GetOutgoingIds()
+        {
+            return this.GetIdsAndSetList(this.InternalTokens.Friendships.Outgoing, this.OutgoingIds, "フォロー申請中一覧");
+        }
 
-        private async Task GetIdsList(Func<int, Task<CursoredIdsResponse>> apiCallFunc, HashSet<long> hashSet, string dataLabel)
+        private async Task GetIdsAndSetList(Func<int, Task<CursoredIdsResponse>> apiCallFunc, HashSet<long> hashSet, string dataLabel)
         {
             try
             {
-                int cursor = -1;
+                int? cursor = null;
 
                 do
                 {
-                    var ids = await apiCallFunc(cursor);
-                    cursor = ids.NextCursor ?? 0;
+                    var ids = await apiCallFunc(cursor ?? -1);
+                    cursor = ids.NextCursor;
 
                     hashSet.UnionWith(ids.Ids);
                 }
-                while (cursor != 0);
+                while (cursor.HasValue && cursor.Value > 0);
             }
             catch (Exception ex)
             {
@@ -152,6 +161,11 @@ namespace Liberfy
             }
         }
 
-        #endregion LoadDetails
+        protected override IAccountCommandGroup CreateCommands()
+        {
+            return new Twitter.AccountCommandGroup(this);
+        }
+
+        #endregion GetDetails
     }
 }

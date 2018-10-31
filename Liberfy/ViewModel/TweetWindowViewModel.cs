@@ -42,14 +42,14 @@ namespace Liberfy.ViewModel
 
         public TweetWindow()
         {
-            Media = new FluidCollection<UploadMedia>();
+            Media = new NotifiableCollection<UploadMedia>();
 
             SelectedAccount = this.Accounts.First();
 
             UpdateCanPost();
         }
 
-        public FluidCollection<UploadMedia> Media { get; }
+        public NotifiableCollection<UploadMedia> Media { get; }
 
         public bool CanUpdateContent { get; private set; }
         public int RemainingTweetLength { get; private set; } = MaxTweetLength;

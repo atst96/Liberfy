@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace Liberfy.ViewModel
 {
@@ -12,13 +13,13 @@ namespace Liberfy.ViewModel
         public ViewModelBase()
         {
             _dialogService = new DialogService(this);
-            _registeredCommands = new Collection<Command>();
+            _registeredCommands = new Collection<ICommand>();
         }
 
         private bool _isDisposed;
         private DialogService _dialogService;
         // ビューモデルと同時に破棄するコマンド
-        private readonly ICollection<Command> _registeredCommands;
+        private readonly ICollection<ICommand> _registeredCommands;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -143,6 +144,12 @@ namespace Liberfy.ViewModel
             return command;
         }
 
+        public Command<T> RegisterCommand<T>(Command<T> command)
+        {
+            this._registeredCommands.Add(command);
+            return command;
+        }
+
         /// <summary>
         /// ViewModelと同時に破棄されるコマンドを登録します。
         /// </summary>
@@ -241,7 +248,10 @@ namespace Liberfy.ViewModel
 
             foreach (var command in _registeredCommands)
             {
-                command.Dispose();
+                if (command is IDisposable _dCmd)
+                {
+                    _dCmd.Dispose();
+                }
             }
             _registeredCommands.Clear();
 

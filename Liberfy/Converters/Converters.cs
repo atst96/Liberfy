@@ -19,14 +19,14 @@ namespace Liberfy.Converter
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             Debug.WriteLine($"Converted: {value}");
-            Debugger.Break();
+            // Debugger.Break();
             return value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             Debug.WriteLine($"Reconverted: {value}");
-            Debugger.Break();
+            // Debugger.Break();
             return value;
         }
     }

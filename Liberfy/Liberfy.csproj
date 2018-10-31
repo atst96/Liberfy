@@ -53,6 +53,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -131,6 +132,12 @@
     </ApplicationDefinition>
     <Compile Include="App.Brushes.cs" />
     <Compile Include="App.UI.cs" />
+    <Compile Include="Commands\Column\ColumnRemoveCommand.cs" />
+    <Compile Include="Commands\Column\ColumnMoveLeftCommand.cs" />
+    <Compile Include="Commands\Column\ColumnMoveRightCommand.cs" />
+    <Compile Include="Components\MVVM\Command_T.cs" />
+    <Compile Include="Components\MVVM\DelegateCommand_T.cs" />
+    <Compile Include="Components\NotifiableCollection.cs" />
     <Compile Include="Enums\StatusVisibility.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\LinqToXmlHtmlExtensions.cs" />
@@ -153,17 +160,23 @@
     <Compile Include="IAccount.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Helper\ITextTokenBuilder.cs" />
+    <Compile Include="SocialServices\Common\IAccountCommandGroup.cs" />
+    <Compile Include="IUnsubscribableObserver.cs" />
     <Compile Include="Model\AccountManager.cs" />
     <Compile Include="Model\Attachment.cs" />
     <Compile Include="Model\Entities.cs" />
     <Compile Include="Model\Setting\ClientKeyCache.cs" />
     <Compile Include="Model\Setting\ColumnSetting.cs" />
     <Compile Include="Model\Setting\WindowSettings.cs" />
+    <Compile Include="ObserverDispose.cs" />
     <Compile Include="SocialServices\Config\ISocialConfig.cs" />
     <Compile Include="SocialServices\Config\MastodonConfig.cs" />
     <Compile Include="SocialServices\Config\TwitterConfig.cs" />
+    <Compile Include="SocialServices\Twitter\AccountCommandGroup.cs" />
+    <Compile Include="SocialServices\Twitter\Commands\LikeCommand.cs" />
+    <Compile Include="SocialServices\Twitter\Commands\RepostCommand.cs" />
+    <Compile Include="SocialServices\Twitter\FakeStreaming.cs" />
     <Compile Include="TemplateSelectors\ColumnOptionTemplateSelector.cs" />
-    <Compile Include="Components\FluidCollection.cs" />
     <Compile Include="Components\MessageBox.cs" />
     <Compile Include="Components\Regexes.cs" />
     <Compile Include="Converters\Converters.cs" />
@@ -187,15 +200,15 @@
     <Compile Include="Components\TwStringInfo.cs" />
     <Compile Include="Helper\TwitterTextTokenBuilder.cs" />
     <Compile Include="Utilieis\FileContentUtility.cs" />
-    <Compile Include="ViewModel\Account\AccountBase.cs" />
-    <Compile Include="ViewModel\Account\MastodonAccount.cs" />
+    <Compile Include="SocialServices\Common\AccountBase.cs" />
+    <Compile Include="SocialServices\Mastodon\MastodonAccount.cs" />
     <Compile Include="ViewModel\Column\HomeColumn.cs" />
     <Compile Include="ViewModel\Column\NotificationColumn.cs" />
     <Compile Include="ViewModel\NowPlayingViewModel.cs" />
     <Compile Include="ViewModel\SettingWindowViewModel.View.cs" />
-    <Compile Include="ViewModel\Account\TwitterAccount.cs" />
-    <Compile Include="ViewModel\Timeline\MastodonTimeline.cs" />
-    <Compile Include="ViewModel\Timeline\TimelineBase.cs" />
+    <Compile Include="SocialServices\Twitter\TwitterAccount.cs" />
+    <Compile Include="SocialServices\Mastodon\MastodonTimeline.cs" />
+    <Compile Include="SocialServices\Common\TimelineBase.cs" />
     <Compile Include="ViewModel\UploadMedia.cs" />
     <Compile Include="Data\UILocalize.cs" />
     <Compile Include="ViewModel\Column\Base\ColumnBase.cs" />
@@ -219,7 +232,7 @@
     <Compile Include="Components\NativeMethods\Values.cs" />
     <Compile Include="Model\StatusInfo.cs" />
     <Compile Include="Model\UserInfo.cs" />
-    <Compile Include="ViewModel\Timeline\TwitterTimeline.cs" />
+    <Compile Include="SocialServices\Twitter\TwitterTimeline.cs" />
     <Compile Include="ViewModel\AuthenticationViewModel.cs" />
     <Compile Include="ViewModel\ContentWindowViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />

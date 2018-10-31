@@ -50,7 +50,7 @@ namespace Liberfy
         {
             if (await base.TryLogin())
             {
-                await this.LoadDetails();
+                await this.GetDetails();
                 this.StartTimeline();
             }
         }
@@ -82,9 +82,14 @@ namespace Liberfy
             return false;
         }
 
-        protected override Task LoadDetails()
+        protected override Task GetDetails()
         {
             return Task.CompletedTask;
+        }
+
+        protected override IAccountCommandGroup CreateCommands()
+        {
+            return null;
         }
     }
 }

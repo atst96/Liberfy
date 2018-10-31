@@ -8,7 +8,7 @@ namespace Liberfy
 {
     internal abstract class TimelineBase : NotificationObject
     {
-        public static FluidCollection<ColumnBase> Columns { get; } = new FluidCollection<ColumnBase>();
+        public static NotifiableCollection<ColumnBase> Columns { get; } = new NotifiableCollection<ColumnBase>();
 
         public abstract void Load();
 
