@@ -21,9 +21,9 @@ namespace SocialApis.Twitter.Apis
             var dic = new Query();
 
             if (!string.IsNullOrEmpty(callbackUrl))
-                dic[OAuthHelper.OAuthParameterKeys.Callback] = callbackUrl;
+                dic[OAuthHelper.OAuthParameters.Callback] = callbackUrl;
 
-            var webReq = WebUtility.CreateOAuthWebRequest(endpoint, this.Tokens, dic, "post");
+            var webReq = WebUtility.CreateOAuthRequest(endpoint, this.Tokens, dic, "POST");
 
             using (var webRes = await webReq.GetResponseAsync())
             using (var sr = new StreamReader(webRes.GetResponseStream()))
@@ -52,11 +52,11 @@ namespace SocialApis.Twitter.Apis
 
             var dic = new Query()
             {
-                [OAuthHelper.OAuthParameterKeys.Token] = requestToken,
-                [OAuthHelper.OAuthParameterKeys.Verifier] = verifier,
+                [OAuthHelper.OAuthParameters.Token] = requestToken,
+                [OAuthHelper.OAuthParameters.Verifier] = verifier,
             };
 
-            var webReq = WebUtility.CreateOAuthWebRequest(endpoint, this.Tokens, dic, "POST");
+            var webReq = WebUtility.CreateOAuthRequest(endpoint, this.Tokens, dic, "POST");
 
             using (var webRes = await webReq.GetResponseAsync())
             using (var sr = new StreamReader(webRes.GetResponseStream()))

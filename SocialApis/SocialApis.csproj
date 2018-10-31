@@ -58,6 +58,7 @@
     <Compile Include="Common\Objects\IStatus.cs" />
     <Compile Include="Common\Enums\SocialService.cs" />
     <Compile Include="Common\Objects\IAccount.cs" />
+    <Compile Include="Common\OrderedQuery.cs" />
     <Compile Include="Common\Regex.cs" />
     <Compile Include="Common\RESTfulAPIMethods.cs" />
     <Compile Include="Common\SequentialSurrogateTextReader.cs" />

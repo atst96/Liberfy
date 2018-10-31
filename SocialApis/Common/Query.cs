@@ -77,6 +77,16 @@ namespace SocialApis
             return GetOrderedQueryString(query, "&");
         }
 
+        public static string GetOrderedQueryString(SortedQuery query, string separator)
+        {
+            return string.Join(separator, GetOrderedRequestParameters(query));
+        }
+
+        public static string GetOrderedQueryString(SortedQuery query)
+        {
+            return GetOrderedQueryString(query, "&");
+        }
+
         public static IEnumerable<string> GetRequestParameters(IQuery values)
         {
             return values?.Select(kvp => GetParameterPair(kvp.Key, kvp.Value)) ?? Enumerable.Empty<string>();
@@ -90,6 +100,11 @@ namespace SocialApis
         public static IEnumerable<string> GetOrderedRequestParameters(IQuery values)
         {
             return GetRequestParameters(Sort(values));
+        }
+
+        public static IEnumerable<string> GetOrderedRequestParameters(SortedQuery values)
+        {
+            return GetRequestParameters(values);
         }
 
         private static string JoinParameterPais(string name, string value, string valueEnclosure = null)

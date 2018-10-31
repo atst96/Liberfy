@@ -26,14 +26,14 @@ namespace SocialApis.Twitter
 
         public string AccessToken
         {
-            get => _accessToken ?? string.Empty;
-            internal set => _accessToken = value;
+            get => this._accessToken ?? string.Empty;
+            internal set => this._accessToken = value;
         }
 
         public string AccessTokenSecret
         {
-            get => _accessTokenSecret ?? string.Empty;
-            internal set => _accessTokenSecret = value;
+            get => this._accessTokenSecret ?? string.Empty;
+            internal set => this._accessTokenSecret = value;
         }
 
         public string ApiToken => this._accessToken ?? string.Empty;
@@ -92,7 +92,7 @@ namespace SocialApis.Twitter
 
         internal HttpWebRequest CreateRequester(string endpoint, IQuery query = null, string method = RESTfulAPIMethods.Get, bool autoSetting = true)
         {
-            return WebUtility.CreateOAuthWebRequest(endpoint, this, query, method, autoSetting);
+            return WebUtility.CreateOAuthRequest(endpoint, this, query, method, autoSetting);
         }
 
         internal HttpWebRequest CreateGetRequester(string endpoint, IQuery query = null, bool autoSetting = true)
@@ -107,7 +107,7 @@ namespace SocialApis.Twitter
 
         internal HttpWebRequest CreateRequesterApi(string path, IQuery query = null, string method = RESTfulAPIMethods.Get, bool autoSetting = true)
         {
-            return WebUtility.CreateOAuthWebRequest(string.Concat(RestApiBaseUrl, path, ".json"), this, query, method, autoSetting);
+            return WebUtility.CreateOAuthRequest(string.Concat(RestApiBaseUrl, path, ".json"), this, query, method, autoSetting);
         }
 
         internal HttpWebRequest CreateGetRequesterApi(string path, IQuery query = null, bool autoSetting = true)
@@ -122,7 +122,7 @@ namespace SocialApis.Twitter
 
         private Task<T> SendRequest<T>(string endpoint, IQuery query = null, string method = RESTfulAPIMethods.Get) where T : class
         {
-            var webReq = WebUtility.CreateOAuthWebRequest(endpoint, this, query, method);
+            var webReq = WebUtility.CreateOAuthRequest(endpoint, this, query, method);
             return this.SendRequest<T>(webReq);
         }
 
@@ -130,16 +130,13 @@ namespace SocialApis.Twitter
         {
             try
             {
-                using (var webRes = await webReq.GetResponseAsync())
+                using (var res = await webReq.GetResponseAsync())
                 {
-                    var str = webRes.GetResponseStream();
-
-                    var wstr = str as System.Net.Sockets.NetworkStream;
-
+                    var str = res.GetResponseStream();
                     var obj = await JsonSerializer.DeserializeAsync<T>(str, Utf8Json.Resolvers.StandardResolver.AllowPrivate);
 
                     if (obj is IRateLimit rObj)
-                        rObj.RateLimit = RateLimit.FromHeaders(webRes.Headers);
+                        rObj.RateLimit = RateLimit.FromHeaders(res.Headers);
 
                     return obj;
                 }

@@ -59,14 +59,11 @@ namespace SocialApis
             return webReq;
         }
 
-        public static HttpWebRequest CreateOAuthWebRequest(string endpoint, ITokensBase tokens, IQuery query, string method, bool autoSetting = true)
+        public static HttpWebRequest CreateOAuthRequest(string endpoint, ITokensBase tokens, IQuery query, string method, bool autoSetting = true)
         {
             query = query ?? new Query();
 
-            var timeStamp = OAuthHelper.GenerateTimeStamp();
-            var nonce = OAuthHelper.GenerateNonce();
-
-            var oauthHeader = OAuthHelper.GenerateAuthenticationHeader(endpoint, tokens, query, method, timeStamp, nonce);
+            var oauthHeader = OAuthHelper.GenerateAuthenticationHeader(endpoint, tokens, query, method);
 
             var headers = new WebHeaderCollection
             {

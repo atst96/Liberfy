@@ -9,13 +9,39 @@ using System.Web;
 
 namespace SocialApis
 {
+    using QueryElement = KeyValuePair<string, object>;
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
     internal static class OAuthHelper
     {
         public const string OAuthVersion = "1.0";
 
-        internal static class OAuthParameterKeys
+        static OAuthHelper()
+        {
+            var hashset = new HashSet<byte>();
+
+            hashset.Add(0x2D);
+            hashset.Add(0x2E);
+
+            for (byte c = 0x30; c <= 0x39; ++c)
+                hashset.Add(c);
+
+            for (byte c = 0x41; c <= 0x5A; ++c)
+                hashset.Add(c);
+
+            hashset.Add(0x5F);
+
+            for (byte c = 0x61; c <= 0x7A; ++c)
+                hashset.Add(c);
+
+            hashset.Add(0x7E);
+
+            _ordinaryCharacters = hashset;
+        }
+
+        private static readonly HashSet<byte> _ordinaryCharacters;
+
+        internal static class OAuthParameters
         {
             public const string ConsumerKey = "oauth_consumer_key";
             public const string Callback = "oauth_callback";
@@ -33,73 +59,54 @@ namespace SocialApis
 
         private static Random random = new Random();
 
-        private const string UnreservedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
-
-        public static string ComputeHash(HashAlgorithm hashAlgorithm, string data)
+        private static IQuery UnionOAuthParameters(ITokensBase tokens, IQuery query, string timeStamp, string nonce)
         {
-            if (hashAlgorithm == null)
-                throw new ArgumentNullException(nameof(hashAlgorithm));
+            if (query == null)
+                query = Enumerable.Empty<QueryElement>();
 
-            if (string.IsNullOrEmpty(data))
-                throw new ArgumentNullException(nameof(data));
-
-            var dataBuffer = Encoding.ASCII.GetBytes(data);
-            var hashBytes = hashAlgorithm.ComputeHash(dataBuffer);
-
-            return Convert.ToBase64String(hashBytes);
+            return query.Union(EnumerateOAuthParameters(tokens, timeStamp, nonce));
         }
 
-        private static string GenerateSignatureBase(ITokensBase tokens, string endpoint, Query query, string httpMethod, string timeStamp, string nonce, bool cloneQuery = true)
+        private static IQuery EnumerateOAuthParameters(ITokensBase tokens, string timeStamp, string nonce)
+        {
+            yield return new QueryElement(OAuthParameters.Version, OAuthVersion);
+            yield return new QueryElement(OAuthParameters.Nonce, nonce);
+            yield return new QueryElement(OAuthParameters.Timestamp, timeStamp);
+            yield return new QueryElement(OAuthParameters.SignatureMethod, HMACSHA1SignatureType);
+            yield return new QueryElement(OAuthParameters.ConsumerKey, tokens.ConsumerKey);
+
+            if (!string.IsNullOrEmpty(tokens.ApiToken))
+            {
+                yield return new QueryElement(OAuthParameters.Token, tokens.ApiToken);
+            }
+        }
+
+        private static string GenerateSignatureBase(ITokensBase tokens, string endpoint, SortedQuery query, string httpMethod)
         {
             if (tokens == null)
                 throw new ArgumentNullException(nameof(tokens));
 
-            var parameters = cloneQuery
-                ? new Query(query)
-                : (query ?? new Query());
+            var normalizedParameters = Query.GetQueryString(query);
 
-            parameters[OAuthParameterKeys.Version] = OAuthVersion;
-            parameters[OAuthParameterKeys.Nonce] = nonce;
-            parameters[OAuthParameterKeys.Timestamp] = timeStamp;
-            parameters[OAuthParameterKeys.SignatureMethod] = HMACSHA1SignatureType;
-            parameters[OAuthParameterKeys.ConsumerKey] = tokens.ConsumerKey;
-
-            if (!string.IsNullOrEmpty(tokens.ApiToken))
-                parameters[OAuthParameterKeys.Token] = tokens.ApiToken;
-
-            var normalizedRequestParameters = Query.GetOrderedQueryString(parameters);
-
-            var signatureBase = new[]
-            {
-                httpMethod.ToUpper(),
-                UrlEncode(endpoint),
-                UrlEncode(normalizedRequestParameters)
-            };
-
-            return string.Join("&", signatureBase);
+            return string.Join("&", httpMethod.ToUpper(), UrlEncode(endpoint), UrlEncode(normalizedParameters));
         }
 
-        public static string GenerateSignatureUsingHash(string signatureBase, HashAlgorithm hashAlgorithm)
+        public static string GenerateAuthenticationHeader(string endpoint, ITokensBase tokens, IQuery query, string httpMethod)
         {
-            return ComputeHash(hashAlgorithm, signatureBase);
+            var timeStamp = GenerateTimeStamp();
+            var nonce = GenerateNonce();
+
+            var urlQuery = new SortedQuery(UnionOAuthParameters(tokens, query, timeStamp, nonce));
+            var signatureBase = GenerateSignatureBase(tokens, endpoint, urlQuery, httpMethod);
+
+            urlQuery[OAuthParameters.Signature] = GenerateSignature(tokens, signatureBase);
+
+            return "OAuth " + string.Join(",", urlQuery.Select(Query.GetParameterPairDq));
         }
-
-        public static string GenerateAuthenticationHeader(string endpoint, ITokensBase tokens, IQuery query, string httpMethod, string timeStamp, string nonce)
-        {
-            var urlQuery = new Query(query);
-
-            var signatureBase = GenerateSignatureBase(tokens, endpoint, urlQuery, httpMethod, timeStamp, nonce, false);
-            urlQuery[OAuthParameterKeys.Signature] = HashHMACSHA1(tokens, signatureBase);
-
-            return string.Concat("OAuth ", string.Join(",", Query.Sort(urlQuery).Select(Query.GetParameterPairDq)));
-        }
-
-        private static DateTime _utcBasedDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
 
         public static string GenerateTimeStamp()
         {
-            var ts = DateTime.UtcNow - _utcBasedDateTime;
-            return Convert.ToInt64(ts.TotalSeconds).ToString();
+            return DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
         }
 
         public static string GenerateNonce()
@@ -107,42 +114,38 @@ namespace SocialApis
             return Guid.NewGuid().ToString("N").ToUpper();
         }
 
-        public static string HashHMACSHA1(ITokensBase token, string signatureBase)
+        public static string GenerateSignature(ITokensBase token, string signatureBase)
         {
-            var algorythm = new HMACSHA1();
-            var key = string.Concat(token.ConsumerSecret, "&", token.ApiTokenSecret);
-            algorythm.Key = Encoding.UTF8.GetBytes(key);
+            if (string.IsNullOrEmpty(signatureBase))
+                throw new ArgumentNullException(nameof(signatureBase));
 
-            return GenerateSignatureUsingHash(signatureBase, algorythm);
+            var hashKey = Encoding.UTF8.GetBytes(string.Concat(token.ConsumerSecret, "&", token.ApiTokenSecret));
+            var data = Encoding.ASCII.GetBytes(signatureBase);
+
+            var algorythm = new HMACSHA1(hashKey);
+
+            return Convert.ToBase64String(algorythm.ComputeHash(data));
         }
 
         public static string UrlEncode(string value)
         {
-            // https://nyahoon.com/blog/1291
+            // 参考: https://nyahoon.com/blog/1291
 
-            const byte _0 = 0x30, _9 = 0x39;
-            const byte _A = 0x41, _Z = 0x5A;
-            const byte _a = 0x61, _z = 0x7A;
-            const byte _hyphen = 0x2D;
-            const byte _dot = 0x2E;
-            const byte _unserscore = 0x5F;
-            const byte _dash = 0x7E;
+            var data = Encoding.UTF8.GetBytes(value);
+            var sb = new StringBuilder(data.Length * 3);
 
-            var utf8str = Encoding.UTF8.GetBytes(value);
-            var sb = new StringBuilder();
-            foreach (byte c in utf8str)
+            foreach (byte c in data)
             {
-                if ((_A <= c && c <= _Z) || (_a <= c && c <= _z) // [A-Z] | [a-z]
-                    || (_0 <= c && c <= _9) // [0-9]
-                    || c == _hyphen || c == _dot || c == _unserscore || c == _dash) // [-._~]
+                if (_ordinaryCharacters.Contains(c))
                 {
                     sb.Append((char)c);
                 }
                 else
                 {
-                    sb.AppendFormat("%{0:X2}", (int)c);
+                    sb.Append("%" + c.ToString("X2"));
                 }
             }
+
             return sb.ToString();
         }
     }
