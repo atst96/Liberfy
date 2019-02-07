@@ -12,7 +12,7 @@ namespace Liberfy
 {
     internal class StatusItem : NotificationObject, IItem
     {
-        public AccountBase Account { get; }
+        public IAccount Account { get; }
 
         public long Id { get; }
         public DateTimeOffset CreatedAt { get; }
@@ -52,8 +52,8 @@ namespace Liberfy
             {
                 this.Type = ItemType.Retweet;
 
-                statusInfo = DataStore.Twitter.StatusAddOrUpdate(status.RetweetedStatus);
-                this.RetweetUser = DataStore.Twitter.UserAddOrUpdate(status.User);
+                statusInfo = DataStore.Twitter.RegisterStatus(status.RetweetedStatus);
+                this.RetweetUser = DataStore.Twitter.RegisterAccount(status.User);
 
                 if (status.User.Id == account.Id)
                     reaction.IsRetweeted = true;
@@ -61,7 +61,7 @@ namespace Liberfy
             else
             {
                 this.Type = ItemType.Status;
-                statusInfo = DataStore.Twitter.StatusAddOrUpdate(status);
+                statusInfo = DataStore.Twitter.RegisterStatus(status);
 
                 this.IsReply = status.InReplyToStatusId.HasValue;
                 if (this.IsReply)
@@ -91,13 +91,15 @@ namespace Liberfy
 
             StatusInfo statusInfo;
 
+            var dataStore = DataStore.Mastodon[account.Tokens.HostUrl];
+
             this.IsRetweet = status.Reblog != null;
             if (this.IsRetweet)
             {
                 this.Type = ItemType.Retweet;
 
-                statusInfo = DataStore.Mastodon.StatusAddOrUpdate(status.Reblog);
-                this.RetweetUser = DataStore.Mastodon.UserAddOrUpdate(status.Account);
+                statusInfo = dataStore.RegisterStatus(status.Reblog);
+                this.RetweetUser = dataStore.RegisterAccount(status.Account);
 
                 if (status.Account.Id == account.Id)
                     reaction.IsRetweeted = true;
@@ -105,7 +107,7 @@ namespace Liberfy
             else
             {
                 this.Type = ItemType.Status;
-                statusInfo = DataStore.Mastodon.StatusAddOrUpdate(status);
+                statusInfo = dataStore.RegisterStatus(status);
 
                 this.IsReply = status.InReplyToId.HasValue;
                 if (this.IsReply)
