@@ -8,14 +8,14 @@ namespace SocialApis.Mastodon.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class FollowsApi : TokenApiBase
+    public class FollowsApi : ApiBase
     {
-        internal FollowsApi(Tokens tokens) : base(tokens) { }
+        internal FollowsApi(MastodonApi tokens) : base(tokens) { }
 
         public Task<Account[]> GetFollows(string uri)
         {
             var query = new Query { ["uri"] = uri };
-            return this.Tokens.GetRequestRestApiAsync<Account[]>("follows", query);
+            return this.Api.GetRequestRestApiAsync<Account[]>("follows", query);
         }
     }
 }

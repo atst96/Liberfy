@@ -8,26 +8,26 @@ namespace SocialApis.Mastodon.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class DomainBlocksApi : TokenApiBase
+    public class DomainBlocksApi : ApiBase
     {
-        internal DomainBlocksApi(Tokens tokens) : base(tokens) { }
+        internal DomainBlocksApi(MastodonApi tokens) : base(tokens) { }
 
         public Task<string[]> GetDomains(Query query = null)
         {
-            return this.Tokens.GetRequestRestApiAsync<string[]>("domain_blocks", query);
+            return this.Api.GetRequestRestApiAsync<string[]>("domain_blocks", query);
         }
 
         public async Task BlockDomain(string domain)
         {
-            var query = new Query { ["domain"] = OAuthHelper.UrlEncode(domain) };
-            var req = this.Tokens.CreatePostRequester("domain_blocks", query);
+            var query = new Query { ["domain"] = HttpHelper.UrlEncode(domain) };
+            var req = this.Api.CreatePostRequester("domain_blocks", query);
             await WebUtility.SendRequestVoid(req);
         }
 
         public async Task UnblockDomain(string domain)
         {
             var query = new Query { ["domain"] = domain };
-            var req = this.Tokens.CreateRequester("domain_blocks", query, "DELETE");
+            var req = this.Api.CreateRequester("domain_blocks", query, "DELETE");
             await WebUtility.SendRequestVoid(req);
         }
     }

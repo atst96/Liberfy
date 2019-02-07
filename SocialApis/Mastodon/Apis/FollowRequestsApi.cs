@@ -8,24 +8,24 @@ namespace SocialApis.Mastodon.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class FollowRequestsApi : TokenApiBase
+    public class FollowRequestsApi : ApiBase
     {
-        internal FollowRequestsApi(Tokens tokens) : base(tokens) { }
+        internal FollowRequestsApi(MastodonApi tokens) : base(tokens) { }
 
         public Task<Account[]> GetFollowRequests(IQuery query = null)
         {
-            return this.Tokens.GetRequestRestApiAsync<Account[]>("follow_requests", query);
+            return this.Api.GetRequestRestApiAsync<Account[]>("follow_requests", query);
         }
 
         public Task Authorize(long accountId)
         {
-            var req = this.Tokens.CreatePostRequesterApi($"follow_requests/{ accountId }/authorize");
+            var req = this.Api.CreatePostRequesterApi($"follow_requests/{ accountId }/authorize");
             return WebUtility.SendRequestVoid(req);
         }
 
         public Task Reject(long accountId)
         {
-            var req = this.Tokens.CreatePostRequesterApi($"follow_requests/{ accountId }/reject");
+            var req = this.Api.CreatePostRequesterApi($"follow_requests/{ accountId }/reject");
             return WebUtility.SendRequestVoid(req);
         }
     }

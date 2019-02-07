@@ -9,13 +9,13 @@ namespace SocialApis.Mastodon
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class MutesApi : TokenApiBase
+    public class MutesApi : ApiBase
     {
-        public MutesApi(Tokens tokens) : base(tokens) { }
+        public MutesApi(MastodonApi tokens) : base(tokens) { }
 
         public Task<Account[]> GetMutes(IQuery query = null)
         {
-            return this.Tokens.PostRequestRestApiAsync<Account[]>("mutes", query);
+            return this.Api.PostRequestRestApiAsync<Account[]>("mutes", query);
         }
     }
 }

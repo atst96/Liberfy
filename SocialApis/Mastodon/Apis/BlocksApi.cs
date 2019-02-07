@@ -8,13 +8,13 @@ namespace SocialApis.Mastodon.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class BlocksApi : TokenApiBase
+    public class BlocksApi : ApiBase
     {
-        internal BlocksApi(Tokens tokens) : base(tokens) { }
+        internal BlocksApi(MastodonApi tokens) : base(tokens) { }
 
         public Task<Account[]> GetAll(IQuery query = null)
         {
-            return this.Tokens.GetRequestRestApiAsync<Account[]>("blocks", query);
+            return this.Api.GetRequestRestApiAsync<Account[]>("blocks", query);
         }
     }
 }

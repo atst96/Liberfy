@@ -8,32 +8,32 @@ namespace SocialApis.Mastodon
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class NotificationsApi : TokenApiBase
+    public class NotificationsApi : ApiBase
     {
-        public NotificationsApi(Tokens tokens) : base(tokens) { }
+        public NotificationsApi(MastodonApi tokens) : base(tokens) { }
 
         public Task<Notification[]> GetNotifications(NotificationType excludeType, IQuery query = null)
         {
             var _query = new Query(query);
             _query["exclude_type"] = excludeType;
 
-            return this.Tokens.GetRequestRestApiAsync<Notification[]>("notifications", _query);
+            return this.Api.GetRequestRestApiAsync<Notification[]>("notifications", _query);
         }
 
         public Task<Notification[]> GetNotification(long id)
         {
-            return this.Tokens.GetRequestRestApiAsync<Notification[]>($"notifications/{ id }");
+            return this.Api.GetRequestRestApiAsync<Notification[]>($"notifications/{ id }");
         }
 
         public Task ClearNotifications()
         {
-            return this.Tokens.PostRequestRestApiAsync("notifications/clear");
+            return this.Api.PostRequestRestApiAsync("notifications/clear");
         }
 
         public Task DismissNotification(long notificationId)
         {
             var query = new Query { ["id"] = notificationId };
-            return this.Tokens.PostRequestRestApiAsync("notifications/dismiss", query);
+            return this.Api.PostRequestRestApiAsync("notifications/dismiss", query);
         }
     }
 }

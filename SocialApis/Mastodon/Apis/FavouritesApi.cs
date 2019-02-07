@@ -8,13 +8,13 @@ namespace SocialApis.Mastodon.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class FavouritesApi : TokenApiBase
+    public class FavouritesApi : ApiBase
     {
-        internal FavouritesApi(Tokens tokens) : base(tokens) { }
+        internal FavouritesApi(MastodonApi tokens) : base(tokens) { }
 
         public Task<Status[]> Favourites(IQuery query = null)
         {
-            return this.Tokens.GetRequestRestApiAsync<Status[]>("favourites", query);
+            return this.Api.GetRequestRestApiAsync<Status[]>("favourites", query);
         }
     }
 }

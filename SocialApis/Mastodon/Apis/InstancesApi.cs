@@ -5,18 +5,18 @@ namespace SocialApis.Mastodon.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class InstancesApi : TokenApiBase
+    public class InstancesApi : ApiBase
     {
-        internal InstancesApi(Tokens tokens) : base(tokens) { }
+        internal InstancesApi(MastodonApi tokens) : base(tokens) { }
 
         public Task<Instance> GetInstance()
         {
-            return this.Tokens.GetRequestAsync<Instance>("instance");
+            return this.Api.GetRequestAsync<Instance>("instance");
         }
 
         public Task<Emoji[]> CustomEmojis()
         {
-            return this.Tokens.GetRequestAsync<Emoji[]>("custom_emojis");
+            return this.Api.GetRequestAsync<Emoji[]>("custom_emojis");
         }
     }
 }

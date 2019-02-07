@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
-
-    public class OAuthApi : TokenApiBase
+    public class OAuthApi : ApiBase
     {
-        internal OAuthApi(Tokens tokens) : base(tokens)
+        internal OAuthApi(MastodonApi tokens) : base(tokens)
         {
             this._oauthBaseUrl = tokens.HostUrl.AbsoluteUri + "oauth/";
         }
@@ -23,16 +16,16 @@ namespace SocialApis.Mastodon.Apis
         {
             var url = _oauthBaseUrl + "token";
 
-            var query = new Query
+            var parameters = new Query
             {
-                ["client_id"] = this.Tokens.ClientId,
-                ["client_secret"] = this.Tokens.ClientSecret,
+                ["client_id"] = this.Api.ClientId,
+                ["client_secret"] = this.Api.ClientSecret,
                 ["grant_type"] = "authorization_code",
                 ["redirect_uri"] = redirectUrl,
                 ["code"] = code,
             };
 
-            return this.Tokens.SendRequest<AccessTokenResponse>(WebUtility.CreateWebRequest(url, query, "POST"));
+            return this.Api.SendRequest<AccessTokenResponse>(WebUtility.CreateWebRequest(url, parameters, HttpMethods.POST));
         }
 
         public string GetAuthorizeUrl(string[] scopes, string redirectUri = "urn:ietf:wg:oauth:2.0:oob")
@@ -44,7 +37,7 @@ namespace SocialApis.Mastodon.Apis
                 ["scope"] = string.Join(" ", scopes),
                 ["response_type"] = "code",
                 ["redirect_uri"] = redirectUri,
-                ["client_id"] = this.Tokens.ClientId,
+                ["client_id"] = this.Api.ClientId,
             };
 
             return $"{ url }?{ string.Join("&", Query.GetRequestParameters(query)) }";

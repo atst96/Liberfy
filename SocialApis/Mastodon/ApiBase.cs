@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon
 {
-    public abstract class TokenApiBase
+    public abstract class ApiBase
     {
-        protected Tokens Tokens { get; }
+        protected MastodonApi Api { get; }
 
-        protected TokenApiBase(Tokens tokens)
+        protected ApiBase(MastodonApi tokens)
         {
-            this.Tokens = tokens;
+            this.Api = tokens;
         }
     }
 }

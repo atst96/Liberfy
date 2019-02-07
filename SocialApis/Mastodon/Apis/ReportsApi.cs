@@ -8,13 +8,13 @@ namespace SocialApis.Mastodon.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class ReportsApi : TokenApiBase
+    public class ReportsApi : ApiBase
     {
-        internal ReportsApi(Tokens tokens) : base(tokens) { }
+        internal ReportsApi(MastodonApi tokens) : base(tokens) { }
 
         public Task<Report[]> GetReports()
         {
-            return this.Tokens.GetRequestRestApiAsync<Report[]>("reports");
+            return this.Api.GetRequestRestApiAsync<Report[]>("reports");
         }
 
         public Task<Report> Report(long accountId, long statusId, string comment)
@@ -26,7 +26,7 @@ namespace SocialApis.Mastodon.Apis
                 ["comment"]    = comment,
             };
 
-            return this.Tokens.PostRequestRestApiAsync<Report>("reports", query);
+            return this.Api.PostRequestRestApiAsync<Report>("reports", query);
         }
     }
 }

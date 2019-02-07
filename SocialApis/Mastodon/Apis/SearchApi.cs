@@ -8,16 +8,16 @@ namespace SocialApis.Mastodon.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class SearchApi : TokenApiBase
+    public class SearchApi : ApiBase
     {
-        internal SearchApi(Tokens tokens) : base(tokens) { }
+        internal SearchApi(MastodonApi tokens) : base(tokens) { }
 
         public Task<Results> Search(string q, IQuery query = null)
         {
             var _q = new Query(query);
             _q["q"] = q;
 
-            return this.Tokens.GetRequestRestApiAsync<Results>("search", _q);
+            return this.Api.GetRequestRestApiAsync<Results>("search", _q);
         }
     }
 }
