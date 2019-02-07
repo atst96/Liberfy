@@ -8,7 +8,7 @@ namespace Liberfy
 {
     internal abstract class StatusColumnBase : ColumnBase
     {
-        protected StatusColumnBase(AccountBase account, ColumnType type, string title = null)
+        protected StatusColumnBase(IAccount account, ColumnType type, string title = null)
             : base(account, type, title)
         {
             if (type == ColumnType.Status || !type.HasFlag(ColumnType.Status))

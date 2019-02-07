@@ -11,10 +11,10 @@ namespace Liberfy.SocialServices.Twitter
 {
     internal class FakeStreaming : IUnsubscribableObserver<IItem>
     {
-        private TwitterAccount _account;
+        private readonly TwitterAccount _account;
 
         public TimeSpan Interval { get; set; } = TimeSpan.FromSeconds(60);
-        public long LatestHomeStatusId { get; set; }
+        public long LatestStatusId { get; set; }
 
         private CancellationTokenSource _cancellationTokenSource;
 
@@ -25,11 +25,11 @@ namespace Liberfy.SocialServices.Twitter
             this._account = account ?? throw new ArgumentNullException(nameof(account));
         }
 
-        public async Task Start()
+        public async void Start()
         {
             this._cancellationTokenSource = new CancellationTokenSource();
 
-            await Task.Delay(this.Interval, this._cancellationTokenSource.Token);
+            await Task.Delay(this.Interval, this._cancellationTokenSource.Token).ConfigureAwait(false);
 
             var sw = new Stopwatch();
 
@@ -39,14 +39,13 @@ namespace Liberfy.SocialServices.Twitter
                 {
                     sw.Restart();
 
-                    var statuses = await this._account.InternalTokens.Statuses.HomeTimeline(new Query
+                    var statuses = await this._account.Tokens.Statuses.HomeTimeline(new Query
                     {
-                        ["since_id"] = this.LatestHomeStatusId,
+                        ["since_id"] = this.LatestStatusId,
                         ["count"] = 200,
-                    });
+                    }).ConfigureAwait(false);
 
                     var enumerator = statuses.Reverse().GetEnumerator();
-
 
                     bool hasNext = enumerator.MoveNext();
                     var currentStatus = hasNext ? enumerator.Current : default;
@@ -54,7 +53,7 @@ namespace Liberfy.SocialServices.Twitter
                     while (hasNext && !this.IsCancelRequested)
                     {
                         var timelineItem = new StatusItem(currentStatus, this._account);
-                        this.LatestHomeStatusId = currentStatus.Id;
+                        this.LatestStatusId = currentStatus.Id;
 
                         foreach (var observer in this._observers)
                         {
@@ -66,7 +65,7 @@ namespace Liberfy.SocialServices.Twitter
                         {
                             var nextStatus = enumerator.Current;
                             var delay = nextStatus.CreatedAt - currentStatus.CreatedAt;
-                            await Task.Delay(delay, this._cancellationTokenSource.Token);
+                            await Task.Delay(delay, this._cancellationTokenSource.Token).ConfigureAwait(false);
 
                             currentStatus = nextStatus;
                         }
@@ -77,11 +76,12 @@ namespace Liberfy.SocialServices.Twitter
                     var remaining = this.Interval - sw.Elapsed;
                     if (sw.Elapsed.TotalSeconds > 0)
                     {
-                        await Task.Delay(remaining);
+                        await Task.Delay(remaining).ConfigureAwait(false);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
                 }
             }
         }

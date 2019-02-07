@@ -17,13 +17,14 @@ namespace Liberfy
 
         private readonly long _userId;
         private readonly TwitterAccount _account;
-        public Tokens _tokens => (Tokens)_account.InternalTokens;
+        public TwitterApi _tokens => _account.Tokens;
 
         private FakeStreaming _streaming;
 
         public event EventHandler OnUnloading;
 
         public TwitterTimeline(TwitterAccount account)
+            : base(account)
         {
             this._account = account;
             this._userId = account.Id;
@@ -31,14 +32,14 @@ namespace Liberfy
 
         public override async void Load()
         {
-            var waitingTasks = new[]
+            var tasks = new[]
             {
                 this.GetHomeTimeline(),
                 this.GetNotificationTimeline(),
                 this.GetMessageTimeline()
             };
 
-            await Task.WhenAll(waitingTasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
 
             this.StartStream();
         }
@@ -47,52 +48,38 @@ namespace Liberfy
         {
             this._streaming = new FakeStreaming(this._account);
 
-            var accountColumn = Columns
-                .Where(a => a.Type == ColumnType.Home && a.Account == this._account)
+            var accountColumn = this.AccountColumns
+                .GetsTypeOf(ColumnType.Home)
                 .FirstOrDefault();
 
             var topItem = accountColumn?.Items?.FirstOrDefault();
 
             if (topItem is StatusItem item)
             {
-                this._streaming.LatestHomeStatusId = item.Id;
+                this._streaming.LatestStatusId = item.Id;
             }
 
             this._streaming.Subscribe(this);
             this._streaming.Start();
         }
 
-        private IEnumerable<StatusItem> GetStatusItem(IEnumerable<Status> statuses)
+        private IEnumerable<StatusItem> GetStatusItem(ICollection<Status> statuses)
         {
-            foreach (var status in statuses)
-            {
-                yield return new StatusItem(status, this._account);
-            }
+            return from status in statuses select new StatusItem(status, this._account);
         }
 
-        private IEnumerable<ColumnBase> GetCurrentAccountColumns()
-        {
-            foreach (var column in TimelineBase.Columns)
-            {
-                if (column.Account?.Equals(this._account) ?? false)
-                {
-                    yield return column;
-                }
-            }
-        }
-
-        private Task GetHomeTimeline() => Task.Run(async () =>
+        private async Task GetHomeTimeline()
         {
             try
             {
-                var statuses = await _tokens.Statuses.HomeTimeline(new Query
+                var statuses = await this._tokens.Statuses.HomeTimeline(new Query
                 {
                     ["tweet_mode"] = "extended",
-                });
+                }).ConfigureAwait(false);
 
                 var items = this.GetStatusItem(statuses);
 
-                foreach (var column in this.GetCurrentAccountColumns().Where(c => c.Type == ColumnType.Home))
+                foreach (var column in this.AccountColumns.GetsTypeOf(ColumnType.Home))
                 {
                     _dispatcher.Invoke(() => column.Items.Reset(items));
                 }
@@ -101,16 +88,16 @@ namespace Liberfy
             {
                 // TODO: 取得失敗時の処理
             }
-        });
+        }
 
-        private Task GetNotificationTimeline() => Task.Run(async () =>
+        private async Task GetNotificationTimeline()
         {
             try
             {
-                var statuses = await _tokens.Statuses.MentionsTimeline();
+                var statuses = await this._tokens.Statuses.MentionsTimeline().ConfigureAwait(false);
                 var items = this.GetStatusItem(statuses);
 
-                foreach (var column in this.GetCurrentAccountColumns().Where(c => c.Type == ColumnType.Notification))
+                foreach (var column in this.AccountColumns.GetsTypeOf(ColumnType.Notification))
                 {
                     _dispatcher.Invoke(() => column.Items.Reset(items));
                 }
@@ -119,45 +106,36 @@ namespace Liberfy
             {
                 // TODO: 取得失敗時の処理
             }
-        });
+        }
 
-        private Task GetMessageTimeline() => Task.Run(() =>
+        private async Task GetMessageTimeline()
         {
             try
             {
-
+                await Task.CompletedTask;
             }
             catch
             {
                 // TODO: 取得失敗時の処理
             }
-        });
+        }
 
         public override void Unload()
         {
             this.OnUnloading?.Invoke(this, EventArgs.Empty);
 
-            var accountColumns = Columns
-                .Where(c => c.Account == this._account)
-                .ToArray();
-
-            foreach (var c in accountColumns)
-            {
-                Columns.Remove(c);
-            }
+            this.AccountColumns.Clear();
 
             this._streaming?.Stop();
-
-            //this.Columns.Clear();
         }
 
         public void OnNext(IItem value)
         {
-            var columns = Columns.Where(a => a.Type == ColumnType.Home && a.Account == this._account);
+            var columns = this.AccountColumns.GetsTypeOf(ColumnType.Home);
 
             foreach (var column in columns)
             {
-                column.Items.Insert(0, value);
+                _dispatcher.InvokeAsync(() => column.Items.Insert(0, value));
             }
         }
 

@@ -9,7 +9,7 @@ namespace Liberfy
 {
     internal abstract class SearchColumnBase : StatusColumnBase
     {
-        protected SearchColumnBase(AccountBase account, ColumnType type)
+        protected SearchColumnBase(IAccount account, ColumnType type)
             : base(account, type)
         {
         }

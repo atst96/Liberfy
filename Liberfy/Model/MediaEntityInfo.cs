@@ -12,7 +12,7 @@ namespace Liberfy
 {
     struct MediaEntityInfo
     {
-        public AccountBase Account { get; }
+        public IAccount Account { get; }
 
         public StatusItem Item { get; }
 
@@ -20,7 +20,7 @@ namespace Liberfy
 
         public Attachment CurrentEntity { get; }
 
-        public MediaEntityInfo(AccountBase account, StatusItem item)
+        public MediaEntityInfo(IAccount account, StatusItem item)
         {
             this.Account = account;
             this.Item = item;
@@ -28,7 +28,7 @@ namespace Liberfy
             this.CurrentEntity = this.Entities.First();
         }
 
-        public MediaEntityInfo(AccountBase account, StatusItem item, Attachment currentEntity)
+        public MediaEntityInfo(IAccount account, StatusItem item, Attachment currentEntity)
         {
             this.Account = account;
             this.Item = item;

@@ -8,7 +8,7 @@ namespace Liberfy
 {
     class MessageColumn : ColumnBase
     {
-        public MessageColumn(AccountBase account)
+        public MessageColumn(IAccount account)
             : base(account, ColumnType.Messages, "Message")
         {
         }

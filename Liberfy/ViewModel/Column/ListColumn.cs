@@ -12,7 +12,7 @@ namespace Liberfy
     {
         private static string BaseTitle = "List";
 
-        public ListColumn(AccountBase account)
+        public ListColumn(IAccount account)
             : base(account, ColumnType.List, BaseTitle)
         {
         }

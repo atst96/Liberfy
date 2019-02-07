@@ -1,4 +1,5 @@
 ﻿using Liberfy.Commands;
+using Liberfy.Services;
 using Liberfy.Settings;
 using SocialApis;
 using SocialApis.Common;
@@ -11,96 +12,98 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    internal abstract class AccountBase : NotificationObject, IEquatable<AccountBase>, IEquatable<UserInfo>
+    internal static class AccountBase
     {
-        public abstract SocialService Service { get; }
+        public static IAccount FromSetting(AccountItem item)
+        {
+            switch (item.Service)
+            {
+                case ServiceType.Twitter:
+                    return new TwitterAccount(item);
 
-        protected abstract DataStore DataStore { get; }
+                case ServiceType.Mastodon:
+                    return new MastodonAccount(item);
 
-        protected static Setting Setting => App.Setting;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+    }
 
-        protected object _lockSharedObject = new object();
-
-        private IAccountCommandGroup _commands;
-        public IAccountCommandGroup Commands => this._commands = (this._commands = this.CreateCommands());
-
+    internal abstract class AccountBase<TTokens, TTimeline, TUser, TStatus>
+        : NotificationObject, IAccount, IEquatable<IAccount>, IEquatable<UserInfo>
+            where TTokens : IApi
+            where TTimeline : TimelineBase
+    {
         public abstract long Id { get; protected set; }
 
-        protected abstract IAccountCommandGroup CreateCommands();
+        public abstract ServiceType Service { get; }
+
+        public TTokens Tokens { get; private set; }
+
+        public abstract DataStoreBase<TUser, TStatus> DataStore { get; }
+
+        IApi IAccount.Tokens => this.Tokens;
+
+        protected static Setting Setting { get; } = App.Setting;
+
+        protected object LockSharedObject = new object();
+
+        public void SetClient(ApiTokenInfo tokens)
+        {
+            this.Tokens = this.TokensFromApiTokenInfo(tokens);
+        }
+
+        public abstract IAccountCommandGroup Commands { get; }
 
         public UserInfo Info { get; protected set; }
 
-        public abstract ITokensBase Tokens { get; }
+        public TTimeline Timeline { get; }
 
-        public TimelineBase Timeline { get; }
+        TimelineBase IAccount.Timeline => this.Timeline;
 
-        private bool _automaticallyLogin;
-        public bool AutomaticallyLogin
+        private AccountBase(long id, ApiTokenInfo tokens)
         {
-            get => this._automaticallyLogin;
-            set => this.SetProperty(ref this._automaticallyLogin, value);
+            this.Id = id;
+            this.SetClient(tokens);
+            this.Timeline = this.CreateTimeline();
         }
 
-        private bool _automaticallyLoadTimeline;
-        public bool AutomaticallyLoadTimeline
-        {
-            get => this._automaticallyLoadTimeline;
-            set => this.SetProperty(ref this._automaticallyLoadTimeline, value);
-        }
-
-        public AccountBase(AccountItem item)
+        protected AccountBase(AccountItem item)
+            : this(item.Id, item.Token)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
 
-            this.Id = item.Id;
-
-            UserInfo userInfo;
-            if (!this.DataStore.Users.TryGetValue(item.Id, out userInfo))
-            {
-                userInfo = new UserInfo(item.Id, item.Name, item.ScreenName, item.IsProtected, item.ProfileImageUrl);
-                this.DataStore.Users.TryAdd(item.Id, userInfo);
-            }
-
-            this.Info = userInfo;
-
-            this.SetTokens(item.Token);
+            this.Info = this.DataStore.Accounts
+                .GetOrAdd(item.Id, _ => new UserInfo(item.Id, item.Name, item.ScreenName, item.IsProtected, item.ProfileImageUrl));
 
             if (item.MutedIds?.Length > 0)
                 this.MutedIds.UnionWith(item.MutedIds);
-
-            this.AutomaticallyLogin = item.AutomaticallyLogin;
-            this.AutomaticallyLoadTimeline = item.AutomaticallyLoadTimeline;
-
-            this.Timeline = this.CreateTimeline();
         }
 
-        public AccountBase(ITokensBase tokens, IAccount account)
+        protected AccountBase(long userId, TUser account, IApi tokens)
+            : this(userId, ApiTokenInfo.FromTokens(tokens))
         {
-            if (this.Service != account.Service)
-                throw new ArgumentException(nameof(account));
-
-            this.Id = (long)account.Id;
-            this.Info = this.DataStore.UserAddOrUpdate(account);
-
+            this.Info = this.GetUserInfo(account);
             this.IsLoggedIn = true;
-
-            this.SetTokens(ApiTokenInfo.FromTokens(tokens));
-            this.Timeline = this.CreateTimeline();
         }
 
-        public abstract void SetTokens(ApiTokenInfo tokens);
+        protected abstract UserInfo GetUserInfo(TUser account);
 
-        protected abstract TimelineBase CreateTimeline();
+        protected abstract TTokens TokensFromApiTokenInfo(ApiTokenInfo tokens);
+
+        protected abstract TTimeline CreateTimeline();
 
         private bool _isLoading;
+        private bool _isLoggedIn;
+
         public bool IsLoading
         {
             get => this._isLoading;
             private set => this.SetProperty(ref this._isLoading, value);
         }
 
-        private bool _isLoggedIn;
         public bool IsLoggedIn
         {
             get => this._isLoggedIn;
@@ -109,14 +112,14 @@ namespace Liberfy
 
         public abstract Task Load();
 
-        public async ValueTask<bool> TryLogin()
+        public async ValueTask<bool> Login()
         {
             if (this._isLoggedIn)
                 return true;
 
             this.IsLoading = true;
 
-            bool loggedIn = await this.Login();
+            bool loggedIn = await this.VerifyCredentials().ConfigureAwait(false);
             if (loggedIn)
             {
                 this.IsLoggedIn = true;
@@ -127,22 +130,31 @@ namespace Liberfy
             return loggedIn;
         }
 
-        protected abstract Task<bool> Login();
+        protected abstract Task<bool> VerifyCredentials();
 
-        public async Task TryLoadDetails()
+        public async Task LoadDetails()
         {
             this.IsLoading = true;
 
-            await this.GetDetails();
+            await this.GetDetails().ConfigureAwait(false);
 
             this.IsLoading = false;
         }
 
         protected abstract Task GetDetails();
 
-        public virtual void StartTimeline() => this.Timeline.Load();
+        public virtual void StartTimeline()
+        {
+            if (App.__DEBUG_LoadTimeline)
+            {
+#pragma warning disable CS0162
+                this.Timeline.Load();
+#pragma warning restore CS0162
+            }
+        }
 
         private string _errorMessage;
+
         public string ErrorMessage
         {
             get => this._errorMessage;
@@ -151,7 +163,7 @@ namespace Liberfy
 
         protected void SetErrorMessage(string name, string message)
         {
-            lock (this._lockSharedObject)
+            lock (this.LockSharedObject)
             {
                 var beforeStr = string.IsNullOrEmpty(this.ErrorMessage) ? string.Empty : "\n";
 
@@ -159,16 +171,16 @@ namespace Liberfy
             }
         }
 
-        private SortedDictionary<long, StatusActivity> _statusReactions = new SortedDictionary<long, StatusActivity>();
+        private SortedDictionary<long, StatusActivity> _statusActivity = new SortedDictionary<long, StatusActivity>();
 
-        public StatusActivity GetActivity(long user_id)
+        public StatusActivity GetActivity(long usreId)
         {
-            StatusActivity activity;
+            StatusActivity activity = default;
 
-            if (!this._statusReactions.TryGetValue(user_id, out activity))
+            if (!this._statusActivity.TryGetValue(usreId, out activity))
             {
                 activity = new StatusActivity();
-                this._statusReactions.Add(user_id, activity);
+                this._statusActivity.Add(usreId, activity);
             }
 
             return activity;
@@ -192,6 +204,8 @@ namespace Liberfy
         private HashSet<long> _outgoingIds = new HashSet<long>();
         public HashSet<long> OutgoingIds => this._outgoingIds ?? (this._outgoingIds = new HashSet<long>());
 
+        public abstract IValidator Validator { get; }
+
         public AccountItem ToSetting() => new AccountItem
         {
             Service = this.Service,
@@ -201,53 +215,41 @@ namespace Liberfy
             IsProtected = this.Info.IsProtected,
             ProfileImageUrl = this.Info.ProfileImageUrl,
             Token = ApiTokenInfo.FromTokens(this.Tokens),
-            AutomaticallyLogin = this.AutomaticallyLogin,
-            AutomaticallyLoadTimeline = this.AutomaticallyLoadTimeline,
             //Columns = this.Timeline.Columns?.Select(c => c.GetOption()),
             MutedIds = this._mutedIds?.ToArray(),
         };
 
-        public static AccountBase FromSetting(AccountItem item)
-        {
-            if (item.Service == SocialService.Twitter)
-                return new TwitterAccount(item);
-            else if (item.Service == SocialService.Mastodon)
-                return new MastodonAccount(item);
-            else
-                throw new NotImplementedException();
-        }
-
         public virtual void Unload()
         {
-            this.Timeline.Unload();
+            this.Timeline?.Unload();
             this._followingIds?.Clear();
             this._followersIds?.Clear();
             this._blockedIds?.Clear();
             this._mutedIds?.Clear();
             this._incomingIds?.Clear();
             this._outgoingIds?.Clear();
-            this._statusReactions.Clear();
+            this._statusActivity.Clear();
         }
 
-        public bool Equals(UserInfo user)
+        public bool Equals(UserInfo other)
         {
-            return this.Id == user.Id && this.Service == user.Service;
+            return this.Id == other.Id && this.Service == other.Service;
         }
 
-        public bool Equals(AccountBase other)
+        public bool Equals(IAccount other)
         {
             return this.Id == other.Id && this.Service == other.Service;
         }
 
         public override bool Equals(object obj)
         {
-            return (obj is UserInfo user && this.Equals(user))
-                || (obj is AccountBase account && this.Equals(account));
+            return (obj is UserInfo user    && this.Equals(user))
+                || (obj is IAccount account && this.Equals(account));
         }
 
         public override int GetHashCode()
         {
-            return this.Id.GetHashCode() + $"Liberfy.Account.{ this.Service.ToString() }.".GetHashCode();
+            return $"{ this.Id }.Liberfy.Account.{ this.Service }".GetHashCode();
         }
 
         ~AccountBase()
@@ -259,8 +261,8 @@ namespace Liberfy
             this._mutedIds = null;
             this._incomingIds = null;
             this._outgoingIds = null;
-            this._statusReactions = null;
-            this._lockSharedObject = null;
+            this._statusActivity = null;
+            this.LockSharedObject = null;
         }
     }
 }

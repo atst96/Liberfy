@@ -8,7 +8,7 @@ namespace Liberfy
 {
     internal class NotificationColumn : StatusColumnBase
     {
-        public NotificationColumn(AccountBase account)
+        public NotificationColumn(IAccount account)
             : base(account, ColumnType.Notification, "Notification")
         {
         }

@@ -20,7 +20,7 @@ namespace Liberfy.Twitter.Commands
         {
             if (item.Account is TwitterAccount account)
             {
-                var tokens = account.InternalTokens;
+                var tokens = account.Tokens;
 
                 StatusResponse status = default;
 
@@ -30,7 +30,7 @@ namespace Liberfy.Twitter.Commands
                         ? await tokens.Favorites.Destroy(item.Status.Id)
                         : await tokens.Favorites.Create(item.Status.Id);
 
-                    DataStore.Twitter.StatusAddOrUpdate(status);
+                    DataStore.Twitter.RegisterStatus(status);
 
                     item.Reaction.IsFavorited = status.IsFavorited ?? !item.Reaction.IsFavorited;
                 }

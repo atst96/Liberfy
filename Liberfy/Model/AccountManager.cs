@@ -10,10 +10,10 @@ namespace Liberfy
 {
     internal static class AccountManager
     {
-        private static readonly NotifiableCollection<AccountBase> _accounts = new NotifiableCollection<AccountBase>();
-        public static IEnumerable<AccountBase> Accounts { get; } = _accounts;
+        private static readonly NotifiableCollection<IAccount> _accounts = new NotifiableCollection<IAccount>();
+        public static IEnumerable<IAccount> Accounts { get; } = _accounts;
 
-        public static readonly IDictionary<SocialService, IDictionary<long, AccountBase>> _serviceAccountMap = new Dictionary<SocialService, IDictionary<long, AccountBase>>();
+        public static readonly IDictionary<ServiceType, IDictionary<long, IAccount>> _serviceAccountMap = new Dictionary<ServiceType, IDictionary<long, IAccount>>();
 
         public static void Load(IEnumerable<AccountItem> accounts)
         {
@@ -23,7 +23,7 @@ namespace Liberfy
             }
         }
 
-        public static AccountBase Get(SocialService service, long userId)
+        public static IAccount Get(ServiceType service, long userId)
         {
             if (_serviceAccountMap.TryGetValue(service, out var dic))
             {
@@ -34,7 +34,7 @@ namespace Liberfy
             return null;
         }
 
-        public static void Add(AccountBase account)
+        public static void Add(IAccount account)
         {
             if (account == null)
                 throw new ArgumentNullException(nameof(account));
@@ -43,17 +43,17 @@ namespace Liberfy
             _accounts.Add(account);
         }
 
-        public static bool Contains(SocialService service, long id)
+        public static bool Contains(ServiceType service, long id)
         {
             return GetAccountList(service).ContainsKey(id);
         }
 
-        public static bool Contains(AccountBase account)
+        public static bool Contains(IAccount account)
         {
             return account != null && Contains(account.Service, account.Id);
         }
 
-        public static void Remove(AccountBase account)
+        public static void Remove(IAccount account)
         {
             if (_serviceAccountMap.TryGetValue(account.Service, out var dic))
             {
@@ -70,16 +70,16 @@ namespace Liberfy
             _accounts.Move(oldIndex, newIndex);
         }
 
-        public static int IndexOf(AccountBase account)
+        public static int IndexOf(IAccount account)
         {
             return _accounts.IndexOf(account);
         }
 
         public static int Count => _accounts.Count;
 
-        private static IDictionary<long, AccountBase> GetAccountList(SocialService service)
+        private static IDictionary<long, IAccount> GetAccountList(ServiceType service)
         {
-            IDictionary<long, AccountBase> dic;
+            IDictionary<long, IAccount> dic;
 
             if (_serviceAccountMap.TryGetValue(service, out dic))
             {
@@ -87,7 +87,7 @@ namespace Liberfy
             }
             else
             {
-                dic = new Dictionary<long, AccountBase>();
+                dic = new Dictionary<long, IAccount>();
                 _serviceAccountMap.Add(service, dic);
                 return dic;
             }

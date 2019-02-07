@@ -1,5 +1,7 @@
-﻿using Liberfy.Settings;
+﻿using Liberfy.Services;
+using Liberfy.Settings;
 using SocialApis;
+using SocialApis.Common;
 using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
@@ -10,56 +12,55 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    internal class TwitterAccount : AccountBase, IAccount<Tokens>
+    internal class TwitterAccount : AccountBase<TwitterApi, TwitterTimeline, User, Status>
     {
         public override long Id { get; protected set; }
 
-        public override SocialService Service { get; } = SocialService.Twitter;
-
-        protected override DataStore DataStore { get; } = DataStore.Twitter;
-
-        public Tokens InternalTokens { get; private set; }
-
-        public override ITokensBase Tokens => this.InternalTokens;
+        public override ServiceType Service { get; } = ServiceType.Twitter;
 
         public TwitterAccount(AccountItem accountItem)
             : base(accountItem)
         {
         }
 
-        public TwitterAccount(Tokens tokens, User account)
-            : base(tokens, account)
+        public TwitterAccount(TwitterApi tokens, User account)
+            : base((long)account.Id, account, tokens)
         {
         }
 
-        public override void SetTokens(ApiTokenInfo t)
+        private IAccountCommandGroup _commands;
+        public override IAccountCommandGroup Commands => _commands ?? (_commands = new Twitter.AccountCommandGroup(this));
+
+        public override DataStoreBase<User, Status> DataStore { get; } = global::Liberfy.DataStore.Twitter;
+
+        public override IValidator Validator { get; } = new TwitterValidator();
+
+        protected override TwitterApi TokensFromApiTokenInfo(ApiTokenInfo tokens)
         {
-            this.InternalTokens = new Tokens(
-                t.ConsumerKey,
-                t.ConsumerSecret,
-                t.AccessToken,
-                t.AccessTokenSecret);
+            return new TwitterApi(
+                tokens.ConsumerKey,
+                tokens.ConsumerSecret,
+                tokens.AccessToken,
+                tokens.AccessTokenSecret
+            );
         }
 
-        protected override TimelineBase CreateTimeline()
-        {
-            return new TwitterTimeline(this);
-        }
+        protected override TwitterTimeline CreateTimeline() => new TwitterTimeline(this);
 
         public override async Task Load()
         {
-            if (await base.TryLogin())
+            if (await base.Login().ConfigureAwait(false))
             {
-                await this.GetDetails();
+                await this.GetDetails().ConfigureAwait(false);
                 this.StartTimeline();
             }
         }
 
-        protected override async Task<bool> Login()
+        protected override async Task<bool> VerifyCredentials()
         {
             try
             {
-                var user = await this.InternalTokens.Account.VerifyCredentials(new Query
+                var user = await this.Tokens.Account.VerifyCredentials(new Query
                 {
                     ["include_entities"] = true,
                     ["skip_status"] = true,
@@ -68,12 +69,14 @@ namespace Liberfy
 
                 this.Id = user.Id.Value;
 
-                this.Info.Update(user);
+                this.DataStore.RegisterAccount(user);
 
                 return true;
             }
             catch (TwitterException tex)
             {
+                Console.WriteLine(tex.Message);
+
                 if (tex.InnerException is WebException wex)
                 {
                     switch (wex.Status)
@@ -89,7 +92,7 @@ namespace Liberfy
 
         protected override Task GetDetails()
         {
-            var tasks = new[]
+            Task[] tasks =
             {
                 this.GetFollowingIds(),
                 this.GetFollowerIds(),
@@ -106,38 +109,38 @@ namespace Liberfy
 
         private Task GetFollowingIds()
         {
-            return this.GetIdsAndSetList(this.InternalTokens.Friends.Ids, this.FollowingIds, "フォロー中一覧");
+            return this.GetIdsAndSetList(this.Tokens.Friends.Ids, this.FollowingIds, "フォロー中一覧");
         }
 
         private Task GetFollowerIds()
         {
-            return this.GetIdsAndSetList(this.InternalTokens.Followers.Ids, this.FollowersIds, "フォロワー一覧");
+            return this.GetIdsAndSetList(this.Tokens.Followers.Ids, this.FollowersIds, "フォロワー一覧");
         }
 
         private Task GetBlockedIds()
         {
             return Setting.GetBlockedIdsAtLoadingAccount
-                ? this.GetIdsAndSetList(this.InternalTokens.Blocks.Ids, this.BlockedIds, "ブロック中一覧")
+                ? this.GetIdsAndSetList(this.Tokens.Blocks.Ids, this.BlockedIds, "ブロック中一覧")
                 : Task.CompletedTask;
         }
 
         private Task GetMutedIds()
         {
             return Setting.GetMutedIdsAtLoadingAccount
-                ? this.GetIdsAndSetList(this.InternalTokens.Mutes.Ids, this.MutedIds, "ミュート中一覧")
+                ? this.GetIdsAndSetList(this.Tokens.Mutes.Ids, this.MutedIds, "ミュート中一覧")
                 : Task.CompletedTask;
         }
 
         private Task GetIncomingIds()
         {
             return this.Info.IsProtected
-                ? this.GetIdsAndSetList(this.InternalTokens.Friendships.Incoming, this.IncomingIds, "フォロー申請一覧")
+                ? this.GetIdsAndSetList(this.Tokens.Friendships.Incoming, this.IncomingIds, "フォロー申請一覧")
                 : Task.CompletedTask;
         }
 
         private Task GetOutgoingIds()
         {
-            return this.GetIdsAndSetList(this.InternalTokens.Friendships.Outgoing, this.OutgoingIds, "フォロー申請中一覧");
+            return this.GetIdsAndSetList(this.Tokens.Friendships.Outgoing, this.OutgoingIds, "フォロー申請中一覧");
         }
 
         private async Task GetIdsAndSetList(Func<int, Task<CursoredIdsResponse>> apiCallFunc, HashSet<long> hashSet, string dataLabel)
@@ -148,7 +151,7 @@ namespace Liberfy
 
                 do
                 {
-                    var ids = await apiCallFunc(cursor ?? -1);
+                    var ids = await apiCallFunc(cursor ?? -1).ConfigureAwait(false);
                     cursor = ids.NextCursor;
 
                     hashSet.UnionWith(ids.Ids);
@@ -161,9 +164,9 @@ namespace Liberfy
             }
         }
 
-        protected override IAccountCommandGroup CreateCommands()
+        protected override UserInfo GetUserInfo(User account)
         {
-            return new Twitter.AccountCommandGroup(this);
+            return this.DataStore.RegisterAccount(account);
         }
 
         #endregion GetDetails

@@ -9,7 +9,7 @@ namespace Liberfy
 {
     class SearchColumn : SearchColumnBase
     {
-        public SearchColumn(AccountBase account)
+        public SearchColumn(IAccount account)
             : base(account, ColumnType.Search)
         {
         }

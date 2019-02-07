@@ -8,7 +8,7 @@ namespace Liberfy
 {
     class StreamSearchColumn : SearchColumnBase
     {
-        public StreamSearchColumn(AccountBase account)
+        public StreamSearchColumn(IAccount account)
             : base(account, ColumnType.Stream)
         {
         }

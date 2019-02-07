@@ -14,47 +14,37 @@ namespace Liberfy
 
         private readonly long _userId;
         private readonly MastodonAccount _account;
-        public Tokens _tokens => _account.InternalTokens;
+        public MastodonApi _tokens => _account.Tokens;
 
         public MastodonTimeline(MastodonAccount account)
+            : base(account)
         {
             this._account = account;
             this._userId = account.Id;
         }
 
-        public override void Load()
+        public override async void Load()
         {
-            this.LoadHomeTimeline();
-            // this.LoadNotificationTimeline();
-            // this.LoadMessageTimeline();
+            Task[] tasks =
+            {
+                this.LoadHomeTimeline(),
+                // this.LoadNotificationTimeline(),
+                // this.LoadMessageTimeline(),
+            };
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
         public override void Unload()
         {
-            var accountColumns = Columns
-                .Where(c => c.Account == this._account)
-                .ToArray();
-
-            foreach (var c in accountColumns)
-            {
-                Columns.Remove(c);
-            }
+            this.AccountColumns.Clear();
         }
 
         private IEnumerable<StatusItem> GetStatusItem(IEnumerable<Status> statuses)
-        {
+        {                                                            
             foreach (var status in statuses)
             {
                 yield return new StatusItem(status, this._account);
-            }
-        }
-
-        private IEnumerable<ColumnBase> GetCurrentAccountColumns()
-        {
-            foreach (var column in TimelineBase.Columns)
-            {
-                if (column.Account?.Equals(this._account) ?? false)
-                    yield return column;
             }
         }
 
@@ -62,12 +52,12 @@ namespace Liberfy
         {
             try
             {
-                var statuses = await this._tokens.Timelines.Home();
+                var statuses = await this._tokens.Timelines.Home().ConfigureAwait(false);
                 var items = this.GetStatusItem(statuses);
 
-                foreach (var column in this.GetCurrentAccountColumns().Where(c => c.Type == ColumnType.Home))
+                foreach (var column in this.AccountColumns.GetsTypeOf(ColumnType.Home))
                 {
-                    column.Items.Reset(items);
+                    _dispatcher.Invoke(() => column.Items.Reset(items));
                 }
             }
             finally { }

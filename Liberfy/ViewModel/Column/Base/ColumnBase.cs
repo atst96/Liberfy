@@ -33,7 +33,7 @@ namespace Liberfy
     {
         internal static ColumnBase FromType(ColumnType type) => FromType(null, type);
 
-        private static ColumnBase FromType(AccountBase account, ColumnType type)
+        private static ColumnBase FromType(IAccount account, ColumnType type)
         {
             switch (type)
             {
@@ -60,7 +60,7 @@ namespace Liberfy
             }
         }
 
-        public static bool FromSetting(ColumnSetting option, AccountBase account, out ColumnBase column)
+        public static bool FromSetting(ColumnSetting option, IAccount account, out ColumnBase column)
         {
             column = option == null ? null : ColumnBase.FromType(account, option.Type);
 
@@ -102,7 +102,7 @@ namespace Liberfy
 
     internal abstract partial class ColumnBase : NotificationObject
     {
-        protected ColumnBase(AccountBase account, ColumnType type, string title = null)
+        protected ColumnBase(IAccount account, ColumnType type, string title = null)
         {
             this.Type = type;
             this._title = title;
@@ -135,7 +135,7 @@ namespace Liberfy
 
         public NotifiableCollection<IItem> Items { get; } = new NotifiableCollection<IItem>();
 
-        public AccountBase Account { get; }
+        public IAccount Account { get; }
 
         private string _title;
         public string Title

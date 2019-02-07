@@ -8,7 +8,7 @@ namespace Liberfy
 {
     internal class HomeColumn : StatusColumnBase
     {
-        public HomeColumn(AccountBase account)
+        public HomeColumn(IAccount account)
             : base(account, ColumnType.Home, "Home")
         {
         }
