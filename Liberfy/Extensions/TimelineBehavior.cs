@@ -3,6 +3,7 @@ using SocialApis.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Cache;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +13,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace Liberfy.Behaviors
 {
@@ -34,15 +36,10 @@ namespace Liberfy.Behaviors
 
         private static async void StatusInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var textBlock = d as TextBlock;
-            if (textBlock == null) return;
-
-            var status = e.NewValue as StatusInfo;
-            if (status == null) return;
-
-            await SetHyperlinkToPlainText(
-                status.Entities,
-                textBlock.Inlines);
+            if (d is TextBlock textBlock && e.NewValue is StatusInfo status)
+            {
+                await SetHyperlinkToPlainText(status.Entities, textBlock.Inlines);
+            }
         }
 
 
@@ -63,15 +60,10 @@ namespace Liberfy.Behaviors
 
         private static async void UserDescriptionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var textBlock = d as TextBlock;
-            if (textBlock == null) return;
-
-            var user = e.NewValue as UserInfo;
-            if (user == null) return;
-
-            await SetHyperlinkToPlainText(
-                user.DescriptionEntities,
-                textBlock.Inlines);
+            if (d is TextBlock textBlock && e.NewValue is UserInfo user)
+            {
+                await SetHyperlinkToPlainText(user.DescriptionEntities, textBlock.Inlines);
+            }
         }
 
 
@@ -87,24 +79,56 @@ namespace Liberfy.Behaviors
 
         public static readonly DependencyProperty UserUrlProperty =
             DependencyProperty.RegisterAttached("UserUrl",
-                typeof(UserInfo), typeof(TimelineBehavior),
-                new PropertyMetadata(null, UserUrlChanged));
+                typeof(UserInfo), typeof(TimelineBehavior), new PropertyMetadata(null, UserUrlChanged));
 
         private static async void UserUrlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var textBlock = d as TextBlock;
-            if (textBlock == null) return;
-
-            var user = e.NewValue as UserInfo;
-            if (user == null) return;
-
-            await SetHyperlinkToPlainText(
-                user.UrlEntities,
-                textBlock.Inlines);
+            if (d is TextBlock textBlock && e.NewValue is UserInfo user)
+            {
+                await SetHyperlinkToPlainText(user.UrlEntities, textBlock.Inlines);
+            }
         }
-        private static async Task SetHyperlinkToPlainText(IEnumerable<IEntity> entities, InlineCollection inlines)
+
+        private static readonly Binding _fontSizeBinding = new Binding
         {
-            await App.Current.Dispatcher.InvokeAsync(() =>
+            Path = new PropertyPath("FontSize"),
+            RelativeSource = new RelativeSource
+            {
+                AncestorType = typeof(TextBlock),
+            },
+        };
+
+        private static readonly RequestCachePolicy EmojiCachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable);
+
+        private static BitmapSource ImageSourceFromUri(string url)
+        {
+            var uri = new Uri(url, UriKind.Absolute);
+
+            return new BitmapImage(uri)
+            {
+                CreateOptions = BitmapCreateOptions.DelayCreation,
+            };
+        }
+
+        private static Image ImageFromImageSousrce(ImageSource imageSource)
+        {
+            var image = new Image
+            {
+                Margin = new Thickness(.0d, .0d, .0d, .0d),
+                Stretch = Stretch.Uniform,
+                Source = imageSource,
+            };
+
+            image.SetBinding(FrameworkElement.HeightProperty, TimelineBehavior._fontSizeBinding);
+
+            RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
+
+            return image;
+        }
+
+        private static DispatcherOperation SetHyperlinkToPlainText(IEnumerable<IEntity> entities, InlineCollection inlines)
+        {
+            return Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 inlines.Clear();
 
@@ -116,34 +140,12 @@ namespace Liberfy.Behaviors
                     }
                     else if (entity is EmojiEntity emojiEntity)
                     {
-                        var src = new BitmapImage();
-                        src.BeginInit();
-                        src.UriSource = new Uri(emojiEntity.ImageUrl, UriKind.Absolute);
-                        src.EndInit();
+                        var source = TimelineBehavior.ImageSourceFromUri(emojiEntity.ImageUrl);
+                        var imageElement = TimelineBehavior.ImageFromImageSousrce(source);
 
-                        var img = new Image
-                        {
-                            Margin = new Thickness(0, 0, 0, 0),
-                            Stretch = Stretch.Uniform,
-                            Source = src,
-                        };
+                        imageElement.ToolTip = emojiEntity.DisplayText;
 
-                        img.SetBinding(Image.HeightProperty, new Binding
-                        {
-                            Path = new PropertyPath("FontSize"),
-                            RelativeSource = new RelativeSource
-                            {
-                                AncestorType = typeof(TextBlock),
-                            }
-                        });
-
-                        img.ToolTip = emojiEntity.DisplayText;
-
-                        img.SetValue(RenderOptions.BitmapScalingModeProperty, BitmapScalingMode.HighQuality);
-
-                        var container = new InlineUIContainer(img);
-
-                        inlines.Add(container);
+                        inlines.Add(new InlineUIContainer(imageElement));
                     }
                     else
                     {
