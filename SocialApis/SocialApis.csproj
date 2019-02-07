@@ -55,12 +55,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\BoundaryWriter.cs" />
+    <Compile Include="Common\HttpHelper.cs" />
+    <Compile Include="Common\JsonUtility.cs" />
+    <Compile Include="Common\Objects\HttpContentTypes.cs" />
     <Compile Include="Common\Objects\IStatus.cs" />
     <Compile Include="Common\Enums\SocialService.cs" />
     <Compile Include="Common\Objects\IAccount.cs" />
-    <Compile Include="Common\OrderedQuery.cs" />
     <Compile Include="Common\Regex.cs" />
-    <Compile Include="Common\RESTfulAPIMethods.cs" />
+    <Compile Include="Common\HttpMethods.cs" />
     <Compile Include="Common\SequentialSurrogateTextReader.cs" />
     <Compile Include="Formatters\ToIntFormatter.cs" />
     <Compile Include="Formatters\ToLongFormatter.cs" />
@@ -107,9 +109,10 @@
     <Compile Include="Mastodon\Objects\Report.cs" />
     <Compile Include="Mastodon\Objects\Results.cs" />
     <Compile Include="Mastodon\Objects\Status.cs" />
-    <Compile Include="Mastodon\TokenApiBase.cs" />
-    <Compile Include="Mastodon\Tokens.cs" />
+    <Compile Include="Mastodon\ApiBase.cs" />
+    <Compile Include="Mastodon\MastodonApi.cs" />
     <Compile Include="Common\MimeTypes.cs" />
+    <Compile Include="StreamUtility.cs" />
     <Compile Include="Twitter\Apis\AccountApi.cs" />
     <Compile Include="Formatters\DateTimeOffsetFormatter.cs" />
     <Compile Include="Common\IRateLimit.cs" />
@@ -125,7 +128,7 @@
     <Compile Include="Twitter\Apis\MutesApi.cs" />
     <Compile Include="Twitter\Apis\SearchApi.cs" />
     <Compile Include="Twitter\Apis\StatusesApi.cs" />
-    <Compile Include="Twitter\Apis\TokenApiBase.cs" />
+    <Compile Include="Twitter\Apis\ApiBase.cs" />
     <Compile Include="Twitter\Apis\UsersApi.cs" />
     <Compile Include="Twitter\Enums\CoordinateType.cs" />
     <Compile Include="Twitter\Enums\DirectMessageEventType.cs" />
@@ -178,7 +181,7 @@
     <Compile Include="Twitter\Objects\User.cs" />
     <Compile Include="Twitter\Objects\Entities\UserMentionEntity.cs" />
     <Compile Include="Twitter\TwitterErrorContainer.cs" />
-    <Compile Include="Common\ITokensBase.cs" />
+    <Compile Include="Common\IApi.cs" />
     <Compile Include="Common\OAuthHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\Query.cs" />
@@ -187,8 +190,8 @@
     <Compile Include="Twitter\TwitterResponse.cs" />
     <Compile Include="Twitter\Apis\OAuthApi.cs" />
     <Compile Include="Twitter\RequestTokenResponse.cs" />
-    <Compile Include="Twitter\Tokens.cs" />
-    <Compile Include="Common\UploadProgressInfo.cs" />
+    <Compile Include="Twitter\TwitterApi.cs" />
+    <Compile Include="Common\UploadProgress.cs" />
     <Compile Include="Common\UrlArray.cs" />
     <Compile Include="Common\WebUtility.cs" />
   </ItemGroup>

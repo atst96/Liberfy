@@ -57,54 +57,19 @@ namespace SocialApis
             }
         }
 
-        public static string GetQueryString(IQuery query, string separator)
+        public static string Join(IQuery query, string separator)
         {
             return string.Join(separator, GetRequestParameters(query));
         }
 
-        public static string GetQueryString(IQuery query)
+        public static string Join(IQuery query)
         {
-            return GetQueryString(query, "&");
-        }
-
-        public static string GetOrderedQueryString(IQuery query, string separator)
-        {
-            return string.Join(separator, GetOrderedRequestParameters(query));
-        }
-
-        public static string GetOrderedQueryString(IQuery query)
-        {
-            return GetOrderedQueryString(query, "&");
-        }
-
-        public static string GetOrderedQueryString(SortedQuery query, string separator)
-        {
-            return string.Join(separator, GetOrderedRequestParameters(query));
-        }
-
-        public static string GetOrderedQueryString(SortedQuery query)
-        {
-            return GetOrderedQueryString(query, "&");
+            return Join(query, "&");
         }
 
         public static IEnumerable<string> GetRequestParameters(IQuery values)
         {
             return values?.Select(kvp => GetParameterPair(kvp.Key, kvp.Value)) ?? Enumerable.Empty<string>();
-        }
-
-        public static IQuery Sort(IQuery values)
-        {
-            return values?.OrderBy(kvp => kvp.Key, StringComparer.CurrentCulture) ?? Enumerable.Empty<KeyValuePair<string, object>>();
-        }
-
-        public static IEnumerable<string> GetOrderedRequestParameters(IQuery values)
-        {
-            return GetRequestParameters(Sort(values));
-        }
-
-        public static IEnumerable<string> GetOrderedRequestParameters(SortedQuery values)
-        {
-            return GetRequestParameters(values);
         }
 
         private static string JoinParameterPais(string name, string value, string valueEnclosure = null)
@@ -116,16 +81,16 @@ namespace SocialApis
         {
             if (value is UrlArray urlArray)
             {
-                var arrayedName = OAuthHelper.UrlEncode(name) + "[]";
+                var arrayedName = HttpHelper.UrlEncode(name) + "[]";
 
                 var valuePairs = urlArray
-                    .Select(val => JoinParameterPais(arrayedName, OAuthHelper.UrlEncode(ValueToString(val))));
+                    .Select(val => JoinParameterPais(arrayedName, HttpHelper.UrlEncode(ValueToString(val))));
 
                 return string.Join("&", valuePairs);
             }
             else
             {
-                return JoinParameterPais(OAuthHelper.UrlEncode(name), OAuthHelper.UrlEncode(ValueToString(value)), valueEnclosure);
+                return JoinParameterPais(HttpHelper.UrlEncode(name), HttpHelper.UrlEncode(ValueToString(value)), valueEnclosure);
             }
         }
 

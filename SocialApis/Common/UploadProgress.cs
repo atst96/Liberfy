@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis
 {
-    public class UploadProgressInfo
+    public class UploadProgress
     {
         public int UploadedSize { get; internal set; }
         public int TotalSize { get; internal set; }

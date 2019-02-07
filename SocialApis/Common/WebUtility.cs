@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Utf8Json;
@@ -13,42 +15,53 @@ namespace SocialApis
 
     internal static class WebUtility
     {
-        private static readonly char[] UrlSpritCharacters = new[] { '?', '&', '#' };
+        private static readonly char[] _uriSpritCharacters = new[] { '?', '&', '#' };
 
-        public static HttpWebRequest CreateWebRequest(string endpoint, IQuery query, string method, WebHeaderCollection headers = null, bool autoSetting = true)
+        public static HttpWebRequest CreateWebRequest(string method, string endpoint, WebHeaderCollection headers, IQuery query)
         {
-            query = query ?? new Query();
-            method = method?.ToUpper() ?? RESTfulAPIMethods.Get;
-            endpoint = endpoint.Split(UrlSpritCharacters, 2)[0];
+            return CreateWebRequest(endpoint, query, method, headers, true);
+        }
 
-            var queryString = default(string);
-            if (autoSetting)
+        private static bool StrEq(string val1, string val2)
+        {
+            return val1.Equals(val2, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static HttpWebRequest CreateWebRequest(string requestUri, IQuery parameters, string method, WebHeaderCollection headers = null, bool autoSetting = true)
+        {
+            method = method ?? HttpMethods.GET;
+            requestUri = requestUri.Split(_uriSpritCharacters, 2)[0];
+
+            string queryString = default;
+
+            if (autoSetting && parameters?.Any() == true)
             {
-                queryString = Query.GetQueryString(query);
-                
-                if (method == RESTfulAPIMethods.Get || method == RESTfulAPIMethods.Delete)
+                queryString = Query.Join(parameters);
+
+                if (StrEq(method, HttpMethods.GET) || StrEq(method, HttpMethods.DELETE))
                 {
-                    endpoint = string.Concat(endpoint, "?", queryString);
+                    requestUri = string.Concat(requestUri, "?", queryString);
                 }
             }
 
-            var webReq = WebRequest.CreateHttp(endpoint);
-            webReq.Method = method;
+            var request = WebRequest.CreateHttp(requestUri);
+            request.Method = method;
+
             if (headers != null)
-                webReq.Headers = headers;
+                request.Headers = headers;
 
             if (autoSetting)
             {
-                if (method == RESTfulAPIMethods.Post || method == RESTfulAPIMethods.Put)
+                if (StrEq(method, HttpMethods.POST) || StrEq(method, HttpMethods.PUT))
                 {
-                    webReq.ContentType = "application/x-www-form-urlencoded";
+                    request.ContentType = HttpContentTypes.FormUrlEncoded;
 
-                    if (!string.IsNullOrEmpty(queryString))
+                    if (queryString != null)
                     {
-                        using (var str = webReq.GetRequestStream())
+                        using (var stream = request.GetRequestStream())
                         {
                             var data = Encoding.UTF8.GetBytes(queryString);
-                            str.Write(data, 0, data.Length);
+                            stream.Write(data, 0, data.Length);
 
                             data = null;
                         }
@@ -56,43 +69,40 @@ namespace SocialApis
                 }
             }
 
-            return webReq;
+            return request;
         }
 
-        public static HttpWebRequest CreateOAuthRequest(string endpoint, ITokensBase tokens, IQuery query, string method, bool autoSetting = true)
+        public static HttpWebRequest CreateOAuthRequest(string endpoint, IApi tokens, IQuery parameters, string method, bool autoSetting = true)
         {
-            query = query ?? new Query();
-
-            var oauthHeader = OAuthHelper.GenerateAuthenticationHeader(endpoint, tokens, query, method);
+            var oauthHeader = OAuthHelper.GenerateAuthenticationHeader(method, endpoint, tokens, parameters);
 
             var headers = new WebHeaderCollection
             {
                 [HttpRequestHeader.Authorization] = oauthHeader,
             };
 
-            return CreateWebRequest(endpoint, query, method, headers, autoSetting);
+            return CreateWebRequest(method, endpoint, headers, parameters);
         }
 
-        public static async Task<string> SendRequestText(HttpWebRequest httpWebRequest)
+        public static async Task<string> SendRequestText(HttpWebRequest request)
         {
-            using (var webRes = await httpWebRequest.GetResponseAsync())
-            using (var sr = new StreamReader(webRes.GetResponseStream()))
+            using (var response = await request.GetResponseAsync().ConfigureAwait(false))
             {
-                return sr.ReadToEnd();
+                return await StreamUtility.ReadToEndAsync(response.GetResponseStream()).ConfigureAwait(false);
             }
         }
 
-        public static async Task SendRequestVoid(HttpWebRequest httpWebRequest)
+        public static async Task SendRequestVoid(HttpWebRequest request)
         {
-            await httpWebRequest.GetRequestStreamAsync();
+            await request.GetRequestStreamAsync().ConfigureAwait(false);
         }
 
-        public static async Task<T> SendRequest<T>(HttpWebRequest httpWebRequest) where T : class
+        public static async Task<T> SendRequest<T>(HttpWebRequest request) where T : class
         {
-            using (var webRes = await httpWebRequest.GetResponseAsync())
+            using (var response = await request.GetResponseAsync().ConfigureAwait(false))
             {
-                return await JsonSerializer.DeserializeAsync<T>(webRes.GetResponseStream(),
-                    Utf8Json.Resolvers.StandardResolver.AllowPrivate);
+                return await JsonUtility.DeserializeAsync<T>(response.GetResponseStream())
+                    .ConfigureAwait(false);
             }
         }
     }

@@ -1,29 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net;
 
 namespace SocialApis
 {
     public struct RateLimit
     {
-        internal static RateLimit FromHeaders(WebHeaderCollection webHeader)
+        private const string XRateLimitLimit = "x-rate-limit-limit";
+        private const string XRateLimitRemaining = "x-rate-limit-remaining";
+        private const string XRateLimitReset = "x-rate-limit-reset";
+
+        internal static RateLimit FromHeaders(WebHeaderCollection header)
         {
             var rateLimit = new RateLimit();
 
-            var _limit = webHeader["x-rate-limit-limit"];
-            if (int.TryParse(_limit, out var limit))
+            if (int.TryParse(header[XRateLimitLimit], out int limit))
+            {
                 rateLimit.Limit = limit;
+            }
 
-            var _remaining = webHeader["x-rate-limit-remaining"];
-            if (int.TryParse(_remaining, out var remaining))
+            if (int.TryParse(header[XRateLimitRemaining], out int remaining))
+            {
                 rateLimit.Remaining = remaining;
+            }
 
-            var _reset = webHeader["x-rate-limit-reset"];
-            if (int.TryParse(_reset, out var unixTime))
+            if (int.TryParse(header[XRateLimitReset], out int unixTime))
+            {
                 rateLimit.ResetDate = DateTimeOffset.FromUnixTimeSeconds(unixTime);
+            }
 
             return rateLimit;
         }
