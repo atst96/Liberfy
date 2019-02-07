@@ -150,6 +150,7 @@ namespace Liberfy.ViewModel
             return command;
         }
 
+        [Obsolete]
         /// <summary>
         /// ViewModelと同時に破棄されるコマンドを登録します。
         /// </summary>
@@ -164,6 +165,7 @@ namespace Liberfy.ViewModel
             return command;
         }
 
+        [Obsolete]
         /// <summary>
         /// ビューモデルと同時に破棄されるコマンドを登録します。
         /// </summary>
@@ -179,6 +181,7 @@ namespace Liberfy.ViewModel
             return command;
         }
 
+        [Obsolete]
         /// <summary>
         /// ビューモデルと同時に破棄されるコマンドを登録します。
         /// </summary>
@@ -194,6 +197,7 @@ namespace Liberfy.ViewModel
             return command;
         }
 
+        [Obsolete]
         /// <summary>
         /// ビューモデルと同時に破棄されるコマンドを登録します。
         /// </summary>
