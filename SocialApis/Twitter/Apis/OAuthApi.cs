@@ -10,29 +10,28 @@ using System.Web;
 
 namespace SocialApis.Twitter.Apis
 {
-    public class OAuthApi : TokenApiBase
+    public class OAuthApi : ApiBase
     {
-        internal OAuthApi(Tokens tokens) : base(tokens) { }
+        internal OAuthApi(TwitterApi tokens) : base(tokens) { }
 
         public async Task<RequestTokenResponse> RequestToken(string callbackUrl = null)
         {
             const string endpoint = "https://api.twitter.com/oauth/request_token";
 
-            var dic = new Query();
+            var parameters = new Query();
 
             if (!string.IsNullOrEmpty(callbackUrl))
-                dic[OAuthHelper.OAuthParameters.Callback] = callbackUrl;
+                parameters[OAuthHelper.OAuthParameters.Callback] = callbackUrl;
 
-            var webReq = WebUtility.CreateOAuthRequest(endpoint, this.Tokens, dic, "POST");
+            var request = WebUtility.CreateOAuthRequest(endpoint, this.Api, parameters, HttpMethods.POST);
 
-            using (var webRes = await webReq.GetResponseAsync())
-            using (var sr = new StreamReader(webRes.GetResponseStream()))
+            using (var response = await request.GetResponseAsync().ConfigureAwait(false))
             {
-                return new RequestTokenResponse(sr.ReadToEnd());
+                return new RequestTokenResponse(StreamUtility.ReadToEnd(response.GetResponseStream()));
             }
         }
 
-        public Task<Tokens> AccessToken(RequestTokenResponse response, string verifier)
+        public Task<TwitterApi> AccessToken(RequestTokenResponse response, string verifier)
         {
             if (response == null)
                 throw new ArgumentNullException(nameof(response));
@@ -40,7 +39,7 @@ namespace SocialApis.Twitter.Apis
             return this.AccessToken(response.OAuthToken, verifier);
         }
 
-        public async Task<Tokens> AccessToken(string requestToken, string verifier)
+        public async Task<TwitterApi> AccessToken(string requestToken, string verifier)
         {
             const string endpoint = "https://api.twitter.com/oauth/access_token";
 
@@ -50,40 +49,44 @@ namespace SocialApis.Twitter.Apis
             if (string.IsNullOrEmpty(verifier))
                 throw new ArgumentNullException(nameof(verifier));
 
-            var dic = new Query()
+            var parameters = new Query()
             {
                 [OAuthHelper.OAuthParameters.Token] = requestToken,
                 [OAuthHelper.OAuthParameters.Verifier] = verifier,
             };
 
-            var webReq = WebUtility.CreateOAuthRequest(endpoint, this.Tokens, dic, "POST");
+            var request = WebUtility.CreateOAuthRequest(endpoint, this.Api, parameters, HttpMethods.POST);
 
-            using (var webRes = await webReq.GetResponseAsync())
-            using (var sr = new StreamReader(webRes.GetResponseStream()))
+            using (var response = await request.GetResponseAsync().ConfigureAwait(false))
+            using (var sr = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
             {
-                var splitCharacters = new[] { '=' };
+                char[] splitCharacters = { '=' };
 
                 foreach (var pair in sr.ReadToEnd().Split('&'))
                 {
-                    var t = pair.Split(splitCharacters, 2);
+                    var tokens = pair.Split(splitCharacters, 2);
 
-                    switch (t[0])
+                    switch (tokens[0])
                     {
                         case "oauth_token":
-                            this.Tokens.AccessToken = t[1];  break;
+                            this.Api.AccessToken = tokens[1];
+                            break;
 
                         case "oauth_token_secret":
-                            this.Tokens.AccessTokenSecret = t[1]; break;
+                            this.Api.AccessTokenSecret = tokens[1];
+                            break;
 
                         case "user_id":
-                            this.Tokens.UserId = long.TryParse(t[1], out var b) ? b : -1; break;
+                            this.Api.UserId = long.TryParse(tokens[1], out var userId) ? userId : -1;
+                            break;
 
                         case "screen_name":
-                            this.Tokens.ScreenName = t[1]; break;
+                            this.Api.ScreenName = tokens[1];
+                            break;
                     }
                 }
 
-                return Tokens;
+                return this.Api;
             }
         }
     }
