@@ -1,5 +1,5 @@
 ﻿using Liberfy.ViewModel;
-using SocialApis;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,36 +17,39 @@ namespace Liberfy.Settings
     {
         public AccountItem() { }
 
+        [Key("service")]
         [DataMember(Name = "service")]
-        public SocialService Service { get; set; } = SocialService.Twitter;
+        public ServiceType Service { get; set; } = ServiceType.Twitter;
 
+        [Key("user_id")]
         [DataMember(Name = "user_id")]
         public long Id { get; set; }
 
+        [Key("screen_name")]
         [DataMember(Name = "screen_name")]
         public string ScreenName { get; set; }
 
+        [Key("name")]
         [DataMember(Name = "name")]
         public string Name { get; set; }
 
+        [Key("profile_image_url")]
         [DataMember(Name = "profile_image_url")]
         public string ProfileImageUrl { get; set; }
 
+        [Key("is_protected")]
         [DataMember(Name = "is_protected")]
         public bool IsProtected { get; set; }
 
+        [Key("token")]
         [DataMember(Name = "token")]
         public ApiTokenInfo Token { get; set; }
 
+        [Key("tokens_third")]
         [DataMember(Name = "tokens_third")]
         public ApiTokenInfo[] ThirdPartyTokens { get; set; }
 
-        [DataMember(Name = "automatically_login")]
-        public bool AutomaticallyLogin { get; set; }
-
-        [DataMember(Name = "automatically_load_timeline")]
-        public bool AutomaticallyLoadTimeline { get; set; }
-
+        [Key("columns")]
         [DataMember(Name = "columns")]
         private IEnumerable<ColumnSetting> _columns;
         [IgnoreDataMember]
@@ -56,6 +59,7 @@ namespace Liberfy.Settings
             set => this._columns = value;
         }
 
+        [Key("mute.ids")]
         [DataMember(Name = "muted_ids")]
         public long[] MutedIds { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using SocialApis;
+﻿using MessagePack;
+using SocialApis;
 using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
@@ -16,24 +17,29 @@ namespace Liberfy.Settings
     [DataContract]
     internal struct ApiTokenInfo
     {
+        [Key("host")]
         [DataMember(Name = "host")]
         public string Host { get; set; }
 
+        [Key("consumer_key")]
         [DataMember(Name = "consumer_key")]
         public string ConsumerKey { get; set; }
 
+        [Key("consumer_secret")]
         [DataMember(Name = "consumer_secret")]
         public string ConsumerSecret { get; set; }
 
+        [Key("access_token")]
         [DataMember(Name = "access_token")]
         public string AccessToken { get; set; }
 
+        [Key("access_token_secret")]
         [DataMember(Name = "access_token_secret")]
         public string AccessTokenSecret { get; set; }
 
-        public static ApiTokenInfo FromTokens(ITokensBase tokens)
+        public static ApiTokenInfo FromTokens(IApi tokens)
         {
-            if (tokens is Mastodon.Tokens mTokens)
+            if (tokens is Mastodon.MastodonApi mTokens)
             {
                 return ApiTokenInfo.FromTokens(mTokens);
             }
@@ -49,7 +55,7 @@ namespace Liberfy.Settings
             }
         }
 
-        public static ApiTokenInfo FromTokens(Mastodon.Tokens tokens)
+        public static ApiTokenInfo FromTokens(Mastodon.MastodonApi tokens)
             => new ApiTokenInfo
             {
                 Host = tokens.HostUrl.AbsoluteUri.ToString(),

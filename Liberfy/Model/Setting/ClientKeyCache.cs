@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -20,21 +21,27 @@ namespace Liberfy
             this.Host = uri.ToString();
         }
 
+        [Key("service")]
         [DataMember(Name = "service")]
         public SocialApis.SocialService Service { get;  set; }
 
+        [Key("id")]
         [DataMember(Name = "id")]
         public string Id { get; set; }
 
+        [Key("host")]
         [DataMember(Name = "host")]
         public string Host { get; set; }
 
+        [Key("registered_at")]
         [DataMember(Name = "registered_at")]
         public DateTimeOffset RegisteredAt { get; set; }
 
+        [Key("client_id")]
         [DataMember(Name = "client_id")]
         public string ClientId { get; set; }
 
+        [Key("client_secret")]
         [DataMember(Name = "client_secret")]
         public string ClientSecret { get; set; }
     }

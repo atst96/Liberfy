@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -10,6 +11,7 @@ namespace Liberfy.Settings
     [DataContract]
     internal class WindowSettings
     {
+        [Key("main")]
         [DataMember(Name = "main")]
         private WindowStatus _main;
         [IgnoreDataMember]
