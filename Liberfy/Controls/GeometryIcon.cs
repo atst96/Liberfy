@@ -13,8 +13,8 @@ namespace Liberfy
     {
         public Brush Fill
         {
-            get { return (Brush)GetValue(FillProperty); }
-            set { SetValue(FillProperty, value); }
+            get => (Brush)this.GetValue(FillProperty);
+            set => this.SetValue(FillProperty, value);
         }
 
         public static readonly DependencyProperty FillProperty =
@@ -22,11 +22,11 @@ namespace Liberfy
 
         public Geometry Data
         {
-            get { return (Geometry)GetValue(DataProperty); }
-            set { SetValue(DataProperty, value); }
+            get => (Geometry)this.GetValue(DataProperty);
+            set => this.SetValue(DataProperty, value);
         }
 
-        public static readonly DependencyProperty DataProperty = 
+        public static readonly DependencyProperty DataProperty =
             DependencyProperty.Register("Data", typeof(Geometry), typeof(GeometryIcon), new PropertyMetadata(null));
     }
 }
