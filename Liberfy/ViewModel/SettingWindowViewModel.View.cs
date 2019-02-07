@@ -4,7 +4,7 @@ using static Liberfy.Defines;
 
 namespace Liberfy.ViewModel
 {
-    partial class SettingWindow
+    partial class SettingWindowViewModel
     {
         public double ProfileImageCornerRadius
         {

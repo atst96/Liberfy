@@ -1,4 +1,5 @@
-﻿using NowPlayingLib;
+﻿using Liberfy.Commands;
+using NowPlayingLib;
 using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
@@ -20,39 +21,53 @@ namespace Liberfy.ViewModel
 {
     internal class TweetWindow : ViewModelBase
     {
-        private static readonly Validator tweetValidator = new Validator();
         protected static Setting Setting => App.Setting;
 
-        public IEnumerable<AccountBase> Accounts { get; } = AccountManager.Accounts;
+        public IEnumerable<IAccount> Accounts { get; } = AccountManager.Accounts;
 
-        private AccountBase _selectedAccount;
-        public AccountBase SelectedAccount
+        private IAccount _selectedAccount;
+        public IAccount SelectedAccount
         {
             get => this._selectedAccount;
-            set => this.SetProperty(ref this._selectedAccount, value, this._postCommand);
+            set
+            {
+                if (this.SetProperty(ref this._selectedAccount, value, this._postCommand))
+                {
+                    this.UpdateCanPost();
+                }
+            }
         }
 
-        public void SetPostAccount(AccountBase account)
+        public void SetPostAccount(IAccount account)
         {
             this.SelectedAccount = account;
+            this.UpdateCanPost();
         }
-
-        private const int MaxTweetLength = 140;
-        private const int MediaUrlLength = 23;
 
         public TweetWindow()
         {
-            Media = new NotifiableCollection<UploadMedia>();
+            this.Media = new NotifiableCollection<UploadMedia>();
 
-            SelectedAccount = this.Accounts.First();
+            this.SelectedAccount = this.Accounts.First();
 
-            UpdateCanPost();
+            this.UpdateCanPost();
         }
 
         public NotifiableCollection<UploadMedia> Media { get; }
 
-        public bool CanUpdateContent { get; private set; }
-        public int RemainingTweetLength { get; private set; } = MaxTweetLength;
+        private int _textLength;
+        public int TextLength
+        {
+            get => this._textLength;
+            set => this.SetProperty(ref this._textLength, value);
+        }
+
+        private bool _canUpdateContent;
+        public bool CanPostContent
+        {
+            get => this._canUpdateContent;
+            set => this.SetProperty(ref this._canUpdateContent, value);
+        }
 
         private string _uploadStatusText;
         public string UploadStatusText
@@ -82,27 +97,12 @@ namespace Liberfy.ViewModel
             }
         }
 
-        private void UpdateCanPost()
+        internal void UpdateCanPost()
         {
-            // ツイート可能な残り文字数の算出
-            int actualTweetLength = tweetValidator.GetTweetLength(_tweet);
+            var validator = this.SelectedAccount.Validator;
 
-            if (this.Media.Count > 0)
-            {
-                actualTweetLength += MediaUrlLength;
-            }
-
-            this.RemainingTweetLength = MaxTweetLength - actualTweetLength;
-
-            // アップロード可能かを判定
-            bool isTweetableLength = this.RemainingTweetLength > 0 && this.RemainingTweetLength < MaxTweetLength;
-            bool isPostableMediaCount = this.Media.Count <= 4;
-
-            this.CanUpdateContent = isTweetableLength && isPostableMediaCount;
-
-            // プロパティの変更通知
-            this.RaisePropertyChanged(nameof(this.RemainingTweetLength));
-            this.RaisePropertyChanged(nameof(this.CanUpdateContent));
+            this.TextLength = validator.CountTextLength(this.Tweet);
+            this.CanPostContent = validator.CanPost(this.TextLength, this.Media);
 
             this.PostCommand.RaiseCanExecute();
         }
@@ -183,110 +183,39 @@ namespace Liberfy.ViewModel
         #region NowPlaying
 
         public static IDictionary<string, string> NowPlayingPlayerList { get; }
-        = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
-        {
-            ["wmplayer"] = "Windows Media Player",
-            ["itunes"] = "iTunes",
-            ["foobar2000"] = "foobar2000"
-        });
+            = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
+            {
+                ["wmplayer"] = "Windows Media Player",
+                ["itunes"] = "iTunes",
+                ["foobar2000"] = "foobar2000"
+            });
 
         public static IDictionary<string, string> NowPlayingFormatParameters { get; }
-        = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
-        {
-            ["%album%"] = "アルバム名 (%album%)",
-            ["%album_artist%"] = "アルバムアーティスト (%album_artist%)",
-            ["%artist%"] = "アーティスト名 (%artist%)",
-            ["%composer%"] = "作曲者 (%coposer%)",
-            ["%category%"] = "カテゴリ (%category%)",
-            ["%genre%"] = "ジャンル (%genre%)",
-            ["%name%"] = "楽曲名 (%name%)",
-            ["%number%"] = "トラック番号 (%nubmer%)",
-            ["%year%"] = "年代 (%year%)",
-        });
+            = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
+            {
+                ["%album%"] = "アルバム名 (%album%)",
+                ["%album_artist%"] = "アルバムアーティスト (%album_artist%)",
+                ["%artist%"] = "アーティスト名 (%artist%)",
+                ["%composer%"] = "作曲者 (%coposer%)",
+                ["%category%"] = "カテゴリ (%category%)",
+                ["%genre%"] = "ジャンル (%genre%)",
+                ["%name%"] = "楽曲名 (%name%)",
+                ["%number%"] = "トラック番号 (%nubmer%)",
+                ["%year%"] = "年代 (%year%)",
+            });
+
+        private Command<string> _nowPlayingCommand;
+        public Command<string> NowPlayingCommand => this._nowPlayingCommand ?? (this._nowPlayingCommand = this.RegisterCommand(new InsertNowPlayingCommand(this)));
 
         #endregion NowPlaying
 
 
         #region Command: PostCommand
 
-        private Command _postCommand;
-        public Command PostCommand
-        {
-            get => _postCommand ?? (_postCommand = RegisterCommand(PostTweet, CanPostTweet));
-        }
+        private Command<IAccount> _postCommand;
+        public Command<IAccount> PostCommand => this._postCommand ?? (this._postCommand = this.RegisterCommand(new PostCommand(this)));
 
-        private Tokens Tokens => (Tokens)SelectedAccount.Tokens;
-        private int _postTweetPhase = -1;
-
-        public async void PostTweet()
-        {
-            this.OnPostBegin();
-
-            var uploadPrams = new SocialApis.Query
-            {
-                ["status"] = this.Tweet,
-                ["possibly_sensitive"] = this.IsSensitiveMedia,
-            };
-
-            if (this.HasReplyStatus)
-                uploadPrams["in_reply_to_status_id"] = this.ReplyToStatus.Id;
-
-            // 画像および動画のアップロード
-            var uploadableMedia = this.GetUploadableMedia(Media);
-            if (uploadableMedia.Any())
-            {
-                _postTweetPhase = 1;
-
-                this.UploadStatusText = "メディアをアップロードしています...";
-                foreach (var mediaItem in uploadableMedia)
-                    mediaItem.SetIsTweetPosting(true);
-
-                if (await this.UploadMediaItems(this.Tokens, uploadableMedia).ConfigureAwait(true))
-                {
-                    uploadPrams["media_ids"] = Media
-                        .Where(m => m.IsAvailableUploadId())
-                        .Select(m => m.UploadId.Value);
-                }
-                else
-                {
-                    foreach (var mediaItem in uploadableMedia)
-                        mediaItem.SetIsTweetPosting(false);
-
-                    this.OnPostEnd();
-
-                    return;
-                }
-            }
-
-            // ツイート
-            _postTweetPhase = 2;
-            this.UploadStatusText = "ツイートしています...";
-
-            try
-            {
-                await this.Tokens.Statuses.Update(uploadPrams);
-
-                this.OnPostComplated();
-            }
-            catch (Exception ex)
-            {
-                this.DialogService.MessageBox(ex.Message, null);
-            }
-
-            this.OnPostEnd();
-
-            if (_closeOnPostComplated)
-            {
-                this.DialogService.Invoke(ViewState.Close);
-            }
-        }
-
-        private void OnPostComplated()
-        {
-            ClearStatus();
-        }
-
-        private void ClearStatus()
+        internal void ClearStatus()
         {
             this.HasReplyUser = false;
             this.ReplyUser = null;
@@ -303,60 +232,23 @@ namespace Liberfy.ViewModel
             this.Tweet = string.Empty;
         }
 
-        private IEnumerable<UploadMedia> GetUploadableMedia(IEnumerable<UploadMedia> media)
-        {
-            return media.Where(m => !m.IsAvailableUploadId());
-        }
-
-        /// <summary>
-        /// 指定されたメディア項目のアップロードを試行し、アップロードが完了したかを返します。
-        /// </summary>
-        /// <param name="token">認証用トークン</param>
-        /// <param name="media">メディア項目の一覧</param>
-        /// <returns>すべての項目のアップロードが完了したかどうか</returns>
-        private async Task<bool> UploadMediaItems(Tokens token, IEnumerable<UploadMedia> media)
-        {
-            await Task.WhenAll(media.Select(m => m.Upload(token)).ToArray());
-
-            var badResults = media.Where(m => m.IsUploadFailed);
-            int badResCount = badResults.Count();
-
-            if (badResCount > 0)
-            {
-                if (this.DialogService.MessageBox(
-                    $"{ media.Count() }件中{ badResCount }件 アップロードに失敗しました。\n再試行しますか？",
-                    MsgBoxButtons.RetryCancel, MsgBoxIcon.Question) == MsgBoxResult.Retry)
-                {
-                    return await this.UploadMediaItems(token, this.GetUploadableMedia(media));
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         public bool CanPostTweet()
         {
-            return _selectedAccount != null && !_isTweetPosting && this.IsEditable && this.CanUpdateContent;
+            return _selectedAccount != null && !_isTweetPosting && this.IsEditable && this.CanPostContent;
         }
 
         public bool IsEditable { get; private set; } = true;
 
-        private void OnPostBegin()
+        internal void OnPostBegin()
         {
             this.IsTweetPosting = true;
             this.SetIsEditable(false);
-            _postTweetPhase = 0;
         }
 
-        private void OnPostEnd()
+        internal void OnPostEnd()
         {
             this.IsTweetPosting = false;
             this.SetIsEditable(true);
-            _postTweetPhase = -1;
         }
 
         private void SetIsEditable(bool canEdit)
@@ -370,92 +262,19 @@ namespace Liberfy.ViewModel
 
         #endregion
 
-        #region Command: AddImageCommand
+        private Command<string> _addImageCommand;
+        public Command<string> AddImageCommand => this._addImageCommand ?? (this._addImageCommand = this.RegisterCommand(new AddImageCommand(this)));
 
-        private Command _addImageCommand;
-        public Command AddImageCommand
-        {
-            get => _addImageCommand ?? (_addImageCommand = RegisterCommand(AddImage, CanEditContent));
-        }
+        private Command<UploadMedia> _removeMediaCommand;
+        public Command<UploadMedia> RemoveMediaCommand => this._removeMediaCommand ?? (this._removeMediaCommand = this.RegisterCommand(new RemoveMediaCommand(this)));
 
-        private void AddImage()
-        {
-            var ofd = new Microsoft.Win32.OpenFileDialog
-            {
-                Title = "アップロードするメディアを選択",
-                Filter = UploadableExtensionFilter,
-                DereferenceLinks = true,
-                Multiselect = true,
-            };
-
-            if (DialogService.OpenModal(ofd)
-                && HasEnableMediaFiles(ofd.FileNames))
-            {
-                Media.AddRange(ofd.FileNames.Select(file => UploadMedia.FromFile(file)));
-                UpdateCanPost();
-            }
-
-            ofd.Reset();
-        }
-
-        private static bool IsUploadableExtension(string ext)
+        public static bool IsUploadableExtension(string ext)
         {
             return UploadableMediaExtensions.Contains(ext.ToLower());
         }
 
-        private bool CanEditContent() => !_isTweetPosting;
-
-
-
-        private static string CreateExtensionFilter()
-        {
-            // OpenFileDialogで用いる拡張子フィルタの生成
-            // e.g. 表示名|*.ext1|表示名(拡張子複数指定)|*.ext2;*.ext2|...
-
-            var medExts = $"アップロード可能なメディア|*{string.Join(";*", UploadableMediaExtensions)}";
-            var imgExts = $"画像ファイル|*{string.Join(";*", ImageExtensions)}";
-            var vidExts = $"動画ファイル|*{string.Join(";*", VideoExtensions)}";
-            var allExts = "すべてのファイル|*.*";
-
-            // 上記の文字列を‘|’(縦線)を区切り文字として結合
-            return string.Join("|", medExts, imgExts, vidExts, allExts);
-        }
-
-        private static readonly string UploadableExtensionFilter = CreateExtensionFilter();
-
-        #endregion
-
-        #region Command: RemoveImageCommand
-
-        private Command<UploadMedia> _removeMediaCommand;
-        public Command<UploadMedia> RemoveMediaCommand
-        {
-            get => _removeMediaCommand ?? (_removeMediaCommand = RegisterCommand<UploadMedia>(RemoveMedia, CanRemoveMedia));
-        }
-
-        private bool CanRemoveMedia(UploadMedia media)
-        {
-            return Media.Contains(media);
-        }
-
-        private void RemoveMedia(UploadMedia media)
-        {
-            using (media)
-            {
-                Media.Remove(media);
-                UpdateCanPost();
-            }
-        }
-
-        #endregion
-
-        #region Command: DragDropCommand
-
         private Command<IDataObject> _dragDropCommand;
-        public Command<IDataObject> DragDropCommand
-        {
-            get => _dragDropCommand ?? (_dragDropCommand = RegisterCommand<IDataObject>(OnDrop, CanDrop));
-        }
+        public Command<IDataObject> DragDropCommand => this._dragDropCommand ?? (this._dragDropCommand = this.RegisterCommand(new DragDropCommand(this)));
 
         private DragDropEffects _dragDropEffects = DragDropEffects.None;
         public DragDropEffects DragDropEffects
@@ -478,7 +297,7 @@ namespace Liberfy.ViewModel
             set => SetProperty(ref _dropDescriptionIcon, value);
         }
 
-        private static bool HasEnableMediaFiles(StringCollection strCollection)
+        public static bool HasEnableMediaFiles(StringCollection strCollection)
         {
             foreach (var str in strCollection)
             {
@@ -489,170 +308,14 @@ namespace Liberfy.ViewModel
             return false;
         }
 
-        private static bool HasEnableMediaFiles(IEnumerable<string> files)
+        public static bool HasEnableMediaFiles(IEnumerable<string> files)
         {
             return files.Any(f => IsUploadableExtension(Path.GetExtension(f)));
         }
 
-        private static IEnumerable<string> GetEnableMediaFiles(StringCollection strCollection)
-        {
-            foreach (var str in strCollection)
-            {
-                if (IsUploadableExtension(Path.GetExtension(str)))
-                    yield return str;
-            }
-
-            yield break;
-        }
-
-        private static IEnumerable<string> GetEnableMediaFiles(IEnumerable<string> files)
-        {
-            return files.Where(f => IsUploadableExtension(Path.GetExtension(f)));
-        }
-
-        private bool CanDrop(IDataObject data)
-        {
-            if (!IsEditable) return false;
-
-            if (data.GetDataPresent(DataFormats.FileDrop)
-                && data.GetData(DataFormats.FileDrop) is string[] dropFiles
-                && HasEnableMediaFiles(dropFiles))
-            {
-                DropDescriptionMessage = "添付";
-                DragDropEffects = DragDropEffects.Copy;
-                DropDescriptionIcon = DropImageType.Copy;
-            }
-            else if (UrlDataPresets.Any(data.GetDataPresent)
-                || data.GetDataPresent(DataFormats.UnicodeText)
-                || data.GetDataPresent(DataFormats.Text))
-            {
-                DropDescriptionMessage = "挿入";
-                DragDropEffects = DragDropEffects.Copy;
-                DropDescriptionIcon = DropImageType.Label;
-            }
-            else
-            {
-                DropDescriptionMessage = "無効な形式";
-                DragDropEffects = DragDropEffects.None;
-                DropDescriptionIcon = DropImageType.None;
-                return false;
-            }
-
-            return true;
-        }
-
-        private void OnDrop(IDataObject data)
-        {
-            if (data.GetDataPresent(DataFormats.FileDrop))
-            {
-                var droppedFiles = (string[])data.GetData(DataFormats.FileDrop);
-                Media.AddRange(GetEnableMediaFiles(droppedFiles).Select(file => UploadMedia.FromFile(file)));
-                UpdateCanPost();
-            }
-            else if (UrlDataPresets.Any(data.GetDataPresent))
-            {
-                TextBoxController.Insert((string)data.GetData(DataFormats.UnicodeText));
-                TextBoxController.Focus();
-            }
-            else if (data.GetDataPresent(DataFormats.UnicodeText))
-            {
-                TextBoxController.Insert((string)data.GetData(DataFormats.UnicodeText));
-                TextBoxController.Focus();
-            }
-            else if (data.GetDataPresent(DataFormats.Text))
-            {
-                TextBoxController.Insert((string)data.GetData(DataFormats.Text));
-                TextBoxController.Focus();
-            }
-        }
-
-        private readonly static string[] UrlDataPresets = { "IESiteModeToUrl", "text/x-moz-url", "UniformResourceLocator" };
-
-        #endregion
-
-        #region Command: ImagePasting
 
         private Command _pasteImageCommand;
-        public Command PasteImageCommand
-        {
-            get => _pasteImageCommand ?? (_pasteImageCommand = RegisterCommand(OnImagePasted, CanImagePaste));
-        }
-
-        private bool CanImagePaste()
-        {
-            return Clipboard.ContainsImage()
-                || (Clipboard.ContainsFileDropList() && HasEnableMediaFiles(Clipboard.GetFileDropList()));
-        }
-
-        private void OnImagePasted()
-        {
-            if (Clipboard.ContainsImage())
-            {
-                Media.Add(UploadMedia.FromBitmapSource(Clipboard.GetImage()));
-            }
-            else if (Clipboard.ContainsFileDropList())
-            {
-                Media.AddRange(
-                    GetEnableMediaFiles(Clipboard.GetFileDropList())
-                    .Select(file => UploadMedia.FromFile(file)));
-            }
-        }
-
-        #endregion
-
-        private Command _selectAccountCommand;
-        public Command SelectAccountCommand => this._selectAccountCommand ?? (this._selectAccountCommand = this.RegisterCommand(() =>
-        {
-            var res = this.DialogService.SelectDialog(new SelectDialogOption<AccountBase>
-            {
-                Instruction = "ツイートするアカウントを選択してください",
-                Items = this.Accounts,
-                ItemTemplate = Application.Current.TryFindResource("AccountItemTemplate") as DataTemplate,
-            });
-        }));
-
-        private Command _showNowPlayingDialogCommand;
-        public Command ShowNowPlayingDialogCommand => this._showNowPlayingDialogCommand ?? (this._showNowPlayingDialogCommand = this.RegisterCommand(() =>
-        {
-            var nowPlaying = new ViewModel.NowPlayingViewModel();
-
-            if (this.DialogService.OpenModal(nowPlaying, new ViewOption
-            {
-                ResizeMode = ResizeMode.NoResize,
-                StartupLocation = WindowStartupLocation.CenterOwner,
-                SizeToContent = SizeToContent.Manual,
-                Width = 340,
-                Height = 320,
-                WindowChrome = new System.Windows.Shell.WindowChrome
-                {
-                    GlassFrameThickness = new Thickness(0, 1, 0, 0),
-                    UseAeroCaptionButtons = false,
-                    CornerRadius = new CornerRadius(0),
-                    CaptionHeight = 0,
-                },
-                ShowInTaskbar = false,
-            }))
-            {
-                this.TextBoxController.Insert(nowPlaying.InsertionText);
-
-                foreach (var artwork in nowPlaying.Artworks)
-                {
-                    if (artwork.Use)
-                    {
-                        this.Media.Add(UploadMedia.FromArtwork(artwork));
-                        artwork.Dispose(false);
-                    }
-                    else
-                    {
-                        artwork.Dispose(true);
-                    }
-                }
-
-                nowPlaying.Artworks.Clear();
-                nowPlaying.InsertionText = null;
-                nowPlaying = null;
-            }
-        }));
+        public Command PasteImageCommand => this._pasteImageCommand ?? (this._pasteImageCommand = this.RegisterCommand(new PasteImageCommand(this)));
 
         internal override bool CanClose()
         {

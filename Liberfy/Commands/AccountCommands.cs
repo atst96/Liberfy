@@ -10,9 +10,9 @@ namespace Liberfy.Commands
 {
     internal class AccountCommands
     {
-        private AccountBase _account;
+        private IAccount _account;
 
-        public AccountCommands(AccountBase account)
+        public AccountCommands(IAccount account)
         {
             this._account = account;
         }

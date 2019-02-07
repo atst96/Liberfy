@@ -10,12 +10,13 @@ using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using Liberfy.Settings;
 using SocialApis;
+using Liberfy.Commands.SettingWindowCommands;
 
 namespace Liberfy.ViewModel
 {
-    internal partial class SettingWindow : ViewModelBase
+    internal partial class SettingWindowViewModel : ViewModelBase
     {
-        public SettingWindow() : base()
+        public SettingWindowViewModel() : base()
         {
             ViewFonts = new NotifiableCollection<FontFamily>();
             SetFontSettings();
@@ -26,7 +27,7 @@ namespace Liberfy.ViewModel
 
         public Setting Setting => App.Setting;
 
-        public IEnumerable<AccountBase> Accounts { get; } = AccountManager.Accounts;
+        public IEnumerable<IAccount> Accounts { get; } = AccountManager.Accounts;
 
         /*
          * [表示]タブ関連 → SettingWindowViewModel.View.cs
@@ -378,8 +379,8 @@ namespace Liberfy.ViewModel
 
         #region Accounts
 
-        private AccountBase _selectedAccount;
-        public AccountBase SelectedAccount
+        private IAccount _selectedAccount;
+        public IAccount SelectedAccount
         {
             get => this._selectedAccount;
             set
@@ -423,21 +424,17 @@ namespace Liberfy.ViewModel
                 {
                     var tokens = auth.TwitterTokens;
 
-                    var account = AccountManager.Get(SocialService.Twitter, tokens.UserId);
+                    var account = AccountManager.Get(ServiceType.Twitter, tokens.UserId);
 
                     if (account != null)
                     {
-                        account.SetTokens(ApiTokenInfo.FromTokens(tokens));
+                        account.SetClient(ApiTokenInfo.FromTokens(tokens));
                     }
                     else
                     {
                         var user = await tokens.Account.VerifyCredentials();
 
-                        account = new TwitterAccount(tokens, user)
-                        {
-                            AutomaticallyLogin = this.Setting.AccountDefaultAutomaticallyLogin,
-                            AutomaticallyLoadTimeline = this.Setting.AccountDefaultAutomaticallyLoadTimeline
-                        };
+                        account = new TwitterAccount(tokens, user);
 
                         AccountManager.Add(account);
 
@@ -450,7 +447,7 @@ namespace Liberfy.ViewModel
                         }
                     }
 
-                    if (!await account.TryLogin())
+                    if (!await account.Login())
                     {
                         this.DialogService.MessageBox(
                             $"アカウント情報の取得に失敗しました:\n",
@@ -466,19 +463,15 @@ namespace Liberfy.ViewModel
                     var user = await tokens.Accounts.VerifyCredentials();
 
 
-                    var account = AccountManager.Get(SocialService.Mastodon, user.Id);
+                    var account = AccountManager.Get(ServiceType.Mastodon, user.Id);
 
                     if (account != null)
                     {
-                        account.SetTokens(ApiTokenInfo.FromTokens(tokens));
+                        account.SetClient(ApiTokenInfo.FromTokens(tokens));
                     }
                     else
                     {
-                        account = new MastodonAccount(tokens, user)
-                        {
-                            AutomaticallyLogin = this.Setting.AccountDefaultAutomaticallyLogin,
-                            AutomaticallyLoadTimeline = this.Setting.AccountDefaultAutomaticallyLoadTimeline
-                        };
+                        account = new MastodonAccount(tokens, user);
 
                         AccountManager.Add(account);
 
@@ -491,7 +484,7 @@ namespace Liberfy.ViewModel
                         }
                     }
 
-                    if (!await account.TryLogin())
+                    if (!await account.Login())
                     {
                         this.DialogService.MessageBox(
                             $"アカウント情報の取得に失敗しました:\n",
@@ -505,53 +498,21 @@ namespace Liberfy.ViewModel
 
         #endregion
 
-        private void RaiseCanExecuteAccountCommands()
+        internal void RaiseCanExecuteAccountCommands()
         {
             this._accountMoveUpCommand?.RaiseCanExecute();
             this._accountMoveDownCommand?.RaiseCanExecute();
             this._accountDeleteCommand?.RaiseCanExecute();
         }
 
-        private Command<AccountBase> _accountDeleteCommand;
-        public Command<AccountBase> AccountDeleteCommand => this._accountDeleteCommand
-            ?? (this._accountDeleteCommand = this.RegisterCommand(
-                DelegateCommand<AccountBase>
-                .When(a => AccountManager.Contains(a))
-                .Exec(a =>
-                {
-                    if (this.DialogService.ShowQuestion(
-                    $"本当にアカウントを一覧から削除しますか？\n { a.Info.Name }@{ a.Info.ScreenName }"))
-                    {
-                        AccountManager.Remove(a);
-                        a.Unload();
-                    }
+        private Command<IAccount> _accountDeleteCommand;
+        public Command<IAccount> AccountDeleteCommand => this._accountDeleteCommand ?? (this._accountDeleteCommand = this.RegisterCommand(new AccountDeleteCommand(this)));
 
-                    this.RaiseCanExecuteAccountCommands();
-                })));
+        private Command<IAccount> _accountMoveUpCommand;
+        public Command<IAccount> AccountMoveUpCommand => this._accountMoveUpCommand ?? (this._accountMoveUpCommand = this.RegisterCommand(new AccountMoveUpCommand(this)));
 
-        private Command<AccountBase> _accountMoveUpCommand;
-        public Command<AccountBase> AccountMoveUpCommand => this._accountMoveUpCommand ?? (this._accountMoveUpCommand = this.RegisterCommand<AccountBase>(
-            DelegateCommand<AccountBase>
-            .When(a => AccountManager.IndexOf(a) > 1)
-            .Exec(a =>
-            {
-                int index = AccountManager.IndexOf(a);
-                AccountManager.Move(index, index - 1);
-
-                this.RaiseCanExecuteAccountCommands();
-            })));
-
-        private Command<AccountBase> _accountMoveDownCommand;
-        public Command<AccountBase> AccountMoveDownCommand => this._accountMoveDownCommand = (this._accountMoveDownCommand = this.RegisterCommand<AccountBase>(
-            DelegateCommand<AccountBase>
-            .When(a => AccountManager.IndexOf(a) < AccountManager.Count - 1)
-            .Exec(a =>
-            {
-                int index = AccountManager.IndexOf(a);
-                AccountManager.Move(index, index + 1);
-
-                this.RaiseCanExecuteAccountCommands();
-            })));
+        private Command<IAccount> _accountMoveDownCommand;
+        public Command<IAccount> AccountMoveDownCommand => this._accountMoveDownCommand = this._accountMoveDownCommand = this.RegisterCommand(new AccountMoveDownCommand(this));
 
         #endregion Commands for account
 
@@ -577,20 +538,10 @@ namespace Liberfy.ViewModel
 
         #region Command: ColumnAddCommand
 
-        private Command _columnAddCommand;
-        public Command ColumnAddCommand => this._columnAddCommand ?? (this._columnAddCommand = this.RegisterCommand(() =>
+        private Command<ColumnType> _columnAddCommand;
+        public Command<ColumnType> ColumnAddCommand => this._columnAddCommand ?? (this._columnAddCommand = this.RegisterCommand((ColumnType key) =>
         {
-            var res = this.DialogService.SelectDialog(new SelectDialogOption<KeyValuePair<object, string>>
-            {
-                Items = ColumnBase.ColumnTypes,
-                SelectedValuePath = "Key",
-                DisplayMemberPath = "Value",
-            });
-
-            if (res.IsSelected && res.SelectedValue is ColumnType columnType)
-            {
-                this.DefaultColumns.Add(ColumnBase.FromType(columnType));
-            }
+            this.DefaultColumns.Add(ColumnBase.FromType(key));
         }));
 
         #endregion

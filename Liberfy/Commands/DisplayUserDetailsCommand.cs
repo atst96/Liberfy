@@ -11,9 +11,9 @@ namespace Liberfy.Commands
 {
     internal class DisplayUserDetailsCommand : Command<UserInfo>
     {
-        private AccountBase _account;
+        private IAccount _account;
 
-        public DisplayUserDetailsCommand(AccountBase account)
+        public DisplayUserDetailsCommand(IAccount account)
         {
             this._account = account;
         }
