@@ -1,4 +1,4 @@
-﻿<ResourceDictionary 
+<ResourceDictionary 
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Liberfy"
@@ -244,7 +244,7 @@
                 IsOpen="{TemplateBinding IsSubmenuOpen}"
                 AllowsTransparency="True"
                 Focusable="False"
-                PopupAnimation="Fade">
+                PopupAnimation="None">
                 <Themes:SystemDropShadowChrome
                     Color="#71000000" Margin="0 0 5 5">
                     <Grid
@@ -429,7 +429,7 @@
                     IsOpen="{TemplateBinding IsSubmenuOpen}"
                     AllowsTransparency="True"
                     Focusable="False"
-                    PopupAnimation="Fade"
+                    PopupAnimation="None"
                     HorizontalOffset="-2"
                     VerticalOffset="-6">
                     <Themes:SystemDropShadowChrome
@@ -496,11 +496,15 @@
 
     <!--#region ContextMenu style -->
 
+    <PopupAnimation x:Key="{x:Static SystemParameters.MenuPopupAnimationKey}">None</PopupAnimation>
+
     <Style x:Key="{x:Type ContextMenu}" TargetType="{x:Type ContextMenu}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Grid.IsSharedSizeScope" Value="True" />
         <Setter Property="HasDropShadow" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContextMenu}">
@@ -1842,6 +1846,7 @@
     </ControlTemplate>
 
     <Style TargetType="{x:Type ToolBar}">
+        <Setter Property="Padding" Value="0" />
         <Setter Property="Background" Value="{StaticResource ToolBar.Static.Background}" />
         <Setter Property="BorderBrush" Value="{StaticResource ToolBar.Static.BorderBrush}" />
         <Setter Property="Foreground" Value="{StaticResource ToolBar.Static.Foreground}" />
@@ -1879,10 +1884,12 @@
 
     <Style x:Key="{x:Static ToolBar.ButtonStyleKey}" TargetType="{x:Type Button}">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-        <Setter Property="Padding" Value="8 2"/>
-        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Margin" Value=" 0" />
+        <Setter Property="Padding" Value="10 4"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource ToolBar.Static.Foreground}" />
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="VerticalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -1892,6 +1899,7 @@
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border
                         x:Name="Bd"
+                        CornerRadius="2"
                         SnapsToDevicePixels="True"
                         Padding="{TemplateBinding Padding}"
                         BorderBrush="{TemplateBinding BorderBrush}"
@@ -1926,10 +1934,12 @@
 
     <Style x:Key="{x:Static ToolBar.ToggleButtonStyleKey}" TargetType="{x:Type ToggleButton}">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-        <Setter Property="Padding" Value="8 2"/>
-        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Margin" Value=" 0" />
+        <Setter Property="Padding" Value="10 4"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource ToolBar.Static.Foreground}" />
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -1938,6 +1948,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
                     <Border
+                        CornerRadius="2"
                         Padding="{TemplateBinding Padding}"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
@@ -2142,6 +2153,8 @@
     <SolidColorBrush x:Key="TabItem.MouseOver.Background" Color="#FFFAFAFA" />
     <SolidColorBrush x:Key="TabItem.Selected.Background" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="TabItem.Selected.Foreground" Color="#FF666666" />
+    <SolidColorBrush x:Key="TabItem.Disabled.Background" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="TabItem.Disabled.Foreground" Color="#FF666666" />
 
     <Style x:Key="{x:Type TabItem}" TargetType="{x:Type TabItem}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -2178,6 +2191,11 @@
 
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="content" Property="TextElement.Foreground" Value="{StaticResource TabItem.Selected.Foreground}" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="content" Property="TextElement.Foreground" Value="{StaticResource TabItem.Disabled.Foreground}" />
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource TabItem.Disabled.Background}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -2260,6 +2278,5 @@
     </Style>
 
     <!--#endregion TabControl styles -->
-
 </ResourceDictionary>
     
