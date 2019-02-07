@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-using MastodonTokens = SocialApis.Mastodon.Tokens;
+using MastodonTokens = SocialApis.Mastodon.MastodonApi;
 
 namespace Liberfy.ViewModel
 {
@@ -123,7 +123,7 @@ namespace Liberfy.ViewModel
 
         public RequestTokenResponse Session { get; private set; }
 
-        public Tokens TwitterTokens { get; private set; }
+        public TwitterApi TwitterTokens { get; private set; }
 
         public MastodonTokens MastodonTokens { get; private set; }
 
@@ -166,7 +166,7 @@ namespace Liberfy.ViewModel
 
                         this.IsRunning = true;
 
-                        this.TwitterTokens = new Tokens(cKey, cSec);
+                        this.TwitterTokens = new TwitterApi(cKey, cSec);
                         this.Session = await TwitterTokens.OAuth.RequestToken();
 
                         App.Open(this.Session.GetAuthorizeUrl());
