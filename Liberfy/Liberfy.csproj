@@ -134,7 +134,7 @@
     <Compile Include="Commands\SettingWindowCommands\AccountDeleteCommand.cs" />
     <Compile Include="Commands\SettingWindowCommands\AccountMoveDownCommand.cs" />
     <Compile Include="Commands\SettingWindowCommands\AccountMoveUpCommand.cs" />
-    <Compile Include="Commands\ViewModelCommand.cs" />
+    <Compile Include="Components\IDisposableCommand.cs" />
     <Compile Include="Controls\BusyIndicator.xaml.cs">
       <DependentUpon>BusyIndicator.xaml</DependentUpon>
     </Compile>
@@ -149,9 +149,6 @@
     <Compile Include="Commands\TweetWindow\PasteImageCommand.cs" />
     <Compile Include="Commands\TweetWindow\PostCommand.cs" />
     <Compile Include="Commands\TweetWindow\RemoveMediaCommand.cs" />
-    <Compile Include="Components\MVPVM\IDisposableCommand.cs" />
-    <Compile Include="Components\MVPVM\IPresenter.cs" />
-    <Compile Include="Components\MVPVM\PresenterBase.cs" />
     <Compile Include="Components\MVVM\Command{T}.cs" />
     <Compile Include="Components\MVVM\DelegateCommand_T.cs" />
     <Compile Include="Components\NotifiableCollection.cs" />
