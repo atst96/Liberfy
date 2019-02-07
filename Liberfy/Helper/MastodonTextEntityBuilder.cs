@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using Liberfy.Model;
 using Sgml;
@@ -14,12 +12,10 @@ namespace Liberfy
 {
     internal class MastodonTextEntityBuilder : ITextEntityBuilder
     {
-        private static Regex _brTagReplaceRegex { get; } = new Regex("<br>", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        private readonly string _content;
+        private readonly Emoji[] _emojis;
 
-        private string _content;
-        private Emoji[] _emojis;
-
-        private static Regex _emojiRegex = new Regex(":(?<code>[a-zA-Z0-9_\\-]+):", RegexOptions.Multiline);
+        private readonly static Regex _emojiRegex = new Regex(":(?<code>[a-zA-Z0-9_\\-]+):", RegexOptions.Multiline | RegexOptions.Compiled);
 
         public MastodonTextEntityBuilder(string content, Emoji[] emojis)
         {
@@ -105,17 +101,19 @@ namespace Liberfy
             const string mentionContainerClassName = "h-card";
             const string mentionAnchorClassName = "u-url mention";
 
-            var content = _brTagReplaceRegex.Replace(this._content, "<br/>");
+            var content = this._content.Replace("<br>", "<br/>", StringComparison.OrdinalIgnoreCase);
 
             var entities = new LinkedList<IEntity>();
 
-            using (var sgmlReader = new SgmlReader
+            var sgmlReader = new SgmlReader
             {
                 DocType = "html",
                 IgnoreDtd = true,
                 CaseFolding = CaseFolding.ToLower,
-                InputStream = new StringReader($"<div>{ content }</div>"),
-            })
+                InputStream = new StringReader(string.Concat("<div>", content, "</div>")),
+            };
+
+            using (sgmlReader)
             {
                 var rootElement = XElement.Load(sgmlReader, LoadOptions.PreserveWhitespace);
 
@@ -139,8 +137,6 @@ namespace Liberfy
                         else if (secLvNode.NodeType == System.Xml.XmlNodeType.Element)
                         {
                             var secLvEl = XElement.Load(secLvNode.CreateReader());
-
-                            System.Diagnostics.Debug.WriteLine(secLvEl);
 
                             if (secLvEl.Name == "br")
                             {
@@ -186,7 +182,11 @@ namespace Liberfy
                             }
                             else if (secLvEl.Name == "span")
                             {
-                                if (secLvEl.Attribute("class")?.Value == mentionContainerClassName)
+                                if (!secLvEl.HasAttributes)
+                                {
+                                    AddText(entities, secLvEl.Value);
+                                }
+                                else if (secLvEl.Attribute("class")?.Value == mentionContainerClassName)
                                 {
                                     var anchorElement = secLvEl.Elements().First();
                                     var anchorElementClassNames = anchorElement.Attribute("class")?.Value;
