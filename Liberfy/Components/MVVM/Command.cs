@@ -6,7 +6,7 @@ namespace Liberfy
     /// <summary>
     /// コマンドを定義する際に基となるクラス。
     /// </summary>
-    internal abstract class Command : ICommand, IDisposable
+    internal abstract class Command : Components.IDisposableCommand
     {
         private readonly bool hookRequerySuggested;
         private EventHandler dummyCanExecuteChanged;

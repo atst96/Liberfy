@@ -20,7 +20,7 @@ namespace Liberfy
         private IntPtr _hWnd;
         private ViewModelBase _viewModel;
         private static Window mainView;
-        private MessageBox msgBox = new MessageBox();
+        private readonly MessageBox msgBox = new MessageBox();
 
 
         public DialogService() { }
@@ -97,52 +97,16 @@ namespace Liberfy
             _view.DialogResult = dialogResult;
         }
 
-        public void Open(ViewType viewType, object parameter = null)
+        public void Open(Window view)
         {
-            ShowView(viewType, _view, false, parameter);
+            view.Owner = this._view;
+            view.Show();
         }
 
-        public bool OpenModal(ViewType viewType, object parameter = null)
+        public void OpenModal(Window view)
         {
-            return ShowView(viewType, _view, true, parameter);
-        }
-
-        public static void OpenWithMainView(ViewType viewType, object parameter = null)
-        {
-            ShowView(viewType, mainView, false, parameter);
-        }
-
-        public static bool OpenWithMainViewModal(ViewType viewType, object parameter = null)
-        {
-            return ShowView(viewType, mainView, true, parameter);
-        }
-
-        private static bool ShowView(ViewType viewType, Window owner, bool isModal, object parameter = null)
-        {
-            var w = WindowFromViewType(viewType, parameter);
-            w.Owner = owner;
-
-            if (isModal)
-            {
-                return w.ShowDialog() ?? false;
-            }
-            else
-            {
-                w.Show();
-                return false;
-            }
-        }
-
-        private static Window WindowFromViewType(ViewType viewType, object parameter = null)
-        {
-            switch (viewType)
-            {
-                case ViewType.TweetWindow:
-                    return new View.TweetWindow(parameter);
-
-                default:
-                    throw new NotSupportedException();
-            }
+            view.Owner = this._view;
+            view.ShowDialog();
         }
 
         public void Invoke(ViewState viewState)
@@ -167,12 +131,6 @@ namespace Liberfy
                     _view.WindowState = System.Windows.WindowState.Normal;
                     return;
             }
-        }
-
-        public bool OpenInitSettingView()
-        {
-            OpenSetting(0, true);
-            return AccountManager.Count > 0;
         }
 
         public void OpenSetting(int? page = null, bool isModal = false)
@@ -210,46 +168,6 @@ namespace Liberfy
         public MsgBoxResult MessageBox(string text, string caption = null, MsgBoxButtons buttons = 0, MsgBoxIcon icon = 0, MsgBoxFlags flags = 0)
         {
             return msgBox.Show(text, caption ?? App.AppName, buttons, icon, flags);
-        }
-
-        public void Open(ContentWindowViewModel viewModel)
-        {
-            new ContentWindow(viewModel)
-            {
-                Owner = _view,
-            }.Show();
-        }
-
-        public void Open(ContentWindowViewModel viewModel, ViewOption option)
-        {
-            new ContentWindow(viewModel, option)
-            {
-                Owner = _view,
-            }.Show();
-        }
-
-        public void Open(ContentWindowViewModel viewModel, ViewOption option, object templateKey)
-        {
-            new ContentWindow(viewModel, option, app.TryFindResource(templateKey) as DataTemplate)
-            {
-                Owner = _view,
-            }.Show();
-        }
-
-        public bool OpenModal(ContentWindowViewModel content)
-        {
-            return new ContentWindow(content)
-            {
-                Owner = _view,
-            }.ShowDialog() ?? false;
-        }
-
-        public bool OpenModal(ContentWindowViewModel viewModel, ViewOption option)
-        {
-            return new ContentWindow(viewModel, option)
-            {
-                Owner = _view,
-            }.ShowDialog() ?? false;
         }
 
         public bool OpenModal(ContentWindowViewModel viewModel, ViewOption option, object templateKey)

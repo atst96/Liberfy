@@ -211,16 +211,6 @@ namespace Liberfy.ViewModel
         }
 
         /// <summary>
-        /// 登録したコマンドを登録解除します。
-        /// </summary>
-        /// <param name="command">コマンド</param>
-        /// <returns>コマンド登録解除の可否</returns>
-        public bool UnregisterCommand(Command command)
-        {
-            return _registeredCommands.Remove(command);
-        }
-
-        /// <summary>
         /// ビューが初期化された際に呼び出されます。
         /// </summary>
         internal virtual void OnInitialized() { }

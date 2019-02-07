@@ -7,7 +7,7 @@ namespace Liberfy
     /// コマンドを定義する際に基となるクラス。
     /// </summary>
     /// <typeparam name="T">コマンドのパラメータの型</typeparam>
-    internal abstract class Command<T> : ICommand, IDisposable
+    internal abstract class Command<T> : Components.IDisposableCommand
     {
         private readonly bool hookRequerySuggested;
         private EventHandler dummyCanExecuteChanged;

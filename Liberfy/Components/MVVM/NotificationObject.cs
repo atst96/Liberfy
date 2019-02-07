@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace Liberfy
 {
     [Serializable]
-    class NotificationObject : INotifyPropertyChanged
+    public class NotificationObject : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
