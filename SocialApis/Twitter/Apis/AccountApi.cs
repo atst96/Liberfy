@@ -8,18 +8,18 @@ namespace SocialApis.Twitter.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class AccountApi : TokenApiBase
+    public class AccountApi : ApiBase
     {
-        internal AccountApi(Tokens tokens) : base(tokens) { }
+        internal AccountApi(TwitterApi tokens) : base(tokens) { }
 
         public Task<UserResponse> VerifyCredentials()
         {
-            return this.Tokens.GetRequestRestApiAsync<UserResponse>("account/verify_credentials");
+            return this.Api.GetRequestRestApiAsync<UserResponse>("account/verify_credentials");
         }
 
         public Task<UserResponse> VerifyCredentials(IQuery query)
         {
-            return this.Tokens.GetRequestRestApiAsync<UserResponse>("account/verify_credentials", query);
+            return this.Api.GetRequestRestApiAsync<UserResponse>("account/verify_credentials", query);
         }
     }
 }

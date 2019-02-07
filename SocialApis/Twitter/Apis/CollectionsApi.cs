@@ -8,8 +8,8 @@ namespace SocialApis.Twitter.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class CollectionsApi : TokenApiBase
+    public class CollectionsApi : ApiBase
     {
-        internal CollectionsApi(Tokens tokens) : base(tokens) { }
+        internal CollectionsApi(TwitterApi tokens) : base(tokens) { }
     }
 }

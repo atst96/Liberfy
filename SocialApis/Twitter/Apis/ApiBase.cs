@@ -8,13 +8,13 @@ namespace SocialApis.Twitter.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public abstract class TokenApiBase
+    public abstract class ApiBase
     {
-        protected Tokens Tokens { get; }
+        protected TwitterApi Api { get; }
 
-        internal TokenApiBase(Tokens tokens)
+        internal ApiBase(TwitterApi api)
         {
-            this.Tokens = tokens ?? throw new ArgumentNullException(nameof(tokens));
+            this.Api = api ?? throw new ArgumentNullException(nameof(api));
         }
     }
 }

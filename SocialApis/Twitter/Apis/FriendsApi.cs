@@ -8,34 +8,34 @@ namespace SocialApis.Twitter.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class FriendsApi : TokenApiBase
+    public class FriendsApi : ApiBase
     {
-        internal FriendsApi(Tokens tokens) : base(tokens) { }
+        internal FriendsApi(TwitterApi tokens) : base(tokens) { }
 
         public Task<CursoredIdsResponse> Ids()
         {
-            return this.Tokens.GetRequestRestApiAsync<CursoredIdsResponse>("friends/ids");
+            return this.Api.GetRequestRestApiAsync<CursoredIdsResponse>("friends/ids");
         }
 
         public Task<CursoredIdsResponse> Ids(int cursor)
         {
             var query = new Query { ["cursor"] = cursor };
-            return this.Tokens.GetRequestRestApiAsync<CursoredIdsResponse>("friends/ids", query);
+            return this.Api.GetRequestRestApiAsync<CursoredIdsResponse>("friends/ids", query);
         }
 
         public Task<CursoredIdsResponse> Ids(IQuery query)
         {
-            return this.Tokens.GetRequestRestApiAsync<CursoredIdsResponse>("friends/ids", query);
+            return this.Api.GetRequestRestApiAsync<CursoredIdsResponse>("friends/ids", query);
         }
 
         public Task<CursoredUsersResponse> List()
         {
-            return this.Tokens.GetRequestRestApiAsync<CursoredUsersResponse>("friends/list");
+            return this.Api.GetRequestRestApiAsync<CursoredUsersResponse>("friends/list");
         }
 
         public Task<CursoredUsersResponse> List(IQuery query)
         {
-            return this.Tokens.GetRequestRestApiAsync<CursoredUsersResponse>("friends/list", query);
+            return this.Api.GetRequestRestApiAsync<CursoredUsersResponse>("friends/list", query);
         }
     }
 }

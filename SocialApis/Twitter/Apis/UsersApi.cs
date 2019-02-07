@@ -8,9 +8,9 @@ namespace SocialApis.Twitter.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class UsersApi : TokenApiBase
+    public class UsersApi : ApiBase
     {
-        internal UsersApi(Tokens tokens) : base(tokens)
+        internal UsersApi(TwitterApi tokens) : base(tokens)
         {
         }
 
@@ -27,7 +27,7 @@ namespace SocialApis.Twitter.Apis
                 ["perform_block"] = performBlock,
             };
 
-            return this.Tokens.PostRequestRestApiAsync<UserResponse>("users/report_spam", query);
+            return this.Api.PostRequestRestApiAsync<UserResponse>("users/report_spam", query);
         }
 
         public Task<UserResponse> ReportSpam(long usreId)
@@ -43,7 +43,7 @@ namespace SocialApis.Twitter.Apis
                 ["perform_block"] = performBlock,
             };
 
-            return this.Tokens.PostRequestRestApiAsync<UserResponse>("users/report_spam", query);
+            return this.Api.PostRequestRestApiAsync<UserResponse>("users/report_spam", query);
         }
     }
 }

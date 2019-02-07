@@ -8,9 +8,9 @@ namespace SocialApis.Twitter.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class SearchApi : TokenApiBase
+    public class SearchApi : ApiBase
     {
-        internal SearchApi(Tokens tokens) : base(tokens) { }
+        internal SearchApi(TwitterApi tokens) : base(tokens) { }
 
         public Task<ListedResponse<Status>> Search(string text)
         {
@@ -19,7 +19,7 @@ namespace SocialApis.Twitter.Apis
 
         public Task<ListedResponse<Status>> Search(IQuery query)
         {
-            return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("search/tweets", query);
+            return this.Api.GetRequestRestApiAsync<ListedResponse<Status>>("search/tweets", query);
         }
     }
 }

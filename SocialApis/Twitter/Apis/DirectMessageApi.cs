@@ -8,13 +8,13 @@ namespace SocialApis.Twitter.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class DirectMessageApi : TokenApiBase
+    public class DirectMessageApi : ApiBase
     {
-        internal DirectMessageApi(Tokens tokens) : base(tokens) { }
+        internal DirectMessageApi(TwitterApi tokens) : base(tokens) { }
 
         public Task<Responses.DirectMessageListResponse> List()
         {
-            return this.Tokens.GetRequestRestApiAsync<Responses.DirectMessageListResponse>("direct_messages/events/list");
+            return this.Api.GetRequestRestApiAsync<Responses.DirectMessageListResponse>("direct_messages/events/list");
         }
 
         public Task<Responses.DirectMessageListResponse> List(int? count = null, long? cursor = null)
@@ -27,7 +27,7 @@ namespace SocialApis.Twitter.Apis
             if (cursor.HasValue)
                 query["cursor"] = cursor.Value;
 
-            return this.Tokens.GetRequestRestApiAsync<Responses.DirectMessageListResponse>("direct_messages/events/list", query);
+            return this.Api.GetRequestRestApiAsync<Responses.DirectMessageListResponse>("direct_messages/events/list", query);
         }
 
         public Task<DirectMessageSingleResponse> Show(long id)
@@ -37,7 +37,7 @@ namespace SocialApis.Twitter.Apis
                 ["id"] = id,
             };
 
-            return this.Tokens.GetRequestRestApiAsync<DirectMessageSingleResponse>("direct_messages/events/show", query);
+            return this.Api.GetRequestRestApiAsync<DirectMessageSingleResponse>("direct_messages/events/show", query);
         }
     }
 }

@@ -6,15 +6,14 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Utf8Json;
 
 namespace SocialApis.Twitter.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class MediaApi : TokenApiBase
+    public class MediaApi : ApiBase
     {
-        internal MediaApi(Tokens tokens) : base(tokens) { }
+        internal MediaApi(TwitterApi tokens) : base(tokens) { }
 
         public Task<MediaResponse> Upload(string filename, long[] additionalOwners = null)
         {
@@ -23,7 +22,7 @@ namespace SocialApis.Twitter.Apis
 
         private const string _apiEndpoint = "https://upload.twitter.com/1.1/media/upload.json";
 
-        private static HttpWebRequest CreateMultipartRequester(Tokens tokens, out string boundary)
+        private static HttpWebRequest CreateMultipartRequester(TwitterApi tokens, out string boundary)
         {
             var req = tokens.CreatePostRequester(_apiEndpoint, null, false);
             boundary = OAuthHelper.GenerateNonce();
@@ -33,19 +32,19 @@ namespace SocialApis.Twitter.Apis
             return req;
         }
 
-        public async Task<MediaResponse> Upload(Stream stream, long[] additionalOwners = null)
+        public async Task<MediaResponse> Upload(Stream contentStream, long[] additionalOwners = null)
         {
-            var req = CreateMultipartRequester(this.Tokens, out var boundary);
+            var request = CreateMultipartRequester(this.Api, out var boundary);
 
-            using (var reqStr = await req.GetRequestStreamAsync())
-            using (var writer = new StreamWriter(reqStr, Encoding.UTF8))
+            using (var requestStream = await request.GetRequestStreamAsync().ConfigureAwait(false))
+            using (var writer = new StreamWriter(requestStream, Encoding.UTF8))
             {
                 writer.WriteLine($"--{ boundary }");
                 writer.WriteLine("Content-Disposition: form-data; name=\"media\"");
                 writer.WriteLine();
                 writer.Flush();
 
-                await stream.CopyToAsync(reqStr);
+                await contentStream.CopyToAsync(requestStream).ConfigureAwait(false);
 
                 writer.WriteLine();
 
@@ -62,23 +61,23 @@ namespace SocialApis.Twitter.Apis
                 writer.Flush();
             }
 
-            return await this.Tokens.SendRequest<MediaResponse>(req);
+            return await this.Api.SendRequest<MediaResponse>(request).ConfigureAwait(false);
         }
 
-        public async Task<MediaResponse> ChunkedUpload(Stream media, string mediaType, long[] additionalOwners = null, IProgress<UploadProgressInfo> progressReceiver = null)
+        public async Task<MediaResponse> ChunkedUpload(Stream media, string mediaType, long[] additionalOwners = null, IProgress<UploadProgress> progressReceiver = null)
         {
-            var initResposne = await this.ChunkedUploadInit(media.Length, mediaType, additionalOwners);
+            var initResposne = await this.ChunkedUploadInit(media.Length, mediaType, additionalOwners).ConfigureAwait(false);
 
             // 1MB
             const int SegmentSize = 1024 * 1024 * 1; // 1MiB
 
             int fileLength = (int)media.Length;
-            int segmentsCount = (int)((fileLength + SegmentSize - 1) / SegmentSize);
+            int segmentsCount = (fileLength + SegmentSize - 1) / SegmentSize;
 
-            var progress = default(UploadProgressInfo);
+            UploadProgress progress = default;
             if (progressReceiver != null)
             {
-                progress = new UploadProgressInfo()
+                progress = new UploadProgress()
                 {
                     TotalSize = fileLength,
                 };
@@ -98,7 +97,7 @@ namespace SocialApis.Twitter.Apis
                 if (SegmentSize > dataRemaining)
                     dataSize = dataRemaining;
 
-                var res = await this.ChunkedUploadAppend(initResposne.MediaId, media, dataSize, segmentIndex, progressReceiver, progress);
+                var res = await this.ChunkedUploadAppend(initResposne.MediaId, media, dataSize, segmentIndex, progressReceiver, progress).ConfigureAwait(false);
                 if (!string.IsNullOrEmpty(res))
                 {
                     throw new TwitterException(res);
@@ -107,7 +106,7 @@ namespace SocialApis.Twitter.Apis
                 dataRemaining -= dataSize;
             }
 
-            return await this.ChunkedUploadFinalize(initResposne.MediaId);
+            return await this.ChunkedUploadFinalize(initResposne.MediaId).ConfigureAwait(false);
         }
 
         public Task<MediaResponse> ChunkedUploadInit(long totalBytes, string mediaType, long[] additionalOwners = null)
@@ -122,12 +121,12 @@ namespace SocialApis.Twitter.Apis
             if (additionalOwners != null)
                 query["additional_owners"] = additionalOwners;
 
-            return this.Tokens.PostRequestAsync<MediaResponse>(_apiEndpoint, query);
+            return this.Api.PostRequestAsync<MediaResponse>(_apiEndpoint, query);
         }
 
-        public async Task<string> ChunkedUploadAppend(long mediaId, Stream media, int segmentSize, long segmentIndex, IProgress<UploadProgressInfo> progressReceiver, UploadProgressInfo progress)
+        public async Task<string> ChunkedUploadAppend(long mediaId, Stream media, int segmentSize, long segmentIndex, IProgress<UploadProgress> progressReceiver, UploadProgress progress)
         {
-            var req = CreateMultipartRequester(this.Tokens, out var boundary);
+            var request = CreateMultipartRequester(this.Api, out var boundary);
 
             // 送信データの準備
             using (var dataStr = new MemoryStream())
@@ -140,9 +139,9 @@ namespace SocialApis.Twitter.Apis
                 writer.CloseBoundary();
                 writer.Flush();
 
-                req.ContentLength = dataStr.Length;
-                req.SendChunked = false;
-                req.AllowWriteStreamBuffering = false;
+                request.ContentLength = dataStr.Length;
+                request.SendChunked = false;
+                request.AllowWriteStreamBuffering = false;
 
                 // 128KB ずつコピー
                 const int SendBufferLength = 1024 * 128;
@@ -154,7 +153,7 @@ namespace SocialApis.Twitter.Apis
 
                 byte[] data = new byte[SendBufferLength];
 
-                using (var stream = req.GetRequestStream())
+                using (var stream = request.GetRequestStream())
                 {
                     dataStr.Position = 0;
 
@@ -186,24 +185,23 @@ namespace SocialApis.Twitter.Apis
 
             try
             {
-                using (var webRes = await req.GetResponseAsync())
-                using (var sr = new StreamReader(webRes.GetResponseStream()))
+                using (var response = await request.GetResponseAsync().ConfigureAwait(false))
                 {
-                    return sr.ReadToEnd();
+                    return await StreamUtility.ReadToEndAsync(response.GetResponseStream()).ConfigureAwait(false);
                 }
             }
             catch (WebException wex) when (wex.Response != null)
             {
                 var response = wex.Response.GetResponseStream();
 
-                var errors = JsonSerializer.Deserialize<TwitterErrorContainer>(response, Utf8Json.Resolvers.StandardResolver.AllowPrivate);
+                var errors = await JsonUtility.DeserializeAsync<TwitterErrorContainer>(response).ConfigureAwait(false);
                 throw new TwitterException(wex, errors);
             }
         }
 
         public Task<UploadMediaInfo> ChunkedUploadStatus(long mediaId)
         {
-            return this.Tokens.GetRequestAsync<UploadMediaInfo>(_apiEndpoint, new Query
+            return this.Api.GetRequestAsync<UploadMediaInfo>(_apiEndpoint, new Query
             {
                 ["command"] = "STATUS",
                 ["media_id"] = mediaId,
@@ -212,7 +210,7 @@ namespace SocialApis.Twitter.Apis
 
         public Task<MediaResponse> ChunkedUploadFinalize(long mediaId)
         {
-            return this.Tokens.PostRequestAsync<MediaResponse>(_apiEndpoint, new Query
+            return this.Api.PostRequestAsync<MediaResponse>(_apiEndpoint, new Query
             {
                 ["command"] = "FINALIZE",
                 ["media_id"] = mediaId,

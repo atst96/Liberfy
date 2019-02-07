@@ -8,9 +8,9 @@ namespace SocialApis.Twitter.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class StatusesApi : TokenApiBase
+    public class StatusesApi : ApiBase
     {
-        internal StatusesApi(Tokens tokens) : base(tokens) { }
+        internal StatusesApi(TwitterApi tokens) : base(tokens) { }
 
         #region Post, retrieve and engage with Tweets
 
@@ -21,12 +21,12 @@ namespace SocialApis.Twitter.Apis
 
         public Task<StatusResponse> Update(IQuery query)
         {
-            return this.Tokens.PostRequestRestApiAsync<StatusResponse>("statuses/update", query);
+            return this.Api.PostRequestRestApiAsync<StatusResponse>("statuses/update", query);
         }
 
         public Task<StatusResponse> Destroy(long statusId)
         {
-            return this.Tokens.PostRequestRestApiAsync<StatusResponse>("statuses/destroy", new Query { ["id"] = statusId });
+            return this.Api.PostRequestRestApiAsync<StatusResponse>("statuses/destroy", new Query { ["id"] = statusId });
         }
 
         public Task<StatusResponse> Show(long statusId)
@@ -36,7 +36,7 @@ namespace SocialApis.Twitter.Apis
 
         public Task<StatusResponse> Show(IQuery query)
         {
-            return this.Tokens.GetRequestRestApiAsync<StatusResponse>("statuses/show", query);
+            return this.Api.GetRequestRestApiAsync<StatusResponse>("statuses/show", query);
         }
 
         public Task<ListedResponse<Status>> Lookup(long[] statusIds)
@@ -46,7 +46,7 @@ namespace SocialApis.Twitter.Apis
 
         public Task<ListedResponse<Status>> Lookup(IQuery query)
         {
-            return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/lookup", query);
+            return this.Api.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/lookup", query);
         }
 
         public Task<StatusResponse> Retweet(long statusId)
@@ -56,7 +56,7 @@ namespace SocialApis.Twitter.Apis
 
         public Task<StatusResponse> Retweet(IQuery query)
         {
-            return this.Tokens.PostRequestRestApiAsync<StatusResponse>("statuses/retweet", query);
+            return this.Api.PostRequestRestApiAsync<StatusResponse>("statuses/retweet", query);
         }
 
         public Task<StatusResponse> Unretweet(long statusId)
@@ -66,7 +66,7 @@ namespace SocialApis.Twitter.Apis
 
         public Task<StatusResponse> Unretweet(IQuery query)
         {
-            return this.Tokens.PostRequestRestApiAsync<StatusResponse>("statuses/unretweet", query);
+            return this.Api.PostRequestRestApiAsync<StatusResponse>("statuses/unretweet", query);
         }
 
         public Task<ListedResponse<Status>> Retweets(long statusId)
@@ -81,7 +81,7 @@ namespace SocialApis.Twitter.Apis
 
         public Task<ListedResponse<Status>> Retweets(IQuery query)
         {
-            return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/retweets", query);
+            return this.Api.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/retweets", query);
         }
 
         public Task<CursoredIdsResponse> RetweetersIds(long statusId)
@@ -91,12 +91,12 @@ namespace SocialApis.Twitter.Apis
 
         public Task<CursoredIdsResponse> RetweetersIds(IQuery query)
         {
-            return this.Tokens.GetRequestRestApiAsync<CursoredIdsResponse>("statuses/retweeters/ids", query);
+            return this.Api.GetRequestRestApiAsync<CursoredIdsResponse>("statuses/retweeters/ids", query);
         }
 
         public Task<ListedResponse<Status>> RetweetsOfMe(IQuery query = null)
         {
-            return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/retweets_of_me", query);
+            return this.Api.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/retweets_of_me", query);
         }
 
         #endregion Post, retrieve and engage with Tweets
@@ -105,17 +105,17 @@ namespace SocialApis.Twitter.Apis
 
         public Task<ListedResponse<Status>> HomeTimeline(IQuery query = null)
         {
-            return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/home_timeline", query);
+            return this.Api.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/home_timeline", query);
         }
 
         public Task<ListedResponse<Status>> MentionsTimeline(IQuery query = null)
         {
-            return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/mentions_timeline", query);
+            return this.Api.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/mentions_timeline", query);
         }
 
         public Task<ListedResponse<Status>> UserTimeline(IQuery query = null)
         {
-            return this.Tokens.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/user_timeline", query);
+            return this.Api.GetRequestRestApiAsync<ListedResponse<Status>>("statuses/user_timeline", query);
         }
 
         #endregion Get Tweet timelines

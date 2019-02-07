@@ -8,39 +8,39 @@ namespace SocialApis.Twitter.Apis
 {
     using IQuery = IEnumerable<KeyValuePair<string, object>>;
 
-    public class MutesApi : TokenApiBase
+    public class MutesApi : ApiBase
     {
-        internal MutesApi(Tokens tokens) : base(tokens)
+        internal MutesApi(TwitterApi tokens) : base(tokens)
         {
         }
 
         public Task<CursoredIdsResponse> Ids()
         {
-            return this.Tokens.GetRequestRestApiAsync<CursoredIdsResponse>("mutes/users/ids");
+            return this.Api.GetRequestRestApiAsync<CursoredIdsResponse>("mutes/users/ids");
         }
 
         public Task<CursoredIdsResponse> Ids(int cursor)
         {
             var query = new Query { ["cursor"] = cursor };
-            return this.Tokens.GetRequestRestApiAsync<CursoredIdsResponse>("mutes/users/ids", query);
+            return this.Api.GetRequestRestApiAsync<CursoredIdsResponse>("mutes/users/ids", query);
         }
 
         public Task<CursoredUsersResponse> List()
         {
-            return this.Tokens.GetRequestRestApiAsync<CursoredUsersResponse>("mutes/users/list");
+            return this.Api.GetRequestRestApiAsync<CursoredUsersResponse>("mutes/users/list");
         }
 
         public Task<CursoredUsersResponse> List(int cursor)
         {
             var query = new Query { ["cursor"] = cursor };
-            return this.Tokens.GetRequestRestApiAsync<CursoredUsersResponse>("mutes/users/list", query);
+            return this.Api.GetRequestRestApiAsync<CursoredUsersResponse>("mutes/users/list", query);
         }
 
         public Task<UserResponse> Create(long userId)
         {
             var q = new Query { ["user_id"] = userId };
 
-            return this.Tokens.PostRequestRestApiAsync<UserResponse>("mutes/users/create", q);
+            return this.Api.PostRequestRestApiAsync<UserResponse>("mutes/users/create", q);
         }
 
         public Task<UserResponse> Create(long userId, IQuery query)
@@ -48,14 +48,14 @@ namespace SocialApis.Twitter.Apis
             var q = new Query(query);
             q["user_id"] = userId;
 
-            return this.Tokens.PostRequestRestApiAsync<UserResponse>("mutes/users/create", q);
+            return this.Api.PostRequestRestApiAsync<UserResponse>("mutes/users/create", q);
         }
 
         public Task<UserResponse> Destroy(long userId)
         {
             var q = new Query { ["user_id"] = userId };
 
-            return this.Tokens.PostRequestRestApiAsync<UserResponse>("mutes/users/destroy", q);
+            return this.Api.PostRequestRestApiAsync<UserResponse>("mutes/users/destroy", q);
         }
 
         public Task<UserResponse> Destroy(long userId, IQuery query)
@@ -63,7 +63,7 @@ namespace SocialApis.Twitter.Apis
             var q = new Query(query);
             q["user_id"] = userId;
 
-            return this.Tokens.PostRequestRestApiAsync<UserResponse>("mutes/users/destroy", q);
+            return this.Api.PostRequestRestApiAsync<UserResponse>("mutes/users/destroy", q);
         }
     }
 }
