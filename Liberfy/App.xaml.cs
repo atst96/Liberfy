@@ -15,6 +15,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Navigation;
 using Utf8Json;
 
 namespace Liberfy
@@ -24,10 +25,12 @@ namespace Liberfy
     /// </summary>
     public partial class App : Application
     {
-        internal static readonly object CommonLockObject = new object();
+        internal const bool __DEBUG_LoadTimeline = true;
 
         private static Setting _setting;
         internal static Setting Setting => _setting;
+
+        public static ApplicationStatus Status { get; } = new ApplicationStatus();
 
         internal static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
 
@@ -43,28 +46,19 @@ namespace Liberfy
         {
             base.OnStartup(e);
 
-            SystemEvents.SessionEnding += SystemEvents_SessionEnding;
+            SystemEvents.SessionEnding += OnSystemSessionEnding;
 
             InitializeProgram();
+
+            var loader = new AccountLoader();
+            loader.Run(new List<IAccount>(AccountManager.Accounts));
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
 
-            SystemEvents.SessionEnding -= SystemEvents_SessionEnding;
-        }
-
-        private void SystemEvents_SessionEnding(object sender, SessionEndingEventArgs e)
-        {
-            if (e.Reason == SessionEndReasons.Logoff)
-            {
-                e.Cancel = Setting.SystemCancelSignout;
-            }
-            else if (e.Reason == SessionEndReasons.SystemShutdown)
-            {
-                e.Cancel = Setting.SystemCancelShutdown;
-            }
+            SystemEvents.SessionEnding -= OnSystemSessionEnding;
         }
 
         private static void InitializeProgram()
@@ -122,6 +116,35 @@ namespace Liberfy
             }
 
             TaskbarIcon = GetResource<TaskbarIcon>("taskbarIcon");
+
+            if (AccountManager.Count == 0 && !RequestInitialUserSettings())
+            {
+                App.Shutdown(false);
+                return;
+            }
+        }
+
+        private static bool RequestInitialUserSettings()
+        {
+            var sw = new SettingWindow();
+
+            sw.MoveTabPage(1);
+
+            sw.ShowDialog();
+            
+            return AccountManager.Count > 0;
+        }
+
+        private void OnSystemSessionEnding(object sender, SessionEndingEventArgs e)
+        {
+            if (e.Reason == SessionEndReasons.Logoff)
+            {
+                e.Cancel = Setting.SystemCancelSignout;
+            }
+            else if (e.Reason == SessionEndReasons.SystemShutdown)
+            {
+                e.Cancel = Setting.SystemCancelShutdown;
+            }
         }
 
         private static bool TryParseSettingFileOrDisplayError<T>(string filename, ref IEnumerable<T> setting)

@@ -10,7 +10,6 @@
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
     xmlns:vm="clr-namespace:Liberfy.ViewModel"
     xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:app="clr-namespace:Liberfy"
     StartupUri="View/MainWindow.xaml"
     ShutdownMode="OnExplicitShutdown">

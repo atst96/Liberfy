@@ -55,6 +55,6 @@ namespace Liberfy
 		};
 
 		public readonly static string[] UploadableMediaExtensions
-			= ImageExtensions.Union(VideoExtensions).ToArray();
+			= ImageExtensions.Concat(VideoExtensions).ToArray();
 	}
 }
