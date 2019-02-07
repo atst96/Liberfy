@@ -25,39 +25,39 @@ namespace Liberfy
     {
         public ContentWindow()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
-        private void setDataContext(ContentWindowViewModel viewModel)
+        private void SetDataContext(ContentWindowViewModel viewModel)
         {
-            DataContext = new ViewModelConnector(viewModel).
-                ProvideValue(new DummyServiceProvider(this, DataContextProperty));
+            this.DataContext = new ViewModelConnector(viewModel)
+                .ProvideValue(new DummyServiceProvider(this, DataContextProperty));
         }
 
         internal ContentWindow(ContentWindowViewModel dataContext)
         {
-            InitializeComponent();
-            setDataContext(dataContext);
+            this.InitializeComponent();
+            this.SetDataContext(dataContext);
         }
 
         internal ContentWindow(ContentWindowViewModel dataContext, DataTemplate dataTemplate)
         {
-            InitializeComponent();
-            setDataContext(dataContext);
-            ContentTemplate = dataTemplate;
+            this.InitializeComponent();
+            this.SetDataContext(dataContext);
+            this.ContentTemplate = dataTemplate;
         }
 
         internal ContentWindow(ContentWindowViewModel dataContext, DataTemplateSelector templateSelector)
         {
-            InitializeComponent();
-            setDataContext(dataContext);
-            ContentTemplateSelector = templateSelector;
+            this.InitializeComponent();
+            this.SetDataContext(dataContext);
+            this.ContentTemplateSelector = templateSelector;
         }
 
         internal ContentWindow(ContentWindowViewModel dataContext, ViewOption option)
         {
             InitializeComponent();
-            setDataContext(dataContext);
+            SetDataContext(dataContext);
 
             if (option.Width.HasValue)
                 Width = option.Width.Value;
@@ -96,12 +96,12 @@ namespace Liberfy
         internal ContentWindow(ContentWindowViewModel dataContext, ViewOption option, DataTemplateSelector templateSelector)
             : this(dataContext, option)
         {
-            ContentTemplateSelector = templateSelector;
+            this.ContentTemplateSelector = templateSelector;
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            e.Cancel = !(GetValue(DataContextProperty) as ContentWindowViewModel)?.CanClose() ?? false;
+            e.Cancel = !(this.GetValue(FrameworkElement.DataContextProperty) as ContentWindowViewModel)?.CanClose() ?? false;
 
             base.OnClosing(e);
         }
@@ -113,13 +113,13 @@ namespace Liberfy
 
             public DummyServiceProvider(DependencyObject targetObj, DependencyProperty targetProp)
             {
-                _targetObject = targetObj;
-                _targetProperty = targetProp;
+                this._targetObject = targetObj;
+                this._targetProperty = targetProp;
             }
 
-            object IProvideValueTarget.TargetObject => _targetObject;
+            object IProvideValueTarget.TargetObject => this._targetObject;
 
-            object IProvideValueTarget.TargetProperty => _targetProperty;
+            object IProvideValueTarget.TargetProperty => this._targetProperty;
 
             public object GetService(Type serviceType)
             {

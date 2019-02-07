@@ -13,7 +13,7 @@ using SocialApis;
 
 namespace Liberfy.ViewModel
 {
-	internal class UploadMedia : NotificationObject, IProgress<UploadProgressInfo>, IDisposable
+	internal class UploadMedia : NotificationObject, IProgress<UploadProgress>, IDisposable
 	{
 		private UploadMedia(BitmapSource bmpSource, MediaType mediaType, string ext)
 		{
@@ -152,7 +152,7 @@ namespace Liberfy.ViewModel
 			SetProperty(ref this._isTweetPosting, value, nameof(IsTweetPosting));
 		}
 
-		public async Task Upload(Tokens tokens)
+		public async Task Upload(TwitterApi tokens)
 		{
 			bool isVideoUpload = (MediaType & MediaType.Video) != 0;
 
@@ -199,7 +199,7 @@ namespace Liberfy.ViewModel
 
 		public bool IsAvailableUploadId() => UploadId.HasValue && UploadId > 0;
 
-		public void Report(UploadProgressInfo value)
+		public void Report(UploadProgress value)
 		{
 			this.UploadProgress = value.UploadPercentage;
 		}
