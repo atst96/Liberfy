@@ -163,7 +163,6 @@
     <Compile Include="Commands\AccountCommands.cs" />
     <Compile Include="Commands\AppCommands.cs" />
     <Compile Include="Commands\DisplayUserDetailsCommand.cs" />
-    <Compile Include="Components\CommandChain.cs" />
     <Compile Include="Components\SequentialSurrogateTextReader.cs" />
     <Compile Include="Controls\GeometryIcon.cs" />
     <Compile Include="Controls\TimelineViewItem.cs" />

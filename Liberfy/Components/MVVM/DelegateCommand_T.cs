@@ -1,5 +1,4 @@
-﻿using Liberfy.Component;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -70,11 +69,5 @@ namespace Liberfy
         }
 
         private static readonly Predicate<T> DefaultCanExecute = (_) => true;
-
-        [Obsolete]
-        public static CommandChain<T> When(Predicate<T> predicate) => new CommandChain<T>(predicate);
-
-        [Obsolete]
-        public static DelegateCommand<T> Execute(Action<T> action) => new DelegateCommand<T>(action);
     }
 }

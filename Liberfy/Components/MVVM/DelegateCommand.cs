@@ -1,5 +1,4 @@
-﻿using Liberfy.Component;
-using System;
+﻿using System;
 
 namespace Liberfy
 {
@@ -65,11 +64,5 @@ namespace Liberfy
         }
 
         private static readonly Func<bool> DefaultCanExecute = () => true;
-
-        [Obsolete]
-        public static CommandChain When(Func<bool> action) => new CommandChain(action);
-
-        [Obsolete]
-        public static DelegateCommand Execute(Action action) => new DelegateCommand(action);
     }
 }
