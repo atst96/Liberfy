@@ -25,17 +25,17 @@ namespace Liberfy
         {
             InitializeComponent();
 
-            switch (RenderCapability.Tier >> 16)
-            {
-                case 0:
-                    Title += " [SWレンダリング]"; break;
+            //switch (RenderCapability.Tier >> 16)
+            //{
+            //    case 0:
+            //        Title += " [SWレンダリング]"; break;
 
-                case 1:
-                    Title += " [HWレンダリング(制限)]"; break;
+            //    case 1:
+            //        Title += " [HWレンダリング(制限)]"; break;
 
-                case 2:
-                    Title += " [HWレンダリング]"; break;
-            }
+            //    case 2:
+            //        Title += " [HWレンダリング]"; break;
+            //}
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -75,7 +75,11 @@ namespace Liberfy
             var status = App.Setting.Window.Main;
 
             this.Loaded -= this.MainWindowLoadedSetState;
-            this.WindowState = WindowStatus.ConvertWindowState(status.State.Value);
+
+            if (status.State.HasValue)
+            {
+                this.WindowState = WindowStatus.ConvertWindowState(status.State.Value);
+            }
         }
 
         protected override void OnClosing(CancelEventArgs e)

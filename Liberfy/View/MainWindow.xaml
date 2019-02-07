@@ -1,16 +1,16 @@
 ﻿<Window
-    x:Class="Liberfy.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Liberfy.ViewModel"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:local="clr-namespace:Liberfy"
-    mc:Ignorable="d" FontFamily="Meiryo"
-    Title="MainWindow" Height="350" Width="525"
     xmlns:app="clr-namespace:Liberfy"
-    DataContext="{local:ViewModelConnector {x:Type vm:MainWindow}, IsMainView=True}"
+    x:Class="Liberfy.MainWindow"
+    mc:Ignorable="d" FontFamily="Meiryo"
+    UseLayoutRounding="True"
+    Title="Liberfy" Height="500" Width="700"
+    DataContext="{app:ViewModelConnector {x:Type vm:MainWindow}, IsMainView=True}"
     d:DataContext="{d:DesignInstance {x:Type vm:MainWindow}, IsDesignTimeCreatable=True}">
     <Window.Resources>
         <app:TimelineItemTemplateSelector x:Key="TimelineItemTemplateSelector" />
@@ -70,7 +70,7 @@
                                 Margin="0 0 6 0"
                                 Width="28" Height="28"
                                 RenderOptions.BitmapScalingMode="HighQuality"
-                                Source="{Binding Account.Info.ProfileImageUrl, Mode=OneWay, IsAsync=True}" />
+                                Source="{Binding Account.Info.ProfileImageUrl, IsAsync=True, Mode=OneWay}" />
 
                             <ToggleButton
                                 x:Name="paneToggle"
@@ -92,21 +92,18 @@
 
                                     <Button
                                         Grid.Column="0"
-                                        FontSize="12"
                                         Content="＜"
                                         Command="{Binding MoveLeftCommand, Mode=OneTime}"
                                         CommandParameter="{Binding Mode=OneTime}" />
-                                    
+
                                     <Button
                                         Grid.Column="1"
-                                        FontSize="12"
                                         Content="＞"
                                         Command="{Binding MoveRightCommand, Mode=OneTime}"
                                         CommandParameter="{Binding Mode=OneTime}" />
-                                    
+
                                     <Button
                                         Grid.Column="3"
-                                        FontSize="12"
                                         Content="✕"
                                         Command="{Binding RemoveCommand, Mode=OneTime}"
                                         CommandParameter="{Binding Mode=OneTime}" />
@@ -149,7 +146,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        
+
         <Border
             Grid.ColumnSpan="2"
             Height="30" ToolBarTray.IsLocked="True"
@@ -161,20 +158,106 @@
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
 
-                <ComboBox
-                    Width="200"
-                    Padding="0"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
-                    ItemsSource="{Binding Accounts, Mode=OneTime}"
-                    ItemTemplate="{StaticResource AccountItemTemplate}" />
+                <local:DropDownButton
+                    Margin="2" Padding="4 2"
+                    VerticalAlignment="Stretch"
+                    PopupOffset="-5 0"
+                    Style="{DynamicResource {x:Static ToolBar.ToggleButtonStyleKey}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <local:GeometryIcon
+                            Data="{StaticResource FontAwesome.Icon.UserCircle}"/>
+
+                        <TextBlock
+                            Margin="4 0 0 0"
+                            Grid.Column="1"
+                            Text="アカウント"
+                            VerticalAlignment="Center" />
+
+                        <local:GeometryIcon
+                            Grid.Column="2"
+                            Margin="4 0 2 0" Width="10"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Data="{StaticResource FontAwesome.Icon.ChevronDown}" />
+                    </Grid>
+
+                    <local:DropDownButton.PopupContent>
+                        <local:PopupDecorator Width="300">
+                            <ScrollViewer
+                                HorizontalScrollBarVisibility="Hidden"
+                                VerticalScrollBarVisibility="Auto">
+                                <StackPanel
+                                    Orientation="Vertical"
+                                    KeyboardNavigation.TabNavigation="Local">
+                                    <ItemsControl
+                                        AlternationCount="2"
+                                        ItemsSource="{Binding Accounts, Mode=OneTime}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type app:AccountBase}">
+                                                <Border
+                                                    x:Name="border"
+                                                    Padding="6"
+                                                    Background="Transparent">
+                                                    <Grid Grid.IsSharedSizeScope="True">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition SharedSizeGroup="account" />
+                                                            <RowDefinition />
+                                                            <RowDefinition SharedSizeGroup="buttons" />
+                                                        </Grid.RowDefinitions>
+
+                                                        <ContentPresenter
+                                                            VerticalAlignment="Center"
+                                                            HorizontalAlignment="Left"
+                                                            ContentTemplate="{StaticResource AccountItemTemplate}"/>
+
+                                                        <StackPanel
+                                                            Grid.Column="2"
+                                                            Orientation="Horizontal"
+                                                            VerticalAlignment="Center"
+                                                            HorizontalAlignment="Right">
+                                                            <Button
+                                                                Padding="12 8"
+                                                                Command="{Binding DataContext.OpenTweetWindowCommand, RelativeSource={RelativeSource AncestorType={x:Type app:MainWindow}}, Mode=OneTime}"
+                                                                CommandParameter="{Binding Mode=OneTime}">
+                                                                <app:GeometryIcon Data="{StaticResource FontAwesome.Icon.Edit}" />
+                                                            </Button>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+
+                                                <DataTemplate.Triggers>
+                                                    <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                                        <Setter TargetName="border" Property="Background" Value="#99EEEEEE" />
+                                                    </Trigger>
+                                                </DataTemplate.Triggers>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <Separator />
+                                    <MenuItem Header="アカウント管理(_M)" />
+                                </StackPanel>
+                            </ScrollViewer>
+                        </local:PopupDecorator>
+                    </local:DropDownButton.PopupContent>
+                </local:DropDownButton>
 
                 <ToolBar Grid.Column="2" ToolBarTray.IsLocked="True" BorderThickness="0">
+
+                    <local:BusyIndicator
+                        Margin="6 0"
+                        Width="18" Height="18"
+                        IsBusy="{Binding IsAccountLoaded, Source={x:Static local:App.Status}, Converter={StaticResource BoolInverter}}"
+                        local:ElementBehavior.Visible="{Binding IsAccountLoaded, Source={x:Static local:App.Status}, Converter={StaticResource BoolInverter}}" />
+
                     <Button
                         ToolTip="ツイートする" Padding="8 0"
                         VerticalAlignment="Stretch"
-                        Command="{Binding TweetCommand, Mode=OneTime}">
+                        Command="{Binding OpenTweetWindowCommand, Mode=OneTime}">
                         <app:GeometryIcon
                             Width="18" Height="18"
                             Data="{StaticResource FontAwesome.Icon.Edit}" />

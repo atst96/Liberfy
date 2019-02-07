@@ -15,24 +15,35 @@ using System.Windows.Shapes;
 
 namespace Liberfy.View
 {
-	/// <summary>
-	/// TweetWindow.xaml の相互作用ロジック
-	/// </summary>
-	public partial class TweetWindow : Window
-	{
-		public TweetWindow()
-		{
-			InitializeComponent();
-		}
+    /// <summary>
+    /// TweetWindow.xaml の相互作用ロジック
+    /// </summary>
+    public partial class TweetWindow : Window
+    {
+        public TweetWindow()
+        {
+            InitializeComponent();
+        }
 
-		public TweetWindow(object parameter) : this()
-		{
-			var viewModel = DataContext as ViewModel.TweetWindow;
+        internal TweetWindow(IAccount account)
+            : this()
+        {
+            if (account != null)
+            {
+                var viewModel = DataContext as ViewModel.TweetWindow;
 
-			if (parameter is AccountBase account)
-			{
-				viewModel?.SetPostAccount(account);
-			}
-		}
-	}
+                viewModel?.SetPostAccount(account);
+            }
+        }
+
+        public TweetWindow(object parameter) : this( )
+        {
+            var viewModel = DataContext as ViewModel.TweetWindow;
+
+            if (parameter is IAccount account)
+            {
+                viewModel?.SetPostAccount(account);
+            }
+        }
+    }
 }

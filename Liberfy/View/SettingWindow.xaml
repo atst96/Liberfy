@@ -12,15 +12,14 @@
     xmlns:b="clr-namespace:Liberfy.Behaviors"
     xmlns:conv="clr-namespace:Liberfy.Converter"
     xmlns:vm="clr-namespace:Liberfy.ViewModel"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     mc:Ignorable="d"
     ResizeMode="NoResize"
     UseLayoutRounding="True"
     TextOptions.TextFormattingMode="Display"
     Title="設定" Height="540" Width="760"
     FontFamily="{StaticResource UIFont}"
-    DataContext="{local:ViewModelConnector {x:Type vm:SettingWindow}}"
-    d:DataContext="{d:DesignInstance {x:Type vm:SettingWindow}, IsDesignTimeCreatable=True}">
+    DataContext="{local:ViewModelConnector {x:Type vm:SettingWindowViewModel}}"
+    d:DataContext="{d:DesignInstance {x:Type vm:SettingWindowViewModel}, IsDesignTimeCreatable=True}">
     <Window.Resources>
         <sys:Double x:Key="tabItemWidth">120</sys:Double>
         <conv:EnumBoolConverter x:Key="EnumBoolConverter" />
@@ -202,7 +201,8 @@
                     <TabItem Header="全般">
                         <StackPanel Style="{StaticResource ElementsContainerStyle}">
                             <CheckBox Content="起動時にアップデートを確認する"
-                                      IsChecked="{Binding Setting.CheckUpdate}"/>
+                                      IsChecked="{Binding Setting.CheckUpdate}"
+                                      IsEnabled="False" />
 
                             <CheckBox Content="ログオン時に自動的に起動する"
                                       IsChecked="{Binding AutoStartup}"/>
@@ -351,7 +351,7 @@
                     </TabItem>
                     <TabItem Header="アカウントの初期設定">
                         <DockPanel>
-                            <UniformGrid
+                            <!--<UniformGrid
                                 Columns="2" Margin="4"
                                 DockPanel.Dock="Top"
                                 Style="{StaticResource ElementsContainerStyle}">
@@ -368,7 +368,7 @@
                             <Separator
                                 DockPanel.Dock="Top"
                                 Background="#ccc"
-                                Margin="0"/>
+                                Margin="0"/>-->
 
                             <ToolBar
                                 DockPanel.Dock="Top"
@@ -377,10 +377,22 @@
                                 FontFamily="{StaticResource UIFont}"
                                 FontSize="{StaticResource UIFontSize}">
 
-                                <Button Command="{Binding ColumnAddCommand, Mode=OneTime}">
-                                    <app:GeometryIcon
-                                        Data="{StaticResource FontAwesome.Icon.Pluse}" />
-                                </Button>
+                                <app:DropDownMenuButton
+                                    Style="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}"
+                                    VerticalAlignment="Stretch">
+                                    <app:GeometryIcon Data="{StaticResource FontAwesome.Icon.Pluse}" />
+                                    <app:DropDownMenuButton.DropDownMenu>
+                                        <ContextMenu ItemsSource="{x:Static app:ColumnBase.ColumnTypes}">
+                                            <ContextMenu.ItemContainerStyle>
+                                                <Style TargetType="{x:Type MenuItem}">
+                                                    <Setter Property="Header" Value="{Binding Value}" />
+                                                    <Setter Property="CommandParameter" Value="{Binding Key}" />
+                                                    <Setter Property="Command" Value="{Binding DataContext.ColumnAddCommand, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ToolBar}}" />
+                                                </Style>
+                                            </ContextMenu.ItemContainerStyle>
+                                        </ContextMenu>
+                                    </app:DropDownMenuButton.DropDownMenu>
+                                </app:DropDownMenuButton>
 
                                 <Button
                                     FontWeight="Normal"
@@ -453,7 +465,7 @@
                 </TabControl>
             </TabItem>
 
-            <TabItem Header="通知">
+            <TabItem Header="通知" IsEnabled="False">
                 <TabControl>
                     <TabItem Header="全般">
                         <StackPanel Style="{StaticResource ElementsContainerStyle}">
@@ -1508,7 +1520,7 @@
                 </StackPanel>
             </TabItem>
 
-            <TabItem Header="ミュート">
+            <TabItem Header="ミュート" IsEnabled="False">
                 <TabControl>
                     <TabItem Header="ミュート項目一覧">
                         <DockPanel>

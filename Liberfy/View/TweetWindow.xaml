@@ -5,11 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:Liberfy.View"
-    xmlns:etk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:app="clr-namespace:Liberfy"
     xmlns:vm="clr-namespace:Liberfy.ViewModel"
     xmlns:b="clr-namespace:Liberfy.Behaviors"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     mc:Ignorable="d" AllowDrop="True"
     Title="ツイート" Height="329" Width="453"
     FontFamily="Meiryo"
@@ -91,11 +89,11 @@
                         AllowDrop="True"
                         DockPanel.Dock="Right"
                         VerticalAlignment="Center"
-                        Content="{Binding RemainingTweetLength, Mode=OneWay}">
+                        Content="{Binding TextLength, Mode=OneWay}">
                         <Label.Style>
                             <Style TargetType="{x:Type Label}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CanUpdateContent, Mode=OneWay}" Value="false">
+                                    <DataTrigger Binding="{Binding CanPostContent, Mode=OneWay}" Value="false">
                                         <Setter Property="Foreground" Value="Red" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -104,28 +102,47 @@
                     </Label>
 
                     <Button
-                        AllowDrop="True"
                         VerticalAlignment="Stretch"
                         Padding="{StaticResource ToolBarItemPadding}"
                         Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                         Command="{Binding AddImageCommand, Mode=OneTime}">
                         <app:GeometryIcon
-                            Width="23" Height="20"
+                            Width="18" Height="18"
                             Data="{StaticResource FontAwesome.Icon.Images}" />
                     </Button>
 
-                    <Button
+                    <app:DropDownButton
                         VerticalAlignment="Stretch"
-                        Command="{Binding ShowNowPlayingDialogCommand, Mode=OneTime}"
-                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                        PopupOffset="-5, 0"
+                        Style="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}">
                         <app:GeometryIcon
                             Margin="4 0"
-                            Width="20" Height="20"
+                            Width="18" Height="18"
                             Data="{StaticResource FontAwesome.Icon.Music}" />
-                    </Button>
+                        <app:DropDownButton.PopupContent>
+                            <app:PopupDecorator>
+                                <StackPanel>
+                                    <MenuItem
+                                        Header="Media Player"
+                                        Command="{Binding NowPlayingCommand, Mode=OneTime}"
+                                        CommandParameter="wmplayer" />
+                                    <MenuItem
+                                        Header="iTunes"
+                                        Command="{Binding NowPlayingCommand, Mode=OneTime}"
+                                        CommandParameter="itunes" />
+                                    <MenuItem
+                                        Header="foobar2000"
+                                        Command="{Binding NowPlayingCommand, Mode=OneTime}"
+                                        CommandParameter="foobar2000" />
+
+                                    <Separator />
+                                    <MenuItem Header="NowPlayingの設定(_D)" />
+                                </StackPanel>
+                            </app:PopupDecorator>
+                        </app:DropDownButton.PopupContent>
+                    </app:DropDownButton>
 
                     <Button
-                        AllowDrop="True"
                         DockPanel.Dock="Right"
                         Content="ツイート"
                         Padding="{StaticResource ToolBarItemPadding}"
@@ -133,32 +150,48 @@
                         Command="{Binding PostCommand, Mode=OneTime}" />
                 </StackPanel>
 
-                <Button
-                    Margin="2" Padding="2 0"
-                    Command="{Binding SelectAccountCommand, Mode=OneTime}"
-                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <app:DropDownButton
+                    Margin="2" Padding="2, 0"
+                    PopupOffset="-5, 0"
+                    Style="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}">
                     <StackPanel
-                        Margin="8 0"
+                        Margin="2, 0"
                         Orientation="Horizontal"
                         DataContext="{Binding SelectedAccount, Mode=OneWay}">
                         <Image
-                            Width="28" Height="28"
-                            Source="{Binding Info.ProfileImageUrl, IsAsync=True, Mode=OneWay}" />
+                            Width="32" Height="32"
+                            Source="{Binding Info.ProfileImageUrl, IsAsync=True, Mode=OneWay}"
+                            RenderOptions.BitmapScalingMode="HighQuality" />
 
                         <app:GeometryIcon
-                            Margin="2 2 0 2"
+                            Margin="2, 2, 0, 2"
                             Width="16" Height="16"
                             app:ElementBehavior.Visible="{Binding Info.IsProtected, Mode=OneWay}"
                             Data="{StaticResource FontAwesome.Icon.Lock}" />
 
                         <TextBlock
-                            Margin="4 2 0 2"
+                            Margin="4, 2, 0, 2"
                             TextWrapping="NoWrap"
                             VerticalAlignment="Center"
                             TextTrimming="CharacterEllipsis"
                             Text="{Binding Info.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+
+                        <app:GeometryIcon
+                            Grid.Column="2"
+                            Margin="4 0 2 0" Width="10"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Data="{StaticResource FontAwesome.Icon.ChevronDown}" />
+
                     </StackPanel>
-                </Button>
+                    <app:DropDownButton.PopupContent>
+                        <app:PopupDecorator Width="240">
+                            <ListBox
+                                SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
+                                ItemsSource="{Binding Accounts, Mode=OneTime}"
+                                ItemTemplate="{StaticResource AccountItemTemplate}" />
+                        </app:PopupDecorator>
+                    </app:DropDownButton.PopupContent>
+                </app:DropDownButton>
 
                 <Border Margin="2" />
             </DockPanel>
@@ -186,7 +219,7 @@
                     HorizontalAlignment="Stretch"
                     VirtualizingPanel.ScrollUnit="Pixel"
                     ScrollViewer.CanContentScroll="False"
-                    ItemsSource="{Binding Media, Mode=OneTime}">
+                    ItemsSource="{Binding Media, Mode=OneWay}">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal" />
@@ -240,8 +273,8 @@
                                     Content="削除"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Bottom"
+                                    CommandParameter="{Binding Mode=OneTime}"
                                     Command="{Binding DataContext.RemoveMediaCommand, Mode=OneTime, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
-                                    CommandParameter="{Binding}"
                                     Style="{StaticResource MediaFunctionButtonStyle}"/>
 
                                 <Border
