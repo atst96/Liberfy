@@ -92,25 +92,22 @@ namespace Liberfy
 
             this.RaiseCollectionChanged(
                 new NotifyCollectionChangedEventArgs(
-                    NotifyCollectionChangedAction.Add, item, Count - 1));
+                    NotifyCollectionChangedAction.Add, item));
 
             this.ApplyItemsCount();
         }
 
         public void AddRange(IEnumerable<T> collection)
         {
-            this._list.AddRange(collection);
+            var items = NormalizeCollection(collection);
 
-            int count = this.Count;
+            this._list.AddRange(items);
 
             this.RaiseCollectionChanged(
                 new NotifyCollectionChangedEventArgs(
-                    NotifyCollectionChangedAction.Add, collection, count));
+                    NotifyCollectionChangedAction.Add, (IList)items));
 
             this.ApplyItemsCount();
-
-            //foreach (var item in collection)
-            //    this.Add(item);
         }
 
         public void Insert(int index, T item)
@@ -126,23 +123,18 @@ namespace Liberfy
 
         public void InsertRange(int index, IEnumerable<T> collection)
         {
-            this._list.InsertRange(index, collection);
+            var items = NormalizeCollection(collection);
+
+            this._list.InsertRange(index, items);
 
             this.RaiseCollectionChanged(
                 new NotifyCollectionChangedEventArgs(
-                    NotifyCollectionChangedAction.Add, collection, index));
+                    NotifyCollectionChangedAction.Add, (IList)items, index));
 
             this.ApplyItemsCount();
-
-            //int i = index;
-            //foreach (var item in collection)
-            //{
-            //    this.Insert(i, item);
-            //    i++;
-            //}
         }
 
-        public void DeleteRange(int index, int count)
+        public void RemoveRange(int index, int count)
         {
             var items = this._list.GetRange(index, count);
 
@@ -298,6 +290,11 @@ namespace Liberfy
             this.HasItems = this.Count > 0;
 
             this.OnItmesCountChanged();
+        }
+
+        private static List<T> NormalizeCollection(IEnumerable<T> collection)
+        {
+            return collection.ToList();
         }
 
         public void Reset() => this.Clear();
