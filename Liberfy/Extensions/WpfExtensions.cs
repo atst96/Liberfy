@@ -9,64 +9,54 @@ using System.Windows.Media;
 
 namespace Liberfy
 {
-	internal static class WpfExtensions
-	{
-		public static T FindAncestor<T>(this DependencyObject obj) where T : DependencyObject
-		{
-			var parentVisual = GetParentVisual(obj);
+    internal static class WpfExtensions
+    {
+        public static T FindAncestor<T>(this DependencyObject obj)
+            where T : DependencyObject
+        {
+            var parent = VisualTreeHelper.GetParent( GetParentVisual(obj));
 
-			var parent = VisualTreeHelper.GetParent(GetParentVisual(obj));
+            return parent == null
+                ? default
+                : parent as T ?? parent.FindAncestor<T>();
+        }
 
-			if (parent != null)
-			{
-				return parent as T ?? FindAncestor<T>(parent);
-			}
+        public static T FindVisualChild<T>(this DependencyObject obj)
+            where T : DependencyObject
+        {
+            if (obj != null)
+            {
+                int childrenCount = VisualTreeHelper.GetChildrenCount(obj);
 
-			return default(T);
-		}
+                for (int i = 0; i < childrenCount; ++i)
+                {
+                    var child = VisualTreeHelper.GetChild(obj, i);
+                    if (child is T t_Cihld)
+                    {
+                        return t_Cihld;
+                    }
 
-		public static T FindVisualChild<T>(this DependencyObject obj) where T : DependencyObject
-		{
-			if (obj != null)
-			{
-				int childrenCount = VisualTreeHelper.GetChildrenCount(obj);
-				for (int i = 0; i < childrenCount; i++)
-				{
-					var childVisual = VisualTreeHelper.GetChild(obj, i);
-					if (childVisual is T castedChild)
-					{
-						return castedChild;
-					}
+                    var grandchild = child.FindVisualChild<T>();
+                    if (grandchild != null)
+                    {
+                        return grandchild;
+                    }
+                }
+            }
 
-					var foundChild = FindVisualChild<T>(childVisual);
-					if (foundChild != null)
-					{
-						return foundChild;
-					}
-				}
-			}
+            return default;
+        }
 
-			return default(T);
-		}
+        public static DependencyObject GetParentVisual(this DependencyObject obj)
+        {
+            if (obj == null) return null;
+            if (obj is Visual) return obj;
 
-		public static DependencyObject GetParentVisual(this DependencyObject obj)
-		{
-			if (obj == null) return null;
-			if (obj is Visual) return obj;
+            var parent = LogicalTreeHelper.GetParent(obj);
 
-			var parentVisual = LogicalTreeHelper.GetParent(obj);
-
-			if (parentVisual != null)
-			{
-				return parentVisual as Visual ?? GetParentVisual(parentVisual);
-			}
-
-			return default(DependencyObject);
-		}
-
-		public static T FindFromTemplate<T>(this Control element, string name) where T : FrameworkElement
-		{
-			return element?.Template.FindName(name, element) as T;
-		}
-	}
+            return parent == null
+                ? default
+                : parent as Visual ?? parent.GetParentVisual();
+        }
+    }
 }

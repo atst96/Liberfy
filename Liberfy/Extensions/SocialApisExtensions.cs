@@ -28,7 +28,7 @@ namespace Liberfy
                 entities.Urls,
                 entities.UserMentions,
                 entities.Media
-            }.Merge();
+            }.Combine();
         }
 
         public static (string sourceUrl, string sourceName) ParseSource(this TwitterApi.Status status)
@@ -44,24 +44,16 @@ namespace Liberfy
         public static IEnumerable<TwitterApi.EntityBase> EnumerateEntity(this TwitterApi.Entities entities)
         {
             if (entities == null)
-                yield break;
+                return Enumerable.Empty<TwitterApi.EntityBase>();
 
-            var entitiesList = new TwitterApi.EntityBase[][]
+            return new TwitterApi.EntityBase[][]
             {
                 entities.Hashtags,
                 entities.Symbols,
                 entities.Urls,
                 entities.UserMentions,
                 entities.Media
-            };
-
-            foreach (var _entities in entitiesList.Where(es => es?.Length > 0))
-            {
-                foreach (var entity in _entities)
-                {
-                    yield return entity;
-                }
-            }
+            }.Combine();
         }
 
         public static IEnumerable<TwitterApi.EntityBase> SortByStartIndex(this IEnumerable<TwitterApi.EntityBase> collection)

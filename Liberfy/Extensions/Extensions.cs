@@ -11,12 +11,7 @@ namespace Liberfy
     {
         public static bool Contains(this string value, string find, StringComparison comparison)
         {
-            return value?.IndexOf(find, comparison) >= 0;
-        }
-
-        public static T CastOrDefault<T>(this object obj)
-        {
-            return obj is T tObj ? tObj : default(T);
+            return value.IndexOf(find, comparison) >= 0;
         }
 
         public static void DisposeAll<T>(this IEnumerable<T> collection) where T : IDisposable
@@ -27,41 +22,76 @@ namespace Liberfy
             }
         }
 
-        [Obsolete]
-        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+        public static IEnumerable<T> Combine<T>(this IEnumerable<IEnumerable<T>> collection)
+            where T : class
         {
-            if (action == null)
-                return;
+            var result = Enumerable.Empty<T>();
 
-            foreach (var item in collection)
+            foreach (var items in collection.Where(item => item != null))
             {
-                action(item);
+                result = result.Concat(items);
             }
+
+            return result.Where(item => item != null);
         }
 
-        public static IEnumerable<T> Distinct<T>(this IEnumerable<T> collection)
+        public static IEnumerable<T> Union<T>(this IEnumerable<IEnumerable<T>> collection)
+            where T : class
         {
-            var list = new List<T>(collection.Count());
+            var result = Enumerable.Empty<T>();
 
-            var compare = EqualityComparer<T>.Default;
-
-            foreach (var item in collection)
+            foreach (var items in collection.Where(item => item != null))
             {
-                if (!list.Contains(item, compare))
+                result = result.Union(items);
+            }
+
+            return result.Where(item => item != null);
+        }
+
+        public static string Replace(this string content, string oldValue, string newValue, StringComparison comparisonType)
+        {
+            return content.Replace(oldValue, newValue, comparisonType, 30);
+        }
+
+        public static string Replace(this string content, string oldValue, string newValue, StringComparison comparisonType, int bufferMargin)
+        {
+            bool foundValues = false;
+            int foundIndex = 0;
+            int previousIndex = 0;
+
+            StringBuilder strBuilder = default;
+
+            while ((foundIndex = content.IndexOf(oldValue, previousIndex, comparisonType)) >= 0)
+            {
+                if (!foundValues)
                 {
-                    list.Add(item);
+                    foundValues = true;
+                    strBuilder = new StringBuilder(content.Length + (bufferMargin * (Math.Max(0, newValue.Length - oldValue.Length))));
                 }
+
+                if (foundIndex != previousIndex)
+                {
+                    strBuilder.Append(content, previousIndex, foundIndex - previousIndex);
+                }
+
+                strBuilder.Append(newValue);
+
+                previousIndex = foundIndex + oldValue.Length;
             }
 
-            return list;
-        }
+            if (!foundValues)
+            {
+                return content;
+            }
+            else
+            {
+                if (previousIndex < (content.Length - 1))
+                {
+                    strBuilder.Append(content, previousIndex, content.Length - previousIndex);
+                }
 
-        public static IEnumerable<T> Merge<T>(this IEnumerable<IEnumerable<T>> collection)
-            where T: class
-        {
-            foreach (var items in collection.Where(i => i != null))
-                foreach (var item in items.Where(i => i != null))
-                    yield return item;
+                return strBuilder.ToString();
+            }
         }
     }
 }
