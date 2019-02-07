@@ -197,33 +197,6 @@ namespace Liberfy
             return result == MsgBoxResult.Yes;
         }
 
-        public SelectDialogOption<T> SelectDialog<T>(IEnumerable<T> items)
-        {
-            return this.SelectDialog(new SelectDialogOption<T>() { Items = items, });
-        }
-
-        public SelectDialogOption<T> SelectDialog<T>(IEnumerable<T> items, string instruction)
-        {
-            return this.SelectDialog(new SelectDialogOption<T>()
-            {
-                Instruction = instruction,
-                Items = items,
-            });
-        }
-
-        public SelectDialogOption<T> SelectDialog<T>(SelectDialogOption<T> option)
-        {
-            var v = new View.SelectItemWindow()
-            {
-                DataContext = option,
-                Owner = _view,
-            };
-
-            option.IsSelected = v.ShowDialog() ?? false;
-
-            return option;
-        }
-
         public void Dispose()
         {
             if (mainView == _view)

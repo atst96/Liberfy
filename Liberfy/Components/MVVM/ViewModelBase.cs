@@ -12,12 +12,10 @@ namespace Liberfy.ViewModel
     {
         public ViewModelBase()
         {
-            _dialogService = new DialogService(this);
-            _registeredCommands = new Collection<ICommand>();
+            this.DialogService = new DialogService(this);
+            this._registeredCommands = new Collection<ICommand>();
         }
-
-        private bool _isDisposed;
-        private DialogService _dialogService;
+        
         // ビューモデルと同時に破棄するコマンド
         private readonly ICollection<ICommand> _registeredCommands;
 
@@ -26,27 +24,27 @@ namespace Liberfy.ViewModel
         /// <summary>
         /// ビューモデルと関連付けられたダイアログ機能提供サービスです。
         /// </summary>
-        public DialogService DialogService => _dialogService;
+        public DialogService DialogService { get; private set; }
 
         /// <summary>
         /// ビューモデルが破棄済みかどうかを返します。
         /// </summary>
-        public bool IsDisposed => _isDisposed;
+        public bool IsDisposed { get; private set; }
 
         /// <summary>
         /// フィールドに値を設定し、変更がある場合はプロパティ名で変更通知を行います。
         /// </summary>
         /// <typeparam name="T">フィールドの型</typeparam>
-        /// <param name="refVal">値の設定先</param>
-        /// <param name="value">値</param>
+        /// <param name="refValue">値の設定先</param>
+        /// <param name="newValue">値</param>
         /// <param name="propertyName">（自動設定）変更を通知するプロパティ名</param>
         /// <returns>値の変更の有無</returns>
-        protected bool SetProperty<T>(ref T refVal, T value, [CallerMemberName] string propertyName = "")
+        protected bool SetProperty<T>(ref T refValue, T newValue, [CallerMemberName] string propertyName = "")
         {
-            if (!Equals(refVal, value))
+            if (!object.Equals(refValue, newValue))
             {
-                refVal = value;
-                RaisePropertyChanged(propertyName);
+                refValue = newValue;
+                this.RaisePropertyChanged(propertyName);
 
                 return true;
             }
@@ -60,14 +58,14 @@ namespace Liberfy.ViewModel
         /// フィールドに値を設定し、変更がある場合はプロパティならびに指定のコマンドの変更通知を行います。
         /// </summary>
         /// <typeparam name="T">フィールドの型</typeparam>
-        /// <param name="refVal">値の設定先</param>
-        /// <param name="value">値</param>
+        /// <param name="refValue">値の設定先</param>
+        /// <param name="newValue">値</param>
         /// <param name="command">値に変更がある場合に参照するコマンド</param>
         /// <param name="propertyName">（自動設定）変更を通知するプロパティ名</param>
         /// <returns>値の変更の有無</returns>
-        protected bool SetProperty<T>(ref T refVal, T value, Command command, [CallerMemberName] string propertyName = "")
+        protected bool SetProperty<T>(ref T refValue, T newValue, Command command, [CallerMemberName] string propertyName = "")
         {
-            if (SetProperty(ref refVal, value, propertyName))
+            if (this.SetProperty(ref refValue, newValue, propertyName))
             {
                 command?.RaiseCanExecute();
                 return true;
@@ -82,14 +80,14 @@ namespace Liberfy.ViewModel
         /// フィールドに値を設定し、変更がある場合はプロパティならびに指定のコマンドの変更通知を行います。
         /// </summary>
         /// <typeparam name="T">フィールドの型</typeparam>
-        /// <param name="refVal">値の設定先</param>
-        /// <param name="value">値</param>
+        /// <param name="refValue">値の設定先</param>
+        /// <param name="newValue">値</param>
         /// <param name="command">値に変更がある場合に参照するコマンド</param>
         /// <param name="propertyName">（自動設定）変更を通知するプロパティ名</param>
         /// <returns>値の変更の有無</returns>
-        protected bool SetProperty<T>(ref T refVal, T value, Command<T> command, [CallerMemberName] string propertyName = "")
+        protected bool SetProperty<T>(ref T refValue, T newValue, Command<T> command, [CallerMemberName] string propertyName = "")
         {
-            if (SetProperty(ref refVal, value, propertyName))
+            if (this.SetProperty(ref refValue, newValue, propertyName))
             {
                 command?.RaiseCanExecute();
                 return true;
@@ -105,12 +103,12 @@ namespace Liberfy.ViewModel
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="refValue"></param>
-        /// <param name="value"></param>
+        /// <param name="newValue"></param>
         /// <param name="propertyName"></param>
-        protected void SetPropertyForce<T>(ref T refValue, T value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+        protected void SetPropertyForce<T>(ref T refValue, T newValue, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
         {
-            refValue = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            refValue = newValue;
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>
@@ -119,7 +117,7 @@ namespace Liberfy.ViewModel
         /// <param name="propertyName">変更を通知するプロパティ名</param>
         protected void RaisePropertyChanged(string propertyName)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>
@@ -129,8 +127,12 @@ namespace Liberfy.ViewModel
         protected void RaisePropertiesChanged(params string[] propertyNames)
         {
             if (this.PropertyChanged != null)
+            {
                 foreach (var name in propertyNames)
+                {
                     this.PropertyChanged(this, new PropertyChangedEventArgs(name));
+                }
+            }
         }
 
         /// <summary>
@@ -160,7 +162,8 @@ namespace Liberfy.ViewModel
         public Command RegisterCommand(Action execute, bool hookRequerySuggested = false)
         {
             var command = new DelegateCommand(execute, hookRequerySuggested);
-            _registeredCommands.Add(command);
+
+            this._registeredCommands.Add(command);
 
             return command;
         }
@@ -176,7 +179,8 @@ namespace Liberfy.ViewModel
         public Command RegisterCommand(Action execute, Func<bool> canExecute, bool hookRequerysuggested = false)
         {
             var command = new DelegateCommand(execute, canExecute, hookRequerysuggested);
-            _registeredCommands.Add(command);
+
+            this._registeredCommands.Add(command);
 
             return command;
         }
@@ -192,7 +196,8 @@ namespace Liberfy.ViewModel
         public Command<T> RegisterCommand<T>(Action<T> execute, bool hookRequerySuggested = false)
         {
             var command = new DelegateCommand<T>(execute, hookRequerySuggested);
-            _registeredCommands.Add(command);
+
+            this._registeredCommands.Add(command);
 
             return command;
         }
@@ -209,7 +214,8 @@ namespace Liberfy.ViewModel
         public Command<T> RegisterCommand<T>(Action<T> execute, Predicate<T> canExecute, bool hookRequerySuggested = false)
         {
             var command = new DelegateCommand<T>(execute, canExecute, hookRequerySuggested);
-            _registeredCommands.Add(command);
+
+            this._registeredCommands.Add(command);
 
             return command;
         }
@@ -235,22 +241,22 @@ namespace Liberfy.ViewModel
         /// </summary>
         public virtual void Dispose()
         {
-            if (_isDisposed)
+            if (this.IsDisposed)
                 return;
 
-            _isDisposed = true;
+            this.IsDisposed = true;
 
-            foreach (var command in _registeredCommands)
+            foreach (var command in this._registeredCommands)
             {
-                if (command is IDisposable _dCmd)
+                if (command is IDisposable disposableCommand)
                 {
-                    _dCmd.Dispose();
+                    disposableCommand.Dispose();
                 }
             }
-            _registeredCommands.Clear();
+            this._registeredCommands.Clear();
 
-            _dialogService.Dispose();
-            _dialogService = null;
+            this.DialogService.Dispose();
+            this.DialogService = null;
         }
     }
 
