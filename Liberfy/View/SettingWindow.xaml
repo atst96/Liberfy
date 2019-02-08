@@ -1013,7 +1013,10 @@
 
                             <ScrollViewer>
                                 <Border VerticalAlignment="Top">
-                                    <Grid Background="Transparent">
+                                    <Grid
+                                        Background="Transparent"
+                                        TextBlock.FontFamily="{Binding TimelineViewFontFamily, Mode=OneWay}"
+                                        TextOptions.TextRenderingMode="{Binding TimelineFontRenderingMode, Mode=OneWay}">
                                         <DockPanel Margin="4">
                                             <DockPanel
                                                 DockPanel.Dock="Bottom"
@@ -1264,7 +1267,9 @@
                             <ScrollViewer>
                                 <DockPanel
                                     Margin="4"
-                                    VerticalAlignment="Top">
+                                    VerticalAlignment="Top"
+                                    TextBlock.FontFamily="{Binding TimelineViewFontFamily, Mode=OneWay}"
+                                    TextOptions.TextRenderingMode="{Binding TimelineFontRenderingMode, Mode=OneWay}">
                                     <DockPanel
                                         DockPanel.Dock="Bottom"
                                         Margin="8 4 8 8">
