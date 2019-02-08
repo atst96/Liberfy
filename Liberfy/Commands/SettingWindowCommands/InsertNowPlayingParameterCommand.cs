@@ -16,10 +16,7 @@ namespace Liberfy.Commands.SettingWindowCommands
             this._viewModel = viewModel;
         }
 
-        protected override bool CanExecute(string parameter)
-        {
-            return false;
-        }
+        protected override bool CanExecute(string parameter) => !string.IsNullOrWhiteSpace(parameter);
 
         protected override void Execute(string parameter)
         {
