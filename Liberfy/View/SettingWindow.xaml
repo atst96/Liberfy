@@ -256,7 +256,7 @@
                             <Label
                                 Style="{StaticResource HeaderLabel}"
                                 Content="ミュート" />
-                            
+
                             <CheckBox
                                 Content="ログイン時にミュート中のアカウント一覧を取得する"
                                 IsChecked="{Binding Setting.GetMutedIdsAtLoadingAccount, Mode=TwoWay}" />
@@ -264,7 +264,7 @@
                             <Label
                                 Style="{StaticResource HeaderLabel}"
                                 Content="ブロック" />
-                            
+
                             <CheckBox
                                 Content="ログイン時にブロック中のアカウント一覧を取得する"
                                 IsChecked="{Binding Setting.GetBlockedIdsAtLoadingAccount, Mode=TwoWay}" />
@@ -597,174 +597,135 @@
             <TabItem Header="表示">
                 <TabControl>
                     <TabItem Header="フォント">
-                        <DockPanel>
-                            <ToolBar
-                                DockPanel.Dock="Top"
-                                Grid.Row="1" Grid.ColumnSpan="2"
-                                Padding="4 0 0 0"
-                                ToolBarTray.IsLocked="True">
-                                <Button
-                                    VerticalAlignment="Stretch"
-                                    ToolTip="フォントをリストから追加"
-                                    Command="{Binding AddFontCommand, Mode=OneTime}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <app:GeometryIcon
-                                            VerticalAlignment="Center"
-                                            Data="{StaticResource FontAwesome.Icon.Font}" />
-
-                                        <app:GeometryIcon
-                                            Margin="-4 2 0 0"
-                                            VerticalAlignment="Top"
-                                            Width="8" Height="8"
-                                            Data="{StaticResource FontAwesome.Icon.Pluse}" />
-                                    </StackPanel>
-                                </Button>
-
-                                <Button
-                                    VerticalAlignment="Stretch"
-                                    Command="{Binding SelectExternalFontCommand, Mode=OneTime}"
-                                    ToolTip="フォントをファイルから追加">
-                                    <StackPanel Orientation="Horizontal">
-                                        <app:GeometryIcon
-                                            VerticalAlignment="Center"
-                                            Data="{StaticResource FontAwesome.Icon.Font}" />
-
-                                        <app:GeometryIcon
-                                            Margin="-4 2 0 0"
-                                            VerticalAlignment="Top"
-                                            Width="8" Height="8"
-                                            Data="{StaticResource FontAwesome.Icon.ExternalLinkSquareAlt}" />
-                                    </StackPanel>
-                                </Button>
-
-                                <Separator />
-
-                                <Button
-                                    Content="削除"
-                                    FontWeight="Normal"
-                                    Padding="{StaticResource ToolBarItemPadding}"
-                                    Command="{Binding RemoveFontCommand, Mode=OneTime}"
-                                    CommandParameter="{Binding SelectedFont, Mode=OneWay}" />
-
-                                <Separator />
-
-                                <Label
-                                    Content="読み込み順："
-                                    FontWeight="Bold"
-                                    VerticalAlignment="Center"
-                                    Padding="{StaticResource ToolBarItemPadding}" />
-
-                                <Button
-                                    Content="▲"
-                                    Padding="{StaticResource ToolBarItemPadding}"
-                                    Command="{Binding IncreaseFontPriorityCommand, Mode=OneTime}"
-                                    CommandParameter="{Binding SelectedFont, Mode=OneWay}"  />
-
-                                <Button
-                                    Content="▼"
-                                    Padding="{StaticResource ToolBarItemPadding}"
-                                    Command="{Binding DecreaseFontPriorityCommand, Mode=OneTime}"
-                                    CommandParameter="{Binding SelectedFont, Mode=OneWay}"  />
-
-                                <Separator />
-
-                                <Button
-                                    FontWeight="Normal"
-                                    Content="フォント設定をリセット"
-                                    Padding="{StaticResource ToolBarItemPadding}"
-                                    Command="{Binding ResetFontCommand, Mode=OneTime}" />
-                            </ToolBar>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width=".7*" />
+                                <ColumnDefinition Width=".3*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height=".6*" />
+                                <RowDefinition Height=".4*" />
+                            </Grid.RowDefinitions>
 
                             <Border
-                                Height="200"
-                                DockPanel.Dock="Bottom"
-                                BorderThickness="0 1 0 0"
-                                BorderBrush="#dadada"
-                                Background="White">
-                                <HeaderedContentControl
-                                    Margin="6"
-                                    Header="フォントのプレビュー">
-                                    <TextBox
-                                        AcceptsTab="False"
-                                        AcceptsReturn="True"
-                                        TextWrapping="Wrap"
-                                        ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                        FontSize="{Binding ViewFontSize, Mode=OneWay}"
-                                        FontFamily="{Binding ViewFont, Mode=OneWay}"
-                                        TextOptions.TextFormattingMode="{Binding ViewFontRendering}"
-                                        Text="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJLMNOPQSTUVWXYZ&#xA;1234567890.:,; ' &quot; (!?) +-*/=&#xA;C# でプログラミングの世界が広がります。1234567890" />
-                                </HeaderedContentControl>
-
-                            </Border>
-
-                            <Border
-                                DockPanel.Dock="Right"
-                                Width="160"
-                                Grid.Row="3"
+                                Padding="8"
                                 Grid.Column="1"
-                                Padding="10 8 12 8"
                                 BorderBrush="#dadada"
                                 BorderThickness="1 0 0 0"
                                 Background="#fafafa">
                                 <StackPanel>
                                     <HeaderedContentControl
                                         Grid.Column="1"
-                                        Header="フォントサイズ">
+                                        Header="サイズ(pt)">
                                         <ComboBox
                                             IsEditable="True"
-                                            Text="{Binding ViewFontSize, UpdateSourceTrigger=PropertyChanged}">
-                                            <ComboBoxItem Content="8"/>
-                                            <ComboBoxItem Content="9"/>
-                                            <ComboBoxItem Content="10"/>
-                                            <ComboBoxItem Content="10.5"/>
-                                            <ComboBoxItem Content="11"/>
-                                            <ComboBoxItem Content="12"/>
-                                            <ComboBoxItem Content="14"/>
-                                            <ComboBoxItem Content="16"/>
-                                            <ComboBoxItem Content="18"/>
-                                            <ComboBoxItem Content="20"/>
-                                            <ComboBoxItem Content="22"/>
-                                            <ComboBoxItem Content="24"/>
-                                            <ComboBoxItem Content="26"/>
-                                            <ComboBoxItem Content="28"/>
-                                            <ComboBoxItem Content="36"/>
-                                            <ComboBoxItem Content="48"/>
-                                            <ComboBoxItem Content="72"/>
+                                            SelectedItem="{Binding TimelineFontSize, UpdateSourceTrigger=PropertyChanged}">
+                                            <sys:Double>8</sys:Double>
+                                            <sys:Double>9</sys:Double>
+                                            <sys:Double>10</sys:Double>
+                                            <sys:Double>10.5</sys:Double>
+                                            <sys:Double>11</sys:Double>
+                                            <sys:Double>12</sys:Double>
+                                            <sys:Double>14</sys:Double>
+                                            <sys:Double>16</sys:Double>
+                                            <sys:Double>18</sys:Double>
+                                            <sys:Double>20</sys:Double>
+                                            <sys:Double>22</sys:Double>
+                                            <sys:Double>24</sys:Double>
+                                            <sys:Double>26</sys:Double>
+                                            <sys:Double>28</sys:Double>
+                                            <sys:Double>36</sys:Double>
+                                            <sys:Double>48</sys:Double>
+                                            <sys:Double>72</sys:Double>
                                         </ComboBox>
                                     </HeaderedContentControl>
 
-                                    <Label
+                                    <HeaderedContentControl
                                         Margin="0 8 0 0"
-                                        FontWeight="Bold"
-                                        Content="フォントレンダリング" />
-
-                                    <RadioButton
-                                        Margin="0 2 0 4"
-                                        Content="GDI互換"
-                                        IsChecked="{Binding IsLegacyGDIRender}"/>
-
-                                    <RadioButton
-                                        Margin="0 2 0 0"
-                                        Content="GDI+"
-                                        IsChecked="{Binding IsGDIPlusRender}"/>
+                                        Header="描画モード">
+                                        <ComboBox
+                                            ItemsSource="{Binding TextRenderingModeList,Mode=OneTime}"
+                                            SelectedValuePath="Key" 
+                                            DisplayMemberPath="Value"
+                                            SelectedValue="{Binding TimelineFontRenderingMode, Mode=TwoWay}">
+                                            <ComboBox.ItemContainerStyle>
+                                                <Style TargetType="{x:Type ComboBoxItem}">
+                                                    <Setter Property="TextOptions.TextFormattingMode" Value="{Binding Key,Mode=OneTime}" />
+                                                </Style>
+                                            </ComboBox.ItemContainerStyle>
+                                        </ComboBox>
+                                    </HeaderedContentControl>
                                 </StackPanel>
                             </Border>
 
-                            <ListBox
-                                Grid.Row="2"
-                                Margin="1"
-                                FontSize="{StaticResource UIFontSize}"
-                                ItemTemplate="{StaticResource FontViewTemplate}"
-                                ItemsSource="{Binding ViewFonts, Mode=OneTime}"
-                                SelectedItem="{Binding SelectedFont, Mode=TwoWay}"
-                                SelectionMode="Single"
-                                TextOptions.TextFormattingMode="{Binding ViewFontRendering}" />
-                        </DockPanel>
+                            <Separator
+                                Margin="0"
+                                Grid.ColumnSpan="2"
+                                VerticalAlignment="Bottom" />
+
+                            <HeaderedContentControl
+                                Margin="8"
+                                Header="フォント">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition />
+                                        <RowDefinition Height="auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label
+                                        Margin="0 0 8 0"
+                                        Content="書体の追加:" />
+
+                                    <ComboBox
+                                        Grid.Column="1"
+                                        ItemsSource="{x:Static Fonts.SystemFontFamilies}"
+                                        DisplayMemberPath="Source"
+                                        SelectedItem="{Binding SelectedFontFamily, Mode=TwoWay}" />
+
+                                    <TextBox
+                                        Margin="0 8 0 0"
+                                        AcceptsReturn="True"
+                                        AcceptsTab="False"
+                                        Grid.ColumnSpan="3"
+                                        Grid.Row="1"
+                                        Text="{Binding TimelineFontFamily, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock
+                                        Grid.Row="2"
+                                        Grid.ColumnSpan="2"
+                                        Margin="0 4 0 0"
+                                        TextWrapping="WrapWithOverflow"
+                                        Text="改行またはカンマで区切ることで複数のフォントを指定することができます。" />
+                                </Grid>
+                            </HeaderedContentControl>
+
+                            <HeaderedContentControl
+                                Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                Margin="8"
+                                Header="プレビュー">
+                                <TextBox
+                                    AcceptsTab="False"
+                                    AcceptsReturn="True"
+                                    TextWrapping="Wrap"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                    FontSize="{Binding TimelineFontSize, Mode=OneWay}"
+                                    FontFamily="{Binding TimelineViewFontFamily, Mode=OneWay}"
+                                    TextOptions.TextFormattingMode="{Binding TimelineFontRenderingMode, Mode=OneWay}"
+                                    Text="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJLMNOPQSTUVWXYZ&#xA;1234567890.:,; ' &quot; (!?) +-*/=&#xA;C# でプログラミングの世界が広がります。1234567890" />
+
+                            </HeaderedContentControl>
+                        </Grid>
                     </TabItem>
                 </TabControl>
             </TabItem>
-            
+
             <TabItem Header="タイムライン">
                 <TabControl>
                     <TabItem Header="全般">
@@ -879,7 +840,7 @@
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
-                    
+
                     <TabItem Header="カラム">
                         <DockPanel>
                             <Border

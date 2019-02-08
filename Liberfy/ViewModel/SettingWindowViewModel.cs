@@ -18,14 +18,13 @@ namespace Liberfy.ViewModel
     {
         public SettingWindowViewModel() : base()
         {
-            ViewFonts = new NotifiableCollection<FontFamily>();
-            SetFontSettings();
-
             this.DefaultColumns = new NotifiableCollection<ColumnBase>(Setting.DefaultColumns
                 .Select(opt => ColumnBase.FromSetting(opt, null, out var column) ? column : ColumnBase.FromType(opt.Type)));
         }
 
-        public Setting Setting => App.Setting;
+        public static Setting GlobalSetting { get; } = App.Setting;
+
+        public Setting Setting { get; } = GlobalSetting;
 
         public IEnumerable<IAccount> Accounts { get; } = AccountManager.Accounts;
 
@@ -126,254 +125,80 @@ namespace Liberfy.ViewModel
 
         #region General
 
-        private void SetFontSettings()
+        public IReadOnlyDictionary<TextFormattingMode, string> TextRenderingModeList { get; } = new ReadOnlyDictionary<TextFormattingMode, string>(new Dictionary<TextFormattingMode, string>
         {
-            ViewFont = new FontFamily(string.Join(", ", Setting.TimelineFont));
-            _viewFontSize = Setting.TimelineFontSize;
+            [TextFormattingMode.Ideal] = "標準",
+            [TextFormattingMode.Display] = "GDI互換",
+        });
 
-            this.ViewFonts.Clear();
-            foreach (var f in Setting.TimelineFont)
-                this.ViewFonts.Add(new FontFamily(f));
-
-            ViewFontRendering = Setting.TimelineFontRendering;
-
-            RaisePropertyChanged(nameof(ViewFont));
-            RaisePropertyChanged(nameof(IsLegacyGDIRender));
-            RaisePropertyChanged(nameof(IsGDIPlusRender));
-            RaisePropertyChanged(nameof(ViewFontSize));
+        private FontFamily _timelineViewFontFamily = new FontFamily(string.Join(",", GlobalSetting.TimelineFont));
+        public FontFamily TimelineViewFontFamily
+        {
+            get => this._timelineViewFontFamily;
+            set => this.SetProperty(ref this._timelineViewFontFamily, value);
         }
 
-        public FontFamily ViewFont { get; set; }
-
-        public bool IsLegacyGDIRender
+        private double? _timelineFontSize = GlobalSetting.TimelineFontSize;
+        public double? TimelineFontSize
         {
-            get => ViewFontRendering == TextFormattingMode.Display;
-            set
-            {
-                ViewFontRendering = TextFormattingMode.Display;
-                RaisePropertyChanged(nameof(ViewFontRendering));
-                RaisePropertyChanged(nameof(IsGDIPlusRender));
-            }
+            get => this._timelineFontSize;
+            set => this.SetProperty(ref this._timelineFontSize, value);
         }
 
-        public bool IsGDIPlusRender
+        private string _timelineFontFamilies = string.Join("\n", GlobalSetting.TimelineFont);
+        public string TimelineFontFamily
         {
-            get => ViewFontRendering == TextFormattingMode.Ideal;
+            get => this._timelineFontFamilies;
             set
             {
-                ViewFontRendering = TextFormattingMode.Ideal;
-                RaisePropertyChanged(nameof(ViewFontRendering));
-                RaisePropertyChanged(nameof(IsLegacyGDIRender));
-            }
-        }
-
-        private double? _viewFontSize;
-        public double? ViewFontSize
-        {
-            get => _viewFontSize;
-            set
-            {
-                if (SetProperty(ref _viewFontSize, value))
+                if (this.SetProperty(ref this._timelineFontFamilies, value))
                 {
-                    UpdateFontUI();
+                    var fonts = EnumerateFontName(value);
+
+                    this.TimelineViewFontFamily = new FontFamily(string.Join(",", fonts));
                 }
             }
         }
 
-        public TextFormattingMode ViewFontRendering { get; private set; }
-
-        //private static readonly StringComparison strComp = StringComparison.CurrentCultureIgnoreCase;
-
-        //private void FilteringFontFontList()
-        //{
-        //    if (string.IsNullOrWhiteSpace(_fontFontFilter))
-        //    {
-        //        _fontFontList = new List<FontFamily>(_baseFontList);
-        //    }
-        //    else
-        //    {
-        //        bool isFontFiltering(FontFamily fontFamily)
-        //        {
-        //            return fontFamily.Source.Contains(_fontFontFilter, strComp)
-        //                || fontFamily.FamilyNames.Any(kvp => kvp.Value.Contains(_fontFontFilter, strComp));
-        //        }
-
-        //        _fontFontList = new List<FontFamily>(_baseFontList.Where(isFontFiltering));
-        //    }
-
-        //    RaisePropertyChanged(nameof(FontFontList));
-        //}
-
-        private FontFamily _selectedFont;
-        public FontFamily SelectedFont
+        private TextFormattingMode _timelineFontRenderingMode = GlobalSetting.TimelineFontRendering;
+        public TextFormattingMode TimelineFontRenderingMode
         {
-            get => _selectedFont;
+            get => this._timelineFontRenderingMode;
+            set => this.SetProperty(ref this._timelineFontRenderingMode, value);
+        }
+
+        private static IEnumerable<string> EnumerateFontName(string text)
+        {
+            return text
+                .Split('\r', '\n', ',')
+                .Select(str => str.Trim())
+                .Where(str => str.Length > 1);
+        }
+
+        public FontFamily _selectedFontFamily;
+        public FontFamily SelectedFontFamily
+        {
+            get => this._selectedFontFamily;
             set
             {
-                if (SetProperty(ref _selectedFont, value))
+                if (this.SetProperty(ref this._selectedFontFamily, value))
                 {
-                    this.UpdateFontUI();
-                }
-            }
-        }
-
-        public NotifiableCollection<FontFamily> ViewFonts { get; }
-
-        private void ReloadViewFont()
-        {
-            this.ViewFont = new FontFamily(string.Join(", ", ViewFonts.Select(f => f.Source)));
-            this.RaisePropertyChanged(nameof(ViewFont));
-        }
-
-        private void UpdateFontUI()
-        {
-            this.ReloadViewFont();
-
-            this.AddFontCommand.RaiseCanExecute();
-            this.RemoveFontCommand.RaiseCanExecute();
-            this.IncreaseFontPriorityCommand.RaiseCanExecute();
-            this.DecreaseFontPriorityCommand.RaiseCanExecute();
-        }
-
-        private void ApplyFontSetting()
-        {
-            Setting.TimelineFont = this.ViewFonts.Select(f => f.Source).ToArray();
-            Setting.TimelineFontSize = this.ViewFontSize.Value;
-            Setting.TimelineFontRendering = this.ViewFontRendering;
-        }
-
-        private Command _addFontCommand;
-        public Command AddFontCommand => this._addFontCommand ?? (this._addFontCommand = this.RegisterCommand(() =>
-        {
-            var option = new SelectDialogOption<FontFamily>
-            {
-                Instruction = "追加するフォントを選択してください",
-                Items = Fonts.SystemFontFamilies,
-                ItemTemplate = App.Current.TryFindResource("FontViewTemplate") as DataTemplate,
-            };
-
-            this.DialogService.SelectDialog(option);
-
-            if (option.IsSelected)
-            {
-                this.ViewFonts.Insert(0, option.SelectedItem);
-                this.UpdateFontUI();
-            }
-        }));
-
-        private Command _selectExternalFontCommand;
-        public Command SelectExternalFontCommand => this._selectExternalFontCommand ?? (this._selectExternalFontCommand = this.RegisterCommand(() =>
-        {
-            var ofd = new OpenFileDialog
-            {
-                Filter = "フォントファイル|*.ttf;*.otf",
-                CheckFileExists = true,
-                CheckPathExists = true,
-            };
-
-            if (this.DialogService.OpenModal(ofd))
-            {
-                try
-                {
-                    var fontFamily = Fonts
-                        .GetFontFamilies(ofd.FileName)
-                        .FirstOrDefault(SupportedFont);
-
-                    if (fontFamily != null)
+                    if (value != null)
                     {
-                        this.ViewFonts.Insert(0, fontFamily);
+                        if (this.TimelineFontFamily.EndsWith("\n"))
+                        {
+                            this.TimelineFontFamily += value.Source;
+                        }
+                        else
+                        {
+                            this.TimelineFontFamily += "\n" + value.Source;
+                        }
+
+                        this.SelectedFontFamily = null;
                     }
-
-                    this.UpdateFontUI();
                 }
-                catch { /* pass */ }
             }
-        }));
-
-        private static bool SupportedFont(FontFamily font)
-        {
-            return font.FamilyTypefaces.Any(face => face.Style == FontStyles.Normal);
         }
-
-        #region Command: RemoveFontCommand
-
-        private Command<FontFamily> _removeFontCommand;
-        public Command<FontFamily> RemoveFontCommand
-        {
-            get => _removeFontCommand ?? (_removeFontCommand = RegisterCommand<FontFamily>(RemoveFont, IsAvailableFont));
-        }
-
-        public void RemoveFont(FontFamily fontFamily)
-        {
-            ViewFonts.Remove(fontFamily);
-            UpdateFontUI();
-        }
-
-        private static bool IsAvailableFont(FontFamily fontFamily) => fontFamily != null;
-
-        #endregion Command: RemoveFontCommand
-
-        #region Command: IncreaseFontPriorityCommand
-
-        private Command<FontFamily> _increaseFontPriorityCommand;
-        public Command<FontFamily> IncreaseFontPriorityCommand
-        {
-            get => _increaseFontPriorityCommand ?? (_increaseFontPriorityCommand = RegisterCommand<FontFamily>(IncreaseFontPriority, CanIncreaseFontPriority));
-        }
-
-        private void IncreaseFontPriority(FontFamily obj)
-        {
-            ViewFonts.ItemIndexDecrement(obj);
-            UpdateFontUI();
-        }
-
-        private bool CanIncreaseFontPriority(FontFamily obj)
-        {
-            return obj != null && MathEx.IsWithin(Math.Min(ViewFonts.Count, ViewFonts.IndexOf(obj)), 1, ViewFonts.Count);
-        }
-
-        #endregion Command: IncreaseFontPriorityCommand
-
-        #region Command: DecreaseFontPriorityCommand
-
-        private Command<FontFamily> _decreaseFontPriorityCommand;
-        public Command<FontFamily> DecreaseFontPriorityCommand
-        {
-            get => _decreaseFontPriorityCommand ?? (_decreaseFontPriorityCommand = RegisterCommand<FontFamily>(DecreaseFontPriority, CanDecreaseFontPriority));
-        }
-
-        private void DecreaseFontPriority(FontFamily obj)
-        {
-            this.ViewFonts.ItemIndexIncrement(obj);
-            this.UpdateFontUI();
-        }
-
-        private bool CanDecreaseFontPriority(FontFamily obj)
-        {
-            return obj != null && Math.Max(0, ViewFonts.IndexOf(obj)) < ViewFonts.Count - 1;
-        }
-
-        #endregion Command: DecreaseFontPriorityCommand
-
-        #region Command: ResetFontCommand
-
-        private Command _resetFontSettingsCommand;
-        public Command ResetFontSettingsCommand
-        {
-            get => _resetFontSettingsCommand ?? (_resetFontSettingsCommand = RegisterCommand(ResetFontSettings));
-        }
-
-        private void ResetFontSettings()
-        {
-            Setting.TimelineFont = Defines.DefaultTimelineFont;
-            Setting.TimelineFontSize = Defines.DefaultTimelineFontSize;
-
-            SetFontSettings();
-
-            ReloadViewFont();
-        }
-
-        #endregion
 
         #endregion
 
@@ -845,7 +670,7 @@ namespace Liberfy.ViewModel
                     MsgBoxButtons.YesNo, MsgBoxIcon.Question) == MsgBoxResult.Yes;
             }
 
-            if (ViewFonts.Count == 0)
+            if (!EnumerateFontName(this.TimelineFontFamily).Any())
             {
                 return DialogService.MessageBox(
                     "フォントが指定されていません。続行しますか？",
@@ -863,7 +688,10 @@ namespace Liberfy.ViewModel
                 this.Setting.DefaultColumns.Add(column.GetOption());
             }
 
-            ApplyFontSetting();
+            GlobalSetting.TimelineFont = EnumerateFontName(this.TimelineFontFamily).ToArray();
+            GlobalSetting.TimelineFontSize = this.TimelineFontSize.Value;
+            GlobalSetting.TimelineFontRendering = this.TimelineFontRenderingMode;
+
             App.UI.ApplyFromSettings();
         }
     }
