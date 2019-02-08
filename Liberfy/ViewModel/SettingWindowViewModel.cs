@@ -449,29 +449,8 @@ namespace Liberfy.ViewModel
 
         #region InsertNowPlayingCommand
 
-        public string SelectedNowPlayingParameter
-        {
-            get => null;
-            set
-            {
-                this.NowPlayingTextBoxController.Insert(value);
-                this.NowPlayingTextBoxController.Focus();
-
-                this.RaisePropertyChanged(nameof(this.SelectedNowPlayingParameter));
-            }
-        }
-
         private Command<string> _insertNowPlayingCommand;
-        public Command<string> InsertNowPlayingParamCommand
-        {
-            get => _insertNowPlayingCommand ?? (_insertNowPlayingCommand = RegisterCommand<string>(InsertNowPlaying));
-        }
-
-        private void InsertNowPlaying(string p)
-        {
-            NowPlayingTextBoxController.Insert(p);
-            NowPlayingTextBoxController.Focus();
-        }
+        public Command<string> InsertNowPlayingParamCommand => this._insertNowPlayingCommand ?? (this._insertNowPlayingCommand = this.RegisterCommand<string>(new InsertNowPlayingParameterCommand(this)));
 
         #endregion
 
