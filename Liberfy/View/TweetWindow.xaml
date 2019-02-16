@@ -217,7 +217,7 @@
             Background="#eee"
             BorderBrush="#ccc"
             BorderThickness="0 0 0 1"
-            app:ElementBehavior.Visible="{Binding Media.HasItems, Mode=OneWay}" Grid.ColumnSpan="2">
+            app:ElementBehavior.Visible="{Binding PostParameters.Attachments.HasItems, Mode=OneWay}" Grid.ColumnSpan="2">
             <DockPanel>
                 <CheckBox
                     DockPanel.Dock="Top" Margin="8 6"

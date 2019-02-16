@@ -24,7 +24,7 @@ namespace Liberfy.Commands
         {
             var data = parameter;
 
-            if (!this._viewModel.IsBusy) return false;
+            if (this._viewModel.IsBusy) return false;
 
             if (data.GetDataPresent(DataFormats.FileDrop)
                 && data.GetData(DataFormats.FileDrop) is string[] dropFiles

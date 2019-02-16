@@ -152,51 +152,6 @@ namespace Liberfy.ViewModel
 			SetProperty(ref this._isTweetPosting, value, nameof(IsTweetPosting));
 		}
 
-		public async Task Upload(TwitterApi tokens)
-		{
-			bool isVideoUpload = (MediaType & MediaType.Video) != 0;
-
-			var uploadType = isVideoUpload
-				? MimeTypes.Video.Mp4
-				: MimeTypes.OctetStream;
-
-			this.CleanUploadState();
-
-			this.IsUploading = true;
-
-			this.SourceStream.Position = 0;
-
-			try
-			{
-				Task<MediaResponse> task;
-
-				if (isVideoUpload)
-				{
-					task = tokens.Media.ChunkedUpload(
-						media: SourceStream,
-						mediaType: uploadType,
-						progressReceiver: this);
-				}
-				else
-				{
-					task = tokens.Media.Upload(SourceStream);
-				}
-
-				var result = await task.ConfigureAwait(true);
-
-				this.UploadId = result.MediaId;
-			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine(ex);
-				this.IsUploadFailed = true;
-			}
-			finally
-			{
-				this.IsUploading = false;
-			}
-		}
-
 		public bool IsAvailableUploadId() => UploadId.HasValue && UploadId > 0;
 
 		public void Report(UploadProgress value)

@@ -259,27 +259,30 @@ namespace Liberfy.ViewModel
             return this.SelectedAccount != null && !this.IsUploading && !this.IsBusy && this.CanPostContent;
         }
 
-        public bool IsBusy { get; private set; } = false;
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => this._isBusy;
+            set
+            {
+                if (this.SetProperty(ref this._isBusy, value))
+                {
+                    this._addImageCommand?.RaiseCanExecute();
+                    this._postCommand?.RaiseCanExecute();
+                }
+            }
+        }
 
         internal void BeginUpload()
         {
             this.IsUploading = true;
-            this.SetIsBusy(true);
+            this.IsBusy = true;
         }
 
         internal void EndUpload()
         {
             this.IsUploading = false;
-            this.SetIsBusy(false);
-        }
-
-        private void SetIsBusy(bool isBusy)
-        {
-            this.IsBusy = !isBusy;
-            this.RaisePropertyChanged(nameof(IsBusy));
-
-            this.AddImageCommand.RaiseCanExecute();
-            this.PostCommand.RaiseCanExecute();
+            this.IsBusy = false;
         }
 
         #endregion
