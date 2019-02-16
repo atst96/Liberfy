@@ -1646,11 +1646,12 @@
                         </HeaderedContentControl>
 
                         <HeaderedContentControl
+                            Margin="-1, 0, 0, 0"
                             Grid.Column="1"
                             Header="パラメータ">
                             <app:DropDownMenuButton
                                 Width="100"
-                                Style="{DynamicResource {x:Static ToolBar.ToggleButtonStyleKey}}">
+                                Style="{StaticResource {x:Type ToggleButton}}">
                                 <app:DropDownMenuButton.Content>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock

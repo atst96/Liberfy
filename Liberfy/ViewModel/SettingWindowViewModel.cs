@@ -433,7 +433,7 @@ namespace Liberfy.ViewModel
 
         #endregion Accounts
 
-        #region Formats
+        #region NowPlaying
 
         public TextBoxController NowPlayingTextBoxController { get; } = new TextBoxController();
 
@@ -447,24 +447,11 @@ namespace Liberfy.ViewModel
             }
         }
 
-        #region InsertNowPlayingCommand
-
         private Command<string> _insertNowPlayingCommand;
         public Command<string> InsertNowPlayingParamCommand => this._insertNowPlayingCommand ?? (this._insertNowPlayingCommand = this.RegisterCommand<string>(new InsertNowPlayingParameterCommand(this)));
 
-        #endregion
-
-        #region ResetNowPlayingCommand
-
         private Command _resetNowPlayingCommand;
-        public Command ResetNowPlayingCommand
-        {
-            get => _resetNowPlayingCommand ?? (_resetNowPlayingCommand = RegisterCommand(ResetNowPlaying));
-        }
-
-        private void ResetNowPlaying() => NowPlayingFormat = Defines.DefaultNowPlayingFormat;
-
-        #endregion
+        public Command ResetNowPlayingCommand => this._resetNowPlayingCommand ?? (this._resetNowPlayingCommand = this.RegisterCommand(new ResetNowPlayingFormatCommand(this)));
 
         #endregion
 
