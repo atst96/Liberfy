@@ -1,5 +1,6 @@
 ﻿using Liberfy.Commands;
 using Liberfy.Services;
+using Liberfy.Services.Common;
 using Liberfy.Settings;
 using SocialApis;
 using SocialApis.Common;
@@ -40,6 +41,10 @@ namespace Liberfy
         public abstract ServiceType Service { get; }
 
         public TTokens Tokens { get; private set; }
+
+        public abstract IApiGateway ApiGateway { get; }
+
+        public abstract IServiceConfiguration ServiceConfiguration { get; }
 
         public abstract DataStoreBase<TUser, TStatus> DataStore { get; }
 

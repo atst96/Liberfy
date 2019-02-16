@@ -1,4 +1,5 @@
 ﻿using Liberfy.Commands;
+using Liberfy.Services.Common;
 using NowPlayingLib;
 using SocialApis.Twitter;
 using System;
@@ -21,7 +22,7 @@ namespace Liberfy.ViewModel
 {
     internal class TweetWindow : ViewModelBase
     {
-        protected static Setting Setting => App.Setting;
+        protected static Setting Setting { get; } = App.Setting;
 
         public IEnumerable<IAccount> Accounts { get; } = AccountManager.Accounts;
 
@@ -33,6 +34,8 @@ namespace Liberfy.ViewModel
             {
                 if (this.SetProperty(ref this._selectedAccount, value, this._postCommand))
                 {
+                    this.ServiceConfiguration = value.ServiceConfiguration;
+                    this.UpdateShowSpoilderText();
                     this.UpdateCanPost();
                 }
             }
@@ -46,14 +49,53 @@ namespace Liberfy.ViewModel
 
         public TweetWindow()
         {
-            this.Media = new NotifiableCollection<UploadMedia>();
+            this.PostParameters = new ServicePostParameters();
+            this.PostParameters.PropertyChanged += this.OnPostParametersProeprtyChanged;
 
             this.SelectedAccount = this.Accounts.First();
 
             this.UpdateCanPost();
         }
 
-        public NotifiableCollection<UploadMedia> Media { get; }
+        private void OnPostParametersProeprtyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(this.PostParameters.SpoilerText):
+                case nameof(this.PostParameters.Text):
+                    this.UpdateCanPost();
+                    break;
+
+                case nameof(this.PostParameters.HasSpoilerText):
+                    this.UpdateCanPost();
+                    this.UpdateShowSpoilderText();
+                    break;
+            }
+        }
+
+        public ServicePostParameters PostParameters { get; }
+
+        private IServiceConfiguration _serviceConfiguration;
+        public IServiceConfiguration ServiceConfiguration
+        {
+            get => this._serviceConfiguration;
+            set => this.SetProperty(ref this._serviceConfiguration, value);
+        }
+
+        private bool _isShowSpilerText;
+        public bool IsShowSpoilerText
+        {
+            get => this._isShowSpilerText;
+            set => this.SetProperty(ref this._isShowSpilerText, value);
+        }
+
+        private void UpdateShowSpoilderText()
+        {
+            if (this.ServiceConfiguration != null)
+            {
+                this.IsShowSpoilerText = this.ServiceConfiguration.HasSpoilerText && this.PostParameters.HasSpoilerText;
+            }
+        }
 
         private int _textLength;
         public int TextLength
@@ -76,33 +118,20 @@ namespace Liberfy.ViewModel
             set => this.SetProperty(ref this._uploadStatusText, value);
         }
 
-        private bool _isTweetPosting;
-        public bool IsTweetPosting
+        private bool _isUploading;
+        public bool IsUploading
         {
-            get => this._isTweetPosting;
-            set => this.SetProperty(ref this._isTweetPosting, value);
-        }
-
-        private string _tweet = string.Empty;
-        public string Tweet
-        {
-            get => _tweet;
-            set
-            {
-                var newTweet = value?.Replace("\r\n", "\n") ?? string.Empty;
-                if (this.SetProperty(ref _tweet, newTweet))
-                {
-                    this.UpdateCanPost();
-                }
-            }
+            get => this._isUploading;
+            set => this.SetProperty(ref this._isUploading, value);
         }
 
         internal void UpdateCanPost()
         {
+            var postParams = this.PostParameters;
             var validator = this.SelectedAccount.Validator;
 
-            this.TextLength = validator.CountTextLength(this.Tweet);
-            this.CanPostContent = validator.CanPost(this.TextLength, this.Media);
+            this.TextLength = validator.GetTextLength(this.PostParameters);
+            this.CanPostContent = validator.CanPost(this.PostParameters);
 
             this.PostCommand.RaiseCanExecute();
         }
@@ -222,39 +251,32 @@ namespace Liberfy.ViewModel
             this.HasReplyStatus = false;
             this.ReplyToStatus = null;
 
-            var media = Media.ToArray();
-            this.Media.Clear();
-
-            media.DisposeAll();
-
-            media = null;
-
-            this.Tweet = string.Empty;
+            this.PostParameters.Clear();
         }
 
         public bool CanPostTweet()
         {
-            return _selectedAccount != null && !_isTweetPosting && this.IsEditable && this.CanPostContent;
+            return this.SelectedAccount != null && !this.IsUploading && !this.IsBusy && this.CanPostContent;
         }
 
-        public bool IsEditable { get; private set; } = true;
+        public bool IsBusy { get; private set; } = false;
 
-        internal void OnPostBegin()
+        internal void BeginUpload()
         {
-            this.IsTweetPosting = true;
-            this.SetIsEditable(false);
+            this.IsUploading = true;
+            this.SetIsBusy(true);
         }
 
-        internal void OnPostEnd()
+        internal void EndUpload()
         {
-            this.IsTweetPosting = false;
-            this.SetIsEditable(true);
+            this.IsUploading = false;
+            this.SetIsBusy(false);
         }
 
-        private void SetIsEditable(bool canEdit)
+        private void SetIsBusy(bool isBusy)
         {
-            this.IsEditable = canEdit;
-            this.RaisePropertyChanged(nameof(IsEditable));
+            this.IsBusy = !isBusy;
+            this.RaisePropertyChanged(nameof(IsBusy));
 
             this.AddImageCommand.RaiseCanExecute();
             this.PostCommand.RaiseCanExecute();
@@ -319,14 +341,14 @@ namespace Liberfy.ViewModel
 
         internal override bool CanClose()
         {
-            return !_isTweetPosting;
+            return !_isUploading;
         }
 
         internal override void OnClosed()
         {
             this.TextBoxController = null;
 
-            this.Media.DisposeAll();
+            this.PostParameters.Attachments.DisposeAll();
 
             base.OnClosed();
         }

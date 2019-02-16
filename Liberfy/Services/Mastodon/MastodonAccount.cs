@@ -2,6 +2,8 @@
 using System.Net;
 using System.Threading.Tasks;
 using Liberfy.Services;
+using Liberfy.Services.Common;
+using Liberfy.Services.Mastodon;
 using Liberfy.Settings;
 using SocialApis.Mastodon;
 
@@ -29,6 +31,11 @@ namespace Liberfy
         public override DataStoreBase<Account, Status> DataStore => _dataStore ?? (_dataStore = global::Liberfy.DataStore.Mastodon[this.Tokens.HostUrl]);
 
         public override IValidator Validator { get; } = new MastodonValidator(int.MaxValue);
+
+        public override IServiceConfiguration ServiceConfiguration { get; } = new MastodonServiceConfiguration();
+
+        private IApiGateway _apiGateway;
+        public override IApiGateway ApiGateway => this._apiGateway ?? (this._apiGateway = new MastodonApiGateway(this.Tokens));
 
         protected override MastodonApi TokensFromApiTokenInfo(ApiTokenInfo tokens)
         {

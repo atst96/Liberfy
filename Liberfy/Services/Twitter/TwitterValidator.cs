@@ -14,21 +14,21 @@ namespace Liberfy.Services
 
         public int MaxPostTextLength { get; } = 140;
 
-        public int CountTextLength(string text)
+        public int GetTextLength(ServicePostParameters parameters)
         {
-            return _tweetTextValidator.GetTweetLength(text);
+            return _tweetTextValidator.GetTweetLength(parameters.Text);
         }
 
-        public bool CanPost(int textLength, ICollection<UploadMedia> sources)
+        public bool CanPost(ServicePostParameters parameters)
         {
-            int length = textLength;
+            int length = GetTextLength(parameters);
 
-            if (sources.Count > 0)
+            if (parameters.Attachments.Count > 0)
             {
                 length += _tweetTextValidator.ShortUrlLengthHttps;
             }
 
-            return length > 0 && length <= this.MaxPostTextLength;
+            return length > 0 && length <= this.MaxPostTextLength && parameters.Attachments.Count <= 4;
         }
     }
 }

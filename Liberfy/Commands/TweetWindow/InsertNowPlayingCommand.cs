@@ -50,7 +50,7 @@ namespace Liberfy.Commands
                         {
                             foreach (var stream in media.Artworks)
                             {
-                                this._viewModel.Media.Add(UploadMedia.FromArtwork(new ArtworkItem(stream, Setting.InsertThumbnailAtNowPlayying)));
+                                this._viewModel.PostParameters.Attachments.Add(UploadMedia.FromArtwork(new ArtworkItem(stream, Setting.InsertThumbnailAtNowPlayying)));
                             }
                         }
                         catch { /* pass */ }

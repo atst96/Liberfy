@@ -28,11 +28,11 @@ namespace Liberfy.Commands
         {
             if (Clipboard.ContainsImage())
             {
-                this._viewModel.Media.Add(UploadMedia.FromBitmapSource(Clipboard.GetImage()));
+                this._viewModel.PostParameters.Attachments.Add(UploadMedia.FromBitmapSource(Clipboard.GetImage()));
             }
             else if (Clipboard.ContainsFileDropList())
             {
-                this._viewModel.Media.AddRange(
+                this._viewModel.PostParameters.Attachments.AddRange(
                     GetEnableMediaFiles(Clipboard.GetFileDropList())
                     .Select(file => UploadMedia.FromFile(file)));
             }

@@ -1,4 +1,5 @@
 ﻿using Liberfy.Services;
+using Liberfy.Services.Common;
 using Liberfy.Settings;
 using SocialApis;
 using System;
@@ -14,6 +15,8 @@ namespace Liberfy
         long Id { get; }
         ServiceType Service { get; }
         IApi Tokens { get; }
+        IApiGateway ApiGateway { get; }
+        IServiceConfiguration ServiceConfiguration { get; }
         UserInfo Info { get; }
         TimelineBase Timeline { get; }
         bool IsLoading { get; }

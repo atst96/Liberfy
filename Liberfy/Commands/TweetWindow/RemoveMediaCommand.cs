@@ -18,20 +18,16 @@ namespace Liberfy.Commands
 
         protected override bool CanExecute(UploadMedia parameter)
         {
-            Console.WriteLine(parameter);
+            bool value = this._viewModel.PostParameters.Attachments.Contains(parameter);
 
-            bool value = this._viewModel.Media.Contains(parameter);
-
-            Console.WriteLine("RemoveMediaCommand-CanExecute: " + value);
-
-            return this._viewModel.Media.Contains(parameter);
+            return this._viewModel.PostParameters.Attachments.Contains(parameter);
         }
 
         protected override void Execute(UploadMedia parameter)
         {
             using (parameter)
             {
-                this._viewModel.Media.Remove(parameter);
+                this._viewModel.PostParameters.Attachments.Remove(parameter);
                 this._viewModel.UpdateCanPost();
             }
         }

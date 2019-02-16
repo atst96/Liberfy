@@ -24,7 +24,7 @@ namespace Liberfy.Commands
         {
             var data = parameter;
 
-            if (!this._viewModel.IsEditable) return false;
+            if (!this._viewModel.IsBusy) return false;
 
             if (data.GetDataPresent(DataFormats.FileDrop)
                 && data.GetData(DataFormats.FileDrop) is string[] dropFiles
@@ -60,7 +60,7 @@ namespace Liberfy.Commands
             if (data.GetDataPresent(DataFormats.FileDrop))
             {
                 var droppedFiles = (string[])data.GetData(DataFormats.FileDrop);
-                this._viewModel.Media.AddRange(GetEnableMediaFiles(droppedFiles).Select(file => UploadMedia.FromFile(file)));
+                this._viewModel.PostParameters.Attachments.AddRange(GetEnableMediaFiles(droppedFiles).Select(file => UploadMedia.FromFile(file)));
                 this._viewModel.UpdateCanPost();
             }
             else if (UrlDataPresets.Any(data.GetDataPresent))

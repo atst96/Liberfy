@@ -16,14 +16,21 @@ namespace Liberfy.Services
 
         public int MaxPostTextLength { get; }
 
-        public bool CanPost(int textLength, ICollection<UploadMedia> sources)
+        public bool CanPost(ServicePostParameters parameters)
         {
-            return textLength > 0 || sources.Count > 0;
+            return parameters.Text?.Length > 0 || (parameters.Attachments.HasItems && parameters.Attachments.Count <= 4);
         }
 
-        public int CountTextLength(string text)
+        public int GetTextLength(ServicePostParameters parameters)
         {
-            return text.Length;
+            int textLength = parameters.Text?.Length ?? 0;
+
+            if (parameters.HasSpoilerText && parameters.SpoilerText != null)
+            {
+                textLength += parameters.SpoilerText.Length;
+            }
+
+            return textLength;
         }
     }
 }

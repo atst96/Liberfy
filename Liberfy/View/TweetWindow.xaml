@@ -75,10 +75,13 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
+        
         <Border 
-            Panel.ZIndex="100" Style="{StaticResource ToolBarBorderStyle}" Grid.ColumnSpan="2">
+            Panel.ZIndex="100" Style="{StaticResource ToolBarBorderStyle}"
+            Grid.ColumnSpan="2">
             <DockPanel>
                 <StackPanel
                     Margin="2"
@@ -86,6 +89,7 @@
                     Orientation="Horizontal">
 
                     <Label
+                        Margin="0 0 4 0"
                         AllowDrop="True"
                         DockPanel.Dock="Right"
                         VerticalAlignment="Center"
@@ -100,6 +104,14 @@
                             </Style>
                         </Label.Style>
                     </Label>
+
+                    <ToggleButton
+                        VerticalAlignment="Stretch"
+                        IsChecked="{Binding PostParameters.HasSpoilerText, Mode=TwoWay}"
+                        Style="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}"
+                        app:ElementBehavior.Visible="{Binding ServiceConfiguration.HasSpoilerText, Mode=OneWay}">
+                        CW
+                    </ToggleButton>
 
                     <Button
                         VerticalAlignment="Stretch"
@@ -147,7 +159,8 @@
                         Content="ツイート"
                         Padding="{StaticResource ToolBarItemPadding}"
                         Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                        Command="{Binding PostCommand, Mode=OneTime}" />
+                        Command="{Binding PostCommand, Mode=OneTime}"
+                        CommandParameter="{Binding SelectedAccount, Mode=OneWay}" />
                 </StackPanel>
 
                 <app:DropDownButton
@@ -208,8 +221,8 @@
             <DockPanel>
                 <CheckBox
                     DockPanel.Dock="Top" Margin="8 6"
-                    IsChecked="{Binding IsSensitiveMedia, Mode=TwoWay}"
-                    Content="不適切な表現を含む画像であることを告示する"/>
+                    IsChecked="{Binding PostParameters.IsContainsWarningAttachment, Mode=TwoWay}"
+                    Content="閲覧注意コンテンツを含む"/>
 
                 <ListBox
                     Padding="0"
@@ -219,7 +232,7 @@
                     HorizontalAlignment="Stretch"
                     VirtualizingPanel.ScrollUnit="Pixel"
                     ScrollViewer.CanContentScroll="False"
-                    ItemsSource="{Binding Media, Mode=OneWay}">
+                    ItemsSource="{Binding PostParameters.Attachments, Mode=OneTime}">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal" />
@@ -346,17 +359,49 @@
             </DockPanel>
         </Border>
 
+        <Border
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            BorderThickness="0, 0, 0, 1"
+            app:ElementBehavior.Visible="{Binding IsShowSpoilerText, Mode=OneWay}"
+            BorderBrush="{StaticResource ToolBar.Static.BorderBrush}">
+            <TextBox
+                Padding="4, 8"
+                Margin="0, 0, 0, 1"
+                TabIndex="0"
+                ClipToBounds="True"
+                BorderThickness="0"
+                TextWrapping="NoWrap"
+                AcceptsReturn="False"
+                Text="{Binding PostParameters.SpoilerText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                IsReadOnly="{Binding IsBusy, Mode=OneWay}">
+                <i:Interaction.Behaviors>
+                    <b:TextBoxBehavior Controller="{Binding TextBoxController, Mode=OneTime}" />
+                    <b:PasteImageBehavior Command="{Binding PasteImageCommand, Mode=OneTime}" />
+                    <b:DragDropBehavior
+                        SetDescription="True"
+                        UseDescriptionIcon="True"
+                        Command="{Binding DragDropCommand, Mode=OneTime}"
+                        AllowEffects="{Binding DragDropEffects, Mode=OneWay}"
+                        DescriptionIcon="{Binding DropDescriptionIcon, Mode=OneWay}"
+                        DescriptionMessage="{Binding DropDescriptionMessage, Mode=OneWay}"/>
+                </i:Interaction.Behaviors>
+            </TextBox>
+        </Border>
+
         <TextBox
+            Grid.ColumnSpan="2"
             Padding="4"
-            TabIndex="0"
+            TabIndex="1"
+            ClipToBounds="True"
             AllowDrop="True"
             IsTabStop="False"
             BorderThickness="0"
             TextWrapping="Wrap"
             AcceptsReturn="True"
-            Grid.Row="2"
-            Text="{Binding Tweet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            IsReadOnly="{Binding IsEditable, Mode=OneWay, Converter={StaticResource BoolInverter}}" Grid.ColumnSpan="2">
+            Grid.Row="3"
+            Text="{Binding PostParameters.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            IsReadOnly="{Binding IsBusy, Mode=OneWay}">
             <i:Interaction.Behaviors>
                 <b:TextBoxBehavior Controller="{Binding TextBoxController, Mode=OneTime}" />
                 <b:PasteImageBehavior Command="{Binding PasteImageCommand, Mode=OneTime}" />
@@ -372,8 +417,10 @@
 
         <Border
             Grid.Row="2"
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="2"
             Background="#A000"
-            app:ElementBehavior.Visible="{Binding IsTweetPosting, Mode=OneWay}" Grid.ColumnSpan="2">
+            app:ElementBehavior.Visible="{Binding IsUploading, Mode=OneWay}">
             <TextBlock 
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"

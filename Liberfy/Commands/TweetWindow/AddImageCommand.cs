@@ -21,7 +21,7 @@ namespace Liberfy.Commands
 
         protected override bool CanExecute(string parameter)
         {
-            return !this._viewModel.IsTweetPosting;
+            return !this._viewModel.IsUploading;
         }
 
         protected override void Execute(string parameter)
@@ -37,7 +37,7 @@ namespace Liberfy.Commands
             if (this._viewModel.DialogService.OpenModal(ofd)
                 && TweetWindow.HasEnableMediaFiles(ofd.FileNames))
             {
-                this._viewModel.Media.AddRange(ofd.FileNames.Select(file => UploadMedia.FromFile(file)));
+                this._viewModel.PostParameters.Attachments.AddRange(ofd.FileNames.Select(file => UploadMedia.FromFile(file)));
                 this._viewModel.UpdateCanPost();
             }
 

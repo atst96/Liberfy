@@ -1,4 +1,6 @@
 ﻿using Liberfy.Services;
+using Liberfy.Services.Common;
+using Liberfy.Services.Twitter;
 using Liberfy.Settings;
 using SocialApis;
 using SocialApis.Common;
@@ -34,6 +36,11 @@ namespace Liberfy
         public override DataStoreBase<User, Status> DataStore { get; } = global::Liberfy.DataStore.Twitter;
 
         public override IValidator Validator { get; } = new TwitterValidator();
+
+        public override IServiceConfiguration ServiceConfiguration { get; } = new TwitterServiceConfiguration();
+
+        private IApiGateway _apiGateway;
+        public override IApiGateway ApiGateway => this._apiGateway ?? (this._apiGateway = new TwitterApiGateway(this.Tokens));
 
         protected override TwitterApi TokensFromApiTokenInfo(ApiTokenInfo tokens)
         {

@@ -11,8 +11,8 @@ namespace Liberfy.Services
     {
         int MaxPostTextLength { get; }
 
-        int CountTextLength(string text);
+        int GetTextLength(ServicePostParameters parameters);
 
-        bool CanPost(int textLength, ICollection<UploadMedia> sources);
+        bool CanPost(ServicePostParameters parameters);
     }
 }
