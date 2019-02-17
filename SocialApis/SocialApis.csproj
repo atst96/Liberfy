@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\BoundaryWriter.cs" />
+    <Compile Include="Common\Extensions.cs" />
     <Compile Include="Common\HttpHelper.cs" />
     <Compile Include="Common\JsonUtility.cs" />
     <Compile Include="Common\Objects\HttpContentTypes.cs" />

@@ -32,7 +32,7 @@ namespace SocialApis.Twitter.Apis
             return req;
         }
 
-        public async Task<MediaResponse> Upload(Stream contentStream, long[] additionalOwners = null)
+        public async Task<MediaResponse> Upload(Stream contentStream, long[] additionalOwners = null, IProgress<UploadProgress> progressReceiver = null)
         {
             var request = CreateMultipartRequester(this.Api, out var boundary);
 
@@ -44,7 +44,7 @@ namespace SocialApis.Twitter.Apis
                 writer.WriteLine();
                 writer.Flush();
 
-                await contentStream.CopyToAsync(requestStream).ConfigureAwait(false);
+                await contentStream.UploadCopyToAsync(requestStream, progressReceiver).ConfigureAwait(false);
 
                 writer.WriteLine();
 

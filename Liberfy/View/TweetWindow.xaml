@@ -264,33 +264,23 @@
                                     Background="#8aaa"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Bottom"
-                                    Padding="4 2" FontWeight="Bold"
-                                    Content="{Binding ViewExtension, Mode=OneTime}"/>
-
-                                <ProgressBar
-                                    x:Name="progressBar"
-                                    Visibility="Collapsed"
-                                    Height="7"
-                                    Minimum="0.0"
-                                    Maximum="1.0"
-                                    Value="{Binding UploadProgress, Mode=OneWay}"
-                                    Grid.ColumnSpan="2"
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Top"
-                                    app:ElementBehavior.Visible="{Binding UseChunkedUpload, Mode=OneWay}"/>
+                                    Padding="4 3" FontWeight="Bold"
+                                    Content="{Binding DisplayExtension, Mode=OneTime}"/>
 
                                 <Button
                                     x:Name="removeButton"
                                     Grid.Row="1"
-                                    Padding="4 2"
-                                    Content="削除"
+                                    Padding="4 3"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Bottom"
                                     CommandParameter="{Binding Mode=OneTime}"
                                     Command="{Binding DataContext.RemoveMediaCommand, Mode=OneTime, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
-                                    Style="{StaticResource MediaFunctionButtonStyle}"/>
+                                    Style="{StaticResource MediaFunctionButtonStyle}"
+                                    app:ElementBehavior.Invisible="{Binding IsUploading, Mode=OneWay}">
+                                    <app:GeometryIcon Data="{StaticResource FontAwesome.Icon.Trash}" />
+                                </Button>
 
-                                <Border
+                                <Grid
                                     Grid.RowSpan="2"
                                     Grid.ColumnSpan="2"
                                     Background="#B000"
@@ -303,16 +293,18 @@
                                         TextTrimming="None"
                                         VerticalAlignment="Center"
                                         HorizontalAlignment="Center"
-                                        Text="アップロード中..." />
-                                </Border>
-                            </Grid>
+                                        Text="..." />
 
-                            <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding IsTweetPosting, Mode=OneWay}" Value="true">
-                                    <Setter TargetName="removeButton" Property="Visibility" Value="{x:Static Visibility.Collapsed}" />
-                                    <Setter TargetName="progressBar" Property="Visibility" Value="{x:Static Visibility.Visible}" />
-                                </DataTrigger>
-                            </DataTemplate.Triggers>
+                                    <ProgressBar
+                                        x:Name="progressBar"
+                                        Grid.ColumnSpan="2"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Bottom"
+                                        Height="7"
+                                        Minimum="0.0" Maximum="1.0"
+                                        Value="{Binding UploadProgress, Mode=OneWay}" />
+                                </Grid>
+                            </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.ItemContainerStyle>
@@ -391,6 +383,7 @@
 
         <TextBox
             Grid.ColumnSpan="2"
+            Grid.Row="3"
             Padding="4"
             TabIndex="1"
             ClipToBounds="True"
@@ -399,7 +392,6 @@
             BorderThickness="0"
             TextWrapping="Wrap"
             AcceptsReturn="True"
-            Grid.Row="3"
             Text="{Binding PostParameters.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             IsReadOnly="{Binding IsBusy, Mode=OneWay}">
             <i:Interaction.Behaviors>

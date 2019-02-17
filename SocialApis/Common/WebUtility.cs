@@ -80,8 +80,8 @@ namespace SocialApis
             {
                 [HttpRequestHeader.Authorization] = oauthHeader,
             };
-
-            return CreateWebRequest(method, endpoint, headers, parameters);
+            
+            return CreateWebRequest(endpoint, parameters, method, headers, autoSetting);
         }
 
         public static async Task<string> SendRequestText(HttpWebRequest request)

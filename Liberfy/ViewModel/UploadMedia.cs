@@ -13,180 +13,155 @@ using SocialApis;
 
 namespace Liberfy.ViewModel
 {
-	internal class UploadMedia : NotificationObject, IProgress<UploadProgress>, IDisposable
-	{
-		private UploadMedia(BitmapSource bmpSource, MediaType mediaType, string ext)
-		{
-			var pngEnc = new PngBitmapEncoder();
-			var memStr = new MemoryStream();
+    internal sealed class UploadMedia : NotificationObject, IProgress<UploadProgress>, IDisposable
+    {
+        private UploadMedia(BitmapSource bitmapSource, MediaType mediaType, string ext)
+        {
+            var stream = new MemoryStream();
 
-			// 画像データをストリームに保存
-			PreviewImage = new BitmapImage();
-			pngEnc.Frames.Add(BitmapFrame.Create(bmpSource));
-			pngEnc.Save(memStr);
-			pngEnc = null;
+            bitmapSource.SaveToStream<PngBitmapEncoder>(stream);
+            stream.Seek(0, SeekOrigin.Begin);
 
-			// ストリームからプレビュー画像の生成
-			memStr.Position = 0;
-			SourceStream = memStr;
-			PreviewImage.BeginInit();
-			PreviewImage.StreamSource = memStr;
-			PreviewImage.EndInit();
+            this.SourceStream = stream;
+            this.PreviewImage = ImageHelper.BitmapSourceFromStream(stream);
 
-			MediaType = mediaType;
-			ViewExtension = ext;
-		}
+            this.MediaType = mediaType;
+            this.DisplayExtension = ext;
+        }
 
-		private UploadMedia(string filePath)
-		{
-			var ext = Path.GetExtension(filePath).ToLower();
+        private UploadMedia(string path)
+        {
+            var ext = System.IO.Path.GetExtension(path);
 
-			if (ext.Equals(".gif") && IsAnimatedGif(ext))
-			{
-				this.MediaType = MediaType.AnimatedGifFile;
-				this.PreviewImage = new BitmapImage(new Uri(filePath));
-			}
-			else if (VideoExtensions.Contains(ext))
-			{
-				this.MediaType = MediaType.VideoFile;
-				this.UseChunkedUpload = true;
-			}
-			else if (ImageExtensions.Contains(ext))
-			{
-				this.MediaType = MediaType.ImageFile;
+            if (ImageExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))
+            {
+                var uri = new Uri(path, UriKind.Absolute);
 
-				if (ext != ".webp")
-				{
-					this.PreviewImage = new BitmapImage(new Uri(filePath));
-				}
-			}
-			else
-			{
-				throw new NotSupportedException();
-			}
+                if (ext.Equals(".gif", StringComparison.OrdinalIgnoreCase) && ImageHelper.IsAnimatedGif(uri))
+                {
+                    this.MediaType = MediaType.AnimatedGifFile;
+                    this.PreviewImage = new BitmapImage(uri);
+                }
+                else
+                {
+                    this.MediaType = MediaType.ImageFile;
 
-			this.FilePath = filePath;
-			filePath = Path.GetFileName(filePath);
-			this.ViewExtension = ext.Substring(1).ToUpper();
-			this.SourceStream = File.OpenRead(this.FilePath);
+                    if (!ext.Equals(".webp", StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.PreviewImage = new BitmapImage(uri);
+                    }
+                }
+            }
+            else if (VideoExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))
+            {
+                this.MediaType = MediaType.VideoFile;
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
 
-			if (this.PreviewImage?.CanFreeze ?? false)
-			{
-				this.PreviewImage.Freeze();
-			}
-		}
+            this.Path = path;
+            this.DisplayExtension = ext.Substring(1).ToUpper();
+            this.SourceStream = File.OpenRead(path);
 
-		public static UploadMedia FromBitmapSource(BitmapSource bmpSource, string ext = "CLIP")
-		{
-			return new UploadMedia(bmpSource, MediaType.Image, ext);
-		}
+            if (this.PreviewImage?.CanFreeze ?? false)
+            {
+                this.PreviewImage.Freeze();
+            }
+        }
 
-		public static UploadMedia FromArtwork(ArtworkItem artwork)
-		{
-			return new UploadMedia(artwork.Image, MediaType.Image, "ARTW");
-		}
+        public static UploadMedia FromBitmapSource(BitmapSource image, string displayExtension)
+        {
+            return new UploadMedia(image, MediaType.Image, displayExtension);
+        }
 
-		public static UploadMedia FromFile(string filepath)
-		{
-			return new UploadMedia(filepath);
-		}
+        public static UploadMedia FromFile(string filepath)
+        {
+            return new UploadMedia(filepath);
+        }
 
-		private static bool IsAnimatedGif(string filename) => ImageAnimator.CanAnimate(Image.FromFile(filename));
+        public string Path { get; private set; }
 
-		public string FileName { get; private set; }
+        public MediaType MediaType { get; }
 
-		public string FilePath { get; private set; }
+        public string DisplayExtension { get; }
 
-		public MediaType MediaType { get; }
+        public BitmapImage PreviewImage { get; private set; }
 
-		public string ViewExtension { get; }
+        private string _description;
+        public string Description
+        {
+            get => this._description;
+            private set => this.SetProperty(ref this._description, value);
+        }
 
-		public BitmapImage PreviewImage { get; private set; }
+        private double _uploadProgress;
+        public double UploadProgress
+        {
+            get => this._uploadProgress;
+            private set => this.SetProperty(ref this._uploadProgress, value);
+        }
 
-		public long? UploadId { get; private set; }
+        private bool _isUploading;
+        public bool IsUploading
+        {
+            get => this._isUploading;
+            private set => this.SetProperty(ref this._isUploading, value);
+        }
 
-		private string _description;
-		public string Description
-		{
-			get => this._description;
-			private set => this.SetProperty(ref this._description, value);
-		}
+        public Stream SourceStream { get; private set; }
 
-		private double _uploadProgress;
-		public double UploadProgress
-		{
-			get => this._uploadProgress;
-			private set => this.SetProperty(ref this._uploadProgress, value);
-		}
+        public void BeginUpload()
+        {
+            this.UploadProgress = 0.0d;
+            this.IsUploading = true;
+        }
 
-		private bool _isUploadFailed;
-		public bool IsUploadFailed
-		{
-			get => this._isUploadFailed;
-			private set => this.SetProperty(ref this._isUploadFailed, value);
-		}
+        public void EndUpload()
+        {
+            this.IsUploading = false;
+            this.UploadProgress = 0.0d;
+        }
 
-		private bool _isUploading;
-		public bool IsUploading
-		{
-			get => this._isUploading;
-			private set => this.SetProperty(ref this._isUploading, value);
-		}
+        public void Report(UploadProgress value)
+        {
+            this.UploadProgress = value.UploadPercentage;
+        }
 
-		private bool _isTweetPosting;
-		public bool IsTweetPosting => this._isTweetPosting;
+        public void Dispose()
+        {
+            if (this.SourceStream != null)
+            {
+                this.SourceStream.Dispose();
+                this.SourceStream = null;
+            }
 
-		public bool UseChunkedUpload { get; }
+            if (this.PreviewImage != null)
+            {
+                this.PreviewImage = null;
+            }
 
-		public Stream SourceStream { get; private set; }
+            this.Path = null;
+        }
 
-		private void CleanUploadState()
-		{
-			this.IsUploading = false;
-			this.UploadProgress = 0.0d;
-			this.IsUploadFailed = false;
-		}
+        public static class DisplayExtensions
+        {
+            public const string Clipboard = "CLPB";
+            public const string Artwork = "ARTW";
+        }
+    }
 
-		public void SetIsTweetPosting(bool value)
-		{
-			SetProperty(ref this._isTweetPosting, value, nameof(IsTweetPosting));
-		}
-
-		public bool IsAvailableUploadId() => UploadId.HasValue && UploadId > 0;
-
-		public void Report(UploadProgress value)
-		{
-			this.UploadProgress = value.UploadPercentage;
-		}
-
-		public void Dispose()
-		{
-			if (SourceStream != null)
-			{
-				SourceStream.Dispose();
-				SourceStream = null;
-			}
-
-			if (PreviewImage != null)
-			{
-				PreviewImage = null;
-			}
-
-			FilePath = null;
-			FileName = null;
-		}
-	}
-
-	[Flags]
-	internal enum MediaType : uint
-	{
-		None = 0,
-		File = 0x01,
-		Image = 0x02,
-		Video = 0x04,
-		AnimatedGif = 0x08,
-		ImageFile = Image | File,
-		VideoFile = Video | File,
-		AnimatedGifFile = AnimatedGif | File,
-	}
+    [Flags]
+    internal enum MediaType : uint
+    {
+        None = 0,
+        File = 0x01,
+        Image = 0x02,
+        Video = 0x04,
+        AnimatedGif = 0x08,
+        ImageFile = Image | File,
+        VideoFile = Video | File,
+        AnimatedGifFile = AnimatedGif | File,
+    }
 }
