@@ -157,6 +157,7 @@
     <Compile Include="Controls\DropDownButton.cs" />
     <Compile Include="Controls\DropDownMenuButton.cs" />
     <Compile Include="Controls\PopupDecorator.cs" />
+    <Compile Include="ImageHelper.cs" />
     <Compile Include="ServicePostParameters.cs" />
     <Compile Include="Services\Common\DataStoreBase.cs" />
     <Compile Include="Enums\StatusVisibility.cs" />

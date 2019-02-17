@@ -301,7 +301,7 @@ namespace Liberfy.ViewModel
         private Command<IDataObject> _dragDropCommand;
         public Command<IDataObject> DragDropCommand => this._dragDropCommand ?? (this._dragDropCommand = this.RegisterCommand(new DragDropCommand(this)));
 
-        private DragDropEffects _dragDropEffects = DragDropEffects.None;
+        private DragDropEffects _dragDropEffects;
         public DragDropEffects DragDropEffects
         {
             get => _dragDropEffects;
@@ -344,7 +344,7 @@ namespace Liberfy.ViewModel
 
         internal override bool CanClose()
         {
-            return !_isUploading;
+            return !this.IsUploading;
         }
 
         internal override void OnClosed()
@@ -354,50 +354,6 @@ namespace Liberfy.ViewModel
             this.PostParameters.Attachments.DisposeAll();
 
             base.OnClosed();
-        }
-    }
-
-
-    internal class ArtworkItem : NotificationObject, IDisposable
-    {
-        public ArtworkItem(Stream stream, bool? use)
-        {
-            var img = new BitmapImage();
-            img.BeginInit();
-            img.StreamSource = stream;
-            img.EndInit();
-            this.Image = img;
-
-            this.ArtStream = stream;
-
-            this._use = use ?? false;
-        }
-
-        private bool _use;
-        public bool Use
-        {
-            get => _use;
-            set => SetProperty(ref _use, value);
-        }
-
-        public BitmapImage Image { get; private set; }
-
-        public Stream ArtStream { get; private set; }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-        }
-
-        public void Dispose(bool disposeStream)
-        {
-            if (disposeStream)
-            {
-                this.ArtStream?.Dispose();
-            }
-
-            this.Image = null;
-            this.ArtStream = null;
         }
     }
 }

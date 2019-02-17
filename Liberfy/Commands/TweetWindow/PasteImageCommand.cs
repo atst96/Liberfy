@@ -28,25 +28,28 @@ namespace Liberfy.Commands
         {
             if (Clipboard.ContainsImage())
             {
-                this._viewModel.PostParameters.Attachments.Add(UploadMedia.FromBitmapSource(Clipboard.GetImage()));
+                var attachment = UploadMedia.FromBitmapSource(Clipboard.GetImage(), UploadMedia.DisplayExtensions.Clipboard);
+
+                this._viewModel.PostParameters.Attachments.Add(attachment);
             }
             else if (Clipboard.ContainsFileDropList())
             {
+                var files = Clipboard.GetFileDropList();
+
+
                 this._viewModel.PostParameters.Attachments.AddRange(
-                    GetEnableMediaFiles(Clipboard.GetFileDropList())
+                    GetEnableMediaFiles(files)
                     .Select(file => UploadMedia.FromFile(file)));
             }
         }
 
-        private static IEnumerable<string> GetEnableMediaFiles(StringCollection strCollection)
+        private static IEnumerable<string> GetEnableMediaFiles(StringCollection collection)
         {
-            foreach (var str in strCollection)
+            foreach (var str in collection)
             {
                 if (TweetWindow.IsUploadableExtension(Path.GetExtension(str)))
                     yield return str;
             }
-
-            yield break;
         }
     }
 }

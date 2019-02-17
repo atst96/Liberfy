@@ -24,19 +24,18 @@ namespace Liberfy.Commands
         {
             var data = parameter;
 
-            if (this._viewModel.IsBusy) return false;
+            if (this._viewModel.IsBusy)
+            {
+                return false;
+            }
 
-            if (data.GetDataPresent(DataFormats.FileDrop)
-                && data.GetData(DataFormats.FileDrop) is string[] dropFiles
-                && TweetWindow.HasEnableMediaFiles(dropFiles))
+            if (IsFileDropData(data))
             {
                 this._viewModel.DropDescriptionMessage = "添付";
                 this._viewModel.DragDropEffects = DragDropEffects.Copy;
                 this._viewModel.DropDescriptionIcon = DropImageType.Copy;
             }
-            else if (UrlDataPresets.Any(data.GetDataPresent)
-                || data.GetDataPresent(DataFormats.UnicodeText)
-                || data.GetDataPresent(DataFormats.Text))
+            else if (IsUrlData(data))
             {
                 this._viewModel.DropDescriptionMessage = "挿入";
                 this._viewModel.DragDropEffects = DragDropEffects.Copy;
@@ -55,29 +54,53 @@ namespace Liberfy.Commands
 
         protected override void Execute(IDataObject parameter)
         {
-            var data = parameter;
-
-            if (data.GetDataPresent(DataFormats.FileDrop))
+            if (DragDropCommand.TryGetStringDataType(parameter, out var type))
             {
-                var droppedFiles = (string[])data.GetData(DataFormats.FileDrop);
+                this._viewModel.TextBoxController.Insert((string)parameter.GetData(type));
+                this._viewModel.TextBoxController.Focus();
+            }
+            else if (parameter.GetDataPresent(DataFormats.FileDrop))
+            {
+                var droppedFiles = (string[])parameter.GetData(DataFormats.FileDrop);
                 this._viewModel.PostParameters.Attachments.AddRange(GetEnableMediaFiles(droppedFiles).Select(file => UploadMedia.FromFile(file)));
                 this._viewModel.UpdateCanPost();
             }
-            else if (UrlDataPresets.Any(data.GetDataPresent))
+        }
+
+        private static bool IsFileDropData(IDataObject dataObject)
+        {
+            return dataObject.GetDataPresent(DataFormats.FileDrop)
+                && dataObject.GetData(DataFormats.FileDrop) is string[] files
+                && TweetWindow.HasEnableMediaFiles(files);
+        }
+
+        private static bool IsUrlData(IDataObject dataObject)
+        {
+            return UrlDataPresets.Any(key => dataObject.GetDataPresent(key))
+                && dataObject.GetDataPresent(DataFormats.UnicodeText)
+                && dataObject.GetDataPresent(DataFormats.Text);
+        }
+
+        private static bool TryGetStringDataType(IDataObject dataObject, out string type)
+        {
+            if (dataObject.GetDataPresent(DataFormats.UnicodeText))
             {
-                this._viewModel.TextBoxController.Insert((string)data.GetData(DataFormats.UnicodeText));
-                this._viewModel.TextBoxController.Focus();
+                type = DataFormats.UnicodeText;
             }
-            else if (data.GetDataPresent(DataFormats.UnicodeText))
+            else if (dataObject.GetDataPresent(DataFormats.Text))
             {
-                this._viewModel.TextBoxController.Insert((string)data.GetData(DataFormats.UnicodeText));
-                this._viewModel.TextBoxController.Focus();
+                type = DataFormats.Text;
             }
-            else if (data.GetDataPresent(DataFormats.Text))
+            else if (UrlDataPresets.Any(f => dataObject.GetDataPresent(f)))
             {
-                this._viewModel.TextBoxController.Insert((string)data.GetData(DataFormats.Text));
-                this._viewModel.TextBoxController.Focus();
+                type = DataFormats.UnicodeText;
             }
+            else
+            {
+                type = null;
+            }
+
+            return type != null;
         }
 
         private static IEnumerable<string> GetEnableMediaFiles(IEnumerable<string> files)
