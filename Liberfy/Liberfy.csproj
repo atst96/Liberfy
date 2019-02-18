@@ -137,6 +137,7 @@
     <Compile Include="Commands\SettingWindowCommands\InsertNowPlayingParameterCommand.cs" />
     <Compile Include="Commands\SettingWindowCommands\ResetNowPlayingFormatCommand.cs" />
     <Compile Include="Components\IDisposableCommand.cs" />
+    <Compile Include="Components\MVVM\WindowService.cs" />
     <Compile Include="Controls\BusyIndicator.xaml.cs">
       <DependentUpon>BusyIndicator.xaml</DependentUpon>
     </Compile>

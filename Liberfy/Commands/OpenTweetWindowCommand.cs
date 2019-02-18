@@ -13,7 +13,7 @@
 
         protected override void Execute(IAccount parameter)
         {
-            this._viewModel.DialogService.Open(new View.TweetWindow(parameter));
+            this._viewModel.WindowService.OpenTweetWindow(parameter);
         }
     }
 }

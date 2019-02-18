@@ -50,7 +50,7 @@ namespace Liberfy.ViewModel
         private Command _showSettingDialog;
         public Command ShowSettingDialog
         {
-            get => this._showSettingDialog ?? (this._showSettingDialog = this.RegisterCommand(() => this.DialogService.OpenSetting()));
+            get => this._showSettingDialog ?? (this._showSettingDialog = this.RegisterCommand(() => this.WindowService.OpenSetting()));
         }
 
         private Command<IAccount> _openTweetWindowCommand;

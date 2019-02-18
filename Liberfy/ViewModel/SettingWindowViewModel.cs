@@ -245,7 +245,7 @@ namespace Liberfy.ViewModel
                 ShowInTaskbar = false,
             }, typeof(AuthenticationViewModel)))
             {
-                if (auth.SelectedService == SocialService.Twitter)
+                if (auth.SelectedService == ServiceType.Twitter)
                 {
                     var tokens = auth.TwitterTokens;
 
@@ -281,7 +281,7 @@ namespace Liberfy.ViewModel
                         AccountManager.Remove(account);
                     }
                 }
-                else if (auth.SelectedService == SocialService.Mastodon)
+                else if (auth.SelectedService == ServiceType.Mastodon)
                 {
                     var tokens = auth.MastodonTokens;
 

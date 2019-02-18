@@ -34,10 +34,13 @@ namespace Liberfy
         [DefaultValue(true)]
         public bool RegisterDialogService { get; set; } = true;
 
+        [DefaultValue(true)]
+        public bool RegisterWindowService { get; set; } = true;
+
         [DefaultValue(false)]
         public bool IsMainView { get; set; } = false;
 
-        private static Type _providerType = typeof(IProvideValueTarget);
+        private static readonly Type _providerType = typeof(IProvideValueTarget);
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
@@ -56,14 +59,21 @@ namespace Liberfy
             }
 
             var dialogService = this._viewModel.DialogService;
+            var windowService = this._viewModel.WindowService;
 
             if (serviceProvider.GetService(_providerType) is IProvideValueTarget valueTarget
                 && valueTarget.TargetObject is Window view)
             {
                 this._view = view;
+
                 if (this.RegisterDialogService)
                 {
-                    dialogService.RegisterView(view, IsMainView);
+                    dialogService.RegisterView(view, this.IsMainView);
+                }
+
+                if (this.RegisterWindowService)
+                {
+                    windowService.SetView(view, this.IsMainView);
                 }
 
                 this.RegisterEvents();
@@ -98,8 +108,6 @@ namespace Liberfy
 
         void OnViewClosed(object sender, EventArgs e)
         {
-            var dialogService = this.ViewModel.DialogService;
-
             if (this._viewModel != null)
             {
                 this._viewModel.OnClosed();

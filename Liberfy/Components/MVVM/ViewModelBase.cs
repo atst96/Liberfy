@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Liberfy.Components.MVVM;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +14,7 @@ namespace Liberfy.ViewModel
         public ViewModelBase()
         {
             this.DialogService = new DialogService(this);
+            this.WindowService = new WindowService(this);
             this._registeredCommands = new Collection<ICommand>();
         }
         
@@ -25,6 +27,11 @@ namespace Liberfy.ViewModel
         /// ビューモデルと関連付けられたダイアログ機能提供サービスです。
         /// </summary>
         public DialogService DialogService { get; private set; }
+
+        /// <summary>
+        /// ビューモデルと関連付けられたウィンドウ機能提供サービスです。
+        /// </summary>
+        public WindowService WindowService { get; private set; }
 
         /// <summary>
         /// ビューモデルが破棄済みかどうかを返します。
