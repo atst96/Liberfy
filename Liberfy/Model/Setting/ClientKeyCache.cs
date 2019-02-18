@@ -13,7 +13,7 @@ namespace Liberfy
     {
         public ClientKeyCache(Uri uri, SocialApis.Mastodon.ClientKeyInfo keyInfo)
         {
-            this.Service = SocialApis.SocialService.Mastodon;
+            this.Service = ServiceType.Mastodon;
             this.Id = keyInfo.Id;
             this.RegisteredAt = DateTimeOffset.Now;
             this.ClientId = keyInfo.ClientId;
@@ -23,7 +23,7 @@ namespace Liberfy
 
         [Key("service")]
         [DataMember(Name = "service")]
-        public SocialApis.SocialService Service { get;  set; }
+        public ServiceType Service { get;  set; }
 
         [Key("id")]
         [DataMember(Name = "id")]

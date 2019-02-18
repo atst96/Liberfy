@@ -18,25 +18,25 @@ namespace Liberfy.ViewModel
         public AuthenticationViewModel() : base()
         {
             this.Title = "認証";
-            this.SelectedService = SocialService.Twitter;
+            this.SelectedService = ServiceType.Twitter;
         }
 
-        public IReadOnlyDictionary<SocialService, string> ServiceNameList { get; } = new ReadOnlyDictionary<SocialService, string>(
-            new Dictionary<SocialService, string>
+        public IReadOnlyDictionary<ServiceType, string> ServiceNameList { get; } = new ReadOnlyDictionary<ServiceType, string>(
+            new Dictionary<ServiceType, string>
             {
-                [SocialService.Twitter] = "Twitter",
-                [SocialService.Mastodon] = "Mastodon",
+                [ServiceType.Twitter] = "Twitter",
+                [ServiceType.Mastodon] = "Mastodon",
             });
 
-        public static IReadOnlyDictionary<SocialService, ISocialConfig> ServiceConfigList { get; } = new ReadOnlyDictionary<SocialService, ISocialConfig>(
-            new Dictionary<SocialService, ISocialConfig>
+        public static IReadOnlyDictionary<ServiceType, ISocialConfig> ServiceConfigList { get; } = new ReadOnlyDictionary<ServiceType, ISocialConfig>(
+            new Dictionary<ServiceType, ISocialConfig>
             {
-                [SocialService.Twitter] = new TwitterConfig(),
-                [SocialService.Mastodon] = new MastodonConfig(),
+                [ServiceType.Twitter] = new TwitterConfig(),
+                [ServiceType.Mastodon] = new MastodonConfig(),
             });
 
-        private SocialService _selectedService;
-        public SocialService SelectedService
+        private ServiceType _selectedService;
+        public ServiceType SelectedService
         {
             get => this._selectedService;
             set
@@ -153,7 +153,7 @@ namespace Liberfy.ViewModel
                     (cKey, cSec) = (this.ConsumerKey, this.ConsumerSecret);
                 }
 
-                if (this.SelectedService == SocialService.Twitter)
+                if (this.SelectedService == ServiceType.Twitter)
                 {
                     if (!this.OverrideKey)
                     {
@@ -181,7 +181,7 @@ namespace Liberfy.ViewModel
                         this.IsRunning = false;
                     }
                 }
-                else if (this.SelectedService == SocialService.Mastodon)
+                else if (this.SelectedService == ServiceType.Mastodon)
                 {
                     this._tokenSource = new CancellationTokenSource();
 
@@ -212,7 +212,7 @@ namespace Liberfy.ViewModel
                             string uri_url = uri.ToString();
 
                             var key = App.Setting.ClientKeys
-                                .Where(k => k.Service == SocialService.Mastodon)
+                                .Where(k => k.Service == ServiceType.Mastodon)
                                 .FirstOrDefault(k => k.Host == uri_url);
 
                             if (key == null)
@@ -255,7 +255,7 @@ namespace Liberfy.ViewModel
             {
                 // page-1: PINコードを用いて認証
 
-                if (this.SelectedService == SocialService.Twitter)
+                if (this.SelectedService == ServiceType.Twitter)
                 {
                     try
                     {
@@ -274,7 +274,7 @@ namespace Liberfy.ViewModel
                         this.IsRunning = false;
                     }
                 }
-                else if (this.SelectedService == SocialService.Mastodon)
+                else if (this.SelectedService == ServiceType.Mastodon)
                 {
                     try
                     {
