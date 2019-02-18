@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class FollowRequestsApi : ApiBase
     {
@@ -14,19 +14,19 @@ namespace SocialApis.Mastodon.Apis
 
         public Task<Account[]> GetFollowRequests(IQuery query = null)
         {
-            return this.Api.GetRequestRestApiAsync<Account[]>("follow_requests", query);
+            return this.Api.RestApiGetRequestAsync<Account[]>("follow_requests", query);
         }
 
         public Task Authorize(long accountId)
         {
-            var req = this.Api.CreatePostRequesterApi($"follow_requests/{ accountId }/authorize");
-            return WebUtility.SendRequestVoid(req);
+            var req = this.Api.CreateRestApiPostRequest($"follow_requests/{ accountId }/authorize");
+            return WebUtility.SendRequest(req);
         }
 
         public Task Reject(long accountId)
         {
-            var req = this.Api.CreatePostRequesterApi($"follow_requests/{ accountId }/reject");
-            return WebUtility.SendRequestVoid(req);
+            var req = this.Api.CreateRestApiPostRequest($"follow_requests/{ accountId }/reject");
+            return WebUtility.SendRequest(req);
         }
     }
 }

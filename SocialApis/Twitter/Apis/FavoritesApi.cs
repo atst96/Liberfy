@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class FavoritesApi : ApiBase
     {
@@ -19,7 +19,7 @@ namespace SocialApis.Twitter.Apis
 
         public Task<StatusResponse> Create(IQuery query)
         {
-            return this.Api.PostRequestRestApiAsync<StatusResponse>("favorites/create", query);
+            return this.Api.RestApiPostRequestAsync<StatusResponse>("favorites/create", query);
         }
 
         public Task<StatusResponse> Destroy(long statusId)
@@ -29,7 +29,7 @@ namespace SocialApis.Twitter.Apis
 
         public Task<StatusResponse> Destroy(IQuery query)
         {
-            return this.Api.PostRequestRestApiAsync<StatusResponse>("favorites/destroy", query);
+            return this.Api.RestApiPostRequestAsync<StatusResponse>("favorites/destroy", query);
         }
 
         public Task<ListedResponse<User>> List(long userId)
@@ -44,7 +44,7 @@ namespace SocialApis.Twitter.Apis
 
         public Task<ListedResponse<User>> List(IQuery query)
         {
-            return this.Api.GetRequestRestApiAsync<ListedResponse<User>>("favorites/list", query);
+            return this.Api.RestApiGetRequestAsync<ListedResponse<User>>("favorites/list", query);
         }
     }
 }

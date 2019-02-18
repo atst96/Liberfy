@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class UsersApi : ApiBase
     {
@@ -27,7 +27,7 @@ namespace SocialApis.Twitter.Apis
                 ["perform_block"] = performBlock,
             };
 
-            return this.Api.PostRequestRestApiAsync<UserResponse>("users/report_spam", query);
+            return this.Api.RestApiPostRequestAsync<UserResponse>("users/report_spam", query);
         }
 
         public Task<UserResponse> ReportSpam(long usreId)
@@ -43,7 +43,7 @@ namespace SocialApis.Twitter.Apis
                 ["perform_block"] = performBlock,
             };
 
-            return this.Api.PostRequestRestApiAsync<UserResponse>("users/report_spam", query);
+            return this.Api.RestApiPostRequestAsync<UserResponse>("users/report_spam", query);
         }
     }
 }

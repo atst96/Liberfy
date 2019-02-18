@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class MediaApi : ApiBase
     {
@@ -24,7 +24,8 @@ namespace SocialApis.Twitter.Apis
 
         private static HttpWebRequest CreateMultipartRequester(TwitterApi tokens, out string boundary)
         {
-            var req = tokens.CreatePostRequester(_apiEndpoint, null, false);
+            var req = WebUtility.CreateOAuthRequest(HttpMethods.POST, _apiEndpoint, tokens, null);
+
             boundary = OAuthHelper.GenerateNonce();
 
             req.ContentType = $"multipart/form-data; boundary={ boundary }";
@@ -37,7 +38,7 @@ namespace SocialApis.Twitter.Apis
             var request = CreateMultipartRequester(this.Api, out var boundary);
 
             using (var requestStream = await request.GetRequestStreamAsync().ConfigureAwait(false))
-            using (var writer = new StreamWriter(requestStream, Encoding.UTF8))
+            using (var writer = new StreamWriter(requestStream, EncodingUtility.UTF8))
             {
                 writer.WriteLine($"--{ boundary }");
                 writer.WriteLine("Content-Disposition: form-data; name=\"media\"");
@@ -121,7 +122,7 @@ namespace SocialApis.Twitter.Apis
             if (additionalOwners != null)
                 query["additional_owners"] = additionalOwners;
 
-            return this.Api.PostRequestAsync<MediaResponse>(_apiEndpoint, query);
+            return this.Api.ApiPostRequestAsync<MediaResponse>(_apiEndpoint, query);
         }
 
         public async Task<string> ChunkedUploadAppend(long mediaId, Stream media, int segmentSize, long segmentIndex, IProgress<UploadProgress> progressReceiver, UploadProgress progress)
@@ -187,21 +188,18 @@ namespace SocialApis.Twitter.Apis
             {
                 using (var response = await request.GetResponseAsync().ConfigureAwait(false))
                 {
-                    return await StreamUtility.ReadToEndAsync(response.GetResponseStream()).ConfigureAwait(false);
+                    return await response.GetResponseStream().ReadToEndAsync().ConfigureAwait(false);
                 }
             }
             catch (WebException wex) when (wex.Response != null)
             {
-                var response = wex.Response.GetResponseStream();
-
-                var errors = await JsonUtility.DeserializeAsync<TwitterErrorContainer>(response).ConfigureAwait(false);
-                throw new TwitterException(wex, errors);
+                throw TwitterException.FromWebException(wex);
             }
         }
 
         public Task<UploadMediaInfo> ChunkedUploadStatus(long mediaId)
         {
-            return this.Api.GetRequestAsync<UploadMediaInfo>(_apiEndpoint, new Query
+            return this.Api.ApiGetRequestAsync<UploadMediaInfo>(_apiEndpoint, new Query
             {
                 ["command"] = "STATUS",
                 ["media_id"] = mediaId,
@@ -210,7 +208,7 @@ namespace SocialApis.Twitter.Apis
 
         public Task<MediaResponse> ChunkedUploadFinalize(long mediaId)
         {
-            return this.Api.PostRequestAsync<MediaResponse>(_apiEndpoint, new Query
+            return this.Api.ApiPostRequestAsync<MediaResponse>(_apiEndpoint, new Query
             {
                 ["command"] = "FINALIZE",
                 ["media_id"] = mediaId,

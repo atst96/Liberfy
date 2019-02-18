@@ -8,11 +8,8 @@ using System.Linq;
 namespace SocialApis.Twitter
 {
     [DataContract]
-    public class Status : IStatus
+    public class Status
     {
-        [IgnoreDataMember]
-        SocialService IStatus.Service { get; } = SocialService.Twitter;
-
         [DataMember(Name = "created_at")]
         [JsonFormatter(typeof(DateTimeOffsetFormatter))]
         public DateTimeOffset CreatedAt { get; set; }

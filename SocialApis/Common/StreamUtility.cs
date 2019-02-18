@@ -11,15 +11,15 @@ namespace SocialApis
     {
         public static string ReadToEnd(Stream stream)
         {
-            using (var reader = new StreamReader(stream, Encoding.UTF8))
+            using (var reader = new StreamReader(stream, EncodingUtility.UTF8))
             {
                 return reader.ReadToEnd();
             }
         }
 
-        public static async Task<string> ReadToEndAsync(Stream stream)
+        public static async Task<string> ReadToEndAsync(this Stream stream)
         {
-            using (var reader = new StreamReader(stream, Encoding.UTF8))
+            using (var reader = new StreamReader(stream, EncodingUtility.UTF8))
             {
                 return await reader.ReadToEndAsync().ConfigureAwait(false);
             }

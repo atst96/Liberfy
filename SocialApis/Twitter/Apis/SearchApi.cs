@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class SearchApi : ApiBase
     {
@@ -19,7 +19,7 @@ namespace SocialApis.Twitter.Apis
 
         public Task<ListedResponse<Status>> Search(IQuery query)
         {
-            return this.Api.GetRequestRestApiAsync<ListedResponse<Status>>("search/tweets", query);
+            return this.Api.RestApiGetRequestAsync<ListedResponse<Status>>("search/tweets", query);
         }
     }
 }

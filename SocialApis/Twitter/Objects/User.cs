@@ -10,11 +10,8 @@ using Utf8Json;
 namespace SocialApis.Twitter
 {
     [DataContract]
-    public class User : IAccount
+    public class User
     {
-        [IgnoreDataMember]
-        public SocialService Service { get; } = SocialService.Twitter;
-
         [DataMember(Name = "id")]
         public long? Id { get; set; }
 

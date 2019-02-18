@@ -23,7 +23,7 @@ namespace SocialApis.Twitter.Apis
             if (!string.IsNullOrEmpty(callbackUrl))
                 parameters[OAuthHelper.OAuthParameters.Callback] = callbackUrl;
 
-            var request = WebUtility.CreateOAuthRequest(endpoint, this.Api, parameters, HttpMethods.POST);
+            var request = WebUtility.CreateOAuthRequest(HttpMethods.POST, endpoint, this.Api, parameters);
 
             using (var response = await request.GetResponseAsync().ConfigureAwait(false))
             {
@@ -55,10 +55,10 @@ namespace SocialApis.Twitter.Apis
                 [OAuthHelper.OAuthParameters.Verifier] = verifier,
             };
 
-            var request = WebUtility.CreateOAuthRequest(endpoint, this.Api, parameters, HttpMethods.POST);
+            var request = WebUtility.CreateOAuthRequest(HttpMethods.POST, endpoint, this.Api, parameters);
 
             using (var response = await request.GetResponseAsync().ConfigureAwait(false))
-            using (var sr = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+            using (var sr = new StreamReader(response.GetResponseStream(), EncodingUtility.UTF8))
             {
                 char[] splitCharacters = { '=' };
 

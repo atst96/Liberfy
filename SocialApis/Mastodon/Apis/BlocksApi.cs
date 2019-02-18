@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class BlocksApi : ApiBase
     {
@@ -14,7 +14,7 @@ namespace SocialApis.Mastodon.Apis
 
         public Task<Account[]> GetAll(IQuery query = null)
         {
-            return this.Api.GetRequestRestApiAsync<Account[]>("blocks", query);
+            return this.Api.RestApiGetRequestAsync<Account[]>("blocks", query);
         }
     }
 }

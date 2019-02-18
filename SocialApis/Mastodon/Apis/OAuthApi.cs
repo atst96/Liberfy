@@ -5,12 +5,12 @@ namespace SocialApis.Mastodon.Apis
 {
     public class OAuthApi : ApiBase
     {
+        private readonly string _oauthBaseUrl;
+
         internal OAuthApi(MastodonApi tokens) : base(tokens)
         {
             this._oauthBaseUrl = tokens.HostUrl.AbsoluteUri + "oauth/";
         }
-
-        private readonly string _oauthBaseUrl;
 
         public Task<AccessTokenResponse> GetAccessToken(string code, string redirectUrl = "urn:ietf:wg:oauth:2.0:oob")
         {
@@ -25,7 +25,7 @@ namespace SocialApis.Mastodon.Apis
                 ["code"] = code,
             };
 
-            return this.Api.SendRequest<AccessTokenResponse>(WebUtility.CreateWebRequest(url, parameters, HttpMethods.POST));
+            return this.Api.SendRequest<AccessTokenResponse>(WebUtility.CreateWebRequest(HttpMethods.POST, url, parameters));
         }
 
         public string GetAuthorizeUrl(string[] scopes, string redirectUri = "urn:ietf:wg:oauth:2.0:oob")
@@ -40,7 +40,7 @@ namespace SocialApis.Mastodon.Apis
                 ["client_id"] = this.Api.ClientId,
             };
 
-            return $"{ url }?{ string.Join("&", Query.GetRequestParameters(query)) }";
+            return $"{ url }?{ string.Join("&", Query.GetRequestParameterStrings(query)) }";
         }
     }
 }

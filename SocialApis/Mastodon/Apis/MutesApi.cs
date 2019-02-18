@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class MutesApi : ApiBase
     {
@@ -15,7 +15,7 @@ namespace SocialApis.Mastodon
 
         public Task<Account[]> GetMutes(IQuery query = null)
         {
-            return this.Api.PostRequestRestApiAsync<Account[]>("mutes", query);
+            return this.Api.RestApiPostRequestAsync<Account[]>("mutes", query);
         }
     }
 }

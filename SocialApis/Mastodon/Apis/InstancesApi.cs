@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class InstancesApi : ApiBase
     {
@@ -11,12 +11,12 @@ namespace SocialApis.Mastodon.Apis
 
         public Task<Instance> GetInstance()
         {
-            return this.Api.GetRequestAsync<Instance>("instance");
+            return this.Api.ApiGetRequestAsync<Instance>("instance");
         }
 
         public Task<Emoji[]> CustomEmojis()
         {
-            return this.Api.GetRequestAsync<Emoji[]>("custom_emojis");
+            return this.Api.ApiGetRequestAsync<Emoji[]>("custom_emojis");
         }
     }
 }

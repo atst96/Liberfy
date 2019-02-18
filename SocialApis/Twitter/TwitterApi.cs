@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace SocialApis.Twitter
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class TwitterApi : IApi
     {
@@ -90,39 +90,14 @@ namespace SocialApis.Twitter
 
         private const string RestApiBaseUrl = "https://api.twitter.com/1.1/";
 
-        internal HttpWebRequest CreateRequester(string endpoint, IQuery query = null, string method = HttpMethods.GET, bool autoSetting = true)
+        private static string GetRestApiUrl(string path)
         {
-            return WebUtility.CreateOAuthRequest(endpoint, this, query, method, autoSetting);
+            return string.Concat(RestApiBaseUrl, path, ".json");
         }
 
-        internal HttpWebRequest CreateGetRequester(string endpoint, IQuery query = null, bool autoSetting = true)
+        private Task<T> SendRequest<T>(string method, string endpoint, IQuery query = null) where T : class
         {
-            return this.CreateRequester(endpoint, query, HttpMethods.GET, autoSetting);
-        }
-
-        internal HttpWebRequest CreatePostRequester(string endpoint, IQuery query = null, bool autoSetting = true)
-        {
-            return this.CreateRequester(endpoint, query, HttpMethods.POST, autoSetting);
-        }
-
-        internal HttpWebRequest CreateRequesterApi(string path, IQuery query = null, string method = HttpMethods.GET, bool autoSetting = true)
-        {
-            return WebUtility.CreateOAuthRequest(string.Concat(RestApiBaseUrl, path, ".json"), this, query, method, autoSetting);
-        }
-
-        internal HttpWebRequest CreateGetRequesterApi(string path, IQuery query = null, bool autoSetting = true)
-        {
-            return this.CreateRequesterApi(path, query, HttpMethods.GET, autoSetting);
-        }
-
-        internal HttpWebRequest CreatePostRequesterApi(string path, IQuery query = null, bool autoSetting = true)
-        {
-            return this.CreateRequesterApi(path, query, HttpMethods.POST, autoSetting);
-        }
-
-        private Task<T> SendRequest<T>(string endpoint, IQuery query = null, string method = HttpMethods.GET) where T : class
-        {
-            return this.SendRequest<T>(WebUtility.CreateOAuthRequest(endpoint, this, query, method));
+            return this.SendRequest<T>(WebUtility.CreateOAuthRequest(method, endpoint, this, query));
         }
 
         internal async Task<T> SendRequest<T>(HttpWebRequest request) where T : class
@@ -145,37 +120,29 @@ namespace SocialApis.Twitter
             }
             catch (WebException wex) when (wex.Response != null)
             {
-                var response = wex.Response.GetResponseStream();
-
-                var errors = await JsonUtility.DeserializeAsync<TwitterErrorContainer>(response)
-                    .ConfigureAwait(false);
-                throw new TwitterException(wex, errors);
+                throw TwitterException.FromWebException(wex);
             }
         }
 
-        private Task<T> SendApiRequestAsync<T>(string path, IQuery query, string method) where T : class
+        internal Task<T> ApiGetRequestAsync<T>(string endpoint, IQuery query) where T : class
         {
-            return this.SendRequest<T>(string.Concat(RestApiBaseUrl, path, ".json"), query, method);
+            return this.SendRequest<T>(HttpMethods.GET, endpoint, query);
         }
 
-        internal Task<T> GetRequestAsync<T>(string endpoint, IQuery query) where T : class
+        internal Task<T> ApiPostRequestAsync<T>(string endpoint, IQuery query = null) where T : class
         {
-            return this.SendRequest<T>(endpoint, query, HttpMethods.GET);
+            return this.SendRequest<T>(HttpMethods.POST, endpoint, query);
         }
 
-        internal Task<T> GetRequestRestApiAsync<T>(string path, IQuery query = null) where T : class
+
+        internal Task<T> RestApiGetRequestAsync<T>(string path, IQuery query = null) where T : class
         {
-            return this.SendApiRequestAsync<T>(path, query, HttpMethods.GET);
+            return this.ApiGetRequestAsync<T>(GetRestApiUrl(path), query);
         }
 
-        internal Task<T> PostRequestAsync<T>(string endpoint, IQuery query = null) where T : class
+        internal Task<T> RestApiPostRequestAsync<T>(string path, IQuery query = null) where T : class
         {
-            return this.SendRequest<T>(endpoint, query, HttpMethods.POST);
-        }
-
-        internal Task<T> PostRequestRestApiAsync<T>(string path, IQuery query = null) where T : class
-        {
-            return this.SendApiRequestAsync<T>(path, query, HttpMethods.POST);
+            return this.ApiPostRequestAsync<T>(GetRestApiUrl(path), query);
         }
     }
 }

@@ -6,18 +6,15 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class SearchApi : ApiBase
     {
         internal SearchApi(MastodonApi tokens) : base(tokens) { }
 
-        public Task<Results> Search(string q, IQuery query = null)
+        public Task<Results> Search(IQuery query = null)
         {
-            var _q = new Query(query);
-            _q["q"] = q;
-
-            return this.Api.GetRequestRestApiAsync<Results>("search", _q);
+            return this.Api.RestApiGetRequestAsync<Results>("search", query);
         }
     }
 }

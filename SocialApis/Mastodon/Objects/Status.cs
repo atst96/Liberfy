@@ -10,11 +10,8 @@ using Utf8Json;
 namespace SocialApis.Mastodon
 {
     [DataContract]
-    public class Status : IStatus
+    public class Status
     {
-        [IgnoreDataMember]
-        SocialService IStatus.Service { get; } = SocialService.Mastodon;
-
         [DataMember(Name = "id")]
         [JsonFormatter(typeof(Formatters.ToLongFormatter))]
         public long Id { get; private set; }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class DirectMessageApi : ApiBase
     {
@@ -14,7 +14,7 @@ namespace SocialApis.Twitter.Apis
 
         public Task<Responses.DirectMessageListResponse> List()
         {
-            return this.Api.GetRequestRestApiAsync<Responses.DirectMessageListResponse>("direct_messages/events/list");
+            return this.Api.RestApiGetRequestAsync<Responses.DirectMessageListResponse>("direct_messages/events/list");
         }
 
         public Task<Responses.DirectMessageListResponse> List(int? count = null, long? cursor = null)
@@ -27,7 +27,7 @@ namespace SocialApis.Twitter.Apis
             if (cursor.HasValue)
                 query["cursor"] = cursor.Value;
 
-            return this.Api.GetRequestRestApiAsync<Responses.DirectMessageListResponse>("direct_messages/events/list", query);
+            return this.Api.RestApiGetRequestAsync<Responses.DirectMessageListResponse>("direct_messages/events/list", query);
         }
 
         public Task<DirectMessageSingleResponse> Show(long id)
@@ -37,7 +37,7 @@ namespace SocialApis.Twitter.Apis
                 ["id"] = id,
             };
 
-            return this.Api.GetRequestRestApiAsync<DirectMessageSingleResponse>("direct_messages/events/show", query);
+            return this.Api.RestApiGetRequestAsync<DirectMessageSingleResponse>("direct_messages/events/show", query);
         }
     }
 }

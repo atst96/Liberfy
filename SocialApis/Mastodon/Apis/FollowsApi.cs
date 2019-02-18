@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class FollowsApi : ApiBase
     {
@@ -15,7 +15,7 @@ namespace SocialApis.Mastodon.Apis
         public Task<Account[]> GetFollows(string uri)
         {
             var query = new Query { ["uri"] = uri };
-            return this.Api.GetRequestRestApiAsync<Account[]>("follows", query);
+            return this.Api.RestApiGetRequestAsync<Account[]>("follows", query);
         }
     }
 }

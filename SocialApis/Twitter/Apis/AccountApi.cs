@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class AccountApi : ApiBase
     {
@@ -14,12 +14,12 @@ namespace SocialApis.Twitter.Apis
 
         public Task<UserResponse> VerifyCredentials()
         {
-            return this.Api.GetRequestRestApiAsync<UserResponse>("account/verify_credentials");
+            return this.Api.RestApiGetRequestAsync<UserResponse>("account/verify_credentials");
         }
 
         public Task<UserResponse> VerifyCredentials(IQuery query)
         {
-            return this.Api.GetRequestRestApiAsync<UserResponse>("account/verify_credentials", query);
+            return this.Api.RestApiGetRequestAsync<UserResponse>("account/verify_credentials", query);
         }
     }
 }

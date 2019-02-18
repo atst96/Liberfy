@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class ListsApi : ApiBase
     {
@@ -14,56 +14,53 @@ namespace SocialApis.Mastodon.Apis
 
         public Task<List[]> GetLists()
         {
-            return this.Api.GetRequestRestApiAsync<List[]>("lists");
+            return this.Api.RestApiGetRequestAsync<List[]>("lists");
         }
 
         public Task<List[]> GetMembershipLists(long accountId)
         {
-            return this.Api.GetRequestRestApiAsync<List[]>($"accounts/{ accountId }/lists");
+            return this.Api.RestApiGetRequestAsync<List[]>($"accounts/{ accountId }/lists");
         }
 
         public Task<Account[]> GetListAccounts(long listId)
         {
-            return this.Api.GetRequestRestApiAsync<Account[]>($"lists/{ listId }/accounts");
+            return this.Api.RestApiGetRequestAsync<Account[]>($"lists/{ listId }/accounts");
         }
 
         public Task<List> GetList(long listId)
         {
-            return this.Api.GetRequestRestApiAsync<List>($"lists/{ listId }");
+            return this.Api.RestApiGetRequestAsync<List>($"lists/{ listId }");
         }
 
         public Task<List> Create(string title)
         {
             var query = new Query { ["title"] = title };
-            return this.Api.PostRequestRestApiAsync<List>("lists", query);
+            return this.Api.RestApiPostRequestAsync<List>("lists", query);
         }
 
         public Task<List> Update(long listId, string title)
         {
             var query = new Query { ["title"] = title };
-            var req = this.Api.CreateApiRequest("lists", query, "PUT");
-            return this.Api.SendRequest<List>(req);
+            return this.Api.RestApiPutRequestAsync<List>($"lists/{ listId }", query);
         }
 
         public Task<List> Delete(long listId)
         {
-            var req = this.Api.CreateApiRequest($"lists/{ listId }", null, "DELETE");
-            return this.Api.SendRequest<List>(req);
+            return this.Api.RestApiDeleteRequestAsync<List>($"lists/{ listId }");
         }
 
         public Task AddAccounts(long listId, params long[] accountIds)
         {
-            var query = new Query { ["account_ids"] = new UrlArray(accountIds) };
+            var query = new Query { ["account_ids"] = new QueryArrayItem(accountIds) };
 
-            var req = this.Api.CreatePostRequesterApi($"lists/{ listId }/accounts", query);
-            return this.Api.SendRequestVoid(req);
+            return this.Api.RestApiPostRequestAsync($"lists/{ listId }/accounts");
         }
 
         public Task RemoveAccounts(long listId, params long[] accountIds)
         {
-            var query = new Query { ["account_ids"] = new UrlArray(accountIds) };
-            var req = this.Api.CreateApiRequest($"lists/{ listId }/accounts", query, "DELETE");
-            return this.Api.SendRequestVoid(req);
+            var query = new Query { ["account_ids"] = new QueryArrayItem(accountIds) };
+
+            return this.Api.RestApiDeleteRequestAsync($"lists/{ listId }/accounts", query);
         }
     }
 }

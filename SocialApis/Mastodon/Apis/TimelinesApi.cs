@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class TimelinesApi : ApiBase
     {
@@ -14,22 +14,22 @@ namespace SocialApis.Mastodon.Apis
 
         public Task<Status[]> Home(IQuery query = null)
         {
-            return this.Api.GetRequestRestApiAsync<Status[]>("timelines/home", query);
+            return this.Api.RestApiGetRequestAsync<Status[]>("timelines/home", query);
         }
 
         public Task<Status[]> Public(IQuery query = null)
         {
-            return this.Api.GetRequestRestApiAsync<Status[]>("timelines/public", query);
+            return this.Api.RestApiGetRequestAsync<Status[]>("timelines/public", query);
         }
 
         public Task<Status[]> Tag(string hashtag, IQuery query = null)
         {
-            return this.Api.GetRequestRestApiAsync<Status[]>($"timelines/tag/{ HttpHelper.UrlEncode(hashtag) }", query);
+            return this.Api.RestApiGetRequestAsync<Status[]>($"timelines/tag/{ WebUtility.UrlEncode(hashtag) }", query);
         }
 
         public Task<Status[]> Tag(long listId, IQuery query = null)
         {
-            return this.Api.GetRequestRestApiAsync<Status[]>($"timelines/list/{ listId }", query);
+            return this.Api.RestApiGetRequestAsync<Status[]>($"timelines/list/{ listId }", query);
         }
     }
 }

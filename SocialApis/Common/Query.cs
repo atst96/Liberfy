@@ -9,7 +9,7 @@ using System.Web;
 
 namespace SocialApis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class Query : IDictionary<string, object>, ICloneable
     {
@@ -47,81 +47,111 @@ namespace SocialApis
 
         public object this[string key]
         {
-            get => TryGetValue(key, out var value) ? value : null;
+            get => this.TryGetValue(key, out var value) ? value : null;
             set
             {
-                if (ContainsKey(key))
-                    _dictionary[key] = value;
+                if (this.ContainsKey(key))
+                {
+                    this._dictionary[key] = value;
+                }
                 else
+                {
                     this.Add(key, value);
+                }
             }
         }
 
-        public static string Join(IQuery query, string separator)
+        public static string JoinParameters(IQuery query, string separator)
         {
-            return string.Join(separator, GetRequestParameters(query));
+            return string.Join(separator, GetRequestParameterStrings(query));
         }
 
-        public static string Join(IQuery query)
+        public static string JoinParameters(IQuery query)
         {
-            return Join(query, "&");
+            return JoinParameters(query, "&");
         }
 
-        public static IEnumerable<string> GetRequestParameters(IQuery values)
+        public static string[] GetRequestParameterStrings(IQuery values)
         {
-            return values?.Select(kvp => GetParameterPair(kvp.Key, kvp.Value)) ?? Enumerable.Empty<string>();
-        }
+            string[] strings = new string[values.Count];
 
-        private static string JoinParameterPais(string name, string value, string valueEnclosure = null)
-        {
-            return name + "=" + (string.IsNullOrEmpty(valueEnclosure) ? value : (valueEnclosure + value + valueEnclosure));
-        }
-
-        public static string GetParamPairString(string name, object value, string valueEnclosure = null)
-        {
-            if (value is UrlArray urlArray)
+            int i = 0;
+            foreach (var kvp in values)
             {
-                var arrayedName = HttpHelper.UrlEncode(name) + "[]";
+                strings[i] = ConcatKeyValuePair(kvp.Key, kvp.Value);
+                ++i;
+            }
 
-                var valuePairs = urlArray
-                    .Select(val => JoinParameterPais(arrayedName, HttpHelper.UrlEncode(ValueToString(val))));
+            return strings;
+        }
+
+        private static string ConcatKeyValuePair(string name, string value, string enclosure)
+        {
+            return name + "=" + (enclosure == null ? value : (enclosure + value + enclosure));
+        }
+
+        public static string ConcatKeyValuePair(string name, object value, string enclosure)
+        {
+            if (value is QueryArrayItem arrayItem)
+            {
+                var valuePairs = new string[arrayItem.Count];
+                var arrayedName = WebUtility.UrlEncode(name) + "[]";
+
+                for (int i = 0; i < arrayItem.Count; ++i)
+                {
+                    valuePairs[i] = ConcatKeyValuePair(arrayedName, WebUtility.UrlEncode(ValueToString(arrayItem[i])));
+                }
 
                 return string.Join("&", valuePairs);
             }
             else
             {
-                return JoinParameterPais(HttpHelper.UrlEncode(name), HttpHelper.UrlEncode(ValueToString(value)), valueEnclosure);
+                return ConcatKeyValuePair(WebUtility.UrlEncode(name), WebUtility.UrlEncode(ValueToString(value)), enclosure);
             }
         }
 
-        public static string GetParameterPair(string name, object value) => GetParamPairString(name, value);
+        public static string ConcatKeyValuePair(string name, object value)
+        {
+            return ConcatKeyValuePair(name, value, null);
+        }
 
-        public static string GetParameterPair(KeyValuePair<string, object> kvp) => GetParamPairString(kvp.Key, kvp.Value);
+        public static string GetParameterPair(KeyValuePair<string, object> kvp)
+        {
+            return ConcatKeyValuePair(kvp.Key, kvp.Value, null);
+        }
 
-        public static string GetParameterPairDq(string name, object value) => GetParamPairString(name, value, "\"");
+        public static string ConcatKeyValuePairDoubleQuotation(string name, object value)
+        {
+            return ConcatKeyValuePair(name, value, "\"");
+        }
 
-        public static string GetParameterPairDq(KeyValuePair<string, object> kvp) => GetParameterPairDq(kvp.Key, kvp.Value);
+        public static string ConcatKeyValuePairDoubleQuotation(KeyValuePair<string, object> kvp)
+        {
+            return ConcatKeyValuePairDoubleQuotation(kvp.Key, kvp.Value);
+        }
 
         private static readonly Hashtable _typeHandles = new Hashtable();
 
         public static string ValueToString(object value, bool nested = false)
         {
             if (value == null)
+            {
                 return string.Empty;
-
-            if (value is string stringValue)
+            }
+            else if (value is string stringValue)
+            {
                 return nested ? $"\"{stringValue}\"" : stringValue;
-
+            }
             else if (value is Array arrayValue)
             {
-                var stringValueList = new List<string>(arrayValue.Length);
+                var valueList = new string[arrayValue.Length];
 
-                foreach (object element in arrayValue)
+                for (int i = 0; i < arrayValue.Length; ++i)
                 {
-                    stringValueList.Add(ValueToString(element, true));
+                    valueList[i] = ValueToString(arrayValue.GetValue(i));
                 }
 
-                return string.Join(",", stringValueList);
+                return string.Join(",", valueList);
             }
             else
             {
@@ -135,37 +165,30 @@ namespace SocialApis
 
                 if (type.IsEnum)
                 {
-                    var enumString = type.GetEnumName(value);
+                    var enumName = type.GetEnumName(value);
+                    var memberInfo = type.GetMember(enumName).FirstOrDefault();
+                    var memberAttribute = Attribute.GetCustomAttribute(memberInfo, typeof(EnumMemberAttribute), true);
 
-                    var memberInfo = type.GetMember(enumString).FirstOrDefault();
-                    var attr = Attribute.GetCustomAttribute(memberInfo, typeof(EnumMemberAttribute), true);
-
-                    if (attr is EnumMemberAttribute enumMember)
-                        return enumMember.Value;
-                    else
-                        return enumString;
+                    return memberAttribute is EnumMemberAttribute enumMemberAttribute
+                        ? enumMemberAttribute.Value
+                        : enumName;
                 }
                 else
                 {
-                    var typeCode = Type.GetTypeCode(type);
-                    switch (typeCode)
-                    {
-                        case TypeCode.Byte:
-                        case TypeCode.Char:
-                        case TypeCode.Decimal:
-                        case TypeCode.Double:
-                        case TypeCode.Int16:
-                        case TypeCode.Int32:
-                        case TypeCode.Int64:
-                        case TypeCode.SByte:
-                        case TypeCode.Single:
-                        case TypeCode.UInt16:
-                        case TypeCode.UInt32:
-                        case TypeCode.UInt64:
-                            return value.ToString();
+                    TypeCode typeCode = Type.GetTypeCode(type);
 
-                        case TypeCode.Boolean:
-                            return value.ToString().ToLower();
+                    if (typeCode == TypeCode.Boolean)
+                    {
+                        return value.ToString().ToLower();
+                    }
+                    else if (typeCode >= TypeCode.Char && typeCode <= TypeCode.Decimal)
+                    {
+                        return value.ToString();
+                    }
+                    else if (typeCode == TypeCode.DateTime)
+                    {
+                        // TODO
+                        return value.ToString();
                     }
                 }
 
@@ -212,30 +235,34 @@ namespace SocialApis
 
         object ICloneable.Clone() => this.Clone();
 
-        public static Query Merge(Query qLeft, Query qRight)
+        public static Query Merge(Query leftQuery, Query rightQuery)
         {
-            if (qLeft == null && qRight == null)
-                throw new ArgumentNullException($"{ nameof(qLeft) } and { nameof(qRight) }");
-
-            if (qLeft == null)
-                return qRight.Clone();
-
-            else if (qRight == null)
-                return qLeft.Clone();
-
-            var query = qLeft.Clone();
-
-            if (qRight.Count > 0)
+            if (leftQuery == null && rightQuery == null)
             {
-                foreach (var key in qRight.Keys.Except(qLeft.Keys))
+                throw new ArgumentNullException($"{ nameof(leftQuery) } and { nameof(rightQuery) }");
+            }
+            else if (leftQuery?.Count == 0)
+            {
+                return rightQuery.Clone();
+            }
+            else if (rightQuery?.Count == 0)
+            {
+                return leftQuery.Clone();
+            }
+
+            var newQuery = leftQuery.Clone();
+
+            if (rightQuery.Count > 0)
+            {
+                foreach (var key in rightQuery.Keys.Except(leftQuery.Keys))
                 {
-                    query[key] = qRight[key];
+                    newQuery[key] = rightQuery[key];
                 }
             }
 
-            return query;
+            return newQuery;
         }
 
-        public static Query operator +(Query qLeft, Query qRight) => Merge(qLeft, qRight);
+        public static Query operator +(Query leftQuery, Query rightQuery) => Query.Merge(leftQuery, rightQuery);
     }
 }

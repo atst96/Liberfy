@@ -9,17 +9,11 @@ using System.Threading.Tasks;
 namespace SocialApis.Mastodon
 {
     [DataContract]
-    public class Account : IAccount
+    public class Account
     {
-        [IgnoreDataMember]
-        public SocialService Service { get; } = SocialService.Mastodon;
-
         [DataMember(Name = "id")]
         [Utf8Json.JsonFormatter(typeof(Formatters.ToLongFormatter))]
         public long Id { get; private set; }
-
-        [IgnoreDataMember]
-        long? IAccount.Id => this.Id;
 
         [DataMember(Name = "username")]
         public string UserName { get; private set; }

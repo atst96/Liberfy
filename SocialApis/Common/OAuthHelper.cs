@@ -60,7 +60,10 @@ namespace SocialApis
 
             sortedQuery[OAuthParameters.Signature] = OAuthHelper.GenerateSignature(tokens.ConsumerSecret, tokens.ApiTokenSecret, signatureBase);
 
-            return $"OAuth {string.Join(",", sortedQuery.Select(Query.GetParameterPairDq))}";
+            var authHeaderParameters = sortedQuery.Select(q => Query.ConcatKeyValuePairDoubleQuotation(q));
+            var authHeaderString = string.Join(",", authHeaderParameters);
+
+            return $"OAuth " + authHeaderString;
         }
 
         public static string GenerateAuthenticationHeader(string httpMethod, string endpoint, IApi tokens, IEnumerable<QueryElement> parameters)
@@ -82,11 +85,11 @@ namespace SocialApis
             return Guid.NewGuid().ToString("N").ToUpper();
         }
 
-        private static string GenerateSignatureBase(string httpMethod, string endpoint, IEnumerable<QueryElement> query)
+        private static string GenerateSignatureBase(string httpMethod, string endpoint, ICollection<QueryElement> query)
         {
-            var normalizedParameters = Query.Join(query);
+            var normalizedParameters = Query.JoinParameters(query);
 
-            return string.Join("&", httpMethod, HttpHelper.UrlEncode(endpoint), HttpHelper.UrlEncode(normalizedParameters));
+            return string.Join("&", httpMethod, WebUtility.UrlEncode(endpoint), WebUtility.UrlEncode(normalizedParameters));
         }
 
         public static string GenerateSignature(string consumerSecret, string apiTokenSecret, string signatureBase)
@@ -94,8 +97,8 @@ namespace SocialApis
             if (string.IsNullOrEmpty(signatureBase))
                 throw new ArgumentNullException(nameof(signatureBase));
 
-            var hashKey = Encoding.UTF8.GetBytes(consumerSecret + "&" + apiTokenSecret);
-            var data = Encoding.ASCII.GetBytes(signatureBase);
+            var hashKey = EncodingUtility.UTF8.GetBytes(consumerSecret + "&" + apiTokenSecret);
+            var data = EncodingUtility.ASCII.GetBytes(signatureBase);
 
             using (var algorythm = new HMACSHA1(hashKey))
             {

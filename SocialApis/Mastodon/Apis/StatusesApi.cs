@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class StatusesApi : ApiBase
     {
@@ -14,78 +14,78 @@ namespace SocialApis.Mastodon.Apis
 
         public Task<Status> GetStatus(long statusId)
         {
-            return this.Api.GetRequestAsync<Status>($"statuses/{ statusId }");
+            return this.Api.ApiGetRequestAsync<Status>($"statuses/{ statusId }");
         }
 
         public Task<Context> GetContext(long statusId)
         {
-            return this.Api.GetRequestAsync<Context>($"statuses/{ statusId }/context");
+            return this.Api.ApiGetRequestAsync<Context>($"statuses/{ statusId }/context");
         }
 
         public Task<Card> GetCard(long statusId)
         {
-            return this.Api.GetRequestAsync<Card>($"statuses/{ statusId }/context");
+            return this.Api.ApiGetRequestAsync<Card>($"statuses/{ statusId }/context");
         }
 
         public Task<Account[]> GetRebloggedBy(long statusId, IQuery query = null)
         {
-            return this.Api.GetRequestAsync<Account[]>($"statuses/{ statusId }/reblogged_by", query);
+            return this.Api.ApiGetRequestAsync<Account[]>($"statuses/{ statusId }/reblogged_by", query);
         }
 
         public Task<Account[]> GetFavouritedBy(long statusId, IQuery query = null)
         {
-            return this.Api.GetRequestAsync<Account[]>($"statuses/{ statusId }/favourited_by", query);
+            return this.Api.ApiGetRequestAsync<Account[]>($"statuses/{ statusId }/favourited_by", query);
         }
 
         public Task<Status> Post(IQuery query)
         {
-            return this.Api.PostRequestRestApiAsync<Status>("statuses", query);
+            return this.Api.RestApiPostRequestAsync<Status>("statuses", query);
         }
 
         public Task Delete(long statusId)
         {
-            var req = this.Api.CreateRequesterApi($"statuses/{ statusId }", null, "DELETE");
-            return this.Api.SendRequestVoid(req);
+            var req = this.Api.CreateRestApiDeleteRequest($"statuses/{ statusId }");
+            return this.Api.SendRequest(req);
         }
 
         public Task<Status> Reblog(long statusId)
         {
-            return this.Api.PostRequestRestApiAsync<Status>($"statuses/{ statusId }/reblog");
+            return this.Api.RestApiPostRequestAsync<Status>($"statuses/{ statusId }/reblog");
         }
 
         public Task<Status> Unreblog(long statusId)
         {
-            return this.Api.PostRequestRestApiAsync<Status>($"statuses/{ statusId }/unreblog");
+            return this.Api.RestApiPostRequestAsync<Status>($"statuses/{ statusId }/unreblog");
         }
 
         public Task<Status> Favourite(long statusId)
         {
-            return this.Api.PostRequestRestApiAsync<Status>($"statuses/{ statusId }/favourite");
+            return this.Api.RestApiPostRequestAsync<Status>($"statuses/{ statusId }/favourite");
         }
 
         public Task<Status> Unfavourite(long statusId)
         {
-            return this.Api.PostRequestRestApiAsync<Status>($"statuses/{ statusId }/unfavourite");
+            return this.Api.RestApiPostRequestAsync<Status>($"statuses/{ statusId }/unfavourite");
         }
 
         public Task<Status> Pin(long statusId)
         {
-            return this.Api.PostRequestRestApiAsync<Status>($"statuses/{ statusId }/pin");
+            return this.Api.RestApiPostRequestAsync<Status>($"statuses/{ statusId }/pin");
         }
 
         public Task<Status> Unpin(long statusId)
         {
-            return this.Api.PostRequestRestApiAsync<Status>($"statuses/{ statusId }/unpin");
+            return this.Api.RestApiPostRequestAsync<Status>($"statuses/{ statusId }/unpin");
         }
 
         public Task<Status> Mute(long statusId)
         {
-            return this.Api.PostRequestRestApiAsync<Status>($"statuses/{ statusId }/mute");
+            return this.Api.RestApiPostRequestAsync<Status>($"statuses/{ statusId }/mute");
         }
 
         public Task<Status> Unmute(long statusId)
         {
-            return this.Api.PostRequestRestApiAsync<Status>($"statuses/{ statusId }/unmute");
+            return this.Api.RestApiPostRequestAsync<Status>($"statuses/{ statusId }/unmute");
         }
     }
 }

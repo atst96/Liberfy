@@ -7,16 +7,24 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon
 {
-#pragma warning disable RCS1194 // Implement exception constructors.
-    public class MastodonException : Exception
-#pragma warning restore RCS1194 // Implement exception constructors.
+    public sealed class MastodonException : Exception
     {
-        internal MastodonException(MastodonError error, WebException exception)
+        private MastodonException(MastodonError error, WebException exception)
             : base(error.ErrorDescription, exception)
         {
             this.Error = error;
         }
 
         public MastodonError Error { get; }
+
+        public static MastodonException FromWebException(WebException wex)
+        {
+            using (var response = wex.Response.GetResponseStream())
+            {
+                var errors = JsonUtility.Deserialize<MastodonError>(response);
+
+                return new MastodonException(errors, wex);
+            }
+        }
     }
 }

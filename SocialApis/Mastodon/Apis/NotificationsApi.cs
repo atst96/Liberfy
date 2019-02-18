@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon
 {
-    using IQuery = IEnumerable<KeyValuePair<string, object>>;
+    using IQuery = ICollection<KeyValuePair<string, object>>;
 
     public class NotificationsApi : ApiBase
     {
@@ -17,23 +17,23 @@ namespace SocialApis.Mastodon
             var _query = new Query(query);
             _query["exclude_type"] = excludeType;
 
-            return this.Api.GetRequestRestApiAsync<Notification[]>("notifications", _query);
+            return this.Api.RestApiGetRequestAsync<Notification[]>("notifications", _query);
         }
 
         public Task<Notification[]> GetNotification(long id)
         {
-            return this.Api.GetRequestRestApiAsync<Notification[]>($"notifications/{ id }");
+            return this.Api.RestApiGetRequestAsync<Notification[]>($"notifications/{ id }");
         }
 
         public Task ClearNotifications()
         {
-            return this.Api.PostRequestRestApiAsync("notifications/clear");
+            return this.Api.RestApiPostRequestAsync("notifications/clear");
         }
 
         public Task DismissNotification(long notificationId)
         {
             var query = new Query { ["id"] = notificationId };
-            return this.Api.PostRequestRestApiAsync("notifications/dismiss", query);
+            return this.Api.RestApiPostRequestAsync("notifications/dismiss", query);
         }
     }
 }
