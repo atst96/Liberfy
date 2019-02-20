@@ -15,6 +15,13 @@ namespace Liberfy
 {
     internal sealed class DropDownButton : ToggleButton
     {
+        static DropDownButton()
+        {
+            ClickModeProperty.OverrideMetadata(
+                typeof(DropDownButton),
+                new FrameworkPropertyMetadata(ClickMode.Press));
+        }
+
         private readonly Popup _popup;
 
         public DropDownButton() : base()
