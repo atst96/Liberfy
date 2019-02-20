@@ -1,5 +1,7 @@
 ﻿using Liberfy.Settings;
 using SocialApis;
+using SocialApis.Mastodon;
+using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +34,75 @@ namespace Liberfy
             }
 
             return null;
+        }
+
+        public static async Task Register(IAccountAuthenticator authenticator)
+        {
+            if (authenticator == null)
+            {
+                throw new ArgumentNullException(nameof(authenticator));
+            }
+
+            IAccount account;
+            bool newRegister = false;
+
+            if (authenticator is TwitterAccountAuthenticator twitterAuth)
+            {
+                var api = (TwitterApi)twitterAuth.Api;
+
+                account = AccountManager.Get(ServiceType.Twitter, api.UserId);
+
+                if (account != null)
+                {
+                    account.SetClient(ApiTokenInfo.FromTokens(api));
+                }
+                else
+                {
+                    var user = await api.Account.VerifyCredentials().ConfigureAwait(false);
+
+                    account = new TwitterAccount(api, user);
+                    newRegister = true;
+                }
+            }
+            else if (authenticator is MastodonAccountAuthenticator mastodonAuth)
+            {
+                var api = (MastodonApi)mastodonAuth.Api;
+                var user = await api.Accounts.VerifyCredentials().ConfigureAwait(false);
+
+                account = AccountManager.Get(ServiceType.Mastodon, user.Id);
+
+                if (account != null)
+                {
+                    account.SetClient(ApiTokenInfo.FromTokens(api));
+                }
+                else
+                {
+                    account = new MastodonAccount(api, user);
+                    newRegister = true;
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            if (newRegister)
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    AccountManager.Add(account);
+
+                    foreach (var columnOptions in App.Setting.DefaultColumns)
+                    {
+                        if (ColumnBase.FromSetting(columnOptions, account, out var column))
+                        {
+                            TimelineBase.Columns.Add(column);
+                        }
+                    }
+                });
+            }
+
+            await account.Load().ConfigureAwait(false);
         }
 
         public static void Add(IAccount account)

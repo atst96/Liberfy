@@ -78,9 +78,12 @@ namespace Liberfy.Components.MVVM
             new View.TweetWindow(account).Show();
         }
 
-        //public void OpenTweetWindow(IAccount account, StatusItem replyToITem)
-        //{
-        //    new View.TweetWindow(account, replyToItem).Show();
-        //}
+        public void OpenAuthenticationWindow()
+        {
+            new View.AccountAuthenticationWindow()
+            {
+                Owner = this._view,
+            }.ShowDialog();
+        }
     }
 }

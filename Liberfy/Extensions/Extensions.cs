@@ -35,6 +35,20 @@ namespace Liberfy
             return result.Where(item => item != null);
         }
 
+        public static string GetMessage(this Exception exception)
+        {
+            if (exception is AggregateException aggregateException)
+            {
+                var messages = from ex in aggregateException.InnerExceptions select ex.Message;
+
+                return string.Join(Environment.NewLine, messages);
+            }
+            else
+            {
+                return exception?.Message;
+            }
+        }
+
         public static IEnumerable<T> Union<T>(this IEnumerable<IEnumerable<T>> collection)
             where T : class
         {
