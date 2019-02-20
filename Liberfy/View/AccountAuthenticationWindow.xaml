@@ -127,30 +127,31 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="auto" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-
-                        <TextBlock
-                            Grid.Row="1" TextWrapping="Wrap"
-                            Foreground="Red" FontWeight="Bold"
-                            Text="{Binding Error, Mode=OneWay}" />
 
                         <Label
                             Padding="0" FontSize="20"
-                            Content="PINコードの入力" />
+                            Content="認証コードの入力" />
 
                         <TextBlock
                             Grid.Row="1" TextWrapping="Wrap"
-                            Text="認証後に表示されるコードを入力してください。" />
+                            Text="アプリの認証後、ブラウザに表示される認証コードを入力してください。" />
+
+                        <TextBlock
+                            Grid.Row="2" TextWrapping="Wrap"
+                            Foreground="Red" FontWeight="Bold"
+                            Text="{Binding Error, Mode=OneWay}" />
 
                         <HeaderedContentControl
                             Margin="0 8" Grid.Row="3"
                             Header="認証コード"
                             IsEnabled="{Binding IsRunning, Mode=OneWay, Converter={StaticResource BoolInverter}}">
                             <TextBox
-                                FontSize="24" FontWeight="Bold"
+                                FontSize="20" FontWeight="Bold"
                                 FontFamily="Comic Sans MS, Meiryo"
                                 TextAlignment="Center"
-                                Foreground="#444"
+                                Foreground="#444444"
                                 Text="{Binding VerificationCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </HeaderedContentControl>
 

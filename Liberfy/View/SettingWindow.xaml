@@ -287,18 +287,39 @@
                                 BorderBrush="{StaticResource ToolBarBorderBrush}">
                                 <DockPanel>
                                     <ToolBar
+                                        Padding="4 0"
                                         DockPanel.Dock="Top"
                                         ToolBarTray.IsLocked="True"
                                         FontSize="{StaticResource UIFontSize}"
                                         FontFamily="{StaticResource UIFont}"
                                         Style="{StaticResource ToolBarStyle}">
-                                        <Label Content="アカウント追加：" />
                                         <Button
                                             FontWeight="Normal"
                                             Padding="{StaticResource ToolBarIconPadding}"
                                             Command="{Binding AccountAddCommand, Mode=OneTime}">
                                             <app:GeometryIcon
-                                                Data="{StaticResource FontAwesome.Icon.Twitter}" />
+                                                Data="{StaticResource FontAwesome.Icon.UserPlus}" />
+                                        </Button>
+                                        <Separator />
+                                        <Button
+                                            CommandParameter="{Binding SelectedAccount}"
+                                            Command="{Binding AccountMoveUpCommand, Mode=OneTime}">
+                                            <app:GeometryIcon
+                                                Data="{StaticResource FontAwesome.Icon.ChevronUp}" />
+                                        </Button>
+                                        <Button
+                                            CommandParameter="{Binding SelectedAccount}"
+                                            Command="{Binding AccountMoveDownCommand, Mode=OneTime}">
+                                            <app:GeometryIcon
+                                                Data="{StaticResource FontAwesome.Icon.ChevronDown}" />
+                                        </Button>
+                                        <Separator />
+                                        <Button
+                                            Foreground="Red"
+                                            CommandParameter="{Binding SelectedAccount}"
+                                            Command="{Binding AccountDeleteCommand, Mode=OneTime}">
+                                            <app:GeometryIcon
+                                                Data="{StaticResource FontAwesome.Icon.Trash}" />
                                         </Button>
                                     </ToolBar>
 
@@ -317,26 +338,6 @@
                                     DockPanel.Dock="Top"
                                     ToolBarTray.IsLocked="True"
                                     Style="{StaticResource ToolBarStyle}">
-                                    <Button
-                                        CommandParameter="{Binding SelectedAccount}"
-                                        Command="{Binding AccountMoveUpCommand, Mode=OneTime}">
-                                        <app:GeometryIcon
-                                            Data="{StaticResource FontAwesome.Icon.ChevronUp}" />
-                                    </Button>
-                                    <Button
-                                        CommandParameter="{Binding SelectedAccount}"
-                                        Command="{Binding AccountMoveDownCommand, Mode=OneTime}">
-                                        <app:GeometryIcon
-                                            Data="{StaticResource FontAwesome.Icon.ChevronDown}" />
-                                    </Button>
-                                    <Separator />
-                                    <Button
-                                        Foreground="Red"
-                                        CommandParameter="{Binding SelectedAccount}"
-                                        Command="{Binding AccountDeleteCommand, Mode=OneTime}">
-                                        <app:GeometryIcon
-                                            Data="{StaticResource FontAwesome.Icon.Trash}" />
-                                    </Button>
                                 </ToolBar>
 
                                 <ScrollViewer
@@ -1657,7 +1658,7 @@
                                         <TextBlock
                                             Text="挿入"
                                             VerticalAlignment="Center" />
-                                    
+
                                         <app:GeometryIcon
                                             Margin="8 0 0 0"
                                             Width="12"
