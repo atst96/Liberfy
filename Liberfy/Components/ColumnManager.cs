@@ -17,11 +17,23 @@ namespace Liberfy
         {
             this._account = account;
             this._allColumns = allColumns;
+            this._columns = new List<ColumnBase>(10);
+            this.ResetColumns(this._columns);
 
             this._allColumns.CollectionChanged += this.OnCollectionChanged;
+        }
 
-            this._columns = new List<ColumnBase>(10);
-            this._columns.AddRange(allColumns.Where(c => c.Account == account));
+        private IEnumerable<ColumnBase> FilterAccountColumns(IEnumerable<ColumnBase> columns)
+        {
+            return columns.Where(c => c.Account == this._account);
+        }
+
+        private void ResetColumns(IEnumerable<ColumnBase> columns)
+        {
+            this._columns.Clear();
+
+            var accountColumns = this.FilterAccountColumns(columns);
+            this._columns.AddRange(accountColumns);
         }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -31,7 +43,8 @@ namespace Liberfy
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    accountColumns.AddRange(e.NewItems.Cast<ColumnBase>());
+                    var columns = this.FilterAccountColumns(e.NewItems.Cast<ColumnBase>());
+                    accountColumns.AddRange(columns);
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
@@ -46,16 +59,18 @@ namespace Liberfy
                     {
                         accountColumns.Remove(item);
                     }
-                    accountColumns.AddRange(e.NewItems.Cast<ColumnBase>());
+
+                    var newColumns = this.FilterAccountColumns(e.NewItems.Cast<ColumnBase>());
+                    accountColumns.AddRange(newColumns);
                     break;
 
                 case NotifyCollectionChangedAction.Reset:
                     accountColumns.Clear();
 
-                    var allColumns = (IEnumerable<ColumnBase>)sender;
-                    var newColumns = allColumns.Where(c => c.Account == this._account);
-
-                    accountColumns.AddRange(newColumns);
+                    if (sender is IEnumerable<ColumnBase> allColumns)
+                    {
+                        this.ResetColumns(allColumns);
+                    }
                     break;
             }
         }
