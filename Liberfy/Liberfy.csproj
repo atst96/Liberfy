@@ -282,9 +282,6 @@
     <Compile Include="View\AccountAuthenticationWindow.xaml.cs">
       <DependentUpon>AccountAuthenticationWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ContentWindow.xaml.cs">
-      <DependentUpon>ContentWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\SettingWindow.xaml.cs">
       <DependentUpon>SettingWindow.xaml</DependentUpon>
     </Compile>
@@ -303,10 +300,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\AccountAuthenticationWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\ContentWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

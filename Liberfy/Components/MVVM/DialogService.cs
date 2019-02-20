@@ -131,25 +131,44 @@ namespace Liberfy
             return msgBox.Show(text, caption ?? App.AppName, buttons, icon, flags);
         }
 
-        [Obsolete("deprecated")]
-        public bool OpenModal(ContentWindowViewModel viewModel, ViewOption option, object templateKey)
+        private bool ShowFileDialog(FileDialog dialog)
         {
-            return new ContentWindow(viewModel, option, app.TryFindResource(templateKey) as DataTemplate)
+            return dialog.ShowDialog(_view) ?? false;
+        }
+
+        public string SelectOpenFile(string title, string filter)
+        {
+            var ofd = new OpenFileDialog
             {
-                Owner = _view,
-            }.ShowDialog() ?? false;
+                Title = title,
+                Filter = filter,
+                Multiselect = false,
+            };
+
+            return ShowFileDialog(ofd) ? ofd.FileName : null;
         }
 
-        [Obsolete("deprecated")]
-        public bool Open(OpenFileDialog ofd)
+        public string[] SelectOpenFiles(string title, string filter)
         {
-            return ofd?.ShowDialog() ?? false;
+            var ofd = new OpenFileDialog
+            {
+                Title = title,
+                Filter = filter,
+                Multiselect = true,
+            };
+
+            return ShowFileDialog(ofd) ? ofd.FileNames : null;
         }
 
-        [Obsolete("deprecated")]
-        public bool OpenModal(OpenFileDialog ofd)
+        public string SelectSaveFile(string title, string filter)
         {
-            return ofd?.ShowDialog(_view) ?? false;
+            var ofd = new SaveFileDialog
+            {
+                Title = title,
+                Filter = filter,
+            };
+
+            return ShowFileDialog(ofd) ? ofd.FileName : null;
         }
 
         public bool ShowQuestion(string content)
@@ -172,24 +191,6 @@ namespace Liberfy
             this._view = null;
             this._viewModel = null;
         }
-    }
-
-    public enum ViewType
-    {
-        TweetWindow,
-    }
-
-    internal struct ViewOption
-    {
-        public double? Width { get; set; }
-        public double? Height { get; set; }
-        public ResizeMode? ResizeMode { get; set; }
-        public SizeToContent? SizeToContent { get; set; }
-        public WindowChrome WindowChrome { get; set; }
-        public WindowStyle? Style { get; set; }
-        public WindowState? State { get; set; }
-        public WindowStartupLocation? StartupLocation { get; set; }
-        public bool? ShowInTaskbar { get; set; }
     }
 
     public enum ViewState
