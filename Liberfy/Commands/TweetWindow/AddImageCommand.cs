@@ -26,22 +26,13 @@ namespace Liberfy.Commands
 
         protected override void Execute(string parameter)
         {
-            var ofd = new Microsoft.Win32.OpenFileDialog
-            {
-                Title = "アップロードするメディアを選択",
-                Filter = UploadableExtensionFilter,
-                DereferenceLinks = true,
-                Multiselect = true,
-            };
+            var files = this._viewModel.DialogService.SelectOpenFiles("アップロードするメディアを選択", UploadableExtensionFilter);
 
-            if (this._viewModel.DialogService.OpenModal(ofd)
-                && TweetWindow.HasEnableMediaFiles(ofd.FileNames))
+            if (files?.Length > 0 && TweetWindow.HasEnableMediaFiles(files))
             {
-                this._viewModel.PostParameters.Attachments.AddRange(ofd.FileNames.Select(file => UploadMedia.FromFile(file)));
+                this._viewModel.PostParameters.Attachments.AddRange(files.Select(path => UploadMedia.FromFile(path)));
                 this._viewModel.UpdateCanPost();
             }
-
-            ofd.Reset();
         }
 
         private static string CreateExtensionFilter()
