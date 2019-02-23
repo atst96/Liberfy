@@ -17,14 +17,6 @@ namespace Liberfy
 
         public static readonly IDictionary<ServiceType, IDictionary<long, IAccount>> _serviceAccountMap = new Dictionary<ServiceType, IDictionary<long, IAccount>>();
 
-        public static void Load(IEnumerable<AccountItem> accounts)
-        {
-            foreach (var accountSetting in accounts.Distinct())
-            {
-                Add(AccountBase.FromSetting(accountSetting));
-            }
-        }
-
         public static IAccount Get(ServiceType service, long userId)
         {
             if (_serviceAccountMap.TryGetValue(service, out var dic))

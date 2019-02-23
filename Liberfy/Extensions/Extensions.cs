@@ -41,7 +41,7 @@ namespace Liberfy
             {
                 var messages = from ex in aggregateException.InnerExceptions select ex.Message;
 
-                return string.Join(Environment.NewLine, messages);
+                return string.Join(Environment.NewLine + Environment.NewLine, messages);
             }
             else
             {

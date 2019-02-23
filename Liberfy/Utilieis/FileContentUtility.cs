@@ -11,8 +11,6 @@ namespace Liberfy
 {
     internal static class FileContentUtility
     {
-        // TODO: Utf8JsonからMessgaePack for C#のJsonシリアライザに置き換える
-
         private static IFormatterResolver _msgPackResolver { get; } = MessagePack.Resolvers.StandardResolverAllowPrivate.Instance;
         private static IJsonFormatterResolver _utf8jsonResolver { get; } = Utf8Json.Resolvers.StandardResolver.AllowPrivate;
 
@@ -42,13 +40,31 @@ namespace Liberfy
             return JsonSerializer.Deserialize<T>(stream, _utf8jsonResolver);
         }
 
-        public static T DeserializeJsonFromFile<T>(string path) where T : class
+        public static Task<T> DeserializeJsonAsync<T>(Stream stream) where T : class
+        {
+            return JsonSerializer.DeserializeAsync<T>(stream, _utf8jsonResolver);
+        }
+
+        public static T DeserializeJsonFile<T>(string path) where T : class
         {
             if (TryOpenReadFile(path, out var stream))
             {
                 using (stream)
                 {
                     return DeserializeJson<T>(stream);
+                }
+            }
+
+            return default;
+        }
+
+        public static async Task<T> DeserializeJsonFileAsync<T>(string path) where T : class
+        {
+            if (TryOpenReadFile(path, out var stream))
+            {
+                using (stream)
+                {
+                    return await DeserializeJsonAsync<T>(stream).ConfigureAwait(false);
                 }
             }
 
@@ -85,7 +101,6 @@ namespace Liberfy
 
         public static void SerializeJsonToFile<T>(T obj, string path) where T : class
         {
-            // シリアライズ後にストリームを開く（シリアライズ失敗時に空ファイルができるのを防ぐだめ）
             byte[] data = SerializeJson(obj);
 
             using (var stream = OpenWriteFile(path))
@@ -106,7 +121,6 @@ namespace Liberfy
 
         public static void SerializeMsgPackToFile<T>(T obj, string path) where T : class
         {
-            // シリアライズ後にストリームを開く（シリアライズ失敗時に空ファイルができるのを防ぐだめ）
             byte[] data = SerializeMsgPack(obj);
 
             if (data.Length > 0)

@@ -1,4 +1,5 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
+using Liberfy.Settings;
 using Microsoft.Win32;
 using Microsoft.Windows.Themes;
 using System;
@@ -27,8 +28,7 @@ namespace Liberfy
     {
         internal const bool __DEBUG_LoadTimeline = true;
 
-        private static Setting _setting;
-        internal static Setting Setting => _setting;
+        internal static Setting Setting { get; private set; }
 
         public static ApplicationStatus Status { get; } = new ApplicationStatus();
 
@@ -46,71 +46,67 @@ namespace Liberfy
         {
             base.OnStartup(e);
 
-            SystemEvents.SessionEnding += OnSystemSessionEnding;
+            // 作業ディレクトリの再指定（自動起動時に作業ディレクトリが変わってしまう対策）
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.Location));
+
+            try
+            {
+                LoadSettings();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(IntPtr.Zero, ex.GetMessage(), "Liberfy", icon: MsgBoxIcon.Error);
+                Environment.Exit(1);
+                return;
+            }
 
             InitializeProgram();
-
-            var loader = new AccountLoader();
-            loader.Run(new List<IAccount>(AccountManager.Accounts));
+            StartTimeline();
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
-            base.OnExit(e);
-
             SystemEvents.SessionEnding -= OnSystemSessionEnding;
+
+            App.SaveSettings();
+
+            base.OnExit(e);
+        }
+
+        private static void LoadSettings()
+        {
+            var loadAccountsTask = ParseSettingAsync<AccountSetting>(Defines.AccountsFile);
+            var loadSettingTask = ParseSettingAsync<Setting>(Defines.SettingFile);
+
+            Task.WaitAll(loadAccountsTask, loadSettingTask);
+
+            // 登録アカウントの読み込み
+            var accountsSetting = loadAccountsTask.Result;
+
+            if (accountsSetting != null)
+            {
+                var (accounts, columns) = (accountsSetting.Accounts, accountsSetting.Columns);
+
+                if (accounts?.Any() ?? false)
+                {
+                    LoadAccounts(accounts);
+                }
+
+                if (columns?.Any() ?? false)
+                {
+                    LoadColumns(columns);
+                }
+            }
+
+            // 設定の読み込み
+            Setting = loadSettingTask.Result ?? new Setting();
         }
 
         private static void InitializeProgram()
         {
-            Settings.AccountSetting accountsSetting = null;
-
-            // 作業ディレクトリの再指定（自動起動時に C:/Windows/system32になってしまうため）
-
-            var workingDirectory = Path.GetDirectoryName(Assembly.Location);
-            Directory.SetCurrentDirectory(workingDirectory);
-
-            // アプリケーション設定の読み込み
-
-            if (TryParseSettingFileOrDisplayError(Defines.AccountsFile, ref accountsSetting))
-            {
-                if (accountsSetting.Accounts?.Any() ?? false)
-                {
-                    AccountManager.Load(accountsSetting.Accounts);
-                }
-
-                if (accountsSetting.Columns?.Any() ?? false)
-                {
-                    var columns = new LinkedList<ColumnBase>();
-
-                    foreach (var columnSetting in accountsSetting.Columns)
-                    {
-                        var account = AccountManager.Get(columnSetting.Service, columnSetting.UserId);
-
-                        if (account != null && ColumnBase.FromSetting(columnSetting, account, out var column))
-                        {
-                            columns.AddLast(column);
-                        }
-                    }
-
-                    TimelineBase.Columns.Reset(columns);
-                }
-            }
-            else
-            {
-                Shutdown(false);
-                return;
-            }
-
-            if (!TryParseSettingFileOrDisplayError(Defines.SettingFile, ref _setting))
-            {
-                Shutdown(false);
-                return;
-            }
-
             UI.ApplyFromSettings();
 
-            foreach (var muteItem in _setting.Mute)
+            foreach (var muteItem in Setting.Mute.AsParallel())
             {
                 muteItem.Apply();
             }
@@ -124,6 +120,43 @@ namespace Liberfy
             }
         }
 
+        private static void LoadAccounts(IEnumerable<AccountItem> accounts)
+        {
+            foreach (var accountSetting in accounts.Distinct())
+            {
+                AccountManager.Add(AccountBase.FromSetting(accountSetting));
+            }
+        }
+
+        private static void LoadColumns(IEnumerable<ColumnSetting> columns)
+        {
+            foreach (var columnSetting in columns)
+            {
+                var account = AccountManager.Get(columnSetting.Service, columnSetting.UserId);
+
+                if (account != null && ColumnBase.FromSetting(columnSetting, account, out var column))
+                {
+                    TimelineBase.Columns.Add(column);
+                }
+            }
+        }
+
+        private static bool _isAccountLoaded;
+
+        private static void StartTimeline()
+        {
+            if (_isAccountLoaded)
+            {
+                return;
+            }
+
+            _isAccountLoaded = true;
+
+            var tasks = AccountManager.Accounts.AsParallel().Select(a => a.Load());
+
+            Task.WhenAll(tasks).ContinueWith(_ => Status.IsAccountLoaded = true, TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
         private static bool RequestInitialUserSettings()
         {
             var sw = new SettingWindow();
@@ -131,7 +164,7 @@ namespace Liberfy
             sw.MoveTabPage(1);
 
             sw.ShowDialog();
-            
+
             return AccountManager.Count > 0;
         }
 
@@ -147,31 +180,15 @@ namespace Liberfy
             }
         }
 
-        private static bool TryParseSettingFileOrDisplayError<T>(string filename, ref IEnumerable<T> setting)
+        private static async Task<T> ParseSettingAsync<T>(string filename) where T : class
         {
             try
             {
-                setting = FileContentUtility.DeserializeJsonFromFile<IEnumerable<T>>(filename) ?? Enumerable.Empty<T>();
-                return true;
+                return await FileContentUtility.DeserializeJsonFileAsync<T>(filename).ConfigureAwait(false);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                DisplayException(e, $"設定ファイルの読み込みに失敗しました:\n{ Path.GetFileName(filename) }");
-                return true;
-            }
-        }
-
-        private static bool TryParseSettingFileOrDisplayError<T>(string filename, ref T setting) where T : class, new()
-        {
-            try
-            {
-                setting = FileContentUtility.DeserializeJsonFromFile<T>(filename) ?? new T();
-                return true;
-            }
-            catch (Exception e)
-            {
-                DisplayException(e, "設定ファイルの読み込みに失敗しました");
-                return true;
+                throw new Exception($"設定ファイル \"{filename}\" の読み込みに失敗しました。\n{ex.GetMessage()}", ex);
             }
         }
 
@@ -190,43 +207,46 @@ namespace Liberfy
 
         private static void SaveSettings()
         {
-            var accountsSetting = new Settings.AccountSetting
+            var accountsSetting = new AccountSetting
             {
                 Accounts = AccountManager.Accounts.Select(a => a.ToSetting()),
                 Columns = TimelineBase.Columns.Select(c => c.GetOption()),
             };
 
-            // 設定をファイルに保存
-            SaveSettingWithErrorDialog(Defines.SettingFile, Setting);
-            SaveSettingWithErrorDialog(Defines.AccountsFile, accountsSetting);
+            var saveSettingTask = Task.Run(() => SaveSetting(Defines.SettingFile, App.Setting));
+            var saveAccountsTask = Task.Run(() => SaveSetting(Defines.AccountsFile, accountsSetting));
+
+            try
+            {
+                Task.WaitAll(saveSettingTask, saveAccountsTask);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(IntPtr.Zero, ex.GetMessage(), App.AppName, icon: MsgBoxIcon.Error);
+            }
         }
 
-        private static void SaveSettingWithErrorDialog<T>(string filename, T setting) where T : class
+        private static void SaveSetting<T>(string filename, T setting) where T : class
         {
             try
             {
                 FileContentUtility.SerializeJsonToFile(setting, filename);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                var message = string.Join("\n",
-                    "設定ファイルの保存に失敗しました\nファイル名：", Path.GetFileName(filename), e.Message, e.StackTrace);
-
-                MessageBox.Show(IntPtr.Zero, message, "エラー", icon: MsgBoxIcon.Error);
+                throw new Exception($"設定 \"{filename}\" の保存に失敗しました。\n{ex.GetMessage()}", ex);
             }
         }
 
         private static bool _appClsoing;
+        private static bool _saveSetting = true;
 
         public static void Shutdown(bool saveSettings)
         {
             if (_appClsoing) return;
             _appClsoing = true;
 
-            if (saveSettings)
-            {
-                App.SaveSettings();
-            }
+            _saveSetting = saveSettings;
 
             Current.Shutdown();
         }
