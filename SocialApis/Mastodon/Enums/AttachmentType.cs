@@ -20,5 +20,8 @@ namespace SocialApis.Mastodon
 
         [EnumMember(Value = "unknown")]
         Unknown,
+
+        [EnumMember(Value = "audio")]
+        Audio,
     }
 }

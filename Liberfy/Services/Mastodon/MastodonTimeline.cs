@@ -41,7 +41,7 @@ namespace Liberfy
         }
 
         private IEnumerable<StatusItem> GetStatusItem(IEnumerable<Status> statuses)
-        {                                                            
+        {
             foreach (var status in statuses)
             {
                 yield return new StatusItem(status, this._account);

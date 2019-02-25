@@ -40,16 +40,9 @@ namespace Liberfy.Commands
                 await account.ApiGateway.PostStatus(parameters);
                 this._viewModel.ClearStatus();
             }
-            catch (AggregateException aex)
-            {
-                var exceptionMessages = aex.InnerExceptions.Select(ex => ex.Message);
-                var message = string.Join("\n", exceptionMessages);
-
-                this._viewModel.DialogService.MessageBox(message, "アップロードに失敗しました");
-            }
             catch (Exception ex)
             {
-                this._viewModel.DialogService.MessageBox(ex.Message, "アップロードに失敗しました");
+                this._viewModel.DialogService.MessageBox(ex.GetMessage(), "アップロードに失敗しました");
             }
 
             foreach (var attachment in parameters.Attachments)

@@ -21,6 +21,8 @@ namespace Liberfy.Services.Mastodon
 
 		private async Task<long> UploadAttachment(UploadMedia attachment)
 		{
+			attachment.SourceStream.Position = 0;
+
 			var media = await this._api.Media.Upload(attachment.SourceStream, attachment.Description, progress: attachment);
 
 			return media.Id;

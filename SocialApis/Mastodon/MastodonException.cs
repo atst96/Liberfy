@@ -11,7 +11,7 @@ namespace SocialApis.Mastodon
 	public sealed class MastodonException : Exception
 	{
 		private MastodonException(MastodonError error, WebException exception)
-			: base(error.ErrorDescription, exception)
+			: base(error.Error, exception)
 		{
 			this.Error = error;
 		}

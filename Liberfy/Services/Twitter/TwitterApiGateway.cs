@@ -22,6 +22,8 @@ namespace Liberfy.Services.Twitter
 
         private async Task<long> UploadAttachment(UploadMedia attachment)
         {
+            attachment.SourceStream.Position = 0;
+
             bool isVideoUpload = attachment.MediaType.HasFlag(ViewModel.MediaType.Video);
             var uploadMediaType = isVideoUpload ? MimeTypes.Video.Mp4 : MimeTypes.OctetStream;
 
