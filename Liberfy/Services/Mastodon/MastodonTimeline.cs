@@ -8,13 +8,15 @@ using System.Windows.Threading;
 
 namespace Liberfy
 {
-    internal class MastodonTimeline : TimelineBase
+    internal class MastodonTimeline : TimelineBase, IMastodonStreamResolver
     {
         private readonly static Dispatcher _dispatcher = App.Current.Dispatcher;
 
         private readonly long _userId;
         private readonly MastodonAccount _account;
         public MastodonApi _tokens => _account.Tokens;
+
+        private IDisposable _streamDisposer;
 
         public MastodonTimeline(MastodonAccount account)
             : base(account)
@@ -29,14 +31,18 @@ namespace Liberfy
             {
                 this.LoadHomeTimeline(),
                 // this.LoadNotificationTimeline(),
-                // this.LoadMessageTimeline(),
             };
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
+
+            this._streamDisposer = this._tokens.Streaming.User(this);
+
+            // this.LoadMessageTimeline(),
         }
 
         public override void Unload()
         {
+            this._streamDisposer?.Dispose();
             this.AccountColumns.Clear();
         }
 
@@ -61,6 +67,40 @@ namespace Liberfy
                 }
             }
             finally { }
+        }
+
+        public void OnStreamingUpdate(Status status)
+        {
+            _dispatcher.InvokeAsync(() =>
+            {
+                var item = new StatusItem(status, this._account);
+
+                foreach (var column in this.AccountColumns.GetsTypeOf(ColumnType.Home))
+                {
+                    column.Items.Insert(0, item);
+                }
+            });
+        }
+
+        public void OnStreamingNotification(Notification notification)
+        {
+            //_dispatcher.InvokeAsync(() =>
+            //{
+            //    var item = new StatusItem(status, this._account);
+
+            //    foreach (var column in this.AccountColumns.GetsTypeOf(ColumnType.Notification))
+            //    {
+            //        column.Items.Insert(0, item);
+            //    }
+            //});
+        }
+
+        public void OnStreamingDelete(long id)
+        {
+        }
+
+        public void OnStreamingFilterChanged()
+        {
         }
     }
 }
