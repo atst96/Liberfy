@@ -33,7 +33,7 @@ namespace Liberfy.Services.Twitter
             }
             else
             {
-                task = this._api.Media.Upload(attachment.SourceStream);
+                task = this._api.Media.Upload(attachment.SourceStream, progressReceiver: attachment);
             }
 
             var result = await task.ConfigureAwait(false);
