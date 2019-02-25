@@ -40,25 +40,5 @@ namespace Liberfy
             else
                 return (match.Groups["url"].Value, match.Groups["name"].Value);
         }
-
-        public static IEnumerable<TwitterApi.EntityBase> EnumerateEntity(this TwitterApi.Entities entities)
-        {
-            if (entities == null)
-                return Enumerable.Empty<TwitterApi.EntityBase>();
-
-            return new TwitterApi.EntityBase[][]
-            {
-                entities.Hashtags,
-                entities.Symbols,
-                entities.Urls,
-                entities.UserMentions,
-                entities.Media
-            }.Combine();
-        }
-
-        public static IEnumerable<TwitterApi.EntityBase> SortByStartIndex(this IEnumerable<TwitterApi.EntityBase> collection)
-        {
-            return collection.OrderBy(e => e.IndexStart);
-        }
     }
 }

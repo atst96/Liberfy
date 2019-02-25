@@ -160,6 +160,7 @@
     <Compile Include="Controls\DropDownButton.cs" />
     <Compile Include="Controls\DropDownMenuButton.cs" />
     <Compile Include="Controls\PopupDecorator.cs" />
+    <Compile Include="Extensions\WebExtensions.cs" />
     <Compile Include="Services\Common\IAccountAuthenticator.cs" />
     <Compile Include="ImageHelper.cs" />
     <Compile Include="Services\Mastodon\MastodonAccountAuthenticator.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="Services\Common\IValidator.cs" />
     <Compile Include="Services\Mastodon\MastodonServiceConfiguration.cs" />
     <Compile Include="Services\Mastodon\MastodonValidator.cs" />
+    <Compile Include="Services\Twitter\TextEntityStartPositionCompare.cs" />
     <Compile Include="Services\Twitter\TwitterApiGateway.cs" />
     <Compile Include="Services\Twitter\TwitterServiceConfiguration.cs" />
     <Compile Include="Services\Twitter\TwitterValidator.cs" />
