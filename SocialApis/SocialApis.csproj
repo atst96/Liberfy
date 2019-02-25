@@ -73,6 +73,7 @@
     <Compile Include="Mastodon\Apis\FollowsApi.cs" />
     <Compile Include="Mastodon\Apis\InstancesApi.cs" />
     <Compile Include="Mastodon\Apis\ListsApi.cs" />
+    <Compile Include="Mastodon\Apis\MediaApi.cs" />
     <Compile Include="Mastodon\Apis\MutesApi.cs" />
     <Compile Include="Mastodon\Apis\NotificationsApi.cs" />
     <Compile Include="Mastodon\Apis\OAuthApi.cs" />

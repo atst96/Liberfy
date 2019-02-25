@@ -83,6 +83,9 @@ namespace SocialApis.Mastodon
         private ListsApi _list;
         public ListsApi List => this._list ?? (this._list = new ListsApi(this));
 
+        private MediaApi _media;
+        public MediaApi Media => this._media ?? (this._media = new MediaApi(this));
+
         private MutesApi _mutes;
         public MutesApi Mutes => this._mutes ?? (this._mutes = new MutesApi(this));
 
@@ -123,6 +126,11 @@ namespace SocialApis.Mastodon
 
         #region CreateRequestFunctions
 
+        internal HttpWebRequest CreateCustomApiRequest(string method, string endpoint)
+        {
+            return WebUtility.CreateWebRequestSimple(method, endpoint, this._authorizeHeader);
+        }
+
         internal HttpWebRequest CreateApiRequest(string method, string endpoint, IQuery query = null)
         {
             return WebUtility.CreateWebRequest(method, endpoint, query, this._authorizeHeader);
@@ -151,6 +159,11 @@ namespace SocialApis.Mastodon
         #endregion
 
         #region CreateRestApiRquest Functions
+
+        internal HttpWebRequest CreateCustomRestApiRequest(string method, string path)
+        {
+            return this.CreateCustomApiRequest(method, this.GetApiUrl(path));
+        }
 
         internal HttpWebRequest CreateRestApiRequest(string method, string path, IQuery query = null)
         {
