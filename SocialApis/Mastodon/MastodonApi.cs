@@ -101,6 +101,9 @@ namespace SocialApis.Mastodon
         private StatusesApi _statuses;
         public StatusesApi Statuses => this._statuses ?? (this._statuses = new StatusesApi(this));
 
+        private StreamingApi _streaming;
+        public StreamingApi Streaming => this._streaming ?? (this._streaming = new StreamingApi(this));
+
         private TimelinesApi _timelines;
         public TimelinesApi Timelines => this._timelines ?? (this._timelines = new TimelinesApi(this));
 

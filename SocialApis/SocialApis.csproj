@@ -80,14 +80,17 @@
     <Compile Include="Mastodon\Apis\ReportsApi.cs" />
     <Compile Include="Mastodon\Apis\SearchApi.cs" />
     <Compile Include="Mastodon\Apis\StatusesApi.cs" />
+    <Compile Include="Mastodon\Apis\StreamingApi.cs" />
     <Compile Include="Mastodon\Apis\TimelinesApi.cs" />
     <Compile Include="Mastodon\Enums\AttachmentType.cs" />
     <Compile Include="Mastodon\Enums\CardType.cs" />
     <Compile Include="Mastodon\Enums\NotificationType.cs" />
     <Compile Include="Mastodon\Enums\StatusVisibility.cs" />
     <Compile Include="Mastodon\Enums\Tag.cs" />
+    <Compile Include="Mastodon\IMastodonStreamResolver.cs" />
     <Compile Include="Mastodon\MastodonError.cs" />
     <Compile Include="Mastodon\MastodonException.cs" />
+    <Compile Include="Mastodon\MastodonHttpStreamingReceiver.cs" />
     <Compile Include="Mastodon\Objects\AccessTokenResponse.cs" />
     <Compile Include="Mastodon\Objects\Account.cs" />
     <Compile Include="Mastodon\Objects\Application.cs" />

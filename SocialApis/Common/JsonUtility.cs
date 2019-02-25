@@ -27,6 +27,11 @@ namespace SocialApis
             return JsonSerializer.SerializeAsync(stream, value, _jsonResolver);
         }
 
+        public static T Deserialize<T>(string stream)
+        {
+            return JsonSerializer.Deserialize<T>(stream, _jsonResolver);
+        }
+
         public static T Deserialize<T>(Stream stream)
         {
             return JsonSerializer.Deserialize<T>(stream, _jsonResolver);
