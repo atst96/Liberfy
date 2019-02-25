@@ -32,7 +32,7 @@ namespace Liberfy
     }
 
     internal abstract class AccountBase<TTokens, TTimeline, TUser, TStatus>
-        : NotificationObject, IAccount, IEquatable<IAccount>, IEquatable<UserInfo>
+        : NotificationObject, IAccount, IEquatable<UserInfo>
             where TTokens : IApi
             where TTimeline : TimelineBase
     {

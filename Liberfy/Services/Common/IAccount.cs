@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    internal interface IAccount
+    internal interface IAccount : IEquatable<IAccount>
     {
         long Id { get; }
         ServiceType Service { get; }
