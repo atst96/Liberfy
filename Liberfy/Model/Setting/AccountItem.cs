@@ -1,4 +1,4 @@
-﻿using Liberfy.ViewModel;
+﻿using Liberfy.ViewModels;
 using MessagePack;
 using System;
 using System.Collections.Generic;

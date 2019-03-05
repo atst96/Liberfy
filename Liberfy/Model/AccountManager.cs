@@ -1,4 +1,6 @@
-﻿using Liberfy.Settings;
+﻿using Liberfy.Services.Mastodon;
+using Liberfy.Services.Twitter;
+using Liberfy.Settings;
 using SocialApis;
 using SocialApis.Mastodon;
 using SocialApis.Twitter;

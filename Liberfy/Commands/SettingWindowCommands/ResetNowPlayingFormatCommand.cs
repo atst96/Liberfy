@@ -1,4 +1,4 @@
-﻿using Liberfy.ViewModel;
+﻿using Liberfy.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +20,7 @@ namespace Liberfy.Commands.SettingWindowCommands
 
         protected override void Execute(object parameter)
         {
-            this._viewModel.NowPlayingFormat = Defines.DefaultNowPlayingFormat;
+            this._viewModel.NowPlayingFormat = Defaults.DefaultNowPlayingFormat;
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Markup;
-using Liberfy.ViewModel;
+using Liberfy.ViewModels;
 
 namespace Liberfy
 {
@@ -13,23 +13,21 @@ namespace Liberfy
 
         public ViewModelConnector(Type instanceType)
         {
-            this._instanceType = instanceType;
+            this.InstanceType = instanceType;
         }
 
         public ViewModelConnector(ViewModelBase viewModel)
         {
-            this._viewModel = viewModel;
+            this.ViewModel = viewModel;
         }
 
         private Window _view;
 
-        private Type _instanceType;
         [ConstructorArgument("instnaceType")]
-        public Type InstanceType => _instanceType;
+        public Type InstanceType { get; private set; }
 
-        private ViewModelBase _viewModel;
         [DefaultValue(null)]
-        public ViewModelBase ViewModel => this._viewModel;
+        public ViewModelBase ViewModel { get; private set; }
 
         [DefaultValue(true)]
         public bool RegisterDialogService { get; set; } = true;
@@ -44,26 +42,26 @@ namespace Liberfy
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            if (this._instanceType != null)
+            if (this.InstanceType != null)
             {
-                this._viewModel = Activator.CreateInstance(this._instanceType) as ViewModelBase
-                    ?? throw new NotSupportedException();
+                this.ViewModel = Activator.CreateInstance(this.InstanceType) as ViewModelBase ?? throw new NotSupportedException();
             }
-            else if (this._viewModel != null)
+            else if (this.ViewModel != null)
             {
-                this._instanceType = this.ViewModel.GetType();
+                this.InstanceType = this.ViewModel.GetType();
             }
             else
             {
                 throw new NullReferenceException();
             }
 
-            var dialogService = this._viewModel.DialogService;
-            var windowService = this._viewModel.WindowService;
+            var valueTargetService = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
 
-            if (serviceProvider.GetService(_providerType) is IProvideValueTarget valueTarget
-                && valueTarget.TargetObject is Window view)
+            if (valueTargetService?.TargetObject is Window view)
             {
+                var dialogService = this.ViewModel.DialogService;
+                var windowService = this.ViewModel.WindowService;
+
                 this._view = view;
 
                 if (this.RegisterDialogService)
@@ -79,47 +77,47 @@ namespace Liberfy
                 this.RegisterEvents();
             }
 
-            return _viewModel;
+            return this.ViewModel;
         }
 
-        void RegisterEvents()
+        private void RegisterEvents()
         {
             this._view.Initialized += this.OnViewInitialized;
             this._view.Closing += this.OnViewClosing;
             this._view.Closed += this.OnViewClosed;
         }
 
-        void UnregisterEvents()
+        private void UnregisterEvents()
         {
             this._view.Initialized -= this.OnViewInitialized;
             this._view.Closing -= this.OnViewClosing;
             this._view.Closed -= this.OnViewClosed;
         }
 
-        void OnViewInitialized(object sender, EventArgs e)
+        private void OnViewInitialized(object sender, EventArgs e)
         {
-            this._viewModel?.OnInitialized();
+            this.ViewModel?.OnInitialized();
         }
 
-        void OnViewClosing(object sender, CancelEventArgs e)
+        private void OnViewClosing(object sender, CancelEventArgs e)
         {
             e.Cancel = !(this.ViewModel?.CanClose() ?? false) || e.Cancel;
         }
 
-        void OnViewClosed(object sender, EventArgs e)
+        private void OnViewClosed(object sender, EventArgs e)
         {
-            if (this._viewModel != null)
+            if (this.ViewModel != null)
             {
-                this._viewModel.OnClosed();
-                this._viewModel.Dispose();
+                this.ViewModel.OnClosed();
+                this.ViewModel.Dispose();
             }
 
             this.UnregisterEvents();
 
             this._view.DataContext = null;
 
-            this._instanceType = null;
-            this._viewModel = null;
+            this.InstanceType = null;
+            this.ViewModel = null;
             this._view = null;
         }
     }

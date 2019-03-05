@@ -1,4 +1,4 @@
-﻿using Liberfy.ViewModel;
+﻿using Liberfy.ViewModels;
 using SocialApis;
 using SocialApis.Twitter;
 using System;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using Liberfy.SocialServices.Twitter;
 
-namespace Liberfy
+namespace Liberfy.Services.Twitter
 {
     internal class TwitterTimeline : TimelineBase, IObserver<IItem>
     {

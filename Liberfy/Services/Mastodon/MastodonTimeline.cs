@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
-namespace Liberfy
+namespace Liberfy.Services.Mastodon
 {
     internal class MastodonTimeline : TimelineBase, IMastodonStreamResolver
     {

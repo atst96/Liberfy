@@ -8,7 +8,7 @@ using System.Windows.Data;
 using Liberfy.Model;
 using SocialApis.Mastodon;
 
-namespace Liberfy
+namespace Liberfy.Services.Mastodon
 {
     internal class MastodonDataStore : DataStoreBase<Account, Status>, IDataStore
     {

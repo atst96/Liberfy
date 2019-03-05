@@ -127,9 +127,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="App.Brushes.cs" />
-    <Compile Include="App.UI.cs" />
-    <Compile Include="ApplicationStatus.cs" />
+    <Compile Include="Model\ApplicationStatus.cs" />
     <Compile Include="Commands\AccountAuthenticationWindowCommands\CancelCommand.cs" />
     <Compile Include="Commands\AccountAuthenticationWindowCommands\NextCommand.cs" />
     <Compile Include="Commands\AccountAuthenticationWindowCommands\CopyClipboardCommand.cs" />
@@ -139,7 +137,8 @@
     <Compile Include="Commands\SettingWindowCommands\InsertNowPlayingParameterCommand.cs" />
     <Compile Include="Commands\SettingWindowCommands\ResetNowPlayingFormatCommand.cs" />
     <Compile Include="Components\IDisposableCommand.cs" />
-    <Compile Include="Components\MVVM\WindowService.cs" />
+    <Compile Include="Components\Services\WindowService.cs" />
+    <Compile Include="Components\UIManager.cs" />
     <Compile Include="Controls\BusyIndicator.xaml.cs">
       <DependentUpon>BusyIndicator.xaml</DependentUpon>
     </Compile>
@@ -154,17 +153,17 @@
     <Compile Include="Commands\TweetWindow\PasteImageCommand.cs" />
     <Compile Include="Commands\TweetWindow\PostCommand.cs" />
     <Compile Include="Commands\TweetWindow\RemoveMediaCommand.cs" />
-    <Compile Include="Components\MVVM\Command{T}.cs" />
-    <Compile Include="Components\MVVM\DelegateCommand_T.cs" />
+    <Compile Include="Components\Mvvm\Command{T}.cs" />
+    <Compile Include="Components\Mvvm\DelegateCommand{T}.cs" />
     <Compile Include="Components\NotifiableCollection.cs" />
     <Compile Include="Controls\DropDownButton.cs" />
     <Compile Include="Controls\DropDownMenuButton.cs" />
     <Compile Include="Controls\PopupDecorator.cs" />
     <Compile Include="Extensions\WebExtensions.cs" />
     <Compile Include="Services\Common\IAccountAuthenticator.cs" />
-    <Compile Include="ImageHelper.cs" />
+    <Compile Include="Utilieis\ImageUtility.cs" />
     <Compile Include="Services\Mastodon\MastodonAccountAuthenticator.cs" />
-    <Compile Include="ServicePostParameters.cs" />
+    <Compile Include="Services\Common\ServicePostParameters.cs" />
     <Compile Include="Services\Common\DataStoreBase.cs" />
     <Compile Include="Enums\StatusVisibility.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
@@ -183,16 +182,16 @@
     <Compile Include="Extensions\SocialApisExtensions.cs" />
     <Compile Include="Extensions\WpfExtensions.cs" />
     <Compile Include="Data\Info\AppInfo.cs" />
-    <Compile Include="Helper\MastodonTextEntityBuilder.cs" />
+    <Compile Include="Services\Mastodon\MastodonTextEntityBuilder.cs" />
     <Compile Include="Services\Common\IAccount.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="Helper\ITextTokenBuilder.cs" />
+    <Compile Include="Services\Common\ITextTokenBuilder.cs" />
     <Compile Include="Services\Common\IDataStore.cs" />
     <Compile Include="Services\Common\IServiceConfiguration.cs" />
     <Compile Include="Services\Common\IApiGateway.cs" />
     <Compile Include="Services\Mastodon\MastodonApiGateway.cs" />
     <Compile Include="Services\Mastodon\MastodonDataStore.cs" />
-    <Compile Include="MultipleInstanceDataStore.cs" />
+    <Compile Include="Services\Common\MultipleInstanceDataStore.cs" />
     <Compile Include="Services\Common\IValidator.cs" />
     <Compile Include="Services\Mastodon\MastodonServiceConfiguration.cs" />
     <Compile Include="Services\Mastodon\MastodonValidator.cs" />
@@ -202,14 +201,14 @@
     <Compile Include="Services\Twitter\TwitterValidator.cs" />
     <Compile Include="Services\Common\ServiceType.cs" />
     <Compile Include="Services\Common\IAccountCommandGroup.cs" />
-    <Compile Include="IUnsubscribableObserver.cs" />
+    <Compile Include="Components\IUnsubscribableObserver.cs" />
     <Compile Include="Model\AccountManager.cs" />
     <Compile Include="Model\Attachment.cs" />
     <Compile Include="Model\Entities.cs" />
     <Compile Include="Model\Setting\ClientKeyCache.cs" />
     <Compile Include="Model\Setting\ColumnSetting.cs" />
     <Compile Include="Model\Setting\WindowSettings.cs" />
-    <Compile Include="ObserverDispose.cs" />
+    <Compile Include="Components\ObserverDispose.cs" />
     <Compile Include="Services\Config\ISocialConfig.cs" />
     <Compile Include="Services\Config\MastodonConfig.cs" />
     <Compile Include="Services\Config\TwitterConfig.cs" />
@@ -224,7 +223,7 @@
     <Compile Include="Data\DataStore.cs" />
     <Compile Include="Components\DictionaryEx.cs" />
     <Compile Include="Extensions\ElementBehavior.cs" />
-    <Compile Include="Defines.cs" />
+    <Compile Include="Defaults.cs" />
     <Compile Include="Data\Info\Info.cs" />
     <Compile Include="Data\Info\OSInfo.cs" />
     <Compile Include="Components\MathEx.cs" />
@@ -232,79 +231,78 @@
     <Compile Include="Model\ReplyStatus.cs" />
     <Compile Include="Model\Setting\AccountItem.cs" />
     <Compile Include="Model\Setting\ApiToken.cs" />
-    <Compile Include="Components\MVVM\CommandHelper.cs" />
     <Compile Include="Behaviors\TextBoxBehavior.cs" />
     <Compile Include="Extensions\TextBoxController.cs" />
     <Compile Include="TemplateSelectors\TimelineItemTemplateSelector.cs" />
     <Compile Include="Controls\TimelineView.cs" />
-    <Compile Include="Components\TwStringInfo.cs" />
-    <Compile Include="Helper\TwitterTextTokenBuilder.cs" />
+    <Compile Include="Services\Twitter\TwitterTextTokenBuilder.cs" />
     <Compile Include="Services\Twitter\TwitterDataStore.cs" />
     <Compile Include="Services\Twitter\TwitterAccountAuthenticator.cs" />
     <Compile Include="Utilieis\FileContentUtility.cs" />
     <Compile Include="Services\Common\AccountBase.cs" />
     <Compile Include="Services\Mastodon\MastodonAccount.cs" />
-    <Compile Include="ViewModel\AccountAuthenticationWindowViewModel.cs" />
-    <Compile Include="ViewModel\Column\HomeColumn.cs" />
-    <Compile Include="ViewModel\Column\NotificationColumn.cs" />
-    <Compile Include="ViewModel\SettingWindowViewModel.View.cs" />
+    <Compile Include="Utilieis\JsonUtility.cs" />
+    <Compile Include="Utilieis\MessagePackUtility.cs" />
+    <Compile Include="ViewModels\AccountAuthenticationWindowViewModel.cs" />
+    <Compile Include="ViewModels\Column\HomeColumn.cs" />
+    <Compile Include="ViewModels\Column\NotificationColumn.cs" />
+    <Compile Include="ViewModels\SettingWindowViewModel.View.cs" />
     <Compile Include="Services\Twitter\TwitterAccount.cs" />
     <Compile Include="Services\Mastodon\MastodonTimeline.cs" />
     <Compile Include="Services\Common\TimelineBase.cs" />
-    <Compile Include="ViewModel\UploadMedia.cs" />
+    <Compile Include="ViewModels\UploadMedia.cs" />
     <Compile Include="Data\UILocalize.cs" />
-    <Compile Include="ViewModel\Column\Base\ColumnBase.cs" />
-    <Compile Include="ViewModel\Column\ListColumn.cs" />
-    <Compile Include="ViewModel\Column\MessageColumn.cs" />
-    <Compile Include="ViewModel\Column\SearchColumn.cs" />
-    <Compile Include="ViewModel\Column\Base\SearchColumnBase.cs" />
-    <Compile Include="ViewModel\Column\Base\StatusColumnBase.cs" />
-    <Compile Include="ViewModel\Column\StreamSearchColumn.cs" />
-    <Compile Include="ViewModel\Item\IItem.cs" />
-    <Compile Include="ViewModel\Item\StatusItem.cs" />
+    <Compile Include="ViewModels\Column\Base\ColumnBase.cs" />
+    <Compile Include="ViewModels\Column\ListColumn.cs" />
+    <Compile Include="ViewModels\Column\MessageColumn.cs" />
+    <Compile Include="ViewModels\Column\SearchColumn.cs" />
+    <Compile Include="ViewModels\Column\Base\SearchColumnBase.cs" />
+    <Compile Include="ViewModels\Column\Base\StatusColumnBase.cs" />
+    <Compile Include="ViewModels\Column\StreamSearchColumn.cs" />
+    <Compile Include="ViewModels\Item\IItem.cs" />
+    <Compile Include="ViewModels\Item\StatusItem.cs" />
     <Compile Include="Model\MediaEntityInfo.cs" />
     <Compile Include="Model\StatusActivity.cs" />
     <Compile Include="Model\Setting\Mute.cs" />
     <Compile Include="Model\Setting\Setting.cs" />
     <Compile Include="Model\Setting\AccountSetting.cs" />
     <Compile Include="Model\WindowStatus.cs" />
-    <Compile Include="Components\MVVM\ViewModelConnector.cs" />
+    <Compile Include="Components\Mvvm\ViewModelConnector.cs" />
     <Compile Include="Components\NativeMethods\Functions.cs" />
     <Compile Include="Components\NativeMethods\NativeMethods.cs" />
     <Compile Include="Components\NativeMethods\Values.cs" />
     <Compile Include="Model\StatusInfo.cs" />
     <Compile Include="Model\UserInfo.cs" />
     <Compile Include="Services\Twitter\TwitterTimeline.cs" />
-    <Compile Include="ViewModel\ContentWindowViewModel.cs" />
-    <Compile Include="ViewModel\MainWindowViewModel.cs" />
-    <Compile Include="ViewModel\SettingWindowViewModel.cs" />
-    <Compile Include="ViewModel\TweetWindowViewModel.cs" />
-    <Compile Include="ViewModel\UserWindowViewModel.cs" />
-    <Compile Include="View\AccountAuthenticationWindow.xaml.cs">
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\SettingWindowViewModel.cs" />
+    <Compile Include="ViewModels\TweetWindowViewModel.cs" />
+    <Compile Include="ViewModels\UserWindowViewModel.cs" />
+    <Compile Include="Views\AccountAuthenticationWindow.xaml.cs">
       <DependentUpon>AccountAuthenticationWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\SettingWindow.xaml.cs">
+    <Compile Include="Views\SettingWindow.xaml.cs">
       <DependentUpon>SettingWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\TweetWindow.xaml.cs">
+    <Compile Include="Views\TweetWindow.xaml.cs">
       <DependentUpon>TweetWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\UserWindow.xaml.cs">
+    <Compile Include="Views\UserWindow.xaml.cs">
       <DependentUpon>UserWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\BusyIndicator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\Generic.xaml">
+    <Page Include="Xaml\Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\AccountAuthenticationWindow.xaml">
+    <Page Include="Views\AccountAuthenticationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MainWindow.xaml">
+    <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -313,42 +311,42 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Extensions\Extensions.cs" />
-    <Compile Include="View\MainWindow.xaml.cs">
+    <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="View\SettingWindow.xaml">
+    <Page Include="Views\SettingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\TweetWindow.xaml">
+    <Page Include="Views\TweetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\UserWindow.xaml">
+    <Page Include="Views\UserWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="XAML\ControlStyles.xaml">
+    <Page Include="Xaml\Templates\ControlStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="XAML\DataTemplates.xaml">
+    <Page Include="Xaml\Templates\DataTemplates.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="XAML\Icons.xaml">
+    <Page Include="Xaml\Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Components\MVVM\Command.cs" />
-    <Compile Include="Components\MVVM\DelegateCommand.cs" />
-    <Compile Include="Components\MVVM\DialogService.cs" />
-    <Compile Include="Components\MVVM\NotificationObject.cs" />
-    <Compile Include="Components\MVVM\ViewModelBase.cs" />
-    <Compile Include="Components\MVVM\WeakCollection.cs" />
+    <Compile Include="Components\Mvvm\Command.cs" />
+    <Compile Include="Components\Mvvm\DelegateCommand.cs" />
+    <Compile Include="Components\Services\DialogService.cs" />
+    <Compile Include="Components\NotificationObject.cs" />
+    <Compile Include="Components\Mvvm\ViewModelBase.cs" />
+    <Compile Include="Components\WeakCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

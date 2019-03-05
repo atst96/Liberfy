@@ -1,4 +1,4 @@
-﻿using Liberfy.ViewModel;
+﻿using Liberfy.ViewModels;
 using MessagePack;
 using SocialApis;
 using System.Collections.Generic;

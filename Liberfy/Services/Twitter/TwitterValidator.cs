@@ -1,4 +1,4 @@
-﻿using Liberfy.ViewModel;
+﻿using Liberfy.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Twitter.Text;
 
-namespace Liberfy.Services
+namespace Liberfy.Services.Twitter
 {
     internal class TwitterValidator : IValidator
     {

@@ -1,4 +1,4 @@
-﻿using Liberfy.ViewModel;
+﻿using Liberfy.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +11,9 @@ namespace Liberfy.Commands
 {
     internal class DragDropCommand : Command<IDataObject>
     {
-        private TweetWindow _viewModel;
+        private TweetWindowViewModel _viewModel;
 
-        public DragDropCommand(TweetWindow viewModel)
+        public DragDropCommand(TweetWindowViewModel viewModel)
         {
             this._viewModel = viewModel;
         }
@@ -71,7 +71,7 @@ namespace Liberfy.Commands
         {
             return dataObject.GetDataPresent(DataFormats.FileDrop)
                 && dataObject.GetData(DataFormats.FileDrop) is string[] files
-                && TweetWindow.HasEnableMediaFiles(files);
+                && TweetWindowViewModel.HasEnableMediaFiles(files);
         }
 
         private static bool IsUrlData(IDataObject dataObject)
@@ -105,7 +105,7 @@ namespace Liberfy.Commands
 
         private static IEnumerable<string> GetEnableMediaFiles(IEnumerable<string> files)
         {
-            return files.Where(f => TweetWindow.IsUploadableExtension(Path.GetExtension(f)));
+            return files.Where(f => TweetWindowViewModel.IsUploadableExtension(Path.GetExtension(f)));
         }
     }
 }

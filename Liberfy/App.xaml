@@ -1,18 +1,15 @@
 ﻿<Application
     x:Class="Liberfy.App"
+    x:ClassModifier="internal"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:cm="clr-namespace:System.ComponentModel;assembly=System"
     xmlns:conv="clr-namespace:Liberfy.Converter"
     xmlns:local="clr-namespace:Liberfy"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:tb="http://www.hardcodet.net/taskbar"
-    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
-    xmlns:vm="clr-namespace:Liberfy.ViewModel"
-    xmlns:is="http://schemas.microsoft.com/expression/2010/interactions"
     xmlns:app="clr-namespace:Liberfy"
-    StartupUri="View/MainWindow.xaml"
-    ShutdownMode="OnExplicitShutdown">
+    StartupUri="Views/MainWindow.xaml"
+    ShutdownMode="OnLastWindowClose">
     <Application.Resources>
         <ResourceDictionary>
             <sys:Double x:Key="UI.Column.Width">300</sys:Double>
@@ -120,10 +117,10 @@
             </Style>
 
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="XAML\Icons.xaml" />
-                <ResourceDictionary Source="Themes\Generic.xaml" />
-                <ResourceDictionary Source="XAML\ControlStyles.xaml" />
-                <ResourceDictionary Source="XAML\DataTemplates.xaml" />
+                <ResourceDictionary Source="Xaml\Icons.xaml" />
+                <ResourceDictionary Source="Xaml\Themes\Generic.xaml" />
+                <ResourceDictionary Source="Xaml\Templates\ControlStyles.xaml" />
+                <ResourceDictionary Source="Xaml\Templates\DataTemplates.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

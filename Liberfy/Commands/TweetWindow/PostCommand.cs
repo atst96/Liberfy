@@ -1,4 +1,4 @@
-﻿using Liberfy.ViewModel;
+﻿using Liberfy.ViewModels;
 using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
@@ -10,9 +10,9 @@ namespace Liberfy.Commands
 {
     internal class PostCommand : Command<IAccount>
     {
-        private TweetWindow _viewModel;
+        private TweetWindowViewModel _viewModel;
 
-        public PostCommand(TweetWindow viewModel)
+        public PostCommand(TweetWindowViewModel viewModel)
         {
             this._viewModel = viewModel;
         }

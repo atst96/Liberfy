@@ -1,4 +1,5 @@
-﻿using Liberfy.ViewModel;
+﻿using Liberfy.Utilities;
+using Liberfy.ViewModels;
 using NowPlayingLib;
 using System;
 using System.Collections.Generic;
@@ -10,12 +11,12 @@ namespace Liberfy.Commands
 {
     internal class InsertNowPlayingCommand : Command<string>
     {
-        public TweetWindow _viewModel;
+        public TweetWindowViewModel _viewModel;
 
         private static Setting Setting { get; } = App.Setting;
         private static string[] PlayerIds = { "wmplayer", "itunes", "foobar2000" };
 
-        public InsertNowPlayingCommand(TweetWindow viewModel)
+        public InsertNowPlayingCommand(TweetWindowViewModel viewModel)
         {
             this._viewModel = viewModel;
         }
@@ -50,7 +51,7 @@ namespace Liberfy.Commands
                         {
                             foreach (var stream in media.Artworks)
                             {
-                                var image = ImageHelper.BitmapSourceFromStream(stream);
+                                var image = ImageUtility.BitmapSourceFromStream(stream);
                                 var attachment = UploadMedia.FromBitmapSource(image, UploadMedia.DisplayExtensions.Artwork);
 
                                 this._viewModel.PostParameters.Attachments.Add(attachment);

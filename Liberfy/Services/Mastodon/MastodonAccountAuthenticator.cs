@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using SocialApis;
 using SocialApis.Mastodon;
 
-namespace Liberfy
+namespace Liberfy.Services.Mastodon
 {
     internal class MastodonAccountAuthenticator : IAccountAuthenticator
     {
@@ -32,7 +32,7 @@ namespace Liberfy
 
                 if (cachecClientKey == null)
                 {
-                    var clientKey = await MastodonApi.Apps.Register(instanceUri, App.AppName, ApiScopes).ConfigureAwait(false);
+                    var clientKey = await MastodonApi.Apps.Register(instanceUri, App.Name, ApiScopes).ConfigureAwait(false);
 
                     App.Setting.ClientKeys.Add(new ClientKeyCache(instanceUri, clientKey));
 

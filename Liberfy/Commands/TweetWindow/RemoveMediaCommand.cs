@@ -1,4 +1,4 @@
-﻿using Liberfy.ViewModel;
+﻿using Liberfy.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +9,9 @@ namespace Liberfy.Commands
 {
     internal class RemoveMediaCommand : Command<UploadMedia>
     {
-        private TweetWindow _viewModel;
+        private TweetWindowViewModel _viewModel;
 
-        public RemoveMediaCommand(TweetWindow viewModel) : base(true)
+        public RemoveMediaCommand(TweetWindowViewModel viewModel) : base(true)
         {
             this._viewModel = viewModel;
         }

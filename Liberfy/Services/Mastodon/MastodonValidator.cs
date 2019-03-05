@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Liberfy.ViewModel;
+using Liberfy.ViewModels;
 
-namespace Liberfy.Services
+namespace Liberfy.Services.Mastodon
 {
     internal class MastodonValidator : IValidator
     {

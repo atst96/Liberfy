@@ -1,5 +1,5 @@
 ﻿using Liberfy.Services.Common;
-using Liberfy.ViewModel;
+using Liberfy.ViewModels;
 using SocialApis;
 using SocialApis.Mastodon;
 using System;

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Windows.Media;
-using static Liberfy.Defines;
+using static Liberfy.Defaults;
 
 using Mastodon = SocialApis.Mastodon;
 
@@ -448,7 +448,7 @@ namespace Liberfy
         [IgnoreDataMember]
         public string NotificationSoundFile
         {
-            get => _notificationSoundFile ?? (_notificationSoundFile = Defines.DefaultSoundFile);
+            get => _notificationSoundFile ?? (_notificationSoundFile = Defaults.DefaultSoundFile);
             set => SetProperty(ref _notificationSoundFile, value);
         }
 

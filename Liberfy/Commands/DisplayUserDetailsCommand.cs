@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Liberfy.View;
-using Liberfy.ViewModel;
+using Liberfy.Views;
+using Liberfy.ViewModels;
 
 namespace Liberfy.Commands
 {

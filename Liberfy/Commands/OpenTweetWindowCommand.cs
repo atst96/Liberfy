@@ -2,9 +2,9 @@
 {
     internal class OpenTweetWindowCommand : Command<IAccount>
     {
-        private ViewModel.MainWindow _viewModel;
+        private ViewModels.MainWindowViewModel _viewModel;
 
-        public OpenTweetWindowCommand(ViewModel.MainWindow viewModel)
+        public OpenTweetWindowCommand(ViewModels.MainWindowViewModel viewModel)
         {
             this._viewModel = viewModel;
         }

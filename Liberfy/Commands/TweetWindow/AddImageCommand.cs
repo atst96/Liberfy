@@ -1,18 +1,18 @@
-﻿using Liberfy.ViewModel;
+﻿using Liberfy.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Liberfy.Defines;
+using static Liberfy.Defaults;
 
 namespace Liberfy.Commands
 {
     internal class AddImageCommand : Command<string>
     {
-        private TweetWindow _viewModel;
+        private TweetWindowViewModel _viewModel;
 
-        public AddImageCommand(TweetWindow viewModel)
+        public AddImageCommand(TweetWindowViewModel viewModel)
         {
             this._viewModel = viewModel;
         }
@@ -28,7 +28,7 @@ namespace Liberfy.Commands
         {
             var files = this._viewModel.DialogService.SelectOpenFiles("アップロードするメディアを選択", UploadableExtensionFilter);
 
-            if (files?.Length > 0 && TweetWindow.HasEnableMediaFiles(files))
+            if (files?.Length > 0 && TweetWindowViewModel.HasEnableMediaFiles(files))
             {
                 this._viewModel.PostParameters.Attachments.AddRange(files.Select(path => UploadMedia.FromFile(path)));
                 this._viewModel.UpdateCanPost();

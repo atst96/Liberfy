@@ -8,7 +8,7 @@ using System.Windows.Data;
 using Liberfy.Model;
 using SocialApis.Twitter;
 
-namespace Liberfy
+namespace Liberfy.Services.Twitter
 {
     internal class TwitterDataStore : DataStoreBase<User, Status>, IDataStore
     {

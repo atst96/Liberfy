@@ -1,5 +1,5 @@
 ﻿using Liberfy.Model;
-using Liberfy.ViewModel;
+using Liberfy.ViewModels;
 using SocialApis.Common;
 using SocialApis.Twitter;
 using System;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    struct MediaEntityInfo
+    internal struct MediaEntityInfo
     {
         public IAccount Account { get; }
 

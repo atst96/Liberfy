@@ -1,5 +1,5 @@
 ﻿using Liberfy.Services.Common;
-using Liberfy.ViewModel;
+using Liberfy.ViewModels;
 using SocialApis;
 using SocialApis.Twitter;
 using System;
@@ -24,7 +24,7 @@ namespace Liberfy.Services.Twitter
         {
             attachment.SourceStream.Position = 0;
 
-            bool isVideoUpload = attachment.MediaType.HasFlag(ViewModel.MediaType.Video);
+            bool isVideoUpload = attachment.MediaType.HasFlag(ViewModels.MediaType.Video);
             var uploadMediaType = isVideoUpload ? MimeTypes.Video.Mp4 : MimeTypes.OctetStream;
 
             Task<MediaResponse> task;

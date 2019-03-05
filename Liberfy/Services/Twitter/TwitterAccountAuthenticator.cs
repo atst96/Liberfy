@@ -7,7 +7,7 @@ using SocialApis;
 using SocialApis.Twitter;
 using Conf = Liberfy.Config.Twitter;
 
-namespace Liberfy
+namespace Liberfy.Services.Twitter
 {
     internal class TwitterAccountAuthenticator : IAccountAuthenticator
     {

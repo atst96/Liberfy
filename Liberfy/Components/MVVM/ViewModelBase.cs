@@ -1,4 +1,4 @@
-﻿using Liberfy.Components.MVVM;
+﻿using Liberfy.Components;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
-namespace Liberfy.ViewModel
+namespace Liberfy.ViewModels
 {
     internal class ViewModelBase : INotifyPropertyChanged, IViewModelBase, IDisposable
     {

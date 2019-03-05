@@ -1,4 +1,4 @@
-﻿using Liberfy.ViewModel;
+﻿using Liberfy.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -12,16 +12,16 @@ namespace Liberfy.Commands
 {
     internal class PasteImageCommand : Command
     {
-        private TweetWindow _viewModel;
+        private TweetWindowViewModel _viewModel;
 
-        public PasteImageCommand(TweetWindow viewModel)
+        public PasteImageCommand(TweetWindowViewModel viewModel)
         {
             this._viewModel = viewModel;
         }
 
         protected override bool CanExecute(object parameter)
         {
-            return Clipboard.ContainsImage() || (Clipboard.ContainsFileDropList() && TweetWindow.HasEnableMediaFiles(Clipboard.GetFileDropList()));
+            return Clipboard.ContainsImage() || (Clipboard.ContainsFileDropList() && TweetWindowViewModel.HasEnableMediaFiles(Clipboard.GetFileDropList()));
         }
 
         protected override void Execute(object parameter)
@@ -47,7 +47,7 @@ namespace Liberfy.Commands
         {
             foreach (var str in collection)
             {
-                if (TweetWindow.IsUploadableExtension(Path.GetExtension(str)))
+                if (TweetWindowViewModel.IsUploadableExtension(Path.GetExtension(str)))
                     yield return str;
             }
         }
