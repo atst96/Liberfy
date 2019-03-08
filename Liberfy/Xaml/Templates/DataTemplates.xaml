@@ -244,12 +244,41 @@
 
     <DataTemplate x:Key="MediaItemTemplate" DataType="{x:Type app:MediaEntityInfo}">
         <Button Style="{StaticResource TimelineImageButton}">
-            <Image
-                Source="{Binding CurrentEntity.PreviewUrl, Mode=OneTime, IsAsync=True}" 
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                Stretch="UniformToFill" />
+            <Grid>
+                <Image
+                    Source="{Binding CurrentAttachment.PreviewUrl, Mode=OneTime, IsAsync=True}" 
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Stretch="UniformToFill" />
+
+                <Border
+                    Margin="6"
+                    Padding="8,3"
+                    Background="#88000000"
+                    CornerRadius="3"
+                    VerticalAlignment="Bottom"
+                    HorizontalAlignment="Right">
+                    <TextBlock
+                        x:Name="attachmentText"
+                        Foreground="#FFFFFFFF"
+                        FontWeight="Bold" />
+                </Border>
+            </Grid>
         </Button>
+
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding CurrentAttachment.Type, Mode=OneTime}" Value="Photo">
+                <Setter TargetName="attachmentText" Property="Text" Value="PHOTO" />
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding CurrentAttachment.Type, Mode=OneTime}" Value="Gif">
+                <Setter TargetName="attachmentText" Property="Text" Value="GIF" />
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding CurrentAttachment.Type, Mode=OneTime}" Value="Video">
+                <Setter TargetName="attachmentText" Property="Text" Value="VIDEO" />
+            </DataTrigger>
+        </DataTemplate.Triggers>
     </DataTemplate>
 
     <!--#region Item templates-->
@@ -314,6 +343,7 @@
                     CommandParameter="{Binding User, Mode=OneTime}"
                     Command="{Binding Account.Commands.DisplayUserDetails, Mode=OneTime}">
                     <Image
+                        RenderOptions.BitmapScalingMode="HighQuality"
                         Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
                         Height="{DynamicResource UI.Tweet.ProfileImage.Width}"
                         Source="{Binding User.ProfileImageUrl, Mode=OneWay, IsAsync=True}" />
@@ -346,7 +376,6 @@
 
                     <TextBlock
                         DockPanel.Dock="Left"
-                        FontWeight="Bold"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Left"
                         TextTrimming="CharacterEllipsis">
@@ -354,22 +383,9 @@
                             Style="{StaticResource UserNameLinkText}"
                             CommandParameter="{Binding User, Mode=OneTime}"
                             Command="{Binding Account.Commands.DisplayUserDetails, Mode=OneTime}">
-                            <Run Text="{Binding User.Name, Mode=OneWay}" />
+                            <Run FontWeight="Bold" Text="{Binding User.Name, Mode=OneWay}" /><Run Text="{Binding User.LongUserName, Mode=OneWay, StringFormat='{}@{0}'}" />
                         </Hyperlink>
                     </TextBlock>
-
-                    <TextBlock
-                        DockPanel.Dock="Left"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Left">
-                        <Hyperlink
-                            Style="{StaticResource UserNameLinkText}"
-                            CommandParameter="{Binding User, Mode=OneTime}"
-                            Command="{Binding Account.Commands.DisplayUserDetails, Mode=OneTime}">
-                            <Run Text="{Binding User.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
-                        </Hyperlink>
-                    </TextBlock>
-
                 </DockPanel>
 
                 <TextBlock

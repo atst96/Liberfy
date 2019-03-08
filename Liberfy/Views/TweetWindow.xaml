@@ -12,11 +12,11 @@
     mc:Ignorable="d" AllowDrop="True"
     Title="ツイート" Height="329" Width="453"
     FontFamily="Meiryo"
+    UseLayoutRounding="True"
     DataContext="{app:ViewModelConnector vm:TweetWindowViewModel}"
     d:DataContext="{d:DesignInstance vm:TweetWindowViewModel, IsDesignTimeCreatable=True}"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
-    UseLayoutRounding="True">
+    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions">
     <Window.Resources>
 
         <Duration x:Key="AnimationDuration">0:0:0.5</Duration>
@@ -24,7 +24,7 @@
 
         <Style x:Key="MediaFunctionButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="OverridesDefaultStyle" Value="False" />
-            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="UseLayoutRounding" Value="True" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Foreground" Value="#fff" />

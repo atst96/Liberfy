@@ -12,7 +12,7 @@
     Title="アカウント認証"
     Height="360" Width="460"
     FontFamily="Meiryo"
-    SnapsToDevicePixels="True"
+    UseLayoutRounding="True"
     ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
     SizeToContent="Manual"
     DataContext="{app:ViewModelConnector vm:AccountAuthenticationWindowViewModel}"

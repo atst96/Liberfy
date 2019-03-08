@@ -34,7 +34,7 @@ namespace Liberfy
 
         public TimelineView() : base()
         {
-            this.Loaded += TimelineView_Loaded;
+            this.Loaded += this.TimelineView_Loaded;
         }
 
         private void TimelineView_Loaded(object sender, RoutedEventArgs e)

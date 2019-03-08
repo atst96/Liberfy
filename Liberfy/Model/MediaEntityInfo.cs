@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    internal struct MediaEntityInfo
+    internal class MediaEntityInfo
     {
         public IAccount Account { get; }
 
@@ -18,22 +18,22 @@ namespace Liberfy
 
         public Attachment[] Entities { get; }
 
-        public Attachment CurrentEntity { get; }
+        public Attachment CurrentAttachment { get; }
 
         public MediaEntityInfo(IAccount account, StatusItem item)
         {
             this.Account = account;
             this.Item = item;
             this.Entities = this.Item.Status.Attachments;
-            this.CurrentEntity = this.Entities.First();
+            this.CurrentAttachment = this.Entities.First();
         }
 
-        public MediaEntityInfo(IAccount account, StatusItem item, Attachment currentEntity)
+        public MediaEntityInfo(IAccount account, StatusItem item, Attachment attachment)
         {
             this.Account = account;
             this.Item = item;
             this.Entities = this.Item.Status.Attachments;
-            this.CurrentEntity = currentEntity;
+            this.CurrentAttachment = attachment;
         }
     }
 }
