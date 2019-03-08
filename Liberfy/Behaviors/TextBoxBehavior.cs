@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Liberfy.Behaviors
 {
-    internal class TextBoxBehavior : System.Windows.Interactivity.Behavior<TextBox>
+    internal class TextBoxBehavior : Microsoft.Xaml.Behaviors.Behavior<TextBox>
     {
         protected override void OnDetaching()
         {

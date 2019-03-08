@@ -10,7 +10,7 @@ using System.Windows.Interop;
 
 namespace Liberfy.Behaviors
 {
-    public class DragDropBehavior : System.Windows.Interactivity.Behavior<FrameworkElement>, ICommandSource
+    public class DragDropBehavior : Microsoft.Xaml.Behaviors.Behavior<FrameworkElement>, ICommandSource
     {
         private DragDropHelper _dragDropHelper;
 

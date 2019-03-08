@@ -15,8 +15,7 @@
     UseLayoutRounding="True"
     DataContext="{app:ViewModelConnector vm:TweetWindowViewModel}"
     d:DataContext="{d:DesignInstance vm:TweetWindowViewModel, IsDesignTimeCreatable=True}"
-    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions">
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors">
     <Window.Resources>
 
         <Duration x:Key="AnimationDuration">0:0:0.5</Duration>

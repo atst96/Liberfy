@@ -20,4 +20,5 @@
   - SgmlReader
   - tweet-text-cs
   - Utf8Json
+  - XamlBehaviors for WPF
   - WPF NotifyIcon
