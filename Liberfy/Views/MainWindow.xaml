@@ -127,7 +127,7 @@
                         Background="Transparent"
                         VirtualizingPanel.ScrollUnit="Pixel"
                         VirtualizingPanel.IsVirtualizing="True"
-                        VirtualizingPanel.VirtualizationMode="Recycling"
+                        VirtualizingPanel.VirtualizationMode="Standard"
                         ScrollViewer.VerticalScrollBarVisibility="Visible"
                         ItemsSource="{Binding Items, Mode=OneTime}"
                         ItemsPanel="{StaticResource TimelinePanelTemplate}"

@@ -20,7 +20,7 @@ namespace Liberfy
 
         public TimelineViewItem() : base()
         {
-            this.Loaded += this.TimelineViewItem_Loaded;
+            // this.Loaded += this.TimelineViewItem_Loaded;
         }
 
         protected override void OnContentChanged(object oldContent, object newContent)
@@ -30,32 +30,32 @@ namespace Liberfy
             this._item = newContent as IItem;
         }
 
-        private void TimelineViewItem_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (this._container.ItemsSource is IEnumerable<IItem> items)
-            {
-                if (items.FirstOrDefault() == this._item)
-                {
-                    // var size = this.MeasureOverride(new Size(this._container.ItemWidth, double.PositiveInfinity));
-                    var size = this.MeasureCore(new Size(this._container.ItemWidth, double.PositiveInfinity));
-                    double height = size.Height;
+        //private void TimelineViewItem_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    if (this._container.ItemsSource is IEnumerable<IItem> items)
+        //    {
+        //        if (items.FirstOrDefault() == this._item)
+        //        {
+        //            // var size = this.MeasureOverride(new Size(this._container.ItemWidth, double.PositiveInfinity));
+        //            var size = this.MeasureCore(new Size(this._container.ItemWidth, double.PositiveInfinity));
+        //            double height = size.Height;
 
-                    var animation = new DoubleAnimation(0.0d, height, _duration)
-                    {
-                        EasingFunction = new QuadraticEase(),
-                        FillBehavior = FillBehavior.Stop,
-                    };
-                    animation.Completed += this.Animation_Completed;
-                    this._isAnimating = true;
-                    this.BeginAnimation(TimelineViewItem.HeightProperty, animation);
-                }
-            }
-        }
+        //            var animation = new DoubleAnimation(0.0d, height, _duration)
+        //            {
+        //                EasingFunction = new QuadraticEase(),
+        //                FillBehavior = FillBehavior.Stop,
+        //            };
+        //            animation.Completed += this.Animation_Completed;
+        //            this._isAnimating = true;
+        //            this.BeginAnimation(TimelineViewItem.HeightProperty, animation);
+        //        }
+        //    }
+        //}
 
-        private void Animation_Completed(object sender, EventArgs e)
-        {
-            this._isAnimating = false;
-        }
+        //private void Animation_Completed(object sender, EventArgs e)
+        //{
+        //    this._isAnimating = false;
+        //}
 
         public bool IsRetweetedItem
         {
