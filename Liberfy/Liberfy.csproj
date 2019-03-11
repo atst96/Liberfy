@@ -124,6 +124,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Items\NotificationItem.cs" />
     <Compile Include="Model\ApplicationStatus.cs" />
     <Compile Include="Commands\AccountAuthenticationWindowCommands\CancelCommand.cs" />
     <Compile Include="Commands\AccountAuthenticationWindowCommands\NextCommand.cs" />

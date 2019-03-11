@@ -10,7 +10,7 @@
     x:ClassModifier="internal"
     mc:Ignorable="d" FontFamily="Meiryo"
     UseLayoutRounding="True"
-    Title="Liberfy" Height="500" Width="700"
+    Title="Liberfy" Width="700" Height="500"
     DataContext="{app:ViewModelConnector vm:MainWindowViewModel, IsMainView=True}"
     d:DataContext="{d:DesignInstance vm:MainWindowViewModel, IsDesignTimeCreatable=True}">
     <Window.Resources>

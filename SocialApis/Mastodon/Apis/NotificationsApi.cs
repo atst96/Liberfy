@@ -12,6 +12,11 @@ namespace SocialApis.Mastodon
     {
         public NotificationsApi(MastodonApi tokens) : base(tokens) { }
 
+        public Task<Notification[]> GetNotifications(IQuery query = null)
+        {
+            return this.Api.RestApiGetRequestAsync<Notification[]>("notifications", query);
+        }
+
         public Task<Notification[]> GetNotifications(NotificationType excludeType, IQuery query = null)
         {
             var _query = new Query(query);

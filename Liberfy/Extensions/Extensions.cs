@@ -9,6 +9,11 @@ namespace Liberfy
 {
     public static class Extensions
     {
+        public static T CastOrDefault<T>(this object @object)
+        {
+            return @object is T value ? value : default;
+        }
+
         public static bool Contains(this string value, string find, StringComparison comparison)
         {
             return value.IndexOf(find, comparison) >= 0;

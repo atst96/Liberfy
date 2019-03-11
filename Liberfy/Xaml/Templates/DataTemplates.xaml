@@ -464,6 +464,247 @@
         </DataTemplate.Triggers>
     </DataTemplate>
 
+    <DataTemplate x:Key="FavoriteNotificationItemTemplate" DataType="{x:Type app:NotificationItem}">
+        <Grid Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <app:GeometryIcon
+                Margin="0,0,4,4"
+                Width="12pt" Height="12pt"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Fill="{DynamicResource Brush.Favorite}"
+                Data="{StaticResource FontAwesome.Icon.Star}" />
+
+            <TextBlock
+                Margin="4,0,4,4"
+                Grid.Column="1"
+                TextWrapping="NoWrap"
+                TextTrimming="CharacterEllipsis">
+                <Hyperlink Style="{StaticResource UserNameLinkText}">
+                    <Run Text="{Binding Account.Name, Mode=OneWay}" />
+                </Hyperlink><!--
+             --><Run Text=" が" /><!--
+             --><Run Text="いいね" /><!--
+             --><Run Text="しました。" />
+            </TextBlock>
+
+            <!-- Profile image -->
+            <Button
+                Margin="0,0,4,0"
+                Grid.Row="1"
+                VerticalAlignment="Top"
+                Opacity=".8"
+                Style="{StaticResource ImageButton}"
+                Visibility="{DynamicResource UI.Tweet.ProfileImage.Visibility}"
+                CommandParameter="{Binding User, Mode=OneTime}"
+                Command="{Binding Own.Commands.DisplayUserDetails, Mode=OneTime}">
+                <Grid>
+                    <Image
+                        Clip="{DynamicResource UI.Tweet.PorfileImage.Clip}"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        RenderTransformOrigin=".0,.0"
+                        Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
+                        Height="{DynamicResource UI.Tweet.ProfileImage.Width}"
+                        Source="{Binding Own.Info.ProfileImageUrl, Mode=OneWay, IsAsync=True}">
+                        <Image.RenderTransform>
+                            <ScaleTransform ScaleX=".7" ScaleY=".7" />
+                        </Image.RenderTransform>
+                    </Image>
+
+                    <Image
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Clip="{DynamicResource UI.Tweet.ProfileImage.Clip}"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        RenderTransformOrigin="1.0,1.0"
+                        Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
+                        Height="{DynamicResource UI.Tweet.ProfileImage.Width}"
+                        Source="{Binding Account.ProfileImageUrl, Mode=OneWay, IsAsync=True}">
+                        <Image.RenderTransform>
+                            <ScaleTransform ScaleX=".6" ScaleY=".6" />
+                        </Image.RenderTransform>
+                    </Image>
+                </Grid>
+            </Button>
+
+            <Button
+                Margin="4,0" Padding="8,5"
+                Grid.Row="1" Grid.Column="1"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Top"
+                Style="{StaticResource QuotedTweetButtonStyle}">
+                <StackPanel>
+                    <TextBlock
+                        TextWrapping="Wrap"
+                        TextTrimming="CharacterEllipsis"
+                        b:TimelineBehavior.StatusInfo="{Binding Status, Mode=OneTime}" />
+                </StackPanel>
+            </Button>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="RetweetNotificationItemTemplate" DataType="{x:Type app:NotificationItem}">
+        <Grid Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <app:GeometryIcon
+                Margin="0,0,4,4"
+                Width="12pt" Height="12pt"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Fill="{DynamicResource Brush.Retweet}"
+                Data="{StaticResource FontAwesome.Icon.Retweet}" />
+
+            <TextBlock
+                Margin="4,0,4,4"
+                Grid.Column="1"
+                TextWrapping="NoWrap"
+                TextTrimming="CharacterEllipsis">
+                <Hyperlink Style="{StaticResource UserNameLinkText}">
+                    <Run Text="{Binding Account.Name, Mode=OneWay}" />
+                </Hyperlink><!--
+             --><Run Text=" が" /><!--
+             --><Run Text="リツイート" /><!--
+             --><Run Text="しました。" />
+            </TextBlock>
+
+            <!-- Profile image -->
+            <Button
+                Margin="0,0,4,0"
+                Grid.Row="1"
+                VerticalAlignment="Top"
+                Opacity=".8"
+                Style="{StaticResource ImageButton}"
+                Visibility="{DynamicResource UI.Tweet.ProfileImage.Visibility}"
+                CommandParameter="{Binding User, Mode=OneTime}"
+                Command="{Binding Own.Commands.DisplayUserDetails, Mode=OneTime}">
+                <Grid>
+                    <Image
+                        Clip="{DynamicResource UI.Tweet.PorfileImage.Clip}"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        RenderTransformOrigin=".0,.0"
+                        Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
+                        Height="{DynamicResource UI.Tweet.ProfileImage.Width}"
+                        Source="{Binding Own.Info.ProfileImageUrl, Mode=OneWay, IsAsync=True}">
+                        <Image.RenderTransform>
+                            <ScaleTransform ScaleX=".7" ScaleY=".7" />
+                        </Image.RenderTransform>
+                    </Image>
+
+                    <Image
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Clip="{DynamicResource UI.Tweet.ProfileImage.Clip}"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        RenderTransformOrigin="1.0,1.0"
+                        Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
+                        Height="{DynamicResource UI.Tweet.ProfileImage.Width}"
+                        Source="{Binding Account.ProfileImageUrl, Mode=OneWay, IsAsync=True}">
+                        <Image.RenderTransform>
+                            <ScaleTransform ScaleX=".6" ScaleY=".6" />
+                        </Image.RenderTransform>
+                    </Image>
+                </Grid>
+            </Button>
+
+            <Button
+                Margin="4,0" Padding="8,5"
+                Grid.Row="1" Grid.Column="1"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Top"
+                Style="{StaticResource QuotedTweetButtonStyle}">
+                <StackPanel>
+                    <TextBlock
+                        TextWrapping="Wrap"
+                        TextTrimming="CharacterEllipsis"
+                        b:TimelineBehavior.StatusInfo="{Binding Status, Mode=OneTime}" />
+                </StackPanel>
+            </Button>
+        </Grid>
+    </DataTemplate>
+    
+    <DataTemplate x:Key="FollowNotificationItemTemplate" DataType="{x:Type app:NotificationItem}">
+        <Grid Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <app:GeometryIcon
+                Margin="0,0,4,4"
+                Width="12pt" Height="12pt"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Data="{StaticResource FontAwesome.Icon.UserPlus}" />
+
+            <TextBlock
+                Margin="4,0,4,4"
+                Grid.Column="1"
+                TextWrapping="NoWrap"
+                TextTrimming="CharacterEllipsis">
+                <Hyperlink Style="{StaticResource UserNameLinkText}">
+                    <Run Text="{Binding Account.Name, Mode=OneWay}" />
+                </Hyperlink><!--
+             --><Run Text=" にフォローされました。" />
+            </TextBlock>
+
+            <!-- Profile image -->
+            <Button
+                Margin="0,0,4,0"
+                Grid.Row="1"
+                VerticalAlignment="Top"
+                Style="{StaticResource ImageButton}"
+                Clip="{DynamicResource UI.Tweet.ProfileImage.Clip}"
+                Visibility="{DynamicResource UI.Tweet.ProfileImage.Visibility}"
+                CommandParameter="{Binding User, Mode=OneTime}"
+                Command="{Binding Account.Commands.DisplayUserDetails, Mode=OneTime}">
+                <Image
+                    RenderOptions.BitmapScalingMode="HighQuality"
+                    Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
+                    Height="{DynamicResource UI.Tweet.ProfileImage.Width}"
+                    Source="{Binding Account.ProfileImageUrl, Mode=OneWay, IsAsync=True}" />
+            </Button>
+
+            <TextBlock
+                Margin="4,0,0,4"
+                Grid.Row="1"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                TextWrapping="NoWrap"
+                TextTrimming="CharacterEllipsis">
+                <Hyperlink
+                    Style="{StaticResource UserNameLinkText}">
+                    <Run FontWeight="Bold" Text="{Binding Account.Name, Mode=OneWay}" /><!--
+                 --><LineBreak /><!--
+                 --><Run Text="{Binding Account.LongUserName, Mode=OneWay}" />
+                </Hyperlink>
+            </TextBlock>
+        </Grid>
+    </DataTemplate>
+
     <!--#endregion-->
 
     <DataTemplate x:Key="AccountItemTemplate" DataType="{x:Type app:IAccount}">

@@ -261,5 +261,15 @@ namespace Liberfy
         {
             return Open(uri.AbsoluteUri);
         }
+
+        public T FindResource<T>(object resourceKey)
+        {
+            return this.FindResource(resourceKey).CastOrDefault<T>();
+        }
+
+        public T TryFindResource<T>(object resourceKey)
+        {
+            return this.TryFindResource(resourceKey).CastOrDefault<T>();
+        }
     }
 }

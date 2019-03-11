@@ -30,7 +30,7 @@ namespace Liberfy.Services.Mastodon
             Task[] tasks =
             {
                 this.LoadHomeTimeline(),
-                // this.LoadNotificationTimeline(),
+                this.LoadNotificationTimeline(),
             };
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -54,6 +54,21 @@ namespace Liberfy.Services.Mastodon
             }
         }
 
+        private IEnumerable<IItem> GetItem(IEnumerable<Notification> notifications)
+        {
+            foreach (var notification in notifications)
+            {
+                if (notification.Type == NotificationType.Mention)
+                {
+                    yield return new StatusItem(notification.Status, this._account);
+                }
+                else
+                {
+                    yield return new NotificationItem(notification, this._account);
+                }
+            }
+        }
+
         private async Task LoadHomeTimeline()
         {
             try
@@ -62,6 +77,21 @@ namespace Liberfy.Services.Mastodon
                 var items = this.GetStatusItem(statuses);
 
                 foreach (var column in this.AccountColumns.GetsTypeOf(ColumnType.Home))
+                {
+                    _dispatcher.Invoke(() => column.Items.Reset(items));
+                }
+            }
+            finally { }
+        }
+
+        private async Task LoadNotificationTimeline()
+        {
+            try
+            {
+                var statuses = await this._tokens.Notifications.GetNotifications().ConfigureAwait(false);
+                var items = this.GetItem(statuses);
+
+                foreach (var column in this.AccountColumns.GetsTypeOf(ColumnType.Notification))
                 {
                     _dispatcher.Invoke(() => column.Items.Reset(items));
                 }
