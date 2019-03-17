@@ -114,9 +114,8 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Twitter.Text, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\tweet-text-cs\Twitter.Text.dll</HintPath>
+    <Reference Include="ToriatamaText, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ToriatamaText.1.1.0.0\lib\portable-net45+win+wpa81+wp80\ToriatamaText.dll</HintPath>
     </Reference>
     <Reference Include="Utf8Json, Version=1.3.7.0, Culture=neutral, PublicKeyToken=8a73d3ba7e392e27, processorArchitecture=MSIL">
       <HintPath>..\packages\Utf8Json.1.3.7\lib\net45\Utf8Json.dll</HintPath>

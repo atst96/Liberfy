@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Twitter.Text;
+using ToriatamaText;
 
 namespace Liberfy.Services.Twitter
 {
@@ -25,7 +25,7 @@ namespace Liberfy.Services.Twitter
 
             if (parameters.Attachments.Count > 0)
             {
-                length += _tweetTextValidator.ShortUrlLengthHttps;
+                length += _tweetTextValidator.ShortUrlLength;
             }
 
             return length > 0 && length <= this.MaxPostTextLength && parameters.Attachments.Count <= 4;

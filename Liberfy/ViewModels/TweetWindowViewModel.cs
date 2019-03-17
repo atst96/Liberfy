@@ -15,7 +15,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using Twitter.Text;
 using static Liberfy.Defaults;
 
 namespace Liberfy.ViewModels

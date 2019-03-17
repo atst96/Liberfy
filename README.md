@@ -18,7 +18,7 @@
   - MessagePack for C#
   - NowPlayingLib
   - SgmlReader
-  - tweet-text-cs
+  - ToriatamaText
   - Utf8Json
   - Windows-API-Code-Pack-1.1
   - WPF NotifyIcon
