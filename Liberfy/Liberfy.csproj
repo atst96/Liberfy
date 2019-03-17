@@ -159,6 +159,7 @@
     <Compile Include="Controls\PopupDecorator.cs" />
     <Compile Include="Extensions\WebExtensions.cs" />
     <Compile Include="Services\Common\IAccountAuthenticator.cs" />
+    <Compile Include="TemplateSelectors\TimelineViewItemTemplateSelector.cs" />
     <Compile Include="Utilieis\ImageUtility.cs" />
     <Compile Include="Services\Mastodon\MastodonAccountAuthenticator.cs" />
     <Compile Include="Services\Common\ServicePostParameters.cs" />

@@ -79,6 +79,7 @@
     </ControlTemplate>
 
     <Style x:Key="ColumnPanelToggleButton" TargetType="{x:Type ToggleButton}">
+        <Setter Property="Foreground" Value="#666" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -115,6 +116,7 @@
     </Style>
 
     <Style x:Key="ColumnPanelButton" TargetType="{x:Type Button}">
+        <Setter Property="Foreground" Value="#666" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Template">
             <Setter.Value>

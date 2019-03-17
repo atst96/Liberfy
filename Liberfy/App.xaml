@@ -56,7 +56,6 @@
             <Style x:Key="GeneralTimelineViewItemStyle" TargetType="{x:Type app:TimelineViewItem}">
                 <Setter Property="Padding" Value="0" />
                 <Setter Property="Margin" Value="0" />
-                <Setter Property="IsRetweetedItem" Value="{Binding IsRetweet, Mode=OneTime}" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type app:TimelineViewItem}">
@@ -116,6 +115,13 @@
                 </Setter>
             </Style>
 
+            <Style
+                x:Key="StatusTimelineViewItemStyle"
+                TargetType="{x:Type app:TimelineViewItem}"
+                BasedOn="{StaticResource GeneralTimelineViewItemStyle}">
+                <Setter Property="IsRetweetedItem" Value="{Binding IsRetweet, Mode=OneTime}" />
+            </Style>
+            
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Xaml\Icons.xaml" />
                 <ResourceDictionary Source="Xaml\Themes\Generic.xaml" />

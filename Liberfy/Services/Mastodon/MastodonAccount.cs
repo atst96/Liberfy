@@ -16,12 +16,12 @@ namespace Liberfy
         public override ServiceType Service { get; } = ServiceType.Mastodon;
 
         public MastodonAccount(AccountItem item)
-            : base(item)
+            : base(new Uri(item.Token.Host).Host, item)
         {
         }
 
         public MastodonAccount(MastodonApi tokens, Account account)
-            : base(account.Id, account, tokens)
+            : base(account.Id, tokens.HostUrl.Host, account, tokens)
         {
         }
 

@@ -504,7 +504,7 @@
                 Opacity=".8"
                 Style="{StaticResource ImageButton}"
                 Visibility="{DynamicResource UI.Tweet.ProfileImage.Visibility}"
-                CommandParameter="{Binding User, Mode=OneTime}"
+                CommandParameter="{Binding Own, Mode=OneTime}"
                 Command="{Binding Own.Commands.DisplayUserDetails, Mode=OneTime}">
                 <Grid>
                     <Image
@@ -593,7 +593,7 @@
                 Opacity=".8"
                 Style="{StaticResource ImageButton}"
                 Visibility="{DynamicResource UI.Tweet.ProfileImage.Visibility}"
-                CommandParameter="{Binding User, Mode=OneTime}"
+                CommandParameter="{Binding Own, Mode=OneTime}"
                 Command="{Binding Own.Commands.DisplayUserDetails, Mode=OneTime}">
                 <Grid>
                     <Image
@@ -679,7 +679,7 @@
                 Style="{StaticResource ImageButton}"
                 Clip="{DynamicResource UI.Tweet.ProfileImage.Clip}"
                 Visibility="{DynamicResource UI.Tweet.ProfileImage.Visibility}"
-                CommandParameter="{Binding User, Mode=OneTime}"
+                CommandParameter="{Binding Account, Mode=OneTime}"
                 Command="{Binding Account.Commands.DisplayUserDetails, Mode=OneTime}">
                 <Image
                     RenderOptions.BitmapScalingMode="HighQuality"

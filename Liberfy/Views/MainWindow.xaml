@@ -20,6 +20,8 @@
             <VirtualizingStackPanel Orientation="Vertical" />
         </ItemsPanelTemplate>
 
+        <app:TimelineViewItemTemplateSelector x:Key="TimelineViewItemTemplateSelector" />
+
         <DataTemplate x:Key="ColumnTemplate" DataType="{x:Type app:ColumnBase}">
             <Border
                 ClipToBounds="True"
@@ -45,6 +47,7 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
 
                             <Path
@@ -66,8 +69,26 @@
                                 Text="{Binding Title, Mode=TwoWay}"
                                 Foreground="{DynamicResource ColumnHeaderForeground}" />
 
-                            <Image
+                            <TextBlock
+                                Margin="6,0"
                                 Grid.Column="3"
+                                TextWrapping="NoWrap"
+                                TextTrimming="CharacterEllipsis"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Right"
+                                TextAlignment="Right"
+                                FontSize="10px"
+                                LineHeight="12px">
+                                <Hyperlink Style="{StaticResource MetadataLinkText}">
+                                    <Run Text="{Binding Account.Info.Name, Mode=OneWay}" FontWeight="Black" /><!--
+                                 --><LineBreak /><!--
+                                 --><Run Text="{Binding Account.Info.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" /><!--
+                                 --><Run Text="{Binding Account.HostName, Mode=OneWay, StringFormat='{}@{0}'}" />
+                                </Hyperlink>
+                            </TextBlock>
+                            
+                            <Image
+                                Grid.Column="4"
                                 Margin="0 0 6 0"
                                 Width="28" Height="28"
                                 RenderOptions.BitmapScalingMode="HighQuality"
@@ -75,13 +96,13 @@
 
                             <ToggleButton
                                 x:Name="paneToggle"
-                                Grid.Column="4" Padding="11"
-                                Width="34" Height="34"
+                                Grid.Column="5" Padding="6,11"
+                                Width="20" Height="34"
                                 IsChecked="{Binding IsDetailOpen, Mode=TwoWay}"
                                 Style="{StaticResource ColumnPanelToggleButton}" />
 
                             <StackPanel
-                                Grid.Row="1" Grid.ColumnSpan="5"
+                                Grid.Row="1" Grid.ColumnSpan="6"
                                 app:ElementBehavior.Visible="{Binding IsDetailOpen, Mode=OneWay}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -92,22 +113,37 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Button
+                                        Padding="5,8"
                                         Grid.Column="0"
-                                        Content="＜"
                                         Command="{Binding MoveLeftCommand, Mode=OneTime}"
-                                        CommandParameter="{Binding Mode=OneTime}" />
+                                        CommandParameter="{Binding Mode=OneTime}"
+                                        Style="{StaticResource ColumnPanelButton}">
+                                        <app:GeometryIcon
+                                            Width="10px" Height="10px"
+                                            Data="{StaticResource FontAwesome.Icon.ChevronLeft}"/>
+                                    </Button>
 
                                     <Button
+                                        Padding="5,8"
                                         Grid.Column="1"
-                                        Content="＞"
                                         Command="{Binding MoveRightCommand, Mode=OneTime}"
-                                        CommandParameter="{Binding Mode=OneTime}" />
+                                        CommandParameter="{Binding Mode=OneTime}"
+                                        Style="{StaticResource ColumnPanelButton}">
+                                        <app:GeometryIcon
+                                            Width="10px" Height="10px"
+                                            Data="{StaticResource FontAwesome.Icon.ChevronRight}"/>
+                                    </Button>
 
                                     <Button
+                                        Padding="5,8"
                                         Grid.Column="3"
-                                        Content="✕"
                                         Command="{Binding RemoveCommand, Mode=OneTime}"
-                                        CommandParameter="{Binding Mode=OneTime}" />
+                                        CommandParameter="{Binding Mode=OneTime}"
+                                        Style="{StaticResource ColumnPanelButton}">
+                                        <app:GeometryIcon
+                                            Width="10px" Height="10px"
+                                            Data="{StaticResource FontAwesome.Icon.Remove}"/>
+                                    </Button>
                                 </Grid>
                             </StackPanel>
                         </Grid>
@@ -132,7 +168,7 @@
                         ItemsSource="{Binding Items, Mode=OneTime}"
                         ItemsPanel="{StaticResource TimelinePanelTemplate}"
                         ItemTemplateSelector="{StaticResource TimelineItemTemplateSelector}"
-                        ItemContainerStyle="{StaticResource GeneralTimelineViewItemStyle}" />
+                        ItemContainerStyleSelector="{StaticResource TimelineViewItemTemplateSelector}" />
                 </DockPanel>
             </Border>
         </DataTemplate>

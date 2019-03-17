@@ -33,10 +33,7 @@ namespace Liberfy
 
             if (this.Accounts.TryGetValue(id, out info))
             {
-                if (App.Status.IsAccountLoaded)
-                {
-                    this.UpdateAccountInfo(info, account);
-                }
+                this.UpdateAccountInfo(info, account);
             }
             else
             {
@@ -64,7 +61,7 @@ namespace Liberfy
 
             if (this.Statuses.TryGetValue(id, out info))
             {
-                if (App.Status.IsAccountLoaded)
+                if (!App.Status.IsAccountLoaded)
                 {
                     this.UpdateStatusInfo(info, status);
                 }

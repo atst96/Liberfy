@@ -38,6 +38,8 @@ namespace Liberfy
     {
         public abstract long Id { get; protected set; }
 
+        public string HostName { get; }
+
         public abstract ServiceType Service { get; }
 
         public TTokens Tokens { get; private set; }
@@ -67,15 +69,16 @@ namespace Liberfy
 
         TimelineBase IAccount.Timeline => this.Timeline;
 
-        private AccountBase(long id, ApiTokenInfo tokens)
+        private AccountBase(long id, string hostName, ApiTokenInfo tokens)
         {
             this.Id = id;
             this.SetClient(tokens);
             this.Timeline = this.CreateTimeline();
+            this.HostName = hostName;
         }
 
-        protected AccountBase(AccountItem item)
-            : this(item.Id, item.Token)
+        protected AccountBase(string hostName, AccountItem item)
+            : this(item.Id, hostName, item.Token)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
@@ -87,8 +90,8 @@ namespace Liberfy
                 this.MutedIds.UnionWith(item.MutedIds);
         }
 
-        protected AccountBase(long userId, TUser account, IApi tokens)
-            : this(userId, ApiTokenInfo.FromTokens(tokens))
+        protected AccountBase(long userId, string hostName, TUser account, IApi tokens)
+            : this(userId, hostName, ApiTokenInfo.FromTokens(tokens))
         {
             this.Info = this.GetUserInfo(account);
             this.IsLoggedIn = true;
