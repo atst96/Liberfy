@@ -5,6 +5,7 @@ using Liberfy.Utilieis;
 using Liberfy.Views;
 using Microsoft.Win32;
 using Microsoft.Windows.Themes;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -74,7 +75,7 @@ namespace Liberfy
             }
             catch (Exception ex)
             {
-                MessageBox.Show(IntPtr.Zero, ex.GetMessage(), "Liberfy", icon: MsgBoxIcon.Error);
+                DialogService.ShowTaskDialog(IntPtr.Zero, ex.GetMessage(), null, null, TaskDialogStandardButtons.Close, TaskDialogStandardIcon.Error); ;
                 this.ForceShutdown();
                 return;
             }
@@ -209,7 +210,7 @@ namespace Liberfy
             }
             catch (Exception ex)
             {
-                MessageBox.Show(IntPtr.Zero, ex.GetMessage(), App.Name, icon: MsgBoxIcon.Error);
+                DialogService.ShowTaskDialog(IntPtr.Zero, ex.GetMessage(), null, null, TaskDialogStandardButtons.Close, TaskDialogStandardIcon.Error);
             }
         }
 

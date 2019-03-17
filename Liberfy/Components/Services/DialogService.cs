@@ -1,5 +1,5 @@
 ﻿using Liberfy.ViewModels;
-using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,7 +20,6 @@ namespace Liberfy.Components
         private IntPtr _hWnd;
         private ViewModelBase _viewModel;
         private static Window mainView;
-        private readonly MessageBox msgBox = new MessageBox();
 
 
         public DialogService() { }
@@ -42,7 +41,6 @@ namespace Liberfy.Components
             if (view != null)
             {
                 this._hWnd = new WindowInteropHelper(view).Handle;
-                this.msgBox.SetWindowHandle(_hWnd);
 
                 this.RegisterEvents();
 
@@ -58,7 +56,6 @@ namespace Liberfy.Components
             if (object.Equals(this._view, view))
             {
                 this.UnregisterEvents();
-                this.msgBox.Dispose();
                 this._view = null;
             }
         }
@@ -66,7 +63,6 @@ namespace Liberfy.Components
         private void ViewLoaded(object sender, RoutedEventArgs e)
         {
             this._hWnd = new WindowInteropHelper(_view).Handle;
-            this.msgBox.SetWindowHandle(_hWnd);
         }
 
         private void ViewClosed(object sender, EventArgs e)
@@ -121,63 +117,96 @@ namespace Liberfy.Components
             }
         }
 
-        public MsgBoxResult MessageBox(string text, MsgBoxButtons buttons = 0, MsgBoxIcon icon = 0, MsgBoxFlags flags = 0)
+        public static TaskDialogResult ShowTaskDialog(IntPtr hWnd, string message, string caption, string instruction, TaskDialogStandardButtons buttons, TaskDialogStandardIcon icon)
         {
-            return msgBox.Show(text, App.Name, buttons, icon, flags);
+            var taskDialog = new TaskDialog()
+            {
+                OwnerWindowHandle = hWnd,
+                Text = message,
+                Caption = caption ?? App.Name,
+                InstructionText = instruction,
+                StandardButtons = buttons,
+                Icon = icon,
+                StartupLocation = TaskDialogStartupLocation.CenterOwner,
+            };
+
+            using (taskDialog)
+            {
+                return taskDialog.Show();
+            }
         }
 
-        public MsgBoxResult MessageBox(string text, string caption = null, MsgBoxButtons buttons = 0, MsgBoxIcon icon = 0, MsgBoxFlags flags = 0)
+        public void WarningMessage(string message, string instruction = null, string caption = null)
         {
-            return msgBox.Show(text, caption ?? App.Name, buttons, icon, flags);
+            ShowTaskDialog(this._hWnd, message, caption, instruction, TaskDialogStandardButtons.Close, TaskDialogStandardIcon.Warning);
         }
 
-        private bool ShowFileDialog(FileDialog dialog)
+        public void ErrorMessage(string message, string instruction = null, string caption = null)
         {
-            return dialog.ShowDialog(_view) ?? false;
+            ShowTaskDialog(this._hWnd, message, caption, instruction, TaskDialogStandardButtons.Close, TaskDialogStandardIcon.Error);
         }
 
-        public string SelectOpenFile(string title, string filter)
+        public void InformationMessage(string message, string instruciton = null, string caption = null)
         {
-            var ofd = new OpenFileDialog
+            ShowTaskDialog(this._hWnd, message, caption, instruciton, TaskDialogStandardButtons.Close, TaskDialogStandardIcon.Information);
+        }
+
+        public bool Confirm(string message, string instruction = null, string caption = null)
+        {
+            return ShowTaskDialog(this._hWnd, message, caption, instruction, TaskDialogStandardButtons.Yes | TaskDialogStandardButtons.No, TaskDialogStandardIcon.Information) == TaskDialogResult.Yes;
+        }
+
+        private static bool ShowCommonFileDialog(IntPtr hWnd, CommonFileDialog fileDialog)
+        {
+            return fileDialog.ShowDialog(hWnd) == CommonFileDialogResult.Ok;
+        }
+
+        private static void SetCmmonFileDialogFilter(CommonFileDialog fileDialog, IDictionary<string, string[]> filters)
+        {
+            foreach (var kvp in filters)
+            {
+                var filterText = string.Join(";", kvp.Value.Select(ext => "*" + ext));
+
+                fileDialog.Filters.Add(new CommonFileDialogFilter(kvp.Key, filterText));
+            }
+        }
+
+        public string SelectOpenFile(string title, IDictionary<string, string[]> filters)
+        {
+            var dialog = new CommonOpenFileDialog
             {
                 Title = title,
-                Filter = filter,
                 Multiselect = false,
             };
 
-            return ShowFileDialog(ofd) ? ofd.FileName : null;
+            SetCmmonFileDialogFilter(dialog, filters);
+
+            return ShowCommonFileDialog(this._hWnd, dialog) ? dialog.FileName : null;
         }
 
-        public string[] SelectOpenFiles(string title, string filter)
+        public IEnumerable<string> SelectOpenFiles(string title, IDictionary<string, string[]> filters)
         {
-            var ofd = new OpenFileDialog
+            var dialog = new CommonOpenFileDialog
             {
                 Title = title,
-                Filter = filter,
                 Multiselect = true,
             };
 
-            return ShowFileDialog(ofd) ? ofd.FileNames : null;
+            SetCmmonFileDialogFilter(dialog, filters);
+
+            return ShowCommonFileDialog(this._hWnd, dialog) ? dialog.FileNames : null;
         }
 
-        public string SelectSaveFile(string title, string filter)
+        public string SelectSaveFile(string title, IDictionary<string, string[]> filters)
         {
-            var ofd = new SaveFileDialog
+            var dialog = new CommonSaveFileDialog
             {
                 Title = title,
-                Filter = filter,
             };
 
-            return ShowFileDialog(ofd) ? ofd.FileName : null;
-        }
+            SetCmmonFileDialogFilter(dialog, filters);
 
-        public bool ShowQuestion(string content)
-        {
-            var result = MessageBox(
-                content, App.Name,
-                MsgBoxButtons.YesNo, MsgBoxIcon.Question);
-
-            return result == MsgBoxResult.Yes;
+            return ShowCommonFileDialog(this._hWnd, dialog) ? dialog.FileName : null;
         }
 
         public void Dispose()

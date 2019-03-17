@@ -72,6 +72,12 @@
     <Reference Include="MessagePack, Version=1.7.3.4, Culture=neutral, PublicKeyToken=b4a0369545f0a1be, processorArchitecture=MSIL">
       <HintPath>..\packages\MessagePack.1.7.3.4\lib\net45\MessagePack.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.3.3, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft-WindowsAPICodePack-Core.1.1.3.3\lib\net452\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.3.3, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft-WindowsAPICodePack-Shell.1.1.3.3\lib\net452\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xaml.Behaviors, Version=1.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.0.1\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
     </Reference>
@@ -216,7 +222,6 @@
     <Compile Include="Services\Twitter\Commands\RepostCommand.cs" />
     <Compile Include="Services\Twitter\FakeStreaming.cs" />
     <Compile Include="TemplateSelectors\ColumnOptionTemplateSelector.cs" />
-    <Compile Include="Components\MessageBox.cs" />
     <Compile Include="Components\Regexes.cs" />
     <Compile Include="Converters\Converters.cs" />
     <Compile Include="Data\DataStore.cs" />
@@ -267,9 +272,6 @@
     <Compile Include="Model\Setting\AccountSetting.cs" />
     <Compile Include="Model\WindowStatus.cs" />
     <Compile Include="Components\Mvvm\ViewModelConnector.cs" />
-    <Compile Include="Components\NativeMethods\Functions.cs" />
-    <Compile Include="Components\NativeMethods\NativeMethods.cs" />
-    <Compile Include="Components\NativeMethods\Values.cs" />
     <Compile Include="Model\StatusInfo.cs" />
     <Compile Include="Model\UserInfo.cs" />
     <Compile Include="Services\Twitter\TwitterTimeline.cs" />

@@ -17,7 +17,7 @@ namespace Liberfy.Commands
             this._viewModel = viewModel;
         }
 
-        private static readonly string UploadableExtensionFilter = CreateExtensionFilter();
+        private static readonly IDictionary<string, string[]> UploadableExtensionFilter = CreateExtensionFilter();
 
         protected override bool CanExecute(string parameter)
         {
@@ -28,25 +28,25 @@ namespace Liberfy.Commands
         {
             var files = this._viewModel.DialogService.SelectOpenFiles("アップロードするメディアを選択", UploadableExtensionFilter);
 
-            if (files?.Length > 0 && TweetWindowViewModel.HasEnableMediaFiles(files))
+            if (files?.Any() == true && TweetWindowViewModel.HasEnableMediaFiles(files))
             {
                 this._viewModel.PostParameters.Attachments.AddRange(files.Select(path => UploadMedia.FromFile(path)));
                 this._viewModel.UpdateCanPost();
             }
         }
 
-        private static string CreateExtensionFilter()
+        private static IDictionary<string, string[]> CreateExtensionFilter()
         {
             // OpenFileDialogで用いる拡張子フィルタの生成
             // e.g. 表示名|*.ext1|表示名(拡張子複数指定)|*.ext2;*.ext2|...
 
-            var medExts = $"アップロード可能なメディア|*{string.Join(";*", UploadableMediaExtensions)}";
-            var imgExts = $"画像ファイル|*{string.Join(";*", ImageExtensions)}";
-            var vidExts = $"動画ファイル|*{string.Join(";*", VideoExtensions)}";
-            var allExts = "すべてのファイル|*.*";
-
-            // 上記の文字列を‘|’(縦線)を区切り文字として結合
-            return string.Join("|", medExts, imgExts, vidExts, allExts);
+            return new Dictionary<string, string[]>
+            {
+                ["アップロード可能なメディア"] = UploadableMediaExtensions,
+                ["画像ファイル"] = ImageExtensions,
+                ["動画ファイル"] = VideoExtensions,
+                ["すべてのファイル"] = new[] { ".*" },
+            };
         }
     }
 }

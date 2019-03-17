@@ -28,7 +28,7 @@ namespace Liberfy.Commands.SettingWindowCommands
 
             var message = $"このアカウントを一覧から削除しますか？\n { user.Info.Name }@{ user.Info.ScreenName }";
 
-            if (this._viewModel.DialogService.ShowQuestion(message))
+            if (this._viewModel.DialogService.Confirm(message))
             {
                 AccountManager.Remove(parameter);
                 parameter.Unload();

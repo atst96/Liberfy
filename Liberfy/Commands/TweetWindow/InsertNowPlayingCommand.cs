@@ -30,9 +30,7 @@ namespace Liberfy.Commands
         {
             if (!IsPlayerRunning(parameter))
             {
-                this._viewModel.DialogService.MessageBox(
-                    $"再生情報の取得に失敗しました。プレーヤが起動しているか確認してください。",
-                    MsgBoxButtons.Ok, MsgBoxIcon.Error);
+                this._viewModel.DialogService.ErrorMessage("プレーヤが起動しているか確認してください。", "再生情報の取得に失敗しました。");
 
                 return;
             }
@@ -63,9 +61,7 @@ namespace Liberfy.Commands
             }
             catch (Exception ex)
             {
-                this._viewModel.DialogService.MessageBox(
-                    $"再生情報の取得に失敗しました。プレーヤで楽曲が再生中かどうか確認してください。\n\nエラー：\n{ex.Message}",
-                    MsgBoxButtons.Ok, MsgBoxIcon.Error);
+                this._viewModel.DialogService.ErrorMessage($"プレーヤで楽曲が再生中かどうか確認してください。\n\nエラー：\n{ex.Message}", "再生情報の取得に失敗しました。");
             }
         }
 

@@ -102,12 +102,12 @@ namespace Liberfy.ViewModels
                         }
                     }
 
-                    this.DialogService.MessageBox($"自動起動を{(value ? "有効" : "無効")}にしました", MsgBoxButtons.Ok, MsgBoxIcon.Information);
+                    this.DialogService.InformationMessage($"自動起動を{(value ? "有効" : "無効")}にしました");
 
                 }
                 catch (Exception ex)
                 {
-                    this.DialogService.MessageBox("自動起動の設定に失敗しました: " + ex.Message, MsgBoxButtons.Ok, MsgBoxIcon.Information);
+                    this.DialogService.ErrorMessage("自動起動の設定に失敗しました: " + ex.Message);
                 }
 
                 this.RaisePropertyChanged(nameof(this.AutoStartup));
@@ -538,16 +538,12 @@ namespace Liberfy.ViewModels
         {
             if (AccountManager.Count == 0)
             {
-                return this.DialogService.MessageBox(
-                    "アカウントが登録されていません。終了しますか？", "Liberfy",
-                    MsgBoxButtons.YesNo, MsgBoxIcon.Question) == MsgBoxResult.Yes;
+                return this.DialogService.Confirm("アカウントが登録されていません。終了しますか？");
             }
 
             if (!EnumerateFontName(this.TimelineFontFamily).Any())
             {
-                return this.DialogService.MessageBox(
-                    "フォントが指定されていません。続行しますか？",
-                    MsgBoxButtons.YesNo, MsgBoxIcon.Question) == MsgBoxResult.Yes;
+                return this.DialogService.Confirm("フォントが指定されていません。続行しますか？");
             }
 
             return true;

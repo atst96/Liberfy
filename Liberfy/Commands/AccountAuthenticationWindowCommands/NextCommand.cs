@@ -125,7 +125,7 @@ namespace Liberfy.Commands.AccountAuthenticationWindowCommands
                 }
                 catch (Exception ex)
                 {
-                    this._viewModel.DialogService.MessageBox(ex.GetMessage(), "Error");
+                    this._viewModel.DialogService.ErrorMessage(ex.GetMessage());
                 }
 
                 this.IsRunning = false;

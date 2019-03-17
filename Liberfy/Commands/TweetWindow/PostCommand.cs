@@ -42,7 +42,7 @@ namespace Liberfy.Commands
             }
             catch (Exception ex)
             {
-                this._viewModel.DialogService.MessageBox(ex.GetMessage(), "アップロードに失敗しました");
+                this._viewModel.DialogService.ErrorMessage(ex.GetMessage(), "アップロードに失敗しました");
             }
 
             foreach (var attachment in parameters.Attachments)
