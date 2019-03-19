@@ -69,29 +69,29 @@ namespace Liberfy
 
         TimelineBase IAccount.Timeline => this.Timeline;
 
-        private AccountBase(long id, string hostName, ApiTokenInfo tokens)
+        private AccountBase(long id, Uri host, ApiTokenInfo tokens)
         {
             this.Id = id;
             this.SetClient(tokens);
             this.Timeline = this.CreateTimeline();
-            this.HostName = hostName;
+            this.HostName = host?.Host;
         }
 
-        protected AccountBase(string hostName, AccountItem item)
-            : this(item.Id, hostName, item.Token)
+        protected AccountBase(Uri hostUrl, AccountItem item)
+            : this(item.Id, hostUrl, item.Token)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
 
             this.Info = this.DataStore.Accounts
-                .GetOrAdd(item.Id, _ => new UserInfo(item.Id, item.Name, item.ScreenName, item.IsProtected, item.ProfileImageUrl));
+                .GetOrAdd(item.Id, _ => new UserInfo(hostUrl, item.Id, item.Name, item.ScreenName, item.IsProtected, item.ProfileImageUrl));
 
             if (item.MutedIds?.Length > 0)
                 this.MutedIds.UnionWith(item.MutedIds);
         }
 
-        protected AccountBase(long userId, string hostName, TUser account, IApi tokens)
-            : this(userId, hostName, ApiTokenInfo.FromTokens(tokens))
+        protected AccountBase(long userId, Uri hostUrl, TUser account, IApi tokens)
+            : this(userId, hostUrl, ApiTokenInfo.FromTokens(tokens))
         {
             this.Info = this.GetUserInfo(account);
             this.IsLoggedIn = true;

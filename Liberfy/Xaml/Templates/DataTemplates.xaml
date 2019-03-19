@@ -346,7 +346,7 @@
                         RenderOptions.BitmapScalingMode="HighQuality"
                         Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
                         Height="{DynamicResource UI.Tweet.ProfileImage.Width}"
-                        Source="{Binding User.ProfileImageUrl, Mode=OneWay, IsAsync=True}" />
+                        b:TimelineBehavior.ProfileImage="{Binding User, Mode=OneTime}" />
                 </Button>
 
                 <!-- Right contents -->
@@ -429,7 +429,7 @@
                             DockPanel.Dock="Left">
                             <Image
                                 Width="28" Height="28"
-                                Source="{Binding RetweetUser.ProfileImageUrl, IsAsync=True, Mode=OneWay}" />
+                                b:TimelineBehavior.ProfileImage="{Binding RetweetUser, Mode=OneTime}" />
                         </Button>
 
                         <TextBlock
@@ -513,7 +513,7 @@
                         RenderTransformOrigin=".0,.0"
                         Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
                         Height="{DynamicResource UI.Tweet.ProfileImage.Width}"
-                        Source="{Binding Own.Info.ProfileImageUrl, Mode=OneWay, IsAsync=True}">
+                        b:TimelineBehavior.ProfileImage="{Binding Own.Info, Mode=OneTime}">
                         <Image.RenderTransform>
                             <ScaleTransform ScaleX=".7" ScaleY=".7" />
                         </Image.RenderTransform>
@@ -527,7 +527,7 @@
                         RenderTransformOrigin="1.0,1.0"
                         Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
                         Height="{DynamicResource UI.Tweet.ProfileImage.Width}"
-                        Source="{Binding Account.ProfileImageUrl, Mode=OneWay, IsAsync=True}">
+                        b:TimelineBehavior.ProfileImage="{Binding Account, Mode=OneTime}">
                         <Image.RenderTransform>
                             <ScaleTransform ScaleX=".6" ScaleY=".6" />
                         </Image.RenderTransform>
@@ -616,7 +616,7 @@
                         RenderTransformOrigin="1.0,1.0"
                         Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
                         Height="{DynamicResource UI.Tweet.ProfileImage.Width}"
-                        Source="{Binding Account.ProfileImageUrl, Mode=OneWay, IsAsync=True}">
+                        b:TimelineBehavior.ProfileImage="{Binding Account, Mode=OneTime}">
                         <Image.RenderTransform>
                             <ScaleTransform ScaleX=".6" ScaleY=".6" />
                         </Image.RenderTransform>
@@ -685,7 +685,7 @@
                     RenderOptions.BitmapScalingMode="HighQuality"
                     Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
                     Height="{DynamicResource UI.Tweet.ProfileImage.Width}"
-                    Source="{Binding Account.ProfileImageUrl, Mode=OneWay, IsAsync=True}" />
+                    b:TimelineBehavior.ProfileImage="{Binding Account, Mode=OneTime}" />
             </Button>
 
             <TextBlock
@@ -717,7 +717,7 @@
 
             <Image
                 Margin="0 0 8 0" Width="36" Height="36"
-                Source="{Binding ProfileImageUrl, IsAsync=True}"
+                b:TimelineBehavior.ProfileImage="{Binding Mode=OneTime}"
                 RenderOptions.BitmapScalingMode="HighQuality" />
 
             <app:GeometryIcon

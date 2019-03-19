@@ -173,7 +173,7 @@
                         DataContext="{Binding SelectedAccount, Mode=OneWay}">
                         <Image
                             Width="32" Height="32"
-                            Source="{Binding Info.ProfileImageUrl, IsAsync=True, Mode=OneWay}"
+                            b:TimelineBehavior.ProfileImage="{Binding Info, Mode=OneTime}"
                             RenderOptions.BitmapScalingMode="HighQuality" />
 
                         <app:GeometryIcon

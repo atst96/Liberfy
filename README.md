@@ -18,6 +18,7 @@
   - MessagePack for C#
   - NowPlayingLib
   - SgmlReader
+  - System.Data.SQLite.Core
   - ToriatamaText
   - Utf8Json
   - Windows-API-Code-Pack-1.1

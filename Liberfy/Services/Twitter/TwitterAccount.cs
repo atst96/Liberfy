@@ -16,19 +16,19 @@ namespace Liberfy
 {
     internal class TwitterAccount : AccountBase<TwitterApi, TwitterTimeline, User, Status>
     {
-        public const string ServerHostName = "twitter.com";
+        public static readonly Uri ServerHostUrl = new Uri("https://twitter.com/", UriKind.Absolute);
 
         public override long Id { get; protected set; }
 
         public override ServiceType Service { get; } = ServiceType.Twitter;
 
         public TwitterAccount(AccountItem accountItem)
-            : base(ServerHostName, accountItem)
+            : base(ServerHostUrl, accountItem)
         {
         }
 
         public TwitterAccount(TwitterApi tokens, User account)
-            : base((long)account.Id, ServerHostName, account, tokens)
+            : base((long)account.Id, ServerHostUrl, account, tokens)
         {
         }
 

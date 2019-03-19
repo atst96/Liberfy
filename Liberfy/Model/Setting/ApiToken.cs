@@ -19,7 +19,7 @@ namespace Liberfy.Settings
     {
         [Key("host")]
         [DataMember(Name = "host")]
-        public string Host { get; set; }
+        public Uri HostUrl { get; set; }
 
         [Key("consumer_key")]
         [DataMember(Name = "consumer_key")]
@@ -58,7 +58,7 @@ namespace Liberfy.Settings
         public static ApiTokenInfo FromTokens(Mastodon.MastodonApi tokens)
             => new ApiTokenInfo
             {
-                Host = tokens.HostUrl.AbsoluteUri.ToString(),
+                HostUrl = tokens.HostUrl,
                 ConsumerKey = tokens.ClientId,
                 ConsumerSecret = tokens.ClientSecret,
                 AccessToken = tokens.AccessToken,

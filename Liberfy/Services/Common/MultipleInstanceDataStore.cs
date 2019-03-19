@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace Liberfy
 {
     internal class MultipleInstanceDataStore<T>
-        where T : new()
     {
         private ConcurrentDictionary<string, T> _instances;
 
@@ -19,14 +18,8 @@ namespace Liberfy
 
         public T this[Uri uri]
         {
-            get => this[uri.Host];
-            set => this[uri.Host] = value;
-        }
-
-        public T this[string host]
-        {
-            get => this._instances.GetOrAdd(host, _ => Activator.CreateInstance<T>());
-            set => this._instances.AddOrUpdate(host, value, (_, __) => value);
+            get => this._instances.GetOrAdd(uri.Host, _ => (T)Activator.CreateInstance(typeof(T), uri));
+            set => this._instances.AddOrUpdate(uri.Host, value, (_, __) => value);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Liberfy.Services.Twitter
             if (!account.Id.HasValue)
                 throw new ArgumentException();
 
-            var info = new UserInfo(ServiceType.Twitter, account.Id.Value)
+            var info = new UserInfo(ServiceType.Twitter, null, account.Id.Value)
             {
                 CreatedAt = account.CreatedAt,
             };

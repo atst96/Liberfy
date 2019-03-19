@@ -16,6 +16,8 @@ namespace Liberfy
 
         public long Id { get; }
 
+        public Uri Host { get; private set; }
+
         public DateTimeOffset CreatedAt { get; set; }
 
         private string _longUserName;
@@ -151,14 +153,16 @@ namespace Liberfy
 
         public DateTime UpdatedAt { get; set; }
 
-        public UserInfo(ServiceType service, long id)
+        public UserInfo(ServiceType service, Uri host, long id)
         {
+            this.Host = host;
             this.Id = id;
             this.Service = service;
         }
 
-        public UserInfo(long id, string name, string screenName, bool isProtected, string profileImageUrl)
+        public UserInfo(Uri host, long id, string name, string screenName, bool isProtected, string profileImageUrl)
         {
+            this.Host = host;
             this.Id = id;
             this.Name = name;
             this.ScreenName = screenName;

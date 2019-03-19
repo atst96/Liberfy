@@ -40,6 +40,9 @@ namespace Liberfy
 
         internal static readonly Assembly AssemblyInfo = Assembly.GetExecutingAssembly();
 
+        private static Database _cacheDatabaseConnection;
+        public static ProfileImageCache ProfileImageCache { get; private set; }
+
         public const string Name = "Liberfy";
         public const string CodeName = "Francium";
         public const string Version = "0.2.3.1";
@@ -150,9 +153,20 @@ namespace Liberfy
 
         private void StartTimeline()
         {
+            _cacheDatabaseConnection = new Database(Defaults.ImageCacheFile);
+
+            ProfileImageCache = new ProfileImageCache(_cacheDatabaseConnection);
+
+            ProfileImageCache.BeginLoadTimelineMode();
+
             var tasks = AccountManager.Accounts.AsParallel().Select(a => a.Load());
 
-            Task.WhenAll(tasks).ContinueWith(_ => Status.IsAccountLoaded = true, TaskScheduler.FromCurrentSynchronizationContext());
+            Task.WhenAll(tasks).ContinueWith(_ =>
+            {
+                Status.IsAccountLoaded = true;
+                ProfileImageCache.EndLoadTimelineMode();
+            },
+            TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private bool RequestInitialUserSettings()
@@ -236,6 +250,8 @@ namespace Liberfy
         protected override void OnExit(ExitEventArgs e)
         {
             SystemEvents.SessionEnding -= OnSystemSessionEnding;
+
+            App._cacheDatabaseConnection?.Dispose();
 
             if (this.IsRequireSaveSetting)
             {

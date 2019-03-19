@@ -6,55 +6,59 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-	internal static class Defaults
-	{
-		#region Setting files
-		public const string @SettingFile = "settings.json";
-		public const string @WindowFile = "winconf.json";
-		public const string @AccountsFile = "accounts3.json";
-		#endregion
+    internal static class Defaults
+    {
+        #region Setting files
+        public const string @SettingFile = "settings.json";
+        public const string @WindowFile = "winconf.json";
+        public const string @AccountsFile = "accounts3.json";
+        #endregion
 
-		#region Default settings
-		public const string @DefaultNowPlayingPlayer = "wmplayer";
-		public const string @DefaultNowPlayingFormat = @"%artist% - %name% / %album% #NowPlaying";
+        #region
+        public const string ImageCacheFile = "cache.bin";
+        #endregion
 
-		private const string _defSoundPath = @"%windir%\Media\Windows Notify.wav";
-		public static readonly string @DefaultSoundFile = Environment.ExpandEnvironmentVariables(_defSoundPath);
+        #region Default settings
+        public const string @DefaultNowPlayingPlayer = "wmplayer";
+        public const string @DefaultNowPlayingFormat = @"%artist% - %name% / %album% #NowPlaying";
 
-		public static readonly string[] DefaultTimelineFont = { "Meiryo", "Segoe UI Symbol" };
-		public const double DefaultTimelineFontSize = 12;
-		#endregion
+        private const string _defSoundPath = @"%windir%\Media\Windows Notify.wav";
+        public static readonly string @DefaultSoundFile = Environment.ExpandEnvironmentVariables(_defSoundPath);
 
-		public const double MinimumProfileImageWidth = 20;
-		public const double MaximumProfileImageWidth = 60;
-		public const double DefaultProfileImageWidth = 40;
+        public static readonly string[] DefaultTimelineFont = { "Meiryo", "Segoe UI Symbol" };
+        public const double DefaultTimelineFontSize = 12;
+        #endregion
 
-		public const double MinimumColumnWidth = 200;
-		public const double MaximumColumnWidth = 600;
-		public const double DefaultColumnWidth = 300;
+        public const double MinimumProfileImageWidth = 20;
+        public const double MaximumProfileImageWidth = 60;
+        public const double DefaultProfileImageWidth = 40;
 
-		public readonly static string[] ImageExtensions =
-		{
-			// JPEG
-			".jpeg", ".jpg", ".jpe", ".jfif", ".jfi", ".jif",
+        public const double MinimumColumnWidth = 200;
+        public const double MaximumColumnWidth = 600;
+        public const double DefaultColumnWidth = 300;
 
-			// PNG
-			".png",
+        public readonly static string[] ImageExtensions =
+        {
+            // JPEG
+            ".jpeg", ".jpg", ".jpe", ".jfif", ".jfi", ".jif",
 
-			// GIF
-			".gif",
+            // PNG
+            ".png",
 
-			// WebP
-			".webp",
-		};
+            // GIF
+            ".gif",
 
-		public readonly static string[] VideoExtensions =
-		{
-			".gif",
-			".mp4",
-		};
+            // WebP
+            ".webp",
+        };
 
-		public readonly static string[] UploadableMediaExtensions
-			= ImageExtensions.Concat(VideoExtensions).ToArray();
-	}
+        public readonly static string[] VideoExtensions =
+        {
+            ".gif",
+            ".mp4",
+        };
+
+        public readonly static string[] UploadableMediaExtensions
+            = ImageExtensions.Concat(VideoExtensions).ToArray();
+    }
 }

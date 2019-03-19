@@ -184,5 +184,48 @@ namespace Liberfy.Behaviors
                 }
             });
         }
+
+        public static UserInfo GetProfileImage(DependencyObject obj)
+        {
+            return (UserInfo)obj.GetValue(ProfileImageProperty);
+        }
+
+        public static void SetProfileImage(DependencyObject obj, UserInfo value)
+        {
+            obj.SetValue(ProfileImageProperty, value);
+        }
+
+        public static readonly DependencyProperty ProfileImageProperty =
+            DependencyProperty.RegisterAttached("ProfileImage",
+                typeof(UserInfo), typeof(TimelineBehavior),
+                new PropertyMetadata(null, OnProfileImagePropertyChagned));
+
+        private static async void OnProfileImagePropertyChagned(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var image = d as Image;
+            if (image == null)
+            {
+                return;
+            }
+
+            if (e.NewValue == null)
+            {
+                BindingOperations.ClearBinding(image, Image.SourceProperty);
+                return;
+            }
+
+            if (e.NewValue is UserInfo userInfo)
+            {
+                var cacheInfo = App.ProfileImageCache.GetCacheInfo(userInfo);
+
+                var binding = new Binding("Image")
+                {
+                    Source = cacheInfo,
+                    Mode = BindingMode.OneWay,
+                };
+
+                image.SetBinding(Image.SourceProperty, binding);
+            }
+        }
     }
 }

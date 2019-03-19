@@ -9,32 +9,31 @@ using System.Windows.Media.Imaging;
 
 namespace Liberfy.Utilities
 {
-	internal static class ImageUtility
-	{
-		public static bool IsAnimatedGif(Uri path)
-		{
-			var decoder = BitmapDecoder.Create(path, BitmapCreateOptions.None, BitmapCacheOption.None);
+    internal static class ImageUtility
+    {
+        public static bool IsAnimatedGif(Uri path)
+        {
+            var decoder = BitmapDecoder.Create(path, BitmapCreateOptions.None, BitmapCacheOption.None);
 
-			return decoder is GifBitmapDecoder && decoder.Frames.Count > 1;
-		}
+            return decoder is GifBitmapDecoder && decoder.Frames.Count > 1;
+        }
 
-		public static BitmapImage BitmapSourceFromStream(Stream stream)
-		{
-			var bitmapSource = new BitmapImage()
-			{
-				CacheOption = BitmapCacheOption.None,
-			};
+        public static BitmapImage BitmapSourceFromStream(Stream stream)
+        {
+            var bitmapSource = new BitmapImage();
 
-			bitmapSource.BeginInit();
-			bitmapSource.StreamSource = stream;
-			bitmapSource.EndInit();
+            bitmapSource.BeginInit();
+            bitmapSource.CreateOptions = BitmapCreateOptions.None;
+            bitmapSource.CacheOption = BitmapCacheOption.None;
+            bitmapSource.StreamSource = stream;
+            bitmapSource.EndInit();
 
-			if (!bitmapSource.CanFreeze)
-			{
-				bitmapSource.Freeze();
-			}
+            if (bitmapSource.CanFreeze)
+            {
+                bitmapSource.Freeze();
+            }
 
-			return bitmapSource;
-		}
-	}
+            return bitmapSource;
+        }
+    }
 }

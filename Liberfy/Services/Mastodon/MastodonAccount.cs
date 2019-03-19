@@ -16,12 +16,12 @@ namespace Liberfy
         public override ServiceType Service { get; } = ServiceType.Mastodon;
 
         public MastodonAccount(AccountItem item)
-            : base(new Uri(item.Token.Host).Host, item)
+            : base(item.Token.HostUrl, item)
         {
         }
 
         public MastodonAccount(MastodonApi tokens, Account account)
-            : base(account.Id, tokens.HostUrl.Host, account, tokens)
+            : base(account.Id, tokens.HostUrl, account, tokens)
         {
         }
 
@@ -39,7 +39,7 @@ namespace Liberfy
 
         protected override MastodonApi TokensFromApiTokenInfo(ApiTokenInfo tokens)
         {
-            return new MastodonApi(new Uri(tokens.Host), tokens.ConsumerKey, tokens.ConsumerSecret, tokens.AccessToken);
+            return new MastodonApi(tokens.HostUrl, tokens.ConsumerKey, tokens.ConsumerSecret, tokens.AccessToken);
         }
 
         protected override MastodonTimeline CreateTimeline() => new MastodonTimeline(this);

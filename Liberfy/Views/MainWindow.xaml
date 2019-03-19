@@ -6,6 +6,7 @@
     xmlns:vm="clr-namespace:Liberfy.ViewModels"
     xmlns:local="clr-namespace:Liberfy.Views"
     xmlns:app="clr-namespace:Liberfy"
+    xmlns:b="clr-namespace:Liberfy.Behaviors"
     x:Class="Liberfy.Views.MainWindow"
     x:ClassModifier="internal"
     mc:Ignorable="d" FontFamily="Meiryo"
@@ -92,7 +93,7 @@
                                 Margin="0 0 6 0"
                                 Width="28" Height="28"
                                 RenderOptions.BitmapScalingMode="HighQuality"
-                                Source="{Binding Account.Info.ProfileImageUrl, IsAsync=True, Mode=OneWay}" />
+                                b:TimelineBehavior.ProfileImage="{Binding Account.Info, Mode=OneTime}" />
 
                             <ToggleButton
                                 x:Name="paneToggle"

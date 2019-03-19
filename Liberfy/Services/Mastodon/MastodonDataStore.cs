@@ -12,9 +12,16 @@ namespace Liberfy.Services.Mastodon
 {
     internal class MastodonDataStore : DataStoreBase<Account, Status>, IDataStore
     {
+        private readonly Uri _host;
+
+        public MastodonDataStore(Uri host)
+        {
+            this._host = host;
+        }
+
         protected override UserInfo CreateAccountInfo(Account account)
         {
-            var info = new UserInfo(ServiceType.Mastodon, account.Id)
+            var info = new UserInfo(ServiceType.Mastodon, this._host, account.Id)
             {
                 CreatedAt = account.CreatedAt,
             };
