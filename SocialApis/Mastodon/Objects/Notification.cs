@@ -10,7 +10,7 @@ namespace SocialApis.Mastodon
     [DataContract]
     public class Notification
     {
-        [DataMember(Name = "id"), Utf8Json.JsonFormatter(typeof(Formatters.ToLongFormatter))]
+        [DataMember(Name = "id"), Utf8Json.JsonFormatter(typeof(Formatters.StringToLongFormatter))]
         public long Id { get; private set; }
 
         [DataMember(Name = "type")]

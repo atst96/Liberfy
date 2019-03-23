@@ -7,7 +7,7 @@ using Utf8Json;
 
 namespace SocialApis.Formatters
 {
-    internal class ToNullableLongFormatter : Utf8Json.IJsonFormatter<long?>
+    internal class StringToNullableLongFormatter : IJsonFormatter<long?>
     {
         long? IJsonFormatter<long?>.Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
@@ -15,7 +15,7 @@ namespace SocialApis.Formatters
             {
                 case JsonToken.Null:
                     reader.ReadNextBlock();
-                    return default(long?);
+                    return default;
 
                 case JsonToken.Number:
                     return reader.ReadInt64();

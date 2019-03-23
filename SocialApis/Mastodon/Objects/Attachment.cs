@@ -11,7 +11,7 @@ namespace SocialApis.Mastodon
     public class Attachment
     {
         [DataMember(Name = "id")]
-        [Utf8Json.JsonFormatter(typeof(Formatters.ToLongFormatter))]
+        [Utf8Json.JsonFormatter(typeof(Formatters.StringToLongFormatter))]
         public long Id { get; private set; }
         
         [DataMember(Name = "type")]

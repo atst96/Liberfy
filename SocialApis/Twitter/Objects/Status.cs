@@ -11,7 +11,7 @@ namespace SocialApis.Twitter
     public class Status
     {
         [DataMember(Name = "created_at")]
-        [JsonFormatter(typeof(DateTimeOffsetFormatter))]
+        [JsonFormatter(typeof(TwitterTimeFormatFormatter))]
         public DateTimeOffset CreatedAt { get; set; }
 
         [DataMember(Name = "id")]

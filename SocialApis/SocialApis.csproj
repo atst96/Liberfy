@@ -62,9 +62,11 @@
     <Compile Include="Common\Regex.cs" />
     <Compile Include="Common\HttpMethods.cs" />
     <Compile Include="Common\SequentialSurrogateTextReader.cs" />
-    <Compile Include="Formatters\ToIntFormatter.cs" />
-    <Compile Include="Formatters\ToLongFormatter.cs" />
-    <Compile Include="Formatters\ToNullableLongFormatter.cs" />
+    <Compile Include="Formatters\NullableValueFormatter.cs" />
+    <Compile Include="Formatters\TimeSpanFormatter.cs" />
+    <Compile Include="Formatters\StringToIntFormatter.cs" />
+    <Compile Include="Formatters\StringToLongFormatter.cs" />
+    <Compile Include="Formatters\StringToNullableLongFormatter.cs" />
     <Compile Include="Mastodon\Apis\AccountsApi.cs" />
     <Compile Include="Mastodon\Apis\BlocksApi.cs" />
     <Compile Include="Mastodon\Apis\DomainBlocksApi.cs" />
@@ -107,6 +109,8 @@
     <Compile Include="Mastodon\Objects\Mention.cs" />
     <Compile Include="Mastodon\Objects\Notification.cs" />
     <Compile Include="Mastodon\Objects\Meta.cs" />
+    <Compile Include="Mastodon\Objects\Poll.cs" />
+    <Compile Include="Mastodon\Objects\PollOption.cs" />
     <Compile Include="Mastodon\Objects\Relationship.cs" />
     <Compile Include="Mastodon\Objects\Report.cs" />
     <Compile Include="Mastodon\Objects\Results.cs" />
@@ -116,7 +120,7 @@
     <Compile Include="Common\MimeTypes.cs" />
     <Compile Include="Common\StreamUtility.cs" />
     <Compile Include="Twitter\Apis\AccountApi.cs" />
-    <Compile Include="Formatters\DateTimeOffsetFormatter.cs" />
+    <Compile Include="Formatters\TwitterTimeFormatConverter.cs" />
     <Compile Include="Common\IRateLimit.cs" />
     <Compile Include="Common\RateLimit.cs" />
     <Compile Include="Twitter\Apis\BlocksApi.cs" />

@@ -7,20 +7,21 @@ using Utf8Json;
 
 namespace SocialApis.Formatters
 {
-    public class ToLongFormatter : Utf8Json.IJsonFormatter<long>
+    public class StringToLongFormatter : IJsonFormatter<long>
     {
         long IJsonFormatter<long>.Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
             switch (reader.GetCurrentJsonToken())
             {
                 case JsonToken.Null:
-                    return default(long);
+                    return default;
 
                 case JsonToken.Number:
-                    return reader.ReadInt64();
+                    return formatterResolver.ReadValue<long>(ref reader);
 
                 case JsonToken.String:
-                    return long.Parse(reader.ReadString());
+                    var value = formatterResolver.ReadValue<string>(ref reader);
+                    return long.Parse(value);
 
                 default:
                     throw new NotSupportedException();
@@ -30,6 +31,7 @@ namespace SocialApis.Formatters
         void IJsonFormatter<long>.Serialize(ref JsonWriter writer, long value, IJsonFormatterResolver formatterResolver)
         {
             writer.WriteString(value.ToString());
+            writer.WriteEndObject();
         }
     }
 }

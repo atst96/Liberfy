@@ -4,12 +4,27 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utf8Json;
 
 namespace SocialApis
 {
     internal static class Extensions
     {
         public const int DefaultStreamCopyBufferSize = 128 * 1024;
+
+        public static T ReadValue<T>(this IJsonFormatterResolver formatterResolver, ref JsonReader reader)
+        {
+            return formatterResolver
+                .GetFormatter<T>()
+                .Deserialize(ref reader, formatterResolver);
+        }
+
+        public static void WriteValue<T>(this IJsonFormatterResolver formatterResolver, ref JsonWriter writer, T value)
+        {
+            formatterResolver
+                .GetFormatter<T>()
+                .Serialize(ref writer, value, formatterResolver);
+        }
 
         public static void UploadCopyTo(this Stream source, Stream destination, IProgress<UploadProgress> progress)
         {

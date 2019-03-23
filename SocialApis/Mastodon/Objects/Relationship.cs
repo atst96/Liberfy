@@ -11,7 +11,7 @@ namespace SocialApis.Mastodon
     public class Relationship
     {
         [DataMember(Name = "id")]
-        [Utf8Json.JsonFormatter(typeof(Formatters.ToLongFormatter))]
+        [Utf8Json.JsonFormatter(typeof(Formatters.StringToLongFormatter))]
         public long Id { get; private set; }
 
         [DataMember(Name = "following")]
@@ -37,5 +37,8 @@ namespace SocialApis.Mastodon
 
         [DataMember(Name = "showing_reblogs")]
         public bool ShowingReblogs { get; private set; }
+
+        [DataMember(Name = "endorsed")]
+        public bool Endorsed { get; set; }
     }
 }

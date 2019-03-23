@@ -13,7 +13,7 @@ namespace SocialApis.Mastodon
     public class Status
     {
         [DataMember(Name = "id")]
-        [JsonFormatter(typeof(Formatters.ToLongFormatter))]
+        [JsonFormatter(typeof(Formatters.StringToLongFormatter))]
         public long Id { get; private set; }
 
         [DataMember(Name = "uri")]
@@ -26,11 +26,11 @@ namespace SocialApis.Mastodon
         public Account Account { get; private set; }
 
         [DataMember(Name = "in_reply_to_id")]
-        [JsonFormatter(typeof(Formatters.ToNullableLongFormatter))]
+        [JsonFormatter(typeof(Formatters.StringToNullableLongFormatter))]
         public long? InReplyToId { get; private set; }
 
         [DataMember(Name = "in_reply_to_account_id")]
-        [JsonFormatter(typeof(Formatters.ToNullableLongFormatter))]
+        [JsonFormatter(typeof(Formatters.StringToNullableLongFormatter))]
         public long? InReplyToAccountId { get; private set; }
 
         [DataMember(Name = "reblog")]
@@ -45,10 +45,13 @@ namespace SocialApis.Mastodon
         [DataMember(Name = "emojis")]
         public Emoji[] Emojis { get; private set; }
 
+        [DataMember(Name = "replies_count")]
+        public int RepliesCount { get; private set; }
+
         [DataMember(Name = "reblogs_count")]
         public int ReblogsCount { get; private set; }
 
-        [DataMember(Name = "favorites_count")]
+        [DataMember(Name = "favourites_count")]
         public int FavouritesCount { get; private set; }
 
         [DataMember(Name = "reblogged")]
@@ -77,6 +80,12 @@ namespace SocialApis.Mastodon
 
         [DataMember(Name = "tags")]
         public Tag[] Tags { get; private set; }
+
+        [DataMember(Name = "card")]
+        public Card Card { get; private set; }
+
+        [DataMember(Name = "poll")]
+        public Poll Poll { get; private set; }
 
         [DataMember(Name = "application")]
         public Application Application { get; private set; }

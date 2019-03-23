@@ -11,7 +11,7 @@ namespace SocialApis.Twitter
         public PollOption Options { get; set; }
 
         [DataMember(Name = "end_datetime")]
-        [JsonFormatter(typeof(DateTimeOffsetFormatter))]
+        [JsonFormatter(typeof(TwitterTimeFormatFormatter))]
         public DateTimeOffset EndDateTime { get; set; }
 
         [DataMember(Name = "duration_minutes")]

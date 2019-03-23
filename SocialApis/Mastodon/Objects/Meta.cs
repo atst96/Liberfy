@@ -17,9 +17,18 @@ namespace SocialApis.Mastodon
         public int Height { get; private set; }
 
         [DataMember(Name = "size")]
-        public object Size { get; private set; }
+        public string Size { get; private set; }
 
         [DataMember(Name = "aspect")]
-        public object Aspect { get; private set; }
+        public float Aspect { get; private set; }
+
+        [DataMember(Name = "frame_rate")]
+        public string FrameRate { get; private set; }
+
+        [DataMember(Name = "duration")]
+        public double Duration { get; set; }
+
+        [DataMember(Name = "bitrate")]
+        public int Bitrate { get; private set; }
     }
 }

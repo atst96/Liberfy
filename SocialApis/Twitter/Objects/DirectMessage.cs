@@ -11,7 +11,7 @@ namespace SocialApis.Twitter
     public class DirectMessage
     {
         [DataMember(Name = "created_at")]
-        [Utf8Json.JsonFormatter(typeof(DateTimeOffsetFormatter))]
+        [Utf8Json.JsonFormatter(typeof(TwitterTimeFormatFormatter))]
         public DateTimeOffset CreatedAt { get; set; }
 
         [DataMember(Name = "entities")]
