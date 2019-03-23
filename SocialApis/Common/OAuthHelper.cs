@@ -43,6 +43,14 @@ namespace SocialApis
             yield return new QueryElement(OAuthParameters.Version, OAuthVersion);
         }
 
+        private static string ConcatOAuthParameterPair(QueryElement q)
+        {
+            var name = WebUtility.UrlEncode(q.Key);
+            var value = WebUtility.UrlEncode(Query.ValueToString(q.Value));
+
+            return $@"{name}=""{value}""";
+        }
+
         public static string GenerateAuthenticationHeader(string httpMethod, string endpoint, IApi tokens, IEnumerable<QueryElement> query, IEnumerable<QueryElement> oauthParameters)
         {
             var (nonce, timestamp) = OAuthHelper.GenerateUniqueValues();
@@ -60,7 +68,7 @@ namespace SocialApis
 
             sortedQuery[OAuthParameters.Signature] = OAuthHelper.GenerateSignature(tokens.ConsumerSecret, tokens.ApiTokenSecret, signatureBase);
 
-            var authHeaderParameters = sortedQuery.Select(q => Query.ConcatKeyValuePairDoubleQuotation(q));
+            var authHeaderParameters = sortedQuery.Select(q => ConcatOAuthParameterPair(q));
             var authHeaderString = string.Join(",", authHeaderParameters);
 
             return $"OAuth " + authHeaderString;
@@ -87,7 +95,7 @@ namespace SocialApis
 
         private static string GenerateSignatureBase(string httpMethod, string endpoint, ICollection<QueryElement> query)
         {
-            var normalizedParameters = Query.JoinParameters(query);
+            var normalizedParameters = Query.JoinParametersWithAmpersand(query);
 
             return string.Join("&", httpMethod, WebUtility.UrlEncode(endpoint), WebUtility.UrlEncode(normalizedParameters));
         }

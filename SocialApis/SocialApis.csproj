@@ -59,8 +59,10 @@
     <Compile Include="Common\Extensions.cs" />
     <Compile Include="Common\JsonUtility.cs" />
     <Compile Include="Common\HttpContentTypes.cs" />
+    <Compile Include="Common\QueryParameterCollection.cs" />
     <Compile Include="Common\Regex.cs" />
     <Compile Include="Common\HttpMethods.cs" />
+    <Compile Include="Common\ValueGroup.cs" />
     <Compile Include="Common\SequentialSurrogateTextReader.cs" />
     <Compile Include="Formatters\NullableValueFormatter.cs" />
     <Compile Include="Formatters\TimeSpanFormatter.cs" />
@@ -198,7 +200,6 @@
     <Compile Include="Twitter\RequestTokenResponse.cs" />
     <Compile Include="Twitter\TwitterApi.cs" />
     <Compile Include="Common\UploadProgress.cs" />
-    <Compile Include="Common\QueryArrayItem.cs" />
     <Compile Include="Common\WebUtility.cs" />
   </ItemGroup>
   <ItemGroup>

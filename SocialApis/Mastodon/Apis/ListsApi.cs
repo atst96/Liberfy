@@ -51,14 +51,14 @@ namespace SocialApis.Mastodon.Apis
 
         public Task AddAccounts(long listId, params long[] accountIds)
         {
-            var query = new Query { ["account_ids"] = new QueryArrayItem(accountIds) };
+            var query = new Query { ["account_ids"] = accountIds };
 
             return this.Api.RestApiPostRequestAsync($"lists/{ listId }/accounts");
         }
 
         public Task RemoveAccounts(long listId, params long[] accountIds)
         {
-            var query = new Query { ["account_ids"] = new QueryArrayItem(accountIds) };
+            var query = new Query { ["account_ids"] = accountIds };
 
             return this.Api.RestApiDeleteRequestAsync($"lists/{ listId }/accounts", query);
         }

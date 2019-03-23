@@ -57,7 +57,7 @@ namespace SocialApis
 
             if (parameters?.Any() ?? false)
             {
-                queryString = Query.JoinParameters(parameters);
+                queryString = Query.JoinParametersWithAmpersand(parameters);
 
                 if (method == HttpMethods.GET || method == HttpMethods.DELETE)
                 {

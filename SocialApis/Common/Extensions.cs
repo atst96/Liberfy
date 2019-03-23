@@ -12,6 +12,11 @@ namespace SocialApis
     {
         public const int DefaultStreamCopyBufferSize = 128 * 1024;
 
+        internal static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> kvp, out TKey key, out TValue value)
+        {
+            (key, value) = (kvp.Key, kvp.Value);
+        }
+
         public static T ReadValue<T>(this IJsonFormatterResolver formatterResolver, ref JsonReader reader)
         {
             return formatterResolver

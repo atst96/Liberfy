@@ -64,7 +64,9 @@ namespace Liberfy.Services.Twitter
 
             if (parameters.Attachments.HasItems)
             {
-                query["media_ids"] = await this.UploadAttachments(parameters.Attachments).ConfigureAwait(false);
+                var mediaIds = await this.UploadAttachments(parameters.Attachments).ConfigureAwait(false);
+
+                query["media_ids"] = new ValueGroup(mediaIds);
             }
 
             if (parameters.IsContainsWarningAttachment)

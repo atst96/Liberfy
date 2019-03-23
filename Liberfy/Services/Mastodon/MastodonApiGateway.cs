@@ -54,7 +54,7 @@ namespace Liberfy.Services.Mastodon
 
 			if (parameters.Attachments.HasItems)
 			{
-				query["media_ids"] = new QueryArrayItem(await this.UploadAttachments(parameters.Attachments).ConfigureAwait(false));
+				query["media_ids"] = await this.UploadAttachments(parameters.Attachments).ConfigureAwait(false);
 			}
 
 			if (parameters.IsContainsWarningAttachment)

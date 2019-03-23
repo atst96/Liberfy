@@ -63,71 +63,25 @@ namespace SocialApis
 
         public static string JoinParameters(IQuery query, string separator)
         {
-            return string.Join(separator, GetRequestParameterStrings(query));
+            return string.Join(separator, Query.EnumerateQueryPairs(query));
         }
 
-        public static string JoinParameters(IQuery query)
+        public static string JoinParametersWithAmpersand(IQuery query)
         {
-            return JoinParameters(query, "&");
+            return Query.JoinParameters(query, "&");
         }
 
-        public static string[] GetRequestParameterStrings(IQuery values)
+        public static IEnumerable<string> EnumerateQueryPairs(IQuery query)
         {
-            string[] strings = new string[values.Count];
+            var parameters = new QueryParameterCollection(query);
 
-            int i = 0;
-            foreach (var kvp in values)
+            foreach (var (key, value) in parameters)
             {
-                strings[i] = ConcatKeyValuePair(kvp.Key, kvp.Value);
-                ++i;
+                yield return key + "=" + value;
             }
 
-            return strings;
-        }
-
-        private static string ConcatKeyValuePair(string name, string value, string enclosure)
-        {
-            return name + "=" + (enclosure == null ? value : (enclosure + value + enclosure));
-        }
-
-        public static string ConcatKeyValuePair(string name, object value, string enclosure)
-        {
-            if (value is QueryArrayItem arrayItem)
-            {
-                var valuePairs = new string[arrayItem.Count];
-                var arrayedName = WebUtility.UrlEncode(name) + "[]";
-
-                for (int i = 0; i < arrayItem.Count; ++i)
-                {
-                    valuePairs[i] = ConcatKeyValuePair(arrayedName, WebUtility.UrlEncode(ValueToString(arrayItem[i])));
-                }
-
-                return string.Join("&", valuePairs);
-            }
-            else
-            {
-                return ConcatKeyValuePair(WebUtility.UrlEncode(name), WebUtility.UrlEncode(ValueToString(value)), enclosure);
-            }
-        }
-
-        public static string ConcatKeyValuePair(string name, object value)
-        {
-            return ConcatKeyValuePair(name, value, null);
-        }
-
-        public static string GetParameterPair(KeyValuePair<string, object> kvp)
-        {
-            return ConcatKeyValuePair(kvp.Key, kvp.Value, null);
-        }
-
-        public static string ConcatKeyValuePairDoubleQuotation(string name, object value)
-        {
-            return ConcatKeyValuePair(name, value, "\"");
-        }
-
-        public static string ConcatKeyValuePairDoubleQuotation(KeyValuePair<string, object> kvp)
-        {
-            return ConcatKeyValuePairDoubleQuotation(kvp.Key, kvp.Value);
+            parameters.Clear();
+            parameters = null;
         }
 
         private static readonly Hashtable _typeHandles = new Hashtable();
@@ -141,17 +95,6 @@ namespace SocialApis
             else if (value is string stringValue)
             {
                 return nested ? $"\"{stringValue}\"" : stringValue;
-            }
-            else if (value is Array arrayValue)
-            {
-                var valueList = new string[arrayValue.Length];
-
-                for (int i = 0; i < arrayValue.Length; ++i)
-                {
-                    valueList[i] = ValueToString(arrayValue.GetValue(i));
-                }
-
-                return string.Join(",", valueList);
             }
             else
             {
@@ -181,11 +124,13 @@ namespace SocialApis
                     {
                         return value.ToString().ToLower();
                     }
-                    else if (typeCode >= TypeCode.Char && typeCode <= TypeCode.Decimal)
+
+                    if (typeCode >= TypeCode.Char && typeCode <= TypeCode.Decimal)
                     {
                         return value.ToString();
                     }
-                    else if (typeCode == TypeCode.DateTime)
+
+                    if (typeCode == TypeCode.DateTime)
                     {
                         // TODO
                         return value.ToString();
