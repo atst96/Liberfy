@@ -17,7 +17,7 @@ namespace Liberfy
 {
     internal class ProfileImageCache
     {
-        private readonly ConcurrentDictionary<UserInfo, ImageCacheInfo> _images = new ConcurrentDictionary<UserInfo, ImageCacheInfo>();
+        private readonly ConcurrentDictionary<UserInfo, WeakReference<ImageCacheInfo>> _images = new ConcurrentDictionary<UserInfo, WeakReference<ImageCacheInfo>>();
         private readonly Database _dbConnection;
         private bool _isLoadTimelineMode = false;
         private SQLiteTransaction _sqlTransaction;
@@ -71,7 +71,14 @@ namespace Liberfy
 
         public ImageCacheInfo GetCacheInfo(UserInfo userInfo)
         {
-            return this._images.AddOrUpdate(userInfo, this.CreateCache, this.UpdateCache);
+            var reference = this._images.AddOrUpdate(userInfo, this.CreateCacheReference, this.UpdateCacheReference);
+
+            if (reference.TryGetTarget(out var cacheInfo))
+            {
+                return cacheInfo;
+            }
+
+            throw new NotImplementedException();
         }
 
         private static Bitmap ResizeImage(Bitmap srcBitmap, int width, int height)
@@ -138,13 +145,15 @@ namespace Liberfy
 
         private bool TryFindCache(IDictionary<string, object> @params, string imageFileName, out byte[] imageData)
         {
-            if (this._dbConnection == null)
+            var database = this._dbConnection;
+
+            if (database == null || !database.IsConnected)
             {
                 imageData = null;
                 return false;
             }
 
-            using (var query = this._dbConnection.ExecuteReader(Database.QueryCollection.SelectProfileImageCacheData, @params))
+            using (var query = database.ExecuteReader(Database.QueryCollection.SelectProfileImageCacheData, @params))
             {
                 if (query.Read())
                 {
@@ -165,7 +174,12 @@ namespace Liberfy
 
         private void WriteCache(IDictionary<string, object> @params)
         {
-            this._dbConnection?.ExecuteNonQuery(Database.QueryCollection.InsertOrReplaceProfileImageCache, @params);
+            var connection = this._dbConnection;
+
+            if (connection?.IsConnected ?? false)
+            {
+                connection.ExecuteNonQuery(Database.QueryCollection.InsertOrReplaceProfileImageCache, @params);
+            }
         }
 
         private bool TryDownloadImage(UserInfo userInfo, out MemoryStream imageStream)
@@ -180,7 +194,7 @@ namespace Liberfy
                     var dataStream = new MemoryStream();
                     stream.CopyTo(dataStream);
 
-                    ShrinkImageData(ref dataStream);
+                    ProfileImageCache.ShrinkImageData(ref dataStream);
 
                     imageStream = dataStream;
                 }
@@ -242,6 +256,13 @@ namespace Liberfy
             return cache;
         }
 
+        private WeakReference<ImageCacheInfo> CreateCacheReference(UserInfo userInfo)
+        {
+            var cache = this.CreateCache(userInfo);
+
+            return new WeakReference<ImageCacheInfo>(cache);
+        }
+
         private ImageCacheInfo UpdateCache(UserInfo userInfo, ImageCacheInfo cacheInfo)
         {
             if (cacheInfo.FileName != Path.GetFileName(userInfo.ProfileImageUrl))
@@ -250,6 +271,20 @@ namespace Liberfy
             }
 
             return cacheInfo;
+        }
+
+        private WeakReference<ImageCacheInfo> UpdateCacheReference(UserInfo userInfo, WeakReference<ImageCacheInfo> reference)
+        {
+            if (reference.TryGetTarget(out ImageCacheInfo cacheInfo))
+            {
+                this.UpdateCache(userInfo, cacheInfo);
+            }
+            else
+            {
+                reference.SetTarget(this.CreateCache(userInfo));
+            }
+
+            return reference;
         }
     }
 }
