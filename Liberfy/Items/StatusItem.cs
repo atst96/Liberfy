@@ -78,7 +78,7 @@ namespace Liberfy
             this.HasMediaEntities = MediaEntities?.Any() ?? false;
             this.IsCurrentAccount = statusInfo.User.Id == account.Id;
 
-            this.User.PropertyChanged += UserPropertyChanged;
+            this.User.PropertyChanged += this.OnUserPropertyChanged;
         }
 
         public StatusItem(MastodonStatus status, MastodonAccount account)
@@ -123,14 +123,14 @@ namespace Liberfy
             this.HasMediaEntities = MediaEntities?.Any() ?? false;
             this.IsCurrentAccount = statusInfo.User.Id == account.Id;
 
-            this.User.PropertyChanged += UserPropertyChanged;
+            this.User.PropertyChanged += OnUserPropertyChanged;
         }
 
-        private void UserPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void OnUserPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(this.User.IsProtected))
             {
-                this.RaisePropertyChanged(nameof(CanRetweet));
+                this.RaisePropertyChanged(nameof(this.CanRetweet));
             }
         }
 

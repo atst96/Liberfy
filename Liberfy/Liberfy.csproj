@@ -136,6 +136,9 @@
     </ApplicationDefinition>
     <Compile Include="Components\Database.cs" />
     <Compile Include="Components\ImageCacheInfo.cs" />
+    <Compile Include="Data\Info\AppInfo.cs" />
+    <Compile Include="Data\Info\Info.cs" />
+    <Compile Include="Data\Info\OSInfo.cs" />
     <Compile Include="Items\NotificationItem.cs" />
     <Compile Include="Model\ApplicationStatus.cs" />
     <Compile Include="Commands\AccountAuthenticationWindowCommands\CancelCommand.cs" />
@@ -193,7 +196,6 @@
     <Compile Include="Components\DragDropHelper.cs" />
     <Compile Include="Extensions\SocialApisExtensions.cs" />
     <Compile Include="Extensions\WpfExtensions.cs" />
-    <Compile Include="Data\Info\AppInfo.cs" />
     <Compile Include="Services\Mastodon\MastodonTextEntityBuilder.cs" />
     <Compile Include="Services\Common\IAccount.cs" />
     <Compile Include="Config.cs" />
@@ -215,8 +217,8 @@
     <Compile Include="Services\Common\IAccountCommandGroup.cs" />
     <Compile Include="Components\IUnsubscribableObserver.cs" />
     <Compile Include="Model\AccountManager.cs" />
-    <Compile Include="Model\Attachment.cs" />
-    <Compile Include="Model\Entities.cs" />
+    <Compile Include="Data\Attachment.cs" />
+    <Compile Include="Data\Entities.cs" />
     <Compile Include="Model\Setting\ClientKeyCache.cs" />
     <Compile Include="Model\Setting\ColumnSetting.cs" />
     <Compile Include="Model\Setting\WindowSettings.cs" />
@@ -235,11 +237,8 @@
     <Compile Include="Components\DictionaryEx.cs" />
     <Compile Include="Extensions\ElementBehavior.cs" />
     <Compile Include="Defaults.cs" />
-    <Compile Include="Data\Info\Info.cs" />
-    <Compile Include="Data\Info\OSInfo.cs" />
     <Compile Include="Components\MathEx.cs" />
     <Compile Include="Controls\MediaPanel.cs" />
-    <Compile Include="Model\ReplyStatus.cs" />
     <Compile Include="Model\Setting\AccountItem.cs" />
     <Compile Include="Model\Setting\ApiToken.cs" />
     <Compile Include="Behaviors\TextBoxBehavior.cs" />
@@ -272,15 +271,15 @@
     <Compile Include="Columns\StreamSearchColumn.cs" />
     <Compile Include="Items\IItem.cs" />
     <Compile Include="Items\StatusItem.cs" />
-    <Compile Include="Model\MediaEntityInfo.cs" />
-    <Compile Include="Model\StatusActivity.cs" />
+    <Compile Include="Data\MediaEntityInfo.cs" />
+    <Compile Include="Data\StatusActivity.cs" />
     <Compile Include="Model\Setting\Mute.cs" />
     <Compile Include="Model\Setting\Setting.cs" />
     <Compile Include="Model\Setting\AccountSetting.cs" />
-    <Compile Include="Model\WindowStatus.cs" />
+    <Compile Include="Model\Setting\WindowStatus.cs" />
     <Compile Include="Components\Mvvm\ViewModelConnector.cs" />
-    <Compile Include="Model\StatusInfo.cs" />
-    <Compile Include="Model\UserInfo.cs" />
+    <Compile Include="Data\StatusInfo.cs" />
+    <Compile Include="Data\UserInfo.cs" />
     <Compile Include="Services\Twitter\TwitterTimeline.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\SettingWindowViewModel.cs" />

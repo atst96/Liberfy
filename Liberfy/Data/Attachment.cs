@@ -11,7 +11,7 @@ namespace Liberfy.Model
     internal class Attachment
     {
         public long Id { get; }
-        public AttachmentItemType Type { get; }
+        public AttachmentType Type { get; }
         public string Url { get; }
         public string OriginalUrl { get; }
         public string PreviewUrl { get; }
@@ -28,15 +28,15 @@ namespace Liberfy.Model
             switch (media.Type)
             {
                 case TwitterApi.MediaType.Photo:
-                    this.Type = AttachmentItemType.Photo;
+                    this.Type = AttachmentType.Photo;
                     break;
 
                 case TwitterApi.MediaType.AnimatedGif:
-                    this.Type = AttachmentItemType.Gif;
+                    this.Type = AttachmentType.Gif;
                     break;
 
                 case TwitterApi.MediaType.Video:
-                    this.Type = AttachmentItemType.Video;
+                    this.Type = AttachmentType.Video;
                     break;
             }
         }
@@ -51,21 +51,21 @@ namespace Liberfy.Model
             switch (attachment.Type)
             {
                 case MastodonApi.AttachmentType.Image:
-                    this.Type = AttachmentItemType.Photo;
+                    this.Type = AttachmentType.Photo;
                     break;
 
                 case MastodonApi.AttachmentType.GifVideo:
-                    this.Type = AttachmentItemType.Gif;
+                    this.Type = AttachmentType.Gif;
                     break;
 
                 case MastodonApi.AttachmentType.Video:
-                    this.Type = AttachmentItemType.Video;
+                    this.Type = AttachmentType.Video;
                     break;
             }
         }
     }
 
-    public enum AttachmentItemType
+    public enum AttachmentType
     {
         Photo,
         Gif,

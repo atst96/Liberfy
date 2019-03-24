@@ -9,12 +9,6 @@ namespace Liberfy
 {
     internal class StatusActivity : NotificationObject
     {
-        public void SetAll(Status status)
-        {
-            this.IsFavorited = status?.IsFavorited ?? false;
-            this.IsRetweeted = status?.IsRetweeted ?? false;
-        }
-
         public void SetAll(bool isFavorited, bool isRetweeted)
         {
             this.IsFavorited = isFavorited;
