@@ -1,19 +1,38 @@
 ﻿# Liberfy (Alpha version)
-開発中のC#製ストリーミング対応Twitterアプリケーションです。
+開発中のWindows向けSNSクライアントアプリケーションです。
+
+## 対応サービス
+- [Twtiter](https://developer.twitter.com/)
+- [Mastodon](https://github.com/tootsuite)
+<!-- - [Frost](https://github.com/Frost-Dev/Frost)（予定）-->
 
 ## 仕様
-- (順次追加)
+- マルチアカウント対応
+- マルチカラム対応
+- 画像キャッシュ
+- (Twitter) 疑似UserStream
+- その他（随時追加）
 
-## ビルド方法
-1.  Liberfy.slnをVisual Studioで読み込む
-2.  Config.cs (/Liberfy/Config.cs) の編集
-    1. APIキー関連の定数が開発用にコメント化されているので解除する
-    2. APIキー関連の定数を適宜、使用可能なものに換える
-3. Build!!!
+## ビルドについて
+ソースコードのビルド時には以下の点にご注意ください。
+- NuGetパッケージの復元を行う。  
+　実行ファイルの出力先にSQLite.Interop.dll(`OUTPUT_DIR\[x86 or x64]\SQLite.Interop.dll`)が存在しない場合に起動時にDllNotFoundException例外が発生します。
+
+- `/Liberfy/Config.cs`内のTwitterクラスの定数 `@ConsumerKey` と `@ConsumerSecret` のコメントを解除し、有効なアクセスキーを設定してください。  
+```csharp:/Liberfy/Config.cs
+static class Config
+{
+    static class Twitter
+    {
+        //public const string @ConsumerKey = "";
+        //public const string @ConsumerSecret = "";
+    }
+}
+```
 
 ## ライセンス
-- Liberfy のソースコードは[MITライセンスの下](https://github.com/atst1996/Liberfy/blob/master/LICENSE)で配布しています。
-- Liberfy では以下のライセンスが含まれるソフトウェアを使用しています。ライセンスについては[NOTICE.md](https://github.com/atst1996/Liberfy/blob/master/NOTICE.md)に記載しています。
+- Liberfy のソースコードは[MITライセンス](https://github.com/atst1996/Liberfy/blob/master/LICENSE)の下で配布しています。
+- Liberfy では以下のライブラリおよびデータを使用しています。各ライセンスについては[NOTICE.md](https://github.com/atst1996/Liberfy/blob/master/NOTICE.md)に記載しています。
   - Font Awesome
   - MessagePack for C#
   - NowPlayingLib
@@ -24,3 +43,8 @@
   - Windows-API-Code-Pack-1.1
   - WPF NotifyIcon
   - XamlBehaviors for WPF
+
+---
+
+#### 名称の由来
+`Liberfy`という名称は英語で"自由"という意味の`Liberty`と`Freedom`を合わせたものです。

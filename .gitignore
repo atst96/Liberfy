@@ -7,10 +7,7 @@ obj/
 /Liberfy/Defines_secret.cs
 /Liberfy/obj
 /Liberfy/dev_*.cs
-/CoreTweet/Release
-/CoreTweet/Debug
 /packages
 /ApiTest
-/Liberfy/Component/DropDownButton.cs
 /Liberfy/Config.Develop.cs
 /SyncToy_*.dat
