@@ -71,12 +71,17 @@ namespace Liberfy.Components
 
         public void OpenTweetWindow()
         {
-            new TweetWindow().Show();
+            new TweetWindow() { Owner = this._view }.Show();
         }
 
         public void OpenTweetWindow(IAccount account)
         {
-            new TweetWindow(account).Show();
+            new TweetWindow(account) { Owner = this._view }.Show();
+        }
+
+        public void OpenTweetWindow(StatusItem statusItem)
+        {
+            new TweetWindow(statusItem) { Owner = this._view }.Show();
         }
 
         public void OpenAuthenticationWindow()

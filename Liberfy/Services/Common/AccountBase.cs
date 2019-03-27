@@ -61,9 +61,9 @@ namespace Liberfy
             this.Tokens = this.TokensFromApiTokenInfo(tokens);
         }
 
-        public abstract IAccountCommandGroup Commands { get; }
-
         public UserInfo Info { get; protected set; }
+
+        public AccountCommandGroup Commands { get; }
 
         public TTimeline Timeline { get; }
 
@@ -75,6 +75,7 @@ namespace Liberfy
             this.SetClient(tokens);
             this.Timeline = this.CreateTimeline();
             this.HostName = host?.Host;
+            this.Commands = new AccountCommandGroup(this);
         }
 
         protected AccountBase(Uri hostUrl, AccountItem item)
@@ -246,12 +247,12 @@ namespace Liberfy
 
         public bool Equals(IAccount other)
         {
-            return this.Id == other.Id && this.Service == other.Service;
+            return other != null && this.Id == other.Id && this.Service == other.Service;
         }
 
         public override bool Equals(object obj)
         {
-            return (obj is UserInfo user    && this.Equals(user))
+            return (obj is UserInfo user && this.Equals(user))
                 || (obj is IAccount account && this.Equals(account));
         }
 

@@ -11,8 +11,14 @@ namespace Liberfy.Services.Twitter
     internal class TwitterValidator : IValidator
     {
         private static readonly Validator _tweetTextValidator = new Validator();
+        private readonly TwitterAccount _account;
 
         public int MaxPostTextLength { get; } = 140;
+
+        public TwitterValidator(TwitterAccount account)
+        {
+            this._account = account;
+        }
 
         public int GetTextLength(ServicePostParameters parameters)
         {
@@ -29,6 +35,13 @@ namespace Liberfy.Services.Twitter
             }
 
             return length > 0 && length <= this.MaxPostTextLength && parameters.Attachments.Count <= 4;
+        }
+
+        public bool CanFavorite(StatusItem item) => true;
+
+        public bool CanRetweet(StatusItem item)
+        {
+            return item.Account.Equals(this._account) || !item.User.IsProtected;
         }
     }
 }

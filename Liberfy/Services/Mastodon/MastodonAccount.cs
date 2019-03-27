@@ -25,7 +25,7 @@ namespace Liberfy
         {
         }
 
-        public override IAccountCommandGroup Commands { get; } = null;
+        //public override IAccountCommandGroup Commands { get; } = null;
 
         private MastodonDataStore _dataStore;
         public override DataStoreBase<Account, Status> DataStore => _dataStore ?? (_dataStore = global::Liberfy.DataStore.Mastodon[this.Tokens.HostUrl]);
@@ -35,7 +35,7 @@ namespace Liberfy
         public override IServiceConfiguration ServiceConfiguration { get; } = new MastodonServiceConfiguration();
 
         private IApiGateway _apiGateway;
-        public override IApiGateway ApiGateway => this._apiGateway ?? (this._apiGateway = new MastodonApiGateway(this.Tokens));
+        public override IApiGateway ApiGateway => this._apiGateway ?? (this._apiGateway = new MastodonApiGateway(this));
 
         protected override MastodonApi TokensFromApiTokenInfo(ApiTokenInfo tokens)
         {

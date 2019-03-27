@@ -13,11 +13,13 @@ namespace Liberfy.Services.Twitter
 {
     internal class TwitterApiGateway : IApiGateway
     {
+        private readonly TwitterAccount _account;
         private readonly TwitterApi _api;
 
-        public TwitterApiGateway(TwitterApi api)
+        public TwitterApiGateway(TwitterAccount account)
         {
-            this._api = api;
+            this._account = account;
+            this._api = account.Tokens;
         }
 
         private async Task<long> UploadAttachment(UploadMedia attachment)
@@ -80,6 +82,42 @@ namespace Liberfy.Services.Twitter
             //}
 
             await this._api.Statuses.Update(query).ConfigureAwait(false);
+        }
+
+        public async Task Favorite(StatusItem item)
+        {
+            if (!item.Account.Equals(this._account))
+            {
+                return;
+            }
+
+            var task = item.Reaction.IsFavorited
+                ? this._api.Favorites.Destroy(item.Id)
+                : this._api.Favorites.Create(item.Id);
+
+            var status = await task.ConfigureAwait(false);
+
+            var statusInfo = this._account.DataStore.RegisterStatus(status);
+
+            item.Reaction.IsFavorited = status.IsFavorited ?? !item.Reaction.IsFavorited;
+        }
+
+        public async Task Retweet(StatusItem item)
+        {
+            if (!item.Account.Equals(this._account))
+            {
+                return;
+            }
+
+            var task = item.Reaction.IsRetweeted
+               ? this._api.Statuses.Destroy(item.Id)
+               : this._api.Statuses.Retweet(item.Id);
+
+            var status = await task.ConfigureAwait(false);
+
+            var statusInfo = this._account.DataStore.RegisterStatus(status);
+
+            item.Reaction.IsRetweeted = status.IsRetweeted ?? !item.Reaction.IsRetweeted;
         }
     }
 }

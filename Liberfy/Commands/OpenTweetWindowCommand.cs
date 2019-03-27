@@ -1,4 +1,6 @@
-﻿namespace Liberfy.Commands
+﻿using System.Linq;
+
+namespace Liberfy.Commands
 {
     internal class OpenTweetWindowCommand : Command<IAccount>
     {
@@ -13,7 +15,10 @@
 
         protected override void Execute(IAccount parameter)
         {
-            this._viewModel.WindowService.OpenTweetWindow(parameter);
+            var account = parameter ?? AccountManager.Accounts.FirstOrDefault();
+
+            this._viewModel.WindowService.OpenTweetWindow(account);
+
         }
     }
 }

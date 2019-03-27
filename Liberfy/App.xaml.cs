@@ -2,6 +2,7 @@
 using Liberfy.Components;
 using Liberfy.Settings;
 using Liberfy.Utilieis;
+using Liberfy.ViewModels;
 using Liberfy.Views;
 using Microsoft.Win32;
 using Microsoft.Windows.Themes;
@@ -287,6 +288,35 @@ namespace Liberfy
         public T TryFindResource<T>(object resourceKey)
         {
             return this.TryFindResource(resourceKey).CastOrDefault<T>();
+        }
+
+        public IEnumerable<Window> EnumerateWindows()
+        {
+            return this.Windows.Cast<Window>();
+        }
+
+        public IEnumerable<T> FindViewModel<T>() where T : ViewModelBase
+        {
+            return this.EnumerateWindows()
+                .Select(w => w.DataContext is T viewModel ? viewModel : default)
+                .Where(vm => vm != null);
+        }
+
+        public IEnumerable<Window> FindViewModelWindow<T>() where T : ViewModelBase
+        {
+            return this.EnumerateWindows()
+                .Where(w => w.DataContext is T);
+        }
+
+        public IEnumerable<(Window view, T viewModel)> FindViewModelWithWindow<T>() where T : ViewModelBase
+        {
+            foreach (var window in this.EnumerateWindows())
+            {
+                if (window.DataContext is T viewModel)
+                {
+                    yield return (window, viewModel);
+                }
+            }
         }
     }
 }

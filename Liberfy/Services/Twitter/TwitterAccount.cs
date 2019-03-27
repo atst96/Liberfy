@@ -25,24 +25,26 @@ namespace Liberfy
         public TwitterAccount(AccountItem accountItem)
             : base(ServerHostUrl, accountItem)
         {
+            this.Validator = new TwitterValidator(this);
         }
 
         public TwitterAccount(TwitterApi tokens, User account)
             : base((long)account.Id, ServerHostUrl, account, tokens)
         {
+            this.Validator = new TwitterValidator(this);
         }
 
-        private IAccountCommandGroup _commands;
-        public override IAccountCommandGroup Commands => _commands ?? (_commands = new Twitter.AccountCommandGroup(this));
+        //private IAccountCommandGroup _commands;
+        //public override IAccountCommandGroup Commands => _commands ?? (_commands = new Twitter.AccountCommandGroup(this));
 
         public override DataStoreBase<User, Status> DataStore { get; } = global::Liberfy.DataStore.Twitter;
 
-        public override IValidator Validator { get; } = new TwitterValidator();
+        public override IValidator Validator { get; }
 
         public override IServiceConfiguration ServiceConfiguration { get; } = new TwitterServiceConfiguration();
 
         private IApiGateway _apiGateway;
-        public override IApiGateway ApiGateway => this._apiGateway ?? (this._apiGateway = new TwitterApiGateway(this.Tokens));
+        public override IApiGateway ApiGateway => this._apiGateway ?? (this._apiGateway = new TwitterApiGateway(this));
 
         protected override TwitterApi TokensFromApiTokenInfo(ApiTokenInfo tokens)
         {

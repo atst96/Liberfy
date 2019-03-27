@@ -9,5 +9,9 @@ namespace Liberfy.Services.Common
     internal interface IApiGateway
     {
         Task PostStatus(ServicePostParameters parameters);
+
+        Task Favorite(StatusItem item);
+
+        Task Retweet(StatusItem item);
     }
 }

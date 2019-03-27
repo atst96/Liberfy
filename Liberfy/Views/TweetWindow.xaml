@@ -13,6 +13,7 @@
     Title="ツイート" Height="329" Width="453"
     FontFamily="Meiryo"
     UseLayoutRounding="True"
+    WindowStartupLocation="CenterOwner"
     DataContext="{app:ViewModelConnector vm:TweetWindowViewModel}"
     d:DataContext="{d:DesignInstance vm:TweetWindowViewModel, IsDesignTimeCreatable=True}"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors">

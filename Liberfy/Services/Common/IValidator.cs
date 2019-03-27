@@ -14,5 +14,9 @@ namespace Liberfy.Services
         int GetTextLength(ServicePostParameters parameters);
 
         bool CanPost(ServicePostParameters parameters);
+
+        bool CanFavorite(StatusItem item);
+
+        bool CanRetweet(StatusItem item);
     }
 }

@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Liberfy.ViewModels;
 
 namespace Liberfy.Views
 {
@@ -19,19 +20,23 @@ namespace Liberfy.Views
     /// </summary>
     internal partial class TweetWindow : Window
     {
+        private TweetWindowViewModel _viewModel;
+
         public TweetWindow()
         {
             this.InitializeComponent();
+
+            this._viewModel = this.DataContext as TweetWindowViewModel;
         }
 
-        internal TweetWindow(IAccount account) : this()
+        public TweetWindow(IAccount account) : this()
         {
-            if (account != null)
-            {
-                var viewModel = DataContext as ViewModels.TweetWindowViewModel;
+            this._viewModel?.SetPostAccount(account);
+        }
 
-                viewModel?.SetPostAccount(account);
-            }
+        public TweetWindow(StatusItem statusItem) : this(statusItem.Account)
+        {
+            this._viewModel?.SetReplyToStatus(statusItem);
         }
     }
 }

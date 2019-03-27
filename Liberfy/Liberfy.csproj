@@ -134,6 +134,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Commands\Account\AccountCommandGroup.cs" />
+    <Compile Include="Commands\Status\FavoriteCommand.cs" />
+    <Compile Include="Commands\Account\OpenUserWindowCommand.cs" />
+    <Compile Include="Commands\Status\ReplyCommand.cs" />
+    <Compile Include="Commands\Status\RetweetCommand.cs" />
+    <Compile Include="Commands\Status\StatusCommandGroup.cs" />
     <Compile Include="Components\Database.cs" />
     <Compile Include="Components\ImageCacheInfo.cs" />
     <Compile Include="Data\Info\AppInfo.cs" />
@@ -184,9 +190,7 @@
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\LinqToXmlHtmlExtensions.cs" />
     <Compile Include="Extensions\TimelineBehavior.cs" />
-    <Compile Include="Commands\AccountCommands.cs" />
     <Compile Include="Commands\AppCommands.cs" />
-    <Compile Include="Commands\DisplayUserDetailsCommand.cs" />
     <Compile Include="Components\SequentialSurrogateTextReader.cs" />
     <Compile Include="Controls\GeometryIcon.cs" />
     <Compile Include="Controls\TimelineViewItem.cs" />
@@ -226,9 +230,6 @@
     <Compile Include="Services\Config\ISocialConfig.cs" />
     <Compile Include="Services\Config\MastodonConfig.cs" />
     <Compile Include="Services\Config\TwitterConfig.cs" />
-    <Compile Include="Services\Twitter\AccountCommandGroup.cs" />
-    <Compile Include="Services\Twitter\Commands\LikeCommand.cs" />
-    <Compile Include="Services\Twitter\Commands\RepostCommand.cs" />
     <Compile Include="Services\Twitter\FakeStreaming.cs" />
     <Compile Include="TemplateSelectors\ColumnOptionTemplateSelector.cs" />
     <Compile Include="Components\Regexes.cs" />

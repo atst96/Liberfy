@@ -294,7 +294,9 @@
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
                         Rows="1" Width="160">
-                        <Button Style="{StaticResource ReplyActionButton}">
+                        <Button
+                            Style="{StaticResource ReplyActionButton}"
+                            Command="{Binding Commands.ReplyCommand, Mode=OneTime}">
                             <app:GeometryIcon
                                 Width="17"
                                 Data="{StaticResource FontAwesome.Icon.Reply}" />
@@ -304,8 +306,7 @@
                             IsEnabled="{Binding CanRetweet, Mode=OneWay}"
                             IsChecked="{Binding Reaction.IsRetweeted, Mode=OneWay}"
                             Style="{StaticResource RetweetActionToggleButton}"
-                            Command="{Binding Account.Commands.Repost, Mode=OneTime}"
-                            CommandParameter="{Binding Mode=OneTime}">
+                            Command="{Binding Commands.RetweetCommand, Mode=OneTime}">
                             <app:GeometryIcon
                                 Margin="0" Width="24"
                                 Data="{StaticResource FontAwesome.Icon.Retweet}" />
@@ -314,8 +315,7 @@
                         <ToggleButton
                             IsChecked="{Binding Reaction.IsFavorited, Mode=OneWay}"
                             Style="{StaticResource FavoriteActionToggleButton}"
-                            Command="{Binding Account.Commands.Like, Mode=OneTime}"
-                            CommandParameter="{Binding Mode=OneTime}">
+                            Command="{Binding Commands.FavoriteCommand, Mode=OneTime}">
                             <app:GeometryIcon
                                 Height="14"
                                 Data="{StaticResource FontAwesome.Icon.Heart}" />
@@ -341,7 +341,7 @@
                     Clip="{DynamicResource UI.Tweet.ProfileImage.Clip}"
                     Visibility="{DynamicResource UI.Tweet.ProfileImage.Visibility}"
                     CommandParameter="{Binding User, Mode=OneTime}"
-                    Command="{Binding Account.Commands.DisplayUserDetails, Mode=OneTime}">
+                    Command="{Binding Account.Commands.OpenUserWindowCommand, Mode=OneTime}">
                     <Image
                         RenderOptions.BitmapScalingMode="HighQuality"
                         Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
@@ -382,7 +382,7 @@
                         <Hyperlink
                             Style="{StaticResource UserNameLinkText}"
                             CommandParameter="{Binding User, Mode=OneTime}"
-                            Command="{Binding Account.Commands.DisplayUserDetails, Mode=OneTime}">
+                            Command="{Binding Account.Commands.OpenUserWindowCommand, Mode=OneTime}">
                             <Run FontWeight="Bold" Text="{Binding User.Name, Mode=OneWay}" /><Run Text="{Binding User.LongUserName, Mode=OneWay, StringFormat='{}@{0}'}" />
                         </Hyperlink>
                     </TextBlock>
@@ -438,17 +438,12 @@
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             TextTrimming="CharacterEllipsis">
-                            <Hyperlink Style="{StaticResource UserNameLinkText}">
-                                <Run Text="{Binding RetweetUser.Name, Mode=OneWay}" />
-                            </Hyperlink>
-                        </TextBlock>
-                        <TextBlock
-                            DockPanel.Dock="Left"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Left"
-                            TextTrimming="CharacterEllipsis">
-                            <Hyperlink Style="{StaticResource UserNameLinkText}">
-                                <Run Text="{Binding RetweetUser.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+                            <Hyperlink
+                                Style="{StaticResource UserNameLinkText}"
+                                Command="{Binding Account.Commands.OpenUserWindowCommand}"
+                                CommandParameter="{Binding RetweetUser, Mode=OneTime}">
+                                <Run Text="{Binding RetweetUser.Name, Mode=OneTime}" FontWeight="Bold" /><!--
+                             --><Run Text="{Binding RetweetUser.ScreenName, Mode=OneTime, StringFormat='{}@{0}'}" />
                             </Hyperlink>
                         </TextBlock>
                     </DockPanel>
@@ -505,7 +500,7 @@
                 Style="{StaticResource ImageButton}"
                 Visibility="{DynamicResource UI.Tweet.ProfileImage.Visibility}"
                 CommandParameter="{Binding Own, Mode=OneTime}"
-                Command="{Binding Own.Commands.DisplayUserDetails, Mode=OneTime}">
+                Command="{Binding Own.Commands.OpenUserWindowCommand, Mode=OneTime}">
                 <Grid>
                     <Image
                         Clip="{DynamicResource UI.Tweet.PorfileImage.Clip}"
@@ -594,7 +589,7 @@
                 Style="{StaticResource ImageButton}"
                 Visibility="{DynamicResource UI.Tweet.ProfileImage.Visibility}"
                 CommandParameter="{Binding Own, Mode=OneTime}"
-                Command="{Binding Own.Commands.DisplayUserDetails, Mode=OneTime}">
+                Command="{Binding Own.Commands.OpenUserWindowCommand, Mode=OneTime}">
                 <Grid>
                     <Image
                         Clip="{DynamicResource UI.Tweet.PorfileImage.Clip}"
@@ -680,7 +675,7 @@
                 Clip="{DynamicResource UI.Tweet.ProfileImage.Clip}"
                 Visibility="{DynamicResource UI.Tweet.ProfileImage.Visibility}"
                 CommandParameter="{Binding Account, Mode=OneTime}"
-                Command="{Binding Account.Commands.DisplayUserDetails, Mode=OneTime}">
+                Command="{Binding Own.Commands.OpenUserWindowCommand, Mode=OneTime}">
                 <Image
                     RenderOptions.BitmapScalingMode="HighQuality"
                     Width="{DynamicResource UI.Tweet.ProfileImage.Width}"
@@ -696,7 +691,9 @@
                 TextWrapping="NoWrap"
                 TextTrimming="CharacterEllipsis">
                 <Hyperlink
-                    Style="{StaticResource UserNameLinkText}">
+                    Style="{StaticResource UserNameLinkText}"
+                    Command="{Binding Own.Commands.OpenUserWindowCommand, Mode=OneTime}"
+                    CommandParameter="{Binding Account, Mode=OneTime}">
                     <Run FontWeight="Bold" Text="{Binding Account.Name, Mode=OneWay}" /><!--
                  --><LineBreak /><!--
                  --><Run Text="{Binding Account.LongUserName, Mode=OneWay}" />

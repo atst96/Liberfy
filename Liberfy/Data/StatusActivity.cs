@@ -18,15 +18,15 @@ namespace Liberfy
         private bool _isFavorited;
         public bool IsFavorited
         {
-            get => _isFavorited;
-            set => SetProperty(ref _isFavorited, value);
+            get => this._isFavorited;
+            set => this.SetProperty(ref this._isFavorited, value);
         }
 
         private bool _isRetweeted;
         public bool IsRetweeted
         {
-            get => _isRetweeted;
-            set => SetProperty(ref _isRetweeted, value);
+            get => this._isRetweeted;
+            set => this.SetProperty(ref this._isRetweeted, value);
         }
     }
 }

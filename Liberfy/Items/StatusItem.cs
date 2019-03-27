@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TwitterStatus = SocialApis.Twitter.Status;
 using MastodonStatus = SocialApis.Mastodon.Status;
 using Liberfy.ViewModels;
+using Liberfy.Commands;
 
 namespace Liberfy
 {
@@ -27,6 +28,8 @@ namespace Liberfy
         public IEnumerable<MediaEntityInfo> MediaEntities { get; }
         public bool HasMediaEntities { get; }
 
+        public StatusCommandGroup Commands { get; }
+
         public bool CanRetweet
         {
             // 公開ユーザまたは自身のアカウントの場合
@@ -39,8 +42,8 @@ namespace Liberfy
 
         public StatusItem(TwitterStatus status, TwitterAccount account)
         {
-            this.Account = account;
             this.Id = status.Id;
+            this.Account = account;
 
             var reaction = account.GetActivity(status.GetSourceId());
             reaction.SetAll(status.IsFavorited ?? false, status.IsRetweeted ?? false);
@@ -75,16 +78,18 @@ namespace Liberfy
             this.User = statusInfo.User;
             this.CreatedAt = statusInfo.CreatedAt;
             this.MediaEntities = statusInfo.Attachments.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
-            this.HasMediaEntities = MediaEntities?.Any() ?? false;
+            this.HasMediaEntities = this.MediaEntities?.Any() ?? false;
             this.IsCurrentAccount = statusInfo.User.Id == account.Id;
 
             this.User.PropertyChanged += this.OnUserPropertyChanged;
+
+            this.Commands = new StatusCommandGroup(this);
         }
 
         public StatusItem(MastodonStatus status, MastodonAccount account)
         {
-            this.Account = account;
             this.Id = status.Id;
+            this.Account = account;
 
             var reaction = account.GetActivity((status.Reblog??status).Id);
             reaction.SetAll(status.Favourited ?? false, status.Reblogged ?? false);
@@ -120,10 +125,12 @@ namespace Liberfy
             this.User = statusInfo.User;
             this.CreatedAt = statusInfo.CreatedAt;
             this.MediaEntities = statusInfo.Attachments.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
-            this.HasMediaEntities = MediaEntities?.Any() ?? false;
+            this.HasMediaEntities = this.MediaEntities?.Any() ?? false;
             this.IsCurrentAccount = statusInfo.User.Id == account.Id;
 
-            this.User.PropertyChanged += OnUserPropertyChanged;
+            this.User.PropertyChanged += this.OnUserPropertyChanged;
+
+            this.Commands = new StatusCommandGroup(this);
         }
 
         private void OnUserPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

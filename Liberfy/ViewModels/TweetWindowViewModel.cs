@@ -31,8 +31,9 @@ namespace Liberfy.ViewModels
             get => this._selectedAccount;
             set
             {
-                if (this.SetProperty(ref this._selectedAccount, value, this._postCommand))
+                if (this.SetProperty(ref this._selectedAccount, value))
                 {
+                    this.PostCommand.RaiseCanExecute();
                     this.ServiceConfiguration = value.ServiceConfiguration;
                     this.UpdateShowSpoilderText();
                     this.UpdateCanPost();
@@ -40,19 +41,17 @@ namespace Liberfy.ViewModels
             }
         }
 
-        public void SetPostAccount(IAccount account)
-        {
-            this.SelectedAccount = account;
-            this.UpdateCanPost();
-        }
-
         public TweetWindowViewModel()
         {
             this.PostParameters = new ServicePostParameters();
             this.PostParameters.PropertyChanged += this.OnPostParametersProeprtyChanged;
 
-            this.SelectedAccount = this.Accounts.First();
+            //this.SelectedAccount = this.Accounts.First();
+        }
 
+        public void SetPostAccount(IAccount account)
+        {
+            this.SelectedAccount = account;
             this.UpdateCanPost();
         }
 
@@ -127,10 +126,13 @@ namespace Liberfy.ViewModels
         internal void UpdateCanPost()
         {
             var postParams = this.PostParameters;
-            var validator = this.SelectedAccount.Validator;
+            var validator = this.SelectedAccount?.Validator;
 
-            this.TextLength = validator.GetTextLength(this.PostParameters);
-            this.CanPostContent = validator.CanPost(this.PostParameters);
+            if (validator != null)
+            {
+                this.TextLength = validator.GetTextLength(this.PostParameters);
+                this.CanPostContent = validator.CanPost(this.PostParameters);
+            }
 
             this.PostCommand.RaiseCanExecute();
         }
@@ -166,8 +168,13 @@ namespace Liberfy.ViewModels
 
         private static string WrapReplyText(string screenName) => $"@{ screenName } ";
 
-        public void SetReplyToStatus(StatusInfo status)
+        public void SetReplyToStatus(StatusItem statusItem)
         {
+            if (statusItem == null)
+            {
+                return;
+            }
+
             //this.ReplyToStatus = status;
             //this.HasReplyStatus = status != null;
 
