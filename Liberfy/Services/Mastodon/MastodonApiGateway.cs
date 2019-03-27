@@ -69,6 +69,26 @@ namespace Liberfy.Services.Mastodon
                 query["spoiler_text"] = parameters.SpoilerText;
             }
 
+            if (parameters.HasPolls)
+            {
+                var polls = parameters.Polls
+                    .Where(poll => !string.IsNullOrEmpty(poll.Text))
+                    .Select(poll => poll.Text);
+
+                if (polls.Any())
+                {
+                    var pollsQuery = new Query
+                    {
+                        ["options"] = polls,
+                        ["expires_in"] = parameters.PollsExpires,
+                        ["multiple"] = parameters.IsPollsMultiple,
+                        ["hide_totals"] = parameters.IsPollsHideTotals,
+                    };
+
+                    query["poll"] = pollsQuery;
+                }
+            }
+
             //if (parameters.Visibility != null)
             //{
             //    query["visibility"] = GetVisibilityValue(parameters.Visibility);

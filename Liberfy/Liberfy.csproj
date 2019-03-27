@@ -140,6 +140,8 @@
     <Compile Include="Commands\Status\ReplyCommand.cs" />
     <Compile Include="Commands\Status\RetweetCommand.cs" />
     <Compile Include="Commands\Status\StatusCommandGroup.cs" />
+    <Compile Include="Commands\TweetWindow\AddPollItemCommand.cs" />
+    <Compile Include="Commands\TweetWindow\RemovePollItemCommand.cs" />
     <Compile Include="Components\Database.cs" />
     <Compile Include="Components\ImageCacheInfo.cs" />
     <Compile Include="Data\Info\AppInfo.cs" />
@@ -181,6 +183,7 @@
     <Compile Include="Extensions\WebExtensions.cs" />
     <Compile Include="Components\ProfileImageChache.cs" />
     <Compile Include="Services\Common\IAccountAuthenticator.cs" />
+    <Compile Include="Services\Common\PollItem.cs" />
     <Compile Include="TemplateSelectors\TimelineViewItemTemplateSelector.cs" />
     <Compile Include="Utilieis\ImageUtility.cs" />
     <Compile Include="Services\Mastodon\MastodonAccountAuthenticator.cs" />

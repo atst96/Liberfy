@@ -14,5 +14,9 @@ namespace Liberfy.Services.Mastodon
         public int? PostTextLength { get; }
 
         public bool IsPostTextLengthLimited { get; } = false;
+
+        public bool IsSupportPolls { get; } = true;
+
+        public int MaxPollsCount { get; } = 4;
     }
 }

@@ -9,6 +9,8 @@ namespace Liberfy
 {
     internal class ServicePostParameters : NotificationObject
     {
+        public const int DefaultPollExpires = 60 * 60 * 24;
+
         public ServicePostParameters()
         {
             this.Clear();
@@ -44,6 +46,40 @@ namespace Liberfy
 
         public NotifiableCollection<UploadMedia> Attachments { get; } = new NotifiableCollection<UploadMedia>();
 
+        private bool _hasPolls;
+        public bool HasPolls
+        {
+            get => this._hasPolls;
+            set => this.SetProperty(ref this._hasPolls, value);
+        }
+
+        public NotifiableCollection<PollItem> Polls { get; } = new NotifiableCollection<PollItem>
+        {
+            new PollItem(),
+            new PollItem(),
+        };
+
+        private int _pollsExpires = DefaultPollExpires;
+        public int PollsExpires
+        {
+            get => this._pollsExpires;
+            set => this.SetProperty(ref this._pollsExpires, value);
+        }
+
+        private bool _isPollsMultiple;
+        public bool IsPollsMultiple
+        {
+            get => this._isPollsMultiple;
+            set => this.SetProperty(ref this._isPollsMultiple, value);
+        }
+
+        private bool _isPollsHideTotals;
+        public bool IsPollsHideTotals
+        {
+            get => this._isPollsHideTotals;
+            set => this.SetProperty(ref this._isPollsHideTotals, value);
+        }
+
         public void Clear()
         {
             this.SpoilerText = string.Empty;
@@ -51,6 +87,7 @@ namespace Liberfy
             this.Attachments.DisposeAll();
             this.Attachments.Clear();
             this.IsContainsWarningAttachment = App.Setting.NoticePostSensitiveMedia;
+            this.Polls.Reset(new[] { new PollItem(), new PollItem() });
         }
 
         private static string NormalizeString(string value)

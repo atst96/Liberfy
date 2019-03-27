@@ -9,10 +9,14 @@ namespace Liberfy.Services.Twitter
 {
     internal class TwitterServiceConfiguration : NotificationObject, IServiceConfiguration
     {
-        public bool HasSpoilerText { get; }= false;
+        public bool HasSpoilerText { get; } = false;
 
-        public int? PostTextLength { get; } =140;
+        public int? PostTextLength { get; } = 140;
 
         public bool IsPostTextLengthLimited { get; } = true;
+
+        public bool IsSupportPolls { get; } = false;
+
+        public int MaxPollsCount { get; } = 0;
     }
 }

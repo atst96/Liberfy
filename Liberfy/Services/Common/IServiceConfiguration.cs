@@ -11,5 +11,8 @@ namespace Liberfy.Services.Common
         bool HasSpoilerText { get; }
         int? PostTextLength { get; }
         bool IsPostTextLengthLimited { get; }
+
+        bool IsSupportPolls { get; }
+        int MaxPollsCount { get; }
     }
 }

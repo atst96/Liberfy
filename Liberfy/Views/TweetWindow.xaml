@@ -10,7 +10,9 @@
     xmlns:vm="clr-namespace:Liberfy.ViewModels"
     xmlns:b="clr-namespace:Liberfy.Behaviors"
     mc:Ignorable="d" AllowDrop="True"
-    Title="ツイート" Height="329" Width="453"
+    Title="ツイート"
+    Width="453" Height="329"
+    d:DesignWidth="500" d:DesignHeight="500"
     FontFamily="Meiryo"
     UseLayoutRounding="True"
     WindowStartupLocation="CenterOwner"
@@ -78,8 +80,9 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        
+
         <Border 
             Panel.ZIndex="100" Style="{StaticResource ToolBarBorderStyle}"
             Grid.ColumnSpan="2">
@@ -112,6 +115,14 @@
                         Style="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}"
                         app:ElementBehavior.Visible="{Binding ServiceConfiguration.HasSpoilerText, Mode=OneWay}">
                         CW
+                    </ToggleButton>
+
+                    <ToggleButton
+                        VerticalAlignment="Stretch"
+                        IsChecked="{Binding PostParameters.HasPolls, Mode=TwoWay}"
+                        Style="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}"
+                        app:ElementBehavior.Visible="{Binding ServiceConfiguration.IsSupportPolls, Mode=OneWay}">
+                        投票
                     </ToggleButton>
 
                     <Button
@@ -355,7 +366,7 @@
         <Border
             Grid.Row="2"
             Grid.ColumnSpan="2"
-            BorderThickness="0, 0, 0, 1"
+            BorderThickness="0,0,0,1"
             app:ElementBehavior.Visible="{Binding IsShowSpoilerText, Mode=OneWay}"
             BorderBrush="{StaticResource ToolBar.Static.BorderBrush}">
             <TextBox
@@ -409,8 +420,87 @@
         </TextBox>
 
         <Border
+            Grid.Row="4"
+            Grid.ColumnSpan="2"
+            Padding="4"
+            BorderThickness="0,1,0,0"
+            app:ElementBehavior.Visible="{Binding IsShowPolls, Mode=OneWay}"
+            BorderBrush="{StaticResource ToolBar.Static.BorderBrush}"
+            Background="{StaticResource ToolBar.Static.Background}">
+
+            <StackPanel>
+                <ItemsControl
+                    ItemsSource="{Binding PostParameters.Polls, Mode=OneTime}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type app:PollItem}">
+                            <Grid Margin="8,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <RadioButton
+                                    IsChecked="True"
+                                    Margin="0,0,8,0"
+                                    IsEnabled="False"
+                                    VerticalAlignment="Center" />
+
+                                <TextBox
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <StackPanel
+                    Margin="34,4,4,4"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Left">
+                    <TextBlock
+                        VerticalAlignment="Center">
+                        <Hyperlink
+                            Command="{Binding AddPollItemCommand, Mode=OneTime}">
+                            <Run Text="項目の追加" />
+                        </Hyperlink><!--
+                     --><Run Text="   " /><!--
+                     --><Hyperlink
+                            Command="{Binding RemovePollItemCommand, Mode=OneTime}">
+                            <Run Text="削除" />
+                        </Hyperlink>
+                    </TextBlock>
+
+                    <TextBlock
+                        Margin="18,0,0,0"
+                        Text="期限"
+                        VerticalAlignment="Center"/>
+
+                    <ComboBox
+                        Margin="8,0,0,0"
+                        Padding="4,2"
+                        Width="80"
+                        ItemsSource="{Binding PollDurationList, Mode=OneWay}"
+                        DisplayMemberPath="Key"
+                        SelectedValuePath="Value"
+                        SelectedValue="{Binding PostParameters.PollsExpires, Mode=TwoWay}"/>
+                </StackPanel>
+
+                <CheckBox
+                    Margin="34,4"
+                    Content="複数選択を可能にする"
+                    IsChecked="{Binding PostParameters.IsPollsMultiple, Mode=TwoWay}" />
+
+                <CheckBox
+                    Margin="34,4"
+                    Content="期限まで投票結果を非表示にする"
+                    IsChecked="{Binding PostParameters.IsPollsHideTotals, Mode=TwoWay}" />
+            </StackPanel>
+        </Border>
+
+        <Border
             Grid.Row="2"
-            Grid.RowSpan="2"
+            Grid.RowSpan="3"
             Grid.ColumnSpan="2"
             Background="#A000"
             app:ElementBehavior.Visible="{Binding IsUploading, Mode=OneWay}">

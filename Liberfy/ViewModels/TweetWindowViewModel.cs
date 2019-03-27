@@ -1,4 +1,5 @@
 ﻿using Liberfy.Commands;
+using Liberfy.Commands.TweetWindow;
 using Liberfy.Services.Common;
 using NowPlayingLib;
 using SocialApis.Twitter;
@@ -36,6 +37,7 @@ namespace Liberfy.ViewModels
                     this.PostCommand.RaiseCanExecute();
                     this.ServiceConfiguration = value.ServiceConfiguration;
                     this.UpdateShowSpoilderText();
+                    this.UpdateShowPolls();
                     this.UpdateCanPost();
                 }
             }
@@ -68,6 +70,10 @@ namespace Liberfy.ViewModels
                     this.UpdateCanPost();
                     this.UpdateShowSpoilderText();
                     break;
+
+                case nameof(this.PostParameters.HasPolls):
+                    this.UpdateShowPolls();
+                    break;
             }
         }
 
@@ -87,11 +93,26 @@ namespace Liberfy.ViewModels
             set => this.SetProperty(ref this._isShowSpilerText, value);
         }
 
+        private bool _isShowPolls;
+        public bool IsShowPolls
+        {
+            get => this._isShowPolls;
+            set => this.SetProperty(ref this._isShowPolls, value);
+        }
+
         private void UpdateShowSpoilderText()
         {
             if (this.ServiceConfiguration != null)
             {
                 this.IsShowSpoilerText = this.ServiceConfiguration.HasSpoilerText && this.PostParameters.HasSpoilerText;
+            }
+        }
+
+        private void UpdateShowPolls()
+        {
+            if (this.ServiceConfiguration != null)
+            {
+                this.IsShowPolls = this.ServiceConfiguration.IsSupportPolls && this.PostParameters.HasPolls;
             }
         }
 
@@ -212,6 +233,23 @@ namespace Liberfy.ViewModels
 
             public int GetHashCode(string obj) => GetHashCode();
         }
+
+        private Command _addPollItemCommand;
+        public Command AddPollItemCommand => this._addPollItemCommand ?? (this._addPollItemCommand = this.RegisterCommand(new AddPollItemCommand(this)));
+
+        private Command _removePollItemCommand;
+        public Command RemovePollItemCommand => this._removePollItemCommand ?? (this._removePollItemCommand = this.RegisterCommand(new RemovePollItemCommand(this)));
+
+        public KeyValuePair<string, int>[] PollDurationList { get; } =
+        {
+            new KeyValuePair<string, int>("5 分", 301),
+            new KeyValuePair<string, int>("30 分", 1800),
+            new KeyValuePair<string, int>("1 時間", 3600),
+            new KeyValuePair<string, int>("6 時間", 21600),
+            new KeyValuePair<string, int>("1 日", 86400),
+            new KeyValuePair<string, int>("3 日", 259200),
+            new KeyValuePair<string, int>("7 日", 604800),
+        };
 
         public TextBoxController TextBoxController { get; private set; } = new TextBoxController();
 
