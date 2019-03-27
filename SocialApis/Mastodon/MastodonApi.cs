@@ -229,8 +229,8 @@ namespace SocialApis.Mastodon
             try
             {
                 using (var response = await request.GetResponseAsync().ConfigureAwait(false))
+                using (var stream = response.GetResponseStream())
                 {
-                    var stream = response.GetResponseStream();
                     var obj = await JsonUtility.DeserializeAsync<T>(stream).ConfigureAwait(false);
 
                     if (obj is IRateLimit rlObj)

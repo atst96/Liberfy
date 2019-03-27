@@ -20,5 +20,8 @@ namespace SocialApis.Mastodon
 
         [EnumMember(Value = "follow")]
         Follow,
+
+        [EnumMember(Value = "poll")]
+        Poll,
     }
 }
