@@ -126,7 +126,7 @@ namespace Liberfy
                 using (var destImage = ResizeImage(srcImage, resizeWidth, resizeHeight))
                 {
                     var imageStream = new MemoryStream();
-                    destImage.Save(imageStream, ImageFormat.Png);
+                    destImage.Save(imageStream, ImageFormat.Tiff);
 
                     refStream = imageStream;
                 }
@@ -235,13 +235,15 @@ namespace Liberfy
                 return ImageUtility.BitmapSourceFromStream(imageStream);
             }
 
+            @params.Clear();
+            @params = null;
+
             return null;
         }
 
-        private void SetImage(ImageCacheInfo cacheInfo, UserInfo userInfo)
+        private async void SetImage(ImageCacheInfo cacheInfo, UserInfo userInfo)
         {
-            Task.Run(() => this.LoadImage(userInfo))
-                .ContinueWith(task => cacheInfo.Image = task.Result, TaskContinuationOptions.OnlyOnRanToCompletion);
+            cacheInfo.Image = await Task.Run(() => this.LoadImage(userInfo));
         }
 
         private ImageCacheInfo CreateCache(UserInfo userInfo)
