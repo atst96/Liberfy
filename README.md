@@ -2,7 +2,7 @@
 開発中のWindows向けSNSクライアントアプリケーションです。
 
 ## 対応サービス
-- [Twtiter](https://developer.twitter.com/)
+- [Twitter](https://developer.twitter.com/)
 - [Mastodon](https://github.com/tootsuite)
 <!-- - [Frost](https://github.com/Frost-Dev/Frost)（予定）-->
 
