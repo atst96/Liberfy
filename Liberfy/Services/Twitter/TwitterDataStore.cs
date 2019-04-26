@@ -12,10 +12,28 @@ namespace Liberfy.Services.Twitter
 {
     internal class TwitterDataStore : DataStoreBase<User, Status>, IDataStore
     {
-        protected override UserInfo CreateAccountInfo(User account)
+        public override UserInfo RegisterAccount(User account)
         {
-            if (!account.Id.HasValue)
-                throw new ArgumentException();
+            long id = account.Id ?? throw new ArgumentException(nameof(account));
+
+            UserInfo info;
+
+            if (this.Accounts.TryGetValue(id, out info))
+            {
+                this.UpdateAccountInfo(info, account);
+            }
+            else
+            {
+                info = this.CreateAccountInfo(account);
+                this.Accounts.TryAdd(id, info);
+            }
+
+            return info;
+        }
+
+        private UserInfo CreateAccountInfo(User account)
+        {
+            long id = account.Id ?? throw new ArgumentException(nameof(account));
 
             var info = new UserInfo(ServiceType.Twitter, null, account.Id.Value)
             {
@@ -27,7 +45,56 @@ namespace Liberfy.Services.Twitter
             return info;
         }
 
-        protected override StatusInfo CreateStatusInfo(Status status)
+        private void UpdateAccountInfo(UserInfo info, User account)
+        {
+            const string RemoteUrlBase = "https://twitter.com/";
+
+            info.LongUserName = account.ScreenName;
+            info.Description = account.Description;
+
+            info.SetDescriptionEntitiesBuilder(new TwitterTextTokenBuilder(account.Description ?? "", account.Entities?.Description));
+            info.SetUrlEntitiesBuilder(new TwitterTextTokenBuilder(account.Url ?? "", account.Entities?.Url));
+
+            info.Url = account.Url;
+
+            info.FollowersCount = account.FollowersCount;
+            info.FriendsCount = account.FriendsCount;
+            info.Language = account.Language;
+            info.Location = account.Location;
+            info.Name = account.Name;
+            info.ProfileBannerUrl = account.ProfileBannerUrl;
+            info.ProfileImageUrl = account.ProfileImageUrl;
+            info.IsProtected = account.IsProtected;
+            info.ScreenName = account.ScreenName;
+            info.StatusesCount = account.StatusesCount;
+            info.RemoteUrl = RemoteUrlBase + account.ScreenName;
+
+            info.UpdatedAt = DateTime.Now;
+        }
+
+        public override StatusInfo RegisterStatus(Status status)
+        {
+            long id = status?.Id ?? throw new ArgumentException(nameof(status));
+
+            StatusInfo info;
+
+            if (this.Statuses.TryGetValue(id, out info))
+            {
+                if (!App.Status.IsAccountLoaded)
+                {
+                    this.UpdateStatusInfo(info, status);
+                }
+            }
+            else
+            {
+                info = this.CreateStatusInfo(status);
+                this.Statuses.TryAdd(id, info);
+            }
+
+            return info;
+        }
+
+        private StatusInfo CreateStatusInfo(Status status)
         {
             if (status.RetweetedStatus != null)
                 throw new ArgumentException();
@@ -66,44 +133,7 @@ namespace Liberfy.Services.Twitter
             return info;
         }
 
-        protected override long GetAccountId(User account)
-        {
-            return account.Id ?? throw new ArgumentNullException("account.Id");
-        }
-
-        protected override long GetStatusId(Status status)
-        {
-            return status.Id;
-        }
-
-        protected override void UpdateAccountInfo(UserInfo info, User account)
-        {
-            const string RemoteUrlBase = "https://twitter.com/";
-
-            info.LongUserName = account.ScreenName;
-            info.Description = account.Description;
-
-            info.SetDescriptionEntitiesBuilder(new TwitterTextTokenBuilder(account.Description ?? "", account.Entities?.Description));
-            info.SetUrlEntitiesBuilder(new TwitterTextTokenBuilder(account.Url ?? "", account.Entities?.Url));
-
-            info.Url = account.Url;
-
-            info.FollowersCount = account.FollowersCount;
-            info.FriendsCount = account.FriendsCount;
-            info.Language = account.Language;
-            info.Location = account.Location;
-            info.Name = account.Name;
-            info.ProfileBannerUrl = account.ProfileBannerUrl;
-            info.ProfileImageUrl = account.ProfileImageUrl;
-            info.IsProtected = account.IsProtected;
-            info.ScreenName = account.ScreenName;
-            info.StatusesCount = account.StatusesCount;
-            info.RemoteUrl = RemoteUrlBase + account.ScreenName;
-
-            info.UpdatedAt = DateTime.Now;
-        }
-
-        protected override void UpdateStatusInfo(StatusInfo info, Status status)
+        private void UpdateStatusInfo(StatusInfo info, Status status)
         {
             if ((status.RetweetedStatus ?? status).Id != info.Id)
                 throw new ArgumentException();

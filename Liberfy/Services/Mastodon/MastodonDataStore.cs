@@ -19,7 +19,26 @@ namespace Liberfy.Services.Mastodon
             this._host = host;
         }
 
-        protected override UserInfo CreateAccountInfo(Account account)
+        public override UserInfo RegisterAccount(Account account)
+        {
+            long id = account?.Id ?? throw new ArgumentException(nameof(account));
+
+            UserInfo info;
+
+            if (this.Accounts.TryGetValue(id, out info))
+            {
+                this.UpdateAccountInfo(info, account);
+            }
+            else
+            {
+                info = this.CreateAccountInfo(account);
+                this.Accounts.TryAdd(id, info);
+            }
+
+            return info;
+        }
+
+        private UserInfo CreateAccountInfo(Account account)
         {
             var info = new UserInfo(ServiceType.Mastodon, this._host, account.Id)
             {
@@ -31,10 +50,58 @@ namespace Liberfy.Services.Mastodon
             return info;
         }
 
-        protected override StatusInfo CreateStatusInfo(Status status)
+        private void UpdateAccountInfo(UserInfo info, Account account)
+        {
+            info.LongUserName = account.Acct;
+            info.Description = account.Note;
+
+            info.Url = account.Url;
+
+            info.UrlEntities = new[] { new PlainTextEntity(account.Url) };
+
+            info.FollowersCount = account.FollowersCount;
+            info.FriendsCount = account.FollowersCount;
+            //info.Language = item.Language;
+            //info.Location = item.Location;
+            info.Name = account.DisplayName;
+            info.ProfileBannerUrl = account.Header;
+            info.ProfileImageUrl = account.Avatar;
+            info.IsProtected = account.IsLocked;
+            info.ScreenName = account.UserName;
+            info.StatusesCount = account.StatusesCount;
+            info.RemoteUrl = account.Url;
+
+            info.UpdatedAt = DateTime.Now;
+        }
+
+        public override StatusInfo RegisterStatus(Status status)
+        {
+            long id = status?.Id ?? throw new ArgumentException(nameof(status));
+
+            StatusInfo info;
+
+            if (this.Statuses.TryGetValue(id, out info))
+            {
+                if (!App.Status.IsAccountLoaded)
+                {
+                    this.UpdateStatusInfo(info, status);
+                }
+            }
+            else
+            {
+                info = this.CreateStatusInfo(status);
+                this.Statuses.TryAdd(id, info);
+            }
+
+            return info;
+        }
+
+        private StatusInfo CreateStatusInfo(Status status)
         {
             if (status.Reblog != null)
-                throw new ArgumentException();
+            {
+                throw new ArgumentException(nameof(status));
+            }
 
             var info = new StatusInfo(ServiceType.Mastodon)
             {
@@ -65,41 +132,7 @@ namespace Liberfy.Services.Mastodon
             return info;
         }
 
-        protected override long GetAccountId(Account account)
-        {
-            return account.Id;
-        }
-
-        protected override long GetStatusId(Status status)
-        {
-            return status.Id;
-        }
-
-        protected override void UpdateAccountInfo(UserInfo info, Account account)
-        {
-            info.LongUserName = account.Acct;
-            info.Description = account.Note;
-
-            info.Url = account.Url;
-
-            info.UrlEntities = new[] { new PlainTextEntity(account.Url) };
-
-            info.FollowersCount = account.FollowersCount;
-            info.FriendsCount = account.FollowersCount;
-            //info.Language = item.Language;
-            //info.Location = item.Location;
-            info.Name = account.DisplayName;
-            info.ProfileBannerUrl = account.Header;
-            info.ProfileImageUrl = account.Avatar;
-            info.IsProtected = account.IsLocked;
-            info.ScreenName = account.UserName;
-            info.StatusesCount = account.StatusesCount;
-            info.RemoteUrl = account.Url;
-
-            info.UpdatedAt = DateTime.Now;
-        }
-
-        protected override void UpdateStatusInfo(StatusInfo info, Status status)
+        private void UpdateStatusInfo(StatusInfo info, Status status)
         {
             if ((status.Reblog ?? status).Id != info.Id)
                 throw new ArgumentException();

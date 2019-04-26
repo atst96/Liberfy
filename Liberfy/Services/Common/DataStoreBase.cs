@@ -22,63 +22,8 @@ namespace Liberfy
             BindingOperations.EnableCollectionSynchronization(this.Statuses, new object());
         }
 
-        public UserInfo RegisterAccount(IAccount account)
-        {
-            if (account == null)
-                throw new ArgumentNullException(nameof(account));
+        public abstract UserInfo RegisterAccount(IAccount account);
 
-            long id = this.GetAccountId(account);
-
-            UserInfo info;
-
-            if (this.Accounts.TryGetValue(id, out info))
-            {
-                this.UpdateAccountInfo(info, account);
-            }
-            else
-            {
-                info = CreateAccountInfo(account);
-                this.Accounts.TryAdd(id, info);
-            }
-
-            return info;
-        }
-
-        protected abstract long GetAccountId(IAccount account);
-
-        protected abstract void UpdateAccountInfo(UserInfo info, IAccount account);
-
-        protected abstract UserInfo CreateAccountInfo(IAccount account);
-
-        public StatusInfo RegisterStatus(IStatus status)
-        {
-            if (status == null)
-                throw new ArgumentNullException(nameof(status));
-
-            long id = this.GetStatusId(status);
-
-            StatusInfo info;
-
-            if (this.Statuses.TryGetValue(id, out info))
-            {
-                if (!App.Status.IsAccountLoaded)
-                {
-                    this.UpdateStatusInfo(info, status);
-                }
-            }
-            else
-            {
-                info = CreateStatusInfo(status);
-                this.Statuses.TryAdd(id, info);
-            }
-
-            return info;
-        }
-
-        protected abstract long GetStatusId(IStatus status);
-
-        protected abstract void UpdateStatusInfo(StatusInfo info, IStatus status);
-
-        protected abstract StatusInfo CreateStatusInfo(IStatus status);
+        public abstract StatusInfo RegisterStatus(IStatus status);
     }
 }
