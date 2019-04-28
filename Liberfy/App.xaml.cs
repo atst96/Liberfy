@@ -54,6 +54,13 @@ namespace Liberfy
 
         internal static TaskbarIcon TaskbarIcon { get; private set; }
 
+        public UISettingManager UIManager { get; private set; }
+
+        public App() : base()
+        {
+            App.Instance = (App)Application.Current;
+        }
+
         public static string GetLocalDirectory()
         {
             return Path.GetDirectoryName(AssemblyInfo.Location);
@@ -66,8 +73,6 @@ namespace Liberfy
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            App.Instance = (App)Application.Current;
-
             base.OnStartup(e);
 
             // 作業ディレクトリの再指定（自動起動時に作業ディレクトリが変わってしまう対策）
@@ -84,7 +89,8 @@ namespace Liberfy
                 return;
             }
 
-            UIManager.Apply();
+            this.UIManager = new UISettingManager(this, App.Setting);
+            this.UIManager.Apply();
 
             foreach (var muteItem in Setting.Mute.AsParallel())
             {
@@ -99,7 +105,7 @@ namespace Liberfy
                 return;
             }
 
-            StartTimeline();
+            this.StartTimeline();
         }
 
         private void LoadSettings()
@@ -250,7 +256,7 @@ namespace Liberfy
 
         protected override void OnExit(ExitEventArgs e)
         {
-            SystemEvents.SessionEnding -= OnSystemSessionEnding;
+            SystemEvents.SessionEnding -= this.OnSystemSessionEnding;
 
             App._cacheDatabaseConnection?.Dispose();
 

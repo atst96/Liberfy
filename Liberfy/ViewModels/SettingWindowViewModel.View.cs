@@ -5,7 +5,7 @@ using static Liberfy.Defaults;
 
 namespace Liberfy.ViewModels
 {
-    partial class SettingWindowViewModel
+    internal partial class SettingWindowViewModel
     {
         public double ProfileImageCornerRadius
         {
@@ -17,7 +17,7 @@ namespace Liberfy.ViewModels
                         return 3.0d;
 
                     case ProfileImageForm.Ellipse:
-                        return _previewProfileImageWidth / 2.0d;
+                        return this._previewProfileImageWidth / 2.0d;
 
                     default:
                         return 0.0d;
@@ -29,13 +29,13 @@ namespace Liberfy.ViewModels
         private ProfileImageForm _profileImageForm = App.Setting.ProfileImageForm;
         public ProfileImageForm ProfileImageForm
         {
-            get => _profileImageForm;
+            get => this._profileImageForm;
             set
             {
-                if (SetProperty(ref _profileImageForm, value))
+                if (this.SetProperty(ref this._profileImageForm, value))
                 {
-                    Setting.ProfileImageForm = value;
-                    RaisePropertyChanged(nameof(ProfileImageCornerRadius));
+                    this.Setting.ProfileImageForm = value;
+                    this.RaisePropertyChanged(nameof(this.ProfileImageCornerRadius));
                 }
             }
         }
@@ -45,13 +45,17 @@ namespace Liberfy.ViewModels
             if (isRetweeted)
             {
                 if (isFavorited)
-                    return UIManager.RetweetFavorite;
+                {
+                    return App.Instance.UIManager.RetweetFavorite;
+                }
                 else
-                    return UIManager.Retweet;
+                {
+                    return App.Instance.UIManager.Retweet;
+                }
             }
             else if (isFavorited)
             {
-                return UIManager.Favorite;
+                return App.Instance.UIManager.Favorite;
             }
             else
             {
@@ -62,13 +66,13 @@ namespace Liberfy.ViewModels
         private double _previewColumnWidth = App.Setting.ColumnWidth;
         public double PreviewColumnWidth
         {
-            get => _previewColumnWidth;
+            get => this._previewColumnWidth;
             set
             {
                 double width = Math.Floor(value);
-                if (SetProperty(ref _previewColumnWidth, width))
+                if (this.SetProperty(ref this._previewColumnWidth, width))
                 {
-                    Setting.ColumnWidth = width;
+                    this.Setting.ColumnWidth = width;
                 }
             }
         }
@@ -77,14 +81,14 @@ namespace Liberfy.ViewModels
         private double _previewProfileImageWidth = App.Setting.TweetProfileImageWidth;
         public double PreviewProfileImageWidth
         {
-            get => _previewProfileImageWidth;
+            get => this._previewProfileImageWidth;
             set
             {
                 double width = Math.Floor(value);
-                if (SetProperty(ref _previewProfileImageWidth, width))
+                if (this.SetProperty(ref this._previewProfileImageWidth, width))
                 {
-                    RaisePropertyChanged(nameof(ProfileImageCornerRadius));
-                    Setting.TweetProfileImageWidth = width;
+                    this.RaisePropertyChanged(nameof(ProfileImageCornerRadius));
+                    this.Setting.TweetProfileImageWidth = width;
                 }
             }
         }

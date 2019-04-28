@@ -144,6 +144,8 @@
     <Compile Include="Commands\TweetWindow\RemovePollItemCommand.cs" />
     <Compile Include="Components\Database.cs" />
     <Compile Include="Components\ImageCacheInfo.cs" />
+    <Compile Include="Components\UISettingManager.cs" />
+    <Compile Include="Components\ValueConverter.cs" />
     <Compile Include="Data\Info\AppInfo.cs" />
     <Compile Include="Data\Info\Info.cs" />
     <Compile Include="Data\Info\OSInfo.cs" />
@@ -159,7 +161,6 @@
     <Compile Include="Commands\SettingWindowCommands\ResetNowPlayingFormatCommand.cs" />
     <Compile Include="Components\IDisposableCommand.cs" />
     <Compile Include="Components\Services\WindowService.cs" />
-    <Compile Include="Components\UIManager.cs" />
     <Compile Include="Controls\BusyIndicator.xaml.cs">
       <DependentUpon>BusyIndicator.xaml</DependentUpon>
     </Compile>

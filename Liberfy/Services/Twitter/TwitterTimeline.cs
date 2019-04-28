@@ -17,7 +17,7 @@ namespace Liberfy.Services.Twitter
 
         private readonly long _userId;
         private readonly TwitterAccount _account;
-        public TwitterApi _tokens => _account.Tokens;
+        private TwitterApi _tokens => _account.Tokens;
 
         private FakeStreaming _streaming;
 

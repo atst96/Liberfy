@@ -561,7 +561,7 @@ namespace Liberfy.ViewModels
             GlobalSetting.TimelineFontSize = this.TimelineFontSize.Value;
             GlobalSetting.TimelineFontRendering = this.TimelineFontRenderingMode;
 
-            UIManager.Apply();
+            App.Instance.UIManager.Apply();
         }
     }
 }
