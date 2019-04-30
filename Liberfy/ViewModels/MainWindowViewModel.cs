@@ -1,4 +1,5 @@
 ﻿using Liberfy.Commands;
+using Liberfy.Commands.MainWindow;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,16 +37,10 @@ namespace Liberfy.ViewModels
         }
 
         private Command _showSettingDialog;
-        public Command ShowSettingDialog
-        {
-            get => this._showSettingDialog ?? (this._showSettingDialog = this.RegisterCommand(() => this.WindowService.OpenSetting()));
-        }
+        public Command ShowSettingDialog => this._showSettingDialog ??= this.RegisterCommand(new ShowSettingDialogCommand(this));
 
         private Command<IAccount> _openTweetWindowCommand;
-        public Command<IAccount> OpenTweetWindowCommand
-        {
-            get => this._openTweetWindowCommand ?? (this._openTweetWindowCommand = this.RegisterCommand(new OpenTweetWindowCommand(this)));
-        }
+        public Command<IAccount> OpenTweetWindowCommand => this._openTweetWindowCommand ??= this.RegisterCommand(new OpenTweetWindowCommand(this));
 
         public IEnumerable<ColumnBase> Columns { get; } = TimelineBase.Columns;
     }

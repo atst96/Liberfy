@@ -161,22 +161,6 @@ namespace Liberfy.ViewModels
 
         [Obsolete]
         /// <summary>
-        /// ViewModelと同時に破棄されるコマンドを登録します。
-        /// </summary>
-        /// <param name="execute">コマンドのExecute処理</param>
-        /// <param name="hookRequerySuggested">RequerySuggestedイベントに登録するかを設定します</param>
-        /// <returns>Command</returns>
-        public Command RegisterCommand(Action execute, bool hookRequerySuggested = false)
-        {
-            var command = new DelegateCommand(execute, hookRequerySuggested);
-
-            this._registeredCommands.Add(command);
-
-            return command;
-        }
-
-        [Obsolete]
-        /// <summary>
         /// ビューモデルと同時に破棄されるコマンドを登録します。
         /// </summary>
         /// <param name="execute">コマンドのExecute処理</param>

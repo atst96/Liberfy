@@ -223,12 +223,7 @@ namespace Liberfy.ViewModels
         #region Command: AccountAddCommand
 
         private Command _accountAddCommand;
-        public Command AccountAddCommand => this._accountAddCommand ?? (this._accountAddCommand = this.RegisterCommand(this.AccountAdd));
-
-        private async void AccountAdd()
-        {
-            this.WindowService.OpenAuthenticationWindow();
-        }
+        public Command AccountAddCommand => this._accountAddCommand ??= this.RegisterCommand(new AccountAddCommand(this));
 
         #endregion
 
@@ -273,10 +268,7 @@ namespace Liberfy.ViewModels
         #region Command: ColumnAddCommand
 
         private Command<ColumnType> _columnAddCommand;
-        public Command<ColumnType> ColumnAddCommand => this._columnAddCommand ?? (this._columnAddCommand = this.RegisterCommand((ColumnType key) =>
-        {
-            this.DefaultColumns.Add(ColumnBase.FromType(key));
-        }));
+        public Command<ColumnType> ColumnAddCommand => this._columnAddCommand ??= (this.RegisterCommand(new ColumnAddCommand(this)));
 
         #endregion
 
@@ -407,19 +399,19 @@ namespace Liberfy.ViewModels
         private Command _muteAddCommand;
         public Command MuteAddCommand
         {
-            get => _muteAddCommand ?? (_muteAddCommand = RegisterCommand(MuteAdd, CanAddMute));
+            get => this._muteAddCommand ??= this.RegisterCommand(this.MuteAdd, this.CanAddMute);
         }
 
         private void MuteAdd()
         {
-            if (Mute.Create(_tempMuteType, _tempMuteSearch, _tempMuteText, out var m))
+            if (Mute.Create(this._tempMuteType, this._tempMuteSearch, this._tempMuteText, out var m))
             {
-                MuteList.Add(m);
-                SelectedMute = m;
+                this.MuteList.Add(m);
+                this.SelectedMute = m;
             }
         }
 
-        private bool CanAddMute() => Mute.IsAvailable(_tempMuteType, _tempMuteSearch, _tempMuteText);
+        private bool CanAddMute() => Mute.IsAvailable(this._tempMuteType, this._tempMuteSearch, this._tempMuteText);
 
         #endregion Command: AddMuteCommand
 

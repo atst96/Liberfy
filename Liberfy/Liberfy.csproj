@@ -45,7 +45,7 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -135,6 +135,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Commands\Account\AccountCommandGroup.cs" />
+    <Compile Include="Commands\MainWindow\ShowSettingDialogCommand.cs" />
+    <Compile Include="Commands\SettingWindowCommands\AccountAddCommand.cs" />
+    <Compile Include="Commands\SettingWindowCommands\ColumnAddCommand.cs" />
     <Compile Include="Commands\Status\FavoriteCommand.cs" />
     <Compile Include="Commands\Account\OpenUserWindowCommand.cs" />
     <Compile Include="Commands\Status\ReplyCommand.cs" />
