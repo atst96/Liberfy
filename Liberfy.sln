@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Liberfy", "Liberfy\Liberfy.csproj", "{2BBC1D87-8B7F-46D3-9648-AC2F2C5A3C88}"
 EndProject
@@ -18,7 +18,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialApis", "SocialApis\So
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiTest", "ApiTest\ApiTest.csproj", "{E849ADBA-3C26-4F2E-A7B3-BAB5892232BD}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "WpfMvvmToolkit", "WpfMvvmToolkit\WpfMvvmToolkit.shproj", "{C4979100-D54E-4200-BAEB-77561ED39085}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		WpfMvvmToolkit\WpfMvvmToolkit.projitems*{c4979100-d54e-4200-baeb-77561ed39085}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
