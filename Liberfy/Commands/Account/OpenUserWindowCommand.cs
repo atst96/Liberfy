@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Liberfy.ViewModels;
 using Liberfy.Views;
+using WpfMvvmToolkit;
 
 namespace Liberfy.Commands.Account
 {

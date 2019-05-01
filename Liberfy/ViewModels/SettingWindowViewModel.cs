@@ -12,6 +12,7 @@ using Liberfy.Settings;
 using SocialApis;
 using Liberfy.Commands.SettingWindowCommands;
 using Liberfy.Components;
+using WpfMvvmToolkit;
 
 namespace Liberfy.ViewModels
 {
@@ -277,7 +278,7 @@ namespace Liberfy.ViewModels
         private Command<ColumnBase> _columnRemoveCommand;
         public Command<ColumnBase> ColumnRemoveCommand
         {
-            get => _columnRemoveCommand ?? (_columnRemoveCommand = RegisterCommand<ColumnBase>(ColumnRemove, CanColumnRemove));
+            get => this._columnRemoveCommand ??= this.RegisterCommand<ColumnBase>(this.ColumnRemove, CanColumnRemove);
         }
 
         private static bool CanColumnRemove(ColumnBase column) => column != null;
@@ -291,12 +292,12 @@ namespace Liberfy.ViewModels
         private Command<ColumnBase> _columnMoveUpCommand;
         public Command<ColumnBase> ColumnMoveUpCommand
         {
-            get => this._columnMoveUpCommand ?? (this._columnMoveUpCommand = this.RegisterCommand<ColumnBase>(this.ColumnMoveUp, this.CanColumnMoveUp));
+            get => this._columnMoveUpCommand ??= this.RegisterCommand<ColumnBase>(this.ColumnMoveUp, this.CanColumnMoveUp);
         }
 
         private bool CanColumnMoveUp(ColumnBase column)
         {
-            return column != null && DefaultColumns.CanItemIndexDecrement(column);
+            return column != null && this.DefaultColumns.CanItemIndexDecrement(column);
         }
 
         private void ColumnMoveUp(ColumnBase column)
@@ -313,7 +314,7 @@ namespace Liberfy.ViewModels
         private Command<ColumnBase> _columnMoveDownCommand;
         public Command<ColumnBase> ColumnMoveDownCommand
         {
-            get => this._columnMoveDownCommand ?? (this._columnMoveDownCommand = this.RegisterCommand<ColumnBase>(this.ColumnMoveRight, this.CanColumnMoveRight));
+            get => this._columnMoveDownCommand ??= this.RegisterCommand<ColumnBase>(this.ColumnMoveRight, this.CanColumnMoveRight);
         }
 
         private bool CanColumnMoveRight(ColumnBase column)
@@ -364,32 +365,50 @@ namespace Liberfy.ViewModels
         public MuteType TempMuteType
         {
             get => _tempMuteType;
-            set => SetProperty(ref _tempMuteType, value, _muteAddCommand);
+            set
+            {
+                if (this.SetProperty(ref this._tempMuteType, value))
+                {
+                    this._muteAddCommand.RaiseCanExecute();
+                }
+            }
         }
 
         private SearchMode _tempMuteSearch;
         public SearchMode TempMuteSearch
         {
-            get => _tempMuteSearch;
-            set => SetProperty(ref _tempMuteSearch, value, _muteAddCommand);
+            get => this._tempMuteSearch;
+            set
+            {
+                if (this.SetProperty(ref this._tempMuteSearch, value))
+                {
+                    this._muteAddCommand.RaiseCanExecute();
+                }
+            }
         }
 
         private string _tempMuteText;
         public string TempMuteText
         {
-            get => _tempMuteText;
-            set => SetProperty(ref _tempMuteText, value, _muteAddCommand);
+            get => this._tempMuteText;
+            set
+            {
+                if (this.SetProperty(ref this._tempMuteText, value))
+                {
+                    this._muteAddCommand.RaiseCanExecute();
+                }
+            }
         }
 
         private Mute _selectedMute;
         public Mute SelectedMute
         {
-            get => _selectedMute;
+            get => this._selectedMute;
             set
             {
-                if (SetProperty(ref _selectedMute, value))
+                if (this.SetProperty(ref this._selectedMute, value))
                 {
-                    MuteRemoveCommand.RaiseCanExecute();
+                    this.MuteRemoveCommand.RaiseCanExecute();
                 }
             }
         }
@@ -420,10 +439,10 @@ namespace Liberfy.ViewModels
         private Command<Mute> _removeMuteCommand;
         public Command<Mute> RemoveMuteCommand
         {
-            get => _removeMuteCommand ?? (_removeMuteCommand = RegisterCommand<Mute>(RemoveMute, IsAvailableMuteItem));
+            get => this._removeMuteCommand ??= (this.RegisterCommand<Mute>(this.RemoveMute, IsAvailableMuteItem));
         }
 
-        private void RemoveMute(Mute mute) => MuteList.Remove(mute);
+        private void RemoveMute(Mute mute) => this.MuteList.Remove(mute);
 
         private static bool IsAvailableMuteItem(Mute mute) => mute != null;
 
@@ -434,12 +453,12 @@ namespace Liberfy.ViewModels
         private Command<Mute> _muteRemoveCommand;
         public Command<Mute> MuteRemoveCommand
         {
-            get => _muteRemoveCommand ?? (_muteRemoveCommand = RegisterCommand<Mute>(MuteRemove, CanMuteRemove));
+            get => this._muteRemoveCommand ??= this.RegisterCommand<Mute>(this.MuteRemove, this.CanMuteRemove);
         }
 
-        private void MuteRemove(Mute item) => MuteList.Remove(item);
+        private void MuteRemove(Mute item) => this.MuteList.Remove(item);
 
-        private bool CanMuteRemove(Mute item) => MuteList.Contains(item);
+        private bool CanMuteRemove(Mute item) => this.MuteList.Contains(item);
 
         #endregion
 

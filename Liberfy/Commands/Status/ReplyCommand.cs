@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Liberfy.Components;
 using Liberfy.ViewModels;
+using WpfMvvmToolkit;
 
 namespace Liberfy.Commands.Status
 {

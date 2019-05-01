@@ -1,5 +1,6 @@
 ﻿using System;
 using Liberfy.Commands.Status;
+using WpfMvvmToolkit;
 
 namespace Liberfy.Commands
 {

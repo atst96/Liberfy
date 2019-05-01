@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using WpfMvvmToolkit;
 
 namespace Liberfy.ViewModels
 {
@@ -104,28 +105,52 @@ namespace Liberfy.ViewModels
         public bool OverrideKey
         {
             get => this._overrideKey;
-            set => this.SetProperty(ref this._overrideKey, value, this._nextCommand);
+            set
+            {
+                if (this.SetProperty(ref this._overrideKey, value))
+                {
+                    this._nextCommand.RaiseCanExecute();
+                }
+            }
         }
 
         private string _consumerKey;
         public string ConsumerKey
         {
             get => this._consumerKey;
-            set => this.SetProperty(ref this._consumerKey, value, this._nextCommand);
+            set
+            {
+                if (this.SetProperty(ref this._consumerKey, value))
+                {
+                    this._nextCommand.RaiseCanExecute();
+                }
+            }
         }
 
         private string _consumerSecret;
         public string ConsumerSecret
         {
             get => this._consumerSecret;
-            set => this.SetProperty(ref this._consumerSecret, value, this._nextCommand);
+            set
+            {
+                if (this.SetProperty(ref this._consumerSecret, value))
+                {
+                    this._nextCommand.RaiseCanExecute();
+                }
+            }
         }
 
         private string _instanceUrl;
         public string InstanceUrl
         {
             get => this._instanceUrl;
-            set => this.SetProperty(ref this._instanceUrl, value, this._nextCommand);
+            set
+            {
+                if (this.SetProperty(ref this._instanceUrl, value))
+                {
+                    this._nextCommand.RaiseCanExecute();
+                }
+            }
         }
 
         private string _error;
@@ -148,21 +173,39 @@ namespace Liberfy.ViewModels
         public string VerificationCode
         {
             get => this._verificationCode;
-            set => this.SetProperty(ref this._verificationCode, value, this._nextCommand);
+            set
+            {
+                if (this.SetProperty(ref this._verificationCode, value))
+                {
+                    this._nextCommand.RaiseCanExecute();
+                }
+            }
         }
 
         private int _authenticationPhase = AuthenticationPhases.SelectService;
         public int AuthenticationPhase
         {
-            get { return this._authenticationPhase; }
-            set { this.SetProperty(ref this._authenticationPhase, value, this._nextCommand); }
+            get => this._authenticationPhase;
+            set
+            {
+                if (this.SetProperty(ref this._authenticationPhase, value))
+                {
+                    this._nextCommand.RaiseCanExecute();
+                }
+            }
         }
 
         private bool _isRunning;
         public bool IsRunning
         {
-            get { return this._isRunning; }
-            set { this.SetProperty(ref this._isRunning, value, this._nextCommand); }
+            get => this._isRunning;
+            set
+            {
+                if (this.SetProperty(ref this._isRunning, value))
+                {
+                    this._nextCommand.RaiseCanExecute();
+                }
+            }
         }
 
         private Command _nextCommand;

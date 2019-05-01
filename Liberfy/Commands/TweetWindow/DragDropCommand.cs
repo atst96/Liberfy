@@ -6,6 +6,7 @@ using System.Windows;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using WpfMvvmToolkit;
 
 namespace Liberfy.Commands
 {

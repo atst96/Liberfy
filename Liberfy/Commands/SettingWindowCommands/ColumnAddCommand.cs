@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Liberfy.ViewModels;
+using WpfMvvmToolkit;
 
 namespace Liberfy.Commands.SettingWindowCommands
 {

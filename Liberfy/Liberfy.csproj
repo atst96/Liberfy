@@ -178,8 +178,6 @@
     <Compile Include="Commands\TweetWindow\PasteImageCommand.cs" />
     <Compile Include="Commands\TweetWindow\PostCommand.cs" />
     <Compile Include="Commands\TweetWindow\RemoveMediaCommand.cs" />
-    <Compile Include="Components\Mvvm\Command{T}.cs" />
-    <Compile Include="Components\Mvvm\DelegateCommand{T}.cs" />
     <Compile Include="Components\NotifiableCollection.cs" />
     <Compile Include="Controls\DropDownButton.cs" />
     <Compile Include="Controls\DropDownMenuButton.cs" />
@@ -356,8 +354,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Components\Mvvm\Command.cs" />
-    <Compile Include="Components\Mvvm\DelegateCommand.cs" />
     <Compile Include="Components\Services\DialogService.cs" />
     <Compile Include="Components\NotificationObject.cs" />
     <Compile Include="Components\Mvvm\ViewModelBase.cs" />
