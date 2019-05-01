@@ -22,6 +22,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "WpfMvvmToolkit", "WpfMvvmTo
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		WpfMvvmToolkit\WpfMvvmToolkit.projitems*{2bbc1d87-8b7f-46d3-9648-ac2f2c5a3c88}*SharedItemsImports = 4
 		WpfMvvmToolkit\WpfMvvmToolkit.projitems*{c4979100-d54e-4200-baeb-77561ed39085}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
