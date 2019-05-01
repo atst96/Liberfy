@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WpfMvvmToolkit.src
+namespace WpfMvvmToolkit
 {
     public class AsyncDelegateCommand<T> : Command<T>
     {
         private Func<T, Task> _execute;
-        private Func<T, bool> _canExecute;
+        private Predicate<T> _canExecute;
 
         public AsyncDelegateCommand(Func<T, Task> execute)
             : this(execute, DefaultCanExecute, false)
@@ -20,12 +20,12 @@ namespace WpfMvvmToolkit.src
         {
         }
 
-        public AsyncDelegateCommand(Func<T, Task> execute, Func<T, bool> canExecute)
+        public AsyncDelegateCommand(Func<T, Task> execute, Predicate<T> canExecute)
             : this(execute, canExecute, false)
         {
         }
 
-        public AsyncDelegateCommand(Func<T, Task> execute, Func<T, bool> canExecute, bool hookRequerySuggested)
+        public AsyncDelegateCommand(Func<T, Task> execute, Predicate<T> canExecute, bool hookRequerySuggested)
             : base(hookRequerySuggested)
         {
             this._execute = execute ?? throw new ArgumentNullException(nameof(execute));
@@ -50,6 +50,6 @@ namespace WpfMvvmToolkit.src
             this._canExecute = null;
         }
 
-        private static readonly Func<T, bool> DefaultCanExecute = (_) => true;
+        internal static readonly Predicate<T> DefaultCanExecute = (_) => true;
     }
 }

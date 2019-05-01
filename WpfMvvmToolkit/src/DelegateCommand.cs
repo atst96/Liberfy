@@ -49,6 +49,6 @@ namespace WpfMvvmToolkit
             this._canExecute = null;
         }
 
-        private static readonly Func<bool> DefaultCanExecute = () => true;
+        internal static readonly Func<bool> DefaultCanExecute = () => true;
     }
 }

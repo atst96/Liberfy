@@ -49,6 +49,6 @@ namespace WpfMvvmToolkit
             this._canExecute = null;
         }
 
-        private static readonly Predicate<T> DefaultCanExecute = (_) => true;
+        internal static readonly Predicate<T> DefaultCanExecute = (_) => true;
     }
 }

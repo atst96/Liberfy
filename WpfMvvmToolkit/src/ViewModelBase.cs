@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace WpfMvvmToolkit
@@ -82,6 +83,26 @@ namespace WpfMvvmToolkit
                     this.PropertyChanged(this, new PropertyChangedEventArgs(name));
                 }
             }
+        }
+
+        public Command CreateCommand(Action execute, Func<bool> canExecute = null, bool isHookRequerySuggested = false)
+        {
+            return this.RegisterCommand(new DelegateCommand(execute, canExecute ?? DelegateCommand.DefaultCanExecute, isHookRequerySuggested));
+        }
+
+        public Command<T> CreateCommand<T>(Action<T> execute, Predicate<T> canExecute = null, bool isHookRequerySuggested = false)
+        {
+            return this.RegisterCommand(new DelegateCommand<T>(execute, canExecute ?? DelegateCommand<T>.DefaultCanExecute, isHookRequerySuggested));
+        }
+
+        public Command CreateCommand(Func<Task> execute, Func<bool> canExecute = null, bool isHookRequerySuggested = false)
+        {
+            return this.RegisterCommand(new AsyncDelegateCommand(execute, canExecute ?? AsyncDelegateCommand.DefaultCanExecute, isHookRequerySuggested));
+        }
+
+        public Command<T> CreateCommand<T>(Func<T, Task> execute, Predicate<T> canExecute = null, bool isHookRequerySuggested = false)
+        {
+            return this.RegisterCommand(new AsyncDelegateCommand<T>(execute, canExecute ?? AsyncDelegateCommand<T>.DefaultCanExecute, isHookRequerySuggested));
         }
 
         public Command RegisterCommand(Command command)
