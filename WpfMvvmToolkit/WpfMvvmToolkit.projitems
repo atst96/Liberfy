@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)src\WeakCollection.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory).editorconfig" />
     <None Include="$(MSBuildThisFileDirectory).gitattributes" />
     <None Include="$(MSBuildThisFileDirectory).gitignore" />
     <None Include="$(MSBuildThisFileDirectory)LICENSE" />
