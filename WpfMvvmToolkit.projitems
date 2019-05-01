@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>c4979100-d54e-4200-baeb-77561ed39085</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>WpfMvvmToolkit</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)src\Command.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)src\Command{T}.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)src\DelegateCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)src\DelegateCommand{T}.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)src\IDisposableCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)src\NotificationObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)src\ViewModelBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)src\WeakCollection.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory).gitattributes" />
+    <None Include="$(MSBuildThisFileDirectory).gitignore" />
+    <None Include="$(MSBuildThisFileDirectory)LICENSE" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)src\" />
+  </ItemGroup>
+</Project>
