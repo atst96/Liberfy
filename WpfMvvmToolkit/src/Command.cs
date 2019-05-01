@@ -1,0 +1,88 @@
+﻿using Liberfy;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows.Input;
+
+namespace WpfMvvmToolkit
+{
+    public abstract class Command : IDisposableCommand
+    {
+        private readonly bool _hookRequerySuggested;
+        private EventHandler _dummyCanExecuteChangedHandler;
+        private readonly WeakCollection<EventHandler> _events = new WeakCollection<EventHandler>();
+
+        protected Command()
+        {
+        }
+
+        protected Command(bool hookRequerySuggested) : this()
+        {
+            this._hookRequerySuggested = hookRequerySuggested;
+        }
+
+        event EventHandler ICommand.CanExecuteChanged
+        {
+            add
+            {
+                this._dummyCanExecuteChangedHandler += value;
+
+                if (this._hookRequerySuggested)
+                {
+                    CommandManager.RequerySuggested += value;
+                }
+
+                this._events.Add(value);
+            }
+            remove
+            {
+                this._dummyCanExecuteChangedHandler -= value;
+
+                if (this._hookRequerySuggested)
+                {
+                    CommandManager.RequerySuggested -= value;
+                }
+
+                this._events.Remove(value);
+            }
+        }
+
+        bool ICommand.CanExecute(object parameter)
+        {
+            return this.CanExecute(parameter);
+        }
+
+        void ICommand.Execute(object parameter)
+        {
+            this.Execute(parameter);
+        }
+
+        protected abstract bool CanExecute(object parameter);
+
+        protected abstract void Execute(object parameter);
+
+        public bool TryExecute() => this.TryExecute(null);
+
+        public bool TryExecute(object parameter)
+        {
+            if (this.CanExecute(parameter))
+            {
+                this.Execute(parameter);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public void RaiseCanExecute()
+        {
+            this._dummyCanExecuteChangedHandler?.Invoke(this, EventArgs.Empty);
+        }
+
+        public virtual void Dispose()
+        {
+            this._events.Clear();
+        }
+    }
+}
