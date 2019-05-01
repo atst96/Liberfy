@@ -24,20 +24,6 @@ namespace Liberfy.ViewModels
         public DialogService DialogService { get; private set; }
 
         public WindowService WindowService { get; private set; }
-        
-        [Obsolete]
-        protected bool SetProperty<T>(ref T refValue, T newValue, Command command, [CallerMemberName] string propertyName = "")
-        {
-            if (this.SetProperty(ref refValue, newValue, propertyName))
-            {
-                command?.RaiseCanExecute();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
 
         [Obsolete]
         public Command RegisterCommand(Action execute, Func<bool> canExecute, bool hookRequerysuggested = false)

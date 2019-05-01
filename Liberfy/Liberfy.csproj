@@ -357,7 +357,6 @@
     <Compile Include="Components\Services\DialogService.cs" />
     <Compile Include="Components\NotificationObject.cs" />
     <Compile Include="Components\Mvvm\ViewModelBase.cs" />
-    <Compile Include="Components\WeakCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

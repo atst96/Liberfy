@@ -13,10 +13,10 @@ namespace WpfMvvmToolkit
     {
         public ViewModelBase()
         {
-            this._registeredCommands = new Collection<ICommand>();
+            this._commands = new Collection<ICommand>();
         }
 
-        private readonly ICollection<ICommand> _registeredCommands;
+        private readonly ICollection<ICommand> _commands;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -107,13 +107,13 @@ namespace WpfMvvmToolkit
 
         public Command RegisterCommand(Command command)
         {
-            this._registeredCommands.Add(command);
+            this._commands.Add(command);
             return command;
         }
 
         public Command<T> RegisterCommand<T>(Command<T> command)
         {
-            this._registeredCommands.Add(command);
+            this._commands.Add(command);
             return command;
         }
 
@@ -132,14 +132,15 @@ namespace WpfMvvmToolkit
 
             this.IsDisposed = true;
 
-            foreach (var command in this._registeredCommands)
+            foreach (var command in this._commands)
             {
                 if (command is IDisposable disposableCommand)
                 {
                     disposableCommand.Dispose();
                 }
             }
-            this._registeredCommands.Clear();
+
+            this._commands.Clear();
         }
     }
 }
