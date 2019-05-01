@@ -1,44 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace WpfMvvmToolkit
 {
-    public class DelegateCommand : Command
+    public class AsyncDelegateCommand : Command
     {
-        private Action _execute;
+        private Func<Task> _execute;
         private Func<bool> _canExecute;
 
-        public DelegateCommand(Action execute)
+        public AsyncDelegateCommand(Func<Task> execute)
             : this(execute, DefaultCanExecute, false)
         {
         }
 
-        public DelegateCommand(Action execute, bool hookRequerySuggested)
+        public AsyncDelegateCommand(Func<Task> execute, bool hookRequerySuggested)
             : this(execute, DefaultCanExecute, hookRequerySuggested)
         {
         }
 
-        public DelegateCommand(Action execute, Func<bool> canExecute)
+        public AsyncDelegateCommand(Func<Task> execute, Func<bool> canExecute)
             : this(execute, canExecute, false)
         {
         }
 
-        public DelegateCommand(Action execute, Func<bool> canExecute, bool hookRequerySuggested)
+        public AsyncDelegateCommand(Func<Task> execute, Func<bool> canExecute, bool hookRequerySuggested)
             : base(hookRequerySuggested)
         {
             this._execute = execute ?? throw new ArgumentNullException(nameof(execute));
             this._canExecute = canExecute ?? throw new ArgumentNullException(nameof(canExecute));
         }
 
-        protected override bool CanExecute(object parameter)
-        {
-            return this._canExecute.Invoke();
-        }
+        protected override bool CanExecute(object parameter) => this._canExecute.Invoke();
 
-        protected override void Execute(object parameter)
+        protected override async void Execute(object parameter)
         {
-            this._execute.Invoke();
+            await this._execute.Invoke();
         }
 
         public override void Dispose()

@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace WpfMvvmToolkit
+namespace WpfMvvmToolkit.src
 {
-    public class DelegateCommand<T> : Command<T>
+    public class AsyncDelegateCommand<T> : Command<T>
     {
-        private Action<T> _execute;
-        private Predicate<T> _canExecute;
+        private Func<T, Task> _execute;
+        private Func<T, bool> _canExecute;
 
-        public DelegateCommand(Action<T> execute)
+        public AsyncDelegateCommand(Func<T, Task> execute)
             : this(execute, DefaultCanExecute, false)
         {
         }
 
-        public DelegateCommand(Action<T> execute, bool hookRequerySuggested)
+        public AsyncDelegateCommand(Func<T, Task> execute, bool hookRequerySuggested)
             : this(execute, DefaultCanExecute, hookRequerySuggested)
         {
         }
 
-        public DelegateCommand(Action<T> execute, Predicate<T> canExecute)
+        public AsyncDelegateCommand(Func<T, Task> execute, Func<T, bool> canExecute)
             : this(execute, canExecute, false)
         {
         }
 
-        public DelegateCommand(Action<T> execute, Predicate<T> canExecute, bool hookRequerySuggested)
+        public AsyncDelegateCommand(Func<T, Task> execute, Func<T, bool> canExecute, bool hookRequerySuggested)
             : base(hookRequerySuggested)
         {
             this._execute = execute ?? throw new ArgumentNullException(nameof(execute));
@@ -36,9 +37,9 @@ namespace WpfMvvmToolkit
             return this._canExecute.Invoke(parameter);
         }
 
-        protected override void Execute(T parameter)
+        protected override async void Execute(T parameter)
         {
-            this._execute.Invoke(parameter);
+            await this._execute.Invoke(parameter);
         }
 
         public override void Dispose()
@@ -49,6 +50,6 @@ namespace WpfMvvmToolkit
             this._canExecute = null;
         }
 
-        private static readonly Predicate<T> DefaultCanExecute = (_) => true;
+        private static readonly Func<T, bool> DefaultCanExecute = (_) => true;
     }
 }

@@ -9,6 +9,8 @@
     <Import_RootNamespace>WpfMvvmToolkit</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)src\AsyncDelegateCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)src\AsyncDelegateCommand{T}.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)src\Command.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)src\Command{T}.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)src\DelegateCommand.cs" />
@@ -22,8 +24,5 @@
     <None Include="$(MSBuildThisFileDirectory).gitattributes" />
     <None Include="$(MSBuildThisFileDirectory).gitignore" />
     <None Include="$(MSBuildThisFileDirectory)LICENSE" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)src\" />
   </ItemGroup>
 </Project>
