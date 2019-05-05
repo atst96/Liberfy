@@ -149,6 +149,7 @@
     <Compile Include="Components\ImageCacheInfo.cs" />
     <Compile Include="Components\UISettingManager.cs" />
     <Compile Include="Components\ValueConverter.cs" />
+    <Compile Include="Controls\CustomWindow.cs" />
     <Compile Include="Data\Info\AppInfo.cs" />
     <Compile Include="Data\Info\Info.cs" />
     <Compile Include="Data\Info\OSInfo.cs" />

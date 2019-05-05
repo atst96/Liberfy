@@ -19,7 +19,7 @@ namespace Liberfy.Views
     /// <summary>
     /// MainWindow.xaml の相互作用ロジック
     /// </summary>
-    internal partial class MainWindow : Window
+    internal partial class MainWindow : CustomWindow
     {
         public MainWindow()
         {

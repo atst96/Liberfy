@@ -379,26 +379,215 @@
 
     <!--#region Window style -->
 
-    <Style x:Key="DialogWindowStyle" TargetType="{x:Type Window}">
-        <Setter Property="FontFamily" Value="Meiryo" />
-        <Setter Property="ShowInTaskbar" Value="False" />
-        <Setter Property="ResizeMode" Value="NoResize" />
-        <Setter Property="WindowChrome.WindowChrome">
+    <Style x:Key="CaptionButtonBase" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
+        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
+        <Setter Property="FontSize" Value="7.5pt" />
+        <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
+    </Style>
+
+    <Style x:Key="NormalCaptionButton" TargetType="Button" BasedOn="{StaticResource CaptionButtonBase}">
+        <Setter Property="Template">
             <Setter.Value>
-                <WindowChrome
-                    UseAeroCaptionButtons="False"
-                    CaptionHeight="0"
-                    GlassFrameThickness="1 0 0 0"
-                    CornerRadius="0" />
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        x:Name="border"
+                        Background="Transparent"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+                        <ContentPresenter
+                            x:Name="presenter"
+                            TextBlock.Foreground="{TemplateBinding Foreground}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                            ContentStringFormat="{TemplateBinding ContentStringFormat}" />
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#2DEEF7FF" />
+                        </Trigger>
+
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#4BF7FFFF" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="presenter" Property="TextBlock.Foreground" Value="#66FFFFFF" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="Background" Value="#FFFFFFFF" />
+    </Style>
+
+    <Style x:Key="NormalCaptionCloseButton" TargetType="Button" BasedOn="{StaticResource CaptionButtonBase}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        x:Name="border"
+                        Background="Transparent">
+                        <ContentPresenter
+                            x:Name="presenter"
+                            TextBlock.Foreground="{TemplateBinding Foreground}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                            ContentStringFormat="{TemplateBinding ContentStringFormat}" />
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#EFEE001B" />
+                            <Setter TargetName="presenter" Property="TextBlock.Foreground" Value="#FFFFFFFF" />
+                        </Trigger>
+
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#B7C0000D" />
+                            <Setter TargetName="presenter" Property="TextBlock.Foreground" Value="#FFFFFFFF" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="presenter" Property="TextBlock.Foreground" Value="#66FFFFFF" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ControlTemplate x:Key="CustomWindowTemplate" TargetType="{x:Type app:CustomWindow}">
+        <Border
+            x:Name="PART_Container"
+            Background="{TemplateBinding Background}">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <Grid
+                    x:Name="PART_TitleBarPanel"
+                    DockPanel.Dock="Top"
+                    Background="Transparent"
+                    Height="{TemplateBinding CaptionHeight}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <ContentPresenter
+                        x:Name="PART_TitleBarContent"
+                        Content="{TemplateBinding TitleBarContent}"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch" />
+
+                    <StackPanel
+                        Grid.Column="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Height="29"
+                        app:CustomWindow.IsHitTestVisible="True" >
+                        <Button
+                            x:Name="PART_MinimizeButton"
+                            Width="45"
+                            Content="&#xE921;"
+                            ToolTip="最小化"
+                            Command="{x:Static SystemCommands.MinimizeWindowCommand}"
+                            Style="{StaticResource NormalCaptionButton}" />
+
+                        <Button
+                            x:Name="PART_MaximizeButton"
+                            Width="45"
+                            Content="&#xE922;"
+                            ToolTip="最大化"
+                            Command="{x:Static SystemCommands.MaximizeWindowCommand}"
+                            Style="{StaticResource NormalCaptionButton}" />
+
+                        <Button
+                            x:Name="PART_RestoreButton"
+                            Width="45"
+                            Content="&#xE923;"
+                            ToolTip="元に戻す"
+                            Command="{x:Static SystemCommands.RestoreWindowCommand}"
+                            Style="{StaticResource NormalCaptionButton}" />
+
+                        <Button
+                            x:Name="PART_CloseButton"
+                            Width="45"
+                            Content="&#xE8BB;"
+                            ToolTip="閉じる"
+                            Command="{x:Static SystemCommands.CloseWindowCommand}"
+                            Style="{StaticResource NormalCaptionCloseButton}" />
+                    </StackPanel>
+
+                    <Border
+                        x:Name="PART_ActionButtonBorderTop"
+                        Grid.Column="3"
+                        Background="Transparent"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Top"
+                        app:CustomWindow.IsHitTestVisible="False" />
+
+                    <Border
+                        x:Name="PART_ActionButtonBorderRight"
+                        Grid.Column="3"
+                        Background="Transparent"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Stretch"
+                        app:CustomWindow.IsHitTestVisible="False" />
+                </Grid>
+                
+                <AdornerDecorator Grid.Row="1">
+                    <ContentPresenter />
+                </AdornerDecorator>
+            </Grid>
+        </Border>
+    </ControlTemplate>
+
+    <Style x:Key="{x:Type app:CustomWindow}" TargetType="{x:Type app:CustomWindow}" BasedOn="{StaticResource {x:Type Window}}">
+        <Setter Property="TitleBarContent">
+            <Setter.Value>
+                <Grid
+                    Height="30"
+                    VerticalAlignment="Top">
+                    <TextBlock
+                        Margin="8,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Text="{Binding Title, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Window}}" />
+                </Grid>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template" Value="{StaticResource CustomWindowTemplate}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="#FFAAAAAA" />
+        <Setter Property="BorderBrush" Value="Black" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="TitleBarActiveBackground" Value="{StaticResource Window.TitleBar.Active.Background}" />
+        <Setter Property="TitleBarInactiveBackground" Value="{StaticResource Window.TitleBar.Inactive.Background}" />
+        <Setter Property="ActiveBorderBrush" Value="{StaticResource Window.Active.BorderBrush}" />
+        <Setter Property="InactiveBorderBrush" Value="{StaticResource Window.Inactive.BorderBrush}" />
+        <Setter Property="TitleBarActiveForeground" Value="{StaticResource Window.TitleBar.Active.Foreground}" />
+        <Setter Property="TitleBarInactiveForeground" Value="{StaticResource Window.TitleBar.Inactive.Foreground}" />
     </Style>
 
     <!--#endregion-->
-    
+
     <!--#region Additional Controls -->
 
     <Style TargetType="{x:Type app:PopupDecorator}">
@@ -464,7 +653,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <!--#endregion-->
 
 </ResourceDictionary>

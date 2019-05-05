@@ -14,27 +14,27 @@ using System.Windows.Shapes;
 
 namespace Liberfy.Views
 {
-	/// <summary>
-	/// SettingWindow.xaml の相互作用ロジック
-	/// </summary>
-	internal partial class SettingWindow : Window
-	{
-		public SettingWindow()
-		{
-			this.InitializeComponent();
-		}
+    /// <summary>
+    /// SettingWindow.xaml の相互作用ロジック
+    /// </summary>
+    internal partial class SettingWindow : CustomWindow
+    {
+        public SettingWindow()
+        {
+            this.InitializeComponent();
+        }
 
-		public SettingWindow(int? page) : base()
-		{
-			if (page.HasValue)
-			{
-				this.MoveTabPage(page.Value);
-			}
-		}
+        public SettingWindow(int? page) : base()
+        {
+            if (page.HasValue)
+            {
+                this.MoveTabPage(page.Value);
+            }
+        }
 
-		public void MoveTabPage(int index)
-		{
-			this.tabControl.SelectedIndex = index;
-		}
-	}
+        public void MoveTabPage(int index)
+        {
+            this.tabControl.SelectedIndex = index;
+        }
+    }
 }
