@@ -56,11 +56,11 @@ namespace Liberfy.ViewModels
         }
 
         public bool IsAccountPage { get; private set; }
-
+        
         private int _tabPageIndex;
         public int TabPageIndex
         {
-            get => _tabPageIndex;
+            get => this._tabPageIndex;
             set
             {
                 if (this.SetProperty(ref this._tabPageIndex, value))
@@ -127,11 +127,11 @@ namespace Liberfy.ViewModels
 
         #region General
 
-        public IReadOnlyDictionary<TextFormattingMode, string> TextRenderingModeList { get; } = new ReadOnlyDictionary<TextFormattingMode, string>(new Dictionary<TextFormattingMode, string>
+        public IReadOnlyDictionary<TextFormattingMode, string> TextRenderingModeList { get; } = new Dictionary<TextFormattingMode, string>
         {
-            [TextFormattingMode.Ideal] = "標準",
+            [TextFormattingMode.Ideal  ] = "標準",
             [TextFormattingMode.Display] = "GDI互換",
-        });
+        };
 
         private FontFamily _timelineViewFontFamily = new FontFamily(string.Join(",", GlobalSetting.TimelineFont));
         public FontFamily TimelineViewFontFamily
@@ -236,13 +236,13 @@ namespace Liberfy.ViewModels
         }
 
         private Command<IAccount> _accountDeleteCommand;
-        public Command<IAccount> AccountDeleteCommand => this._accountDeleteCommand ?? (this._accountDeleteCommand = this.RegisterCommand(new AccountDeleteCommand(this)));
+        public Command<IAccount> AccountDeleteCommand => this._accountDeleteCommand ??= this.RegisterCommand(new AccountDeleteCommand(this));
 
         private Command<IAccount> _accountMoveUpCommand;
-        public Command<IAccount> AccountMoveUpCommand => this._accountMoveUpCommand ?? (this._accountMoveUpCommand = this.RegisterCommand(new AccountMoveUpCommand(this)));
+        public Command<IAccount> AccountMoveUpCommand => this._accountMoveUpCommand ??= this.RegisterCommand(new AccountMoveUpCommand(this));
 
         private Command<IAccount> _accountMoveDownCommand;
-        public Command<IAccount> AccountMoveDownCommand => this._accountMoveDownCommand = this._accountMoveDownCommand = this.RegisterCommand(new AccountMoveDownCommand(this));
+        public Command<IAccount> AccountMoveDownCommand => this._accountMoveDownCommand ??= this.RegisterCommand(new AccountMoveDownCommand(this));
 
         #endregion Commands for account
 
@@ -269,7 +269,7 @@ namespace Liberfy.ViewModels
         #region Command: ColumnAddCommand
 
         private Command<ColumnType> _columnAddCommand;
-        public Command<ColumnType> ColumnAddCommand => this._columnAddCommand ??= (this.RegisterCommand(new ColumnAddCommand(this)));
+        public Command<ColumnType> ColumnAddCommand => this._columnAddCommand ??= this.RegisterCommand(new ColumnAddCommand(this));
 
         #endregion
 
@@ -350,10 +350,10 @@ namespace Liberfy.ViewModels
         }
 
         private Command<string> _insertNowPlayingCommand;
-        public Command<string> InsertNowPlayingParamCommand => this._insertNowPlayingCommand ?? (this._insertNowPlayingCommand = this.RegisterCommand<string>(new InsertNowPlayingParameterCommand(this)));
+        public Command<string> InsertNowPlayingParamCommand => this._insertNowPlayingCommand ??= this.RegisterCommand(new InsertNowPlayingParameterCommand(this));
 
         private Command _resetNowPlayingCommand;
-        public Command ResetNowPlayingCommand => this._resetNowPlayingCommand ?? (this._resetNowPlayingCommand = this.RegisterCommand(new ResetNowPlayingFormatCommand(this)));
+        public Command ResetNowPlayingCommand => this._resetNowPlayingCommand ??= this.RegisterCommand(new ResetNowPlayingFormatCommand(this));
 
         #endregion
 

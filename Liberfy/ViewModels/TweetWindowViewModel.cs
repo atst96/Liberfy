@@ -232,54 +232,52 @@ namespace Liberfy.ViewModels
                 return string.Equals(x, y, StringComparison.OrdinalIgnoreCase);
             }
 
-            public int GetHashCode(string obj) => GetHashCode();
+            public int GetHashCode(string obj) => this.GetHashCode();
         }
 
         private Command _addPollItemCommand;
-        public Command AddPollItemCommand => this._addPollItemCommand ?? (this._addPollItemCommand = this.RegisterCommand(new AddPollItemCommand(this)));
+        public Command AddPollItemCommand => this._addPollItemCommand ??= this.RegisterCommand(new AddPollItemCommand(this));
 
         private Command _removePollItemCommand;
-        public Command RemovePollItemCommand => this._removePollItemCommand ?? (this._removePollItemCommand = this.RegisterCommand(new RemovePollItemCommand(this)));
+        public Command RemovePollItemCommand => this._removePollItemCommand ??= this.RegisterCommand(new RemovePollItemCommand(this));
 
-        public KeyValuePair<string, int>[] PollDurationList { get; } =
+        public IReadOnlyDictionary<string, int> PollDurationList { get; } = new Dictionary<string, int>
         {
-            new KeyValuePair<string, int>("5 分", 301),
-            new KeyValuePair<string, int>("30 分", 1800),
-            new KeyValuePair<string, int>("1 時間", 3600),
-            new KeyValuePair<string, int>("6 時間", 21600),
-            new KeyValuePair<string, int>("1 日", 86400),
-            new KeyValuePair<string, int>("3 日", 259200),
-            new KeyValuePair<string, int>("7 日", 604800),
+            ["5 分"] = 301,
+            ["30 分"] = 1800,
+            ["1 時間"] = 3600,
+            ["6 時間"] = 21600,
+            ["1 日"] = 86400,
+            ["3 日"] = 259200,
+            ["7 日"] = 604800,
         };
 
         public TextBoxController TextBoxController { get; private set; } = new TextBoxController();
 
         #region NowPlaying
 
-        public static IDictionary<string, string> NowPlayingPlayerList { get; }
-            = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
-            {
-                ["wmplayer"] = "Windows Media Player",
-                ["itunes"] = "iTunes",
-                ["foobar2000"] = "foobar2000"
-            });
+        public static IReadOnlyDictionary<string, string> NowPlayingPlayerList { get; } = new Dictionary<string, string>
+        {
+            ["wmplayer"] = "Windows Media Player",
+            ["itunes"] = "iTunes",
+            ["foobar2000"] = "foobar2000"
+        };
 
-        public static IDictionary<string, string> NowPlayingFormatParameters { get; }
-            = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
-            {
-                ["%album%"] = "アルバム名 (%album%)",
-                ["%album_artist%"] = "アルバムアーティスト (%album_artist%)",
-                ["%artist%"] = "アーティスト名 (%artist%)",
-                ["%composer%"] = "作曲者 (%coposer%)",
-                ["%category%"] = "カテゴリ (%category%)",
-                ["%genre%"] = "ジャンル (%genre%)",
-                ["%name%"] = "楽曲名 (%name%)",
-                ["%number%"] = "トラック番号 (%nubmer%)",
-                ["%year%"] = "年代 (%year%)",
-            });
+        public static IReadOnlyDictionary<string, string> NowPlayingFormatParameters { get; } = new Dictionary<string, string>
+        {
+            ["%album%"] = "アルバム名 (%album%)",
+            ["%album_artist%"] = "アルバムアーティスト (%album_artist%)",
+            ["%artist%"] = "アーティスト名 (%artist%)",
+            ["%composer%"] = "作曲者 (%coposer%)",
+            ["%category%"] = "カテゴリ (%category%)",
+            ["%genre%"] = "ジャンル (%genre%)",
+            ["%name%"] = "楽曲名 (%name%)",
+            ["%number%"] = "トラック番号 (%nubmer%)",
+            ["%year%"] = "年代 (%year%)",
+        };
 
         private Command<string> _nowPlayingCommand;
-        public Command<string> NowPlayingCommand => this._nowPlayingCommand ?? (this._nowPlayingCommand = this.RegisterCommand(new InsertNowPlayingCommand(this)));
+        public Command<string> NowPlayingCommand => this._nowPlayingCommand ??= this.RegisterCommand(new InsertNowPlayingCommand(this));
 
         #endregion NowPlaying
 
@@ -287,7 +285,7 @@ namespace Liberfy.ViewModels
         #region Command: PostCommand
 
         private Command<IAccount> _postCommand;
-        public Command<IAccount> PostCommand => this._postCommand ?? (this._postCommand = this.RegisterCommand(new PostCommand(this)));
+        public Command<IAccount> PostCommand => this._postCommand ??= this.RegisterCommand(new PostCommand(this));
 
         internal void ClearStatus()
         {
@@ -333,10 +331,10 @@ namespace Liberfy.ViewModels
         #endregion
 
         private Command<string> _addImageCommand;
-        public Command<string> AddImageCommand => this._addImageCommand ?? (this._addImageCommand = this.RegisterCommand(new AddImageCommand(this)));
+        public Command<string> AddImageCommand => this._addImageCommand ??= this.RegisterCommand(new AddImageCommand(this));
 
         private Command<UploadMedia> _removeMediaCommand;
-        public Command<UploadMedia> RemoveMediaCommand => this._removeMediaCommand ?? (this._removeMediaCommand = this.RegisterCommand(new RemoveMediaCommand(this)));
+        public Command<UploadMedia> RemoveMediaCommand => this._removeMediaCommand ??= this.RegisterCommand(new RemoveMediaCommand(this));
 
         public static bool IsUploadableExtension(string ext)
         {
@@ -344,27 +342,27 @@ namespace Liberfy.ViewModels
         }
 
         private Command<IDataObject> _dragDropCommand;
-        public Command<IDataObject> DragDropCommand => this._dragDropCommand ?? (this._dragDropCommand = this.RegisterCommand(new DragDropCommand(this)));
+        public Command<IDataObject> DragDropCommand => this._dragDropCommand ??= this.RegisterCommand(new DragDropCommand(this));
 
         private DragDropEffects _dragDropEffects;
         public DragDropEffects DragDropEffects
         {
-            get => _dragDropEffects;
-            set => SetProperty(ref _dragDropEffects, value);
+            get => this._dragDropEffects;
+            set => this.SetProperty(ref this._dragDropEffects, value);
         }
 
         private string _dropDescriptionMessage;
         public string DropDescriptionMessage
         {
-            get => _dropDescriptionMessage;
-            set => SetProperty(ref _dropDescriptionMessage, value);
+            get => this._dropDescriptionMessage;
+            set => this.SetProperty(ref this._dropDescriptionMessage, value);
         }
 
         private DropImageType _dropDescriptionIcon;
         public DropImageType DropDescriptionIcon
         {
-            get => _dropDescriptionIcon;
-            set => SetProperty(ref _dropDescriptionIcon, value);
+            get => this._dropDescriptionIcon;
+            set => this.SetProperty(ref this._dropDescriptionIcon, value);
         }
 
         public static bool HasEnableMediaFiles(StringCollection strCollection)

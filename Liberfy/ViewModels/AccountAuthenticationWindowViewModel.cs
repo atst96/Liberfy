@@ -24,19 +24,17 @@ namespace Liberfy.ViewModels
 
         public AccountAuthenticationWindowViewModel() : base()
         {
-            this.ServiceNames = new ReadOnlyDictionary<ServiceType, string>(
-                new Dictionary<ServiceType, string>
-                {
-                    [ServiceType.Twitter] = "Twitter",
-                    [ServiceType.Mastodon] = "Mastodon",
-                });
+            this.ServiceNames = new Dictionary<ServiceType, string>
+            {
+                [ServiceType.Twitter] = "Twitter",
+                [ServiceType.Mastodon] = "Mastodon",
+            };
 
-            this.ServiceConfigs = new ReadOnlyDictionary<ServiceType, ISocialConfig>(
-                new Dictionary<ServiceType, ISocialConfig>
-                {
-                    [ServiceType.Twitter] = new TwitterConfig(),
-                    [ServiceType.Mastodon] = new MastodonConfig(),
-                });
+            this.ServiceConfigs = new Dictionary<ServiceType, ISocialConfig>
+            {
+                [ServiceType.Twitter] = new TwitterConfig(),
+                [ServiceType.Mastodon] = new MastodonConfig(),
+            };
 
             this.OnSelectedServiceUpdated(this.SelectedService);
         }
@@ -45,12 +43,11 @@ namespace Liberfy.ViewModels
 
         public IReadOnlyDictionary<ServiceType, ISocialConfig> ServiceConfigs { get; }
 
-        public static readonly IReadOnlyDictionary<ServiceType, Type> _authenticatorTypes = new ReadOnlyDictionary<ServiceType, Type>(
-            new Dictionary<ServiceType, Type>
-            {
-                [ServiceType.Twitter] = typeof(TwitterAccountAuthenticator),
-                [ServiceType.Mastodon] = typeof(MastodonAccountAuthenticator),
-            });
+        public static readonly IReadOnlyDictionary<ServiceType, Type> _authenticatorTypes = new Dictionary<ServiceType, Type>
+        {
+            [ServiceType.Twitter ] = typeof(TwitterAccountAuthenticator ),
+            [ServiceType.Mastodon] = typeof(MastodonAccountAuthenticator),
+        };
 
         private IList<string> _cachedInstanceUrls;
         public IList<string> CachedInstanceUrls
