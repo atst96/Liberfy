@@ -79,7 +79,7 @@ namespace Liberfy
             set => this.SetProperty(ref this._retweetCount, value, _retweetCountPropertyChangedEventArgs);
         }
 
-        public SocialApis.Mastodon.StatusVisibility Visibility { get; }
+        public StatusVisibility Visibility { get; }
 
         public StatusInfo(ServiceType service)
         {

@@ -34,8 +34,8 @@ namespace Liberfy.Services.Mastodon
         {
             // TODO
             return item.Account.Equals(this._account)
-                || item.Status.Visibility == SocialApis.Mastodon.StatusVisibility.Public
-                || item.Status.Visibility == SocialApis.Mastodon.StatusVisibility.Unlisted;
+                || item.Status.Visibility == StatusVisibility.Public
+                || item.Status.Visibility == StatusVisibility.Unlisted;
         }
 
         public int GetTextLength(ServicePostParameters parameters)

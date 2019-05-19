@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter
 {
-    public enum DirectMessageEventType
+    public static class DirectMessageEventTypes
     {
-        [EnumMember(Value = "message_create")]
-        MessageCreate,
+        public const string MessageCreate = "message_create";
     }
 }

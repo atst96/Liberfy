@@ -7,21 +7,12 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon
 {
-    public enum NotificationType
+    public static class NotificationTypes
     {
-        [EnumMember(Value = "mention")]
-        Mention,
-
-        [EnumMember(Value = "reblog")]
-        Reblog,
-
-        [EnumMember(Value = "favourite")]
-        Favourite,
-
-        [EnumMember(Value = "follow")]
-        Follow,
-
-        [EnumMember(Value = "poll")]
-        Poll,
+        public const string Mention = "mention";
+        public const string Reblog = "reblog";
+        public const string Favourite = "favourite";
+        public const string Follow = "follow";
+        public const string Poll = "poll";
     }
 }

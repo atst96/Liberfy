@@ -24,21 +24,7 @@ namespace Liberfy.Model
             this.PreviewUrl = media.MediaUrl;
             this.OriginalUrl = media.MediaUrl;
             this.Description = media.Unwound?.Description;
-
-            switch (media.Type)
-            {
-                case TwitterApi.MediaType.Photo:
-                    this.Type = AttachmentType.Photo;
-                    break;
-
-                case TwitterApi.MediaType.AnimatedGif:
-                    this.Type = AttachmentType.Gif;
-                    break;
-
-                case TwitterApi.MediaType.Video:
-                    this.Type = AttachmentType.Video;
-                    break;
-            }
+            this.Type = TwitterValueConverter.ToAttachmentType(media.Type);
         }
 
         public Attachment(MastodonApi.Attachment attachment)
@@ -47,21 +33,7 @@ namespace Liberfy.Model
             this.Url = attachment.PreviewUrl;
             this.PreviewUrl = attachment.PreviewUrl;
             this.Description = attachment.Description;
-
-            switch (attachment.Type)
-            {
-                case MastodonApi.AttachmentType.Image:
-                    this.Type = AttachmentType.Photo;
-                    break;
-
-                case MastodonApi.AttachmentType.GifVideo:
-                    this.Type = AttachmentType.Gif;
-                    break;
-
-                case MastodonApi.AttachmentType.Video:
-                    this.Type = AttachmentType.Video;
-                    break;
-            }
+            this.Type = MastodonValueConverter.ToAttachmentType(attachment.Type);
         }
     }
 

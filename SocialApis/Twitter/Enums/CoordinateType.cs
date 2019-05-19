@@ -2,12 +2,9 @@
 
 namespace SocialApis.Twitter
 {
-    public enum CoordinateType
+    public static class CoordinateTypes
     {
-        [EnumMember(Value = "Point")]
-        Point,
-
-        [EnumMember(Value = "Polygon")]
-        Polygon,
+        public const string Point = "Point";
+        public const string Polygon = "Polygon";
     }
 }

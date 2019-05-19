@@ -90,7 +90,7 @@
     <Compile Include="Mastodon\Enums\CardType.cs" />
     <Compile Include="Mastodon\Enums\NotificationType.cs" />
     <Compile Include="Mastodon\Enums\StatusVisibility.cs" />
-    <Compile Include="Mastodon\Enums\Tag.cs" />
+    <Compile Include="Mastodon\Objects\Tag.cs" />
     <Compile Include="Mastodon\IMastodonStreamResolver.cs" />
     <Compile Include="Mastodon\MastodonError.cs" />
     <Compile Include="Mastodon\MastodonException.cs" />
@@ -140,11 +140,8 @@
     <Compile Include="Twitter\Apis\UsersApi.cs" />
     <Compile Include="Twitter\Enums\CoordinateType.cs" />
     <Compile Include="Twitter\Enums\DirectMessageEventType.cs" />
-    <Compile Include="Twitter\Enums\EventType.cs" />
     <Compile Include="Twitter\Enums\FriendshipConnection.cs" />
     <Compile Include="Twitter\Enums\MediaType.cs" />
-    <Compile Include="Twitter\Enums\StreamType.cs" />
-    <Compile Include="Twitter\Enums\TranslatorType.cs" />
     <Compile Include="Twitter\Objects\App.cs" />
     <Compile Include="Twitter\Objects\Coordinates.cs" />
     <Compile Include="Twitter\Objects\DirectMessage.cs" />

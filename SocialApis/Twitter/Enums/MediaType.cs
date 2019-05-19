@@ -7,15 +7,10 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter
 {
-    public enum MediaType
+    public static class MediaTypes
     {
-        [EnumMember(Value = "photo")]
-        Photo,
-
-        [EnumMember(Value = "animated_gif")]
-        AnimatedGif,
-
-        [EnumMember(Value = "video")]
-        Video,
+        public const string Photo = "photo";
+        public const string AnimatedGif = "animated_gif";
+        public const string Video = "video";
     }
 }

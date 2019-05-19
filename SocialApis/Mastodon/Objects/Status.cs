@@ -69,8 +69,11 @@ namespace SocialApis.Mastodon
         [DataMember(Name = "spoiler_text")]
         public string SpoilerText { get; private set; }
 
+        /// <summary>
+        /// SocialApis.Mastodon.StatusVisibilities.*
+        /// </summary>
         [DataMember(Name = "visibility")]
-        public StatusVisibility Visibility { get; private set; }
+        public string Visibility { get; private set; }
 
         [DataMember(Name = "media_attachments")]
         public Attachment[] MediaAttachments { get; private set; }

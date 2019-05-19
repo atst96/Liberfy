@@ -7,21 +7,12 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon
 {
-    public enum AttachmentType
+    public static class AttachmentTypes
     {
-        [EnumMember(Value = "image")]
-        Image,
-        
-        [EnumMember(Value = "video")]
-        Video,
-        
-        [EnumMember(Value = "gifv")]
-        GifVideo,
-
-        [EnumMember(Value = "unknown")]
-        Unknown,
-
-        [EnumMember(Value = "audio")]
-        Audio,
+        public const string Image = "image";
+        public const string Video = "video";
+        public const string GifVideo = "gifv";
+        public const string Unknown = "unknown";
+        public const string Audio = "audio";
     }
 }

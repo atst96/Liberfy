@@ -5,8 +5,11 @@ namespace SocialApis.Twitter
     [DataContract]
     public class MediaEntity : UrlEntity
     {
+        /// <summary>
+        /// SocialApis.Twitter.MediaTypes.*
+        /// </summary>
         [DataMember(Name = "type")]
-        public MediaType Type { get; set; }
+        public string Type { get; set; }
 
         [DataMember(Name = "sizes")]
         public MediaSizes Sizes { get; set; }

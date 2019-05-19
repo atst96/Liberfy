@@ -14,8 +14,11 @@ namespace SocialApis.Mastodon
         [Utf8Json.JsonFormatter(typeof(Formatters.StringToLongFormatter))]
         public long Id { get; private set; }
         
+        /// <summary>
+        /// SocialApis.Mastodon.AttachmentTypes.*
+        /// </summary>
         [DataMember(Name = "type")]
-        public AttachmentType Type { get; private set; }
+        public string Type { get; private set; }
 
         [DataMember(Name = "url")]
         public string Url { get; private set; }

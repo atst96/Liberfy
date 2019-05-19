@@ -7,24 +7,13 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Twitter
 {
-    public enum FriendshipConnection : int
+    public static class FriendshipConnections
     {
-        [EnumMember(Value = "none")]
-        None = 0b0_0000,
-
-        [EnumMember(Value = "following")]
-        Following = 0b0_0001,
-
-        [EnumMember(Value = "followed_by")]
-        FollowedBy = 0b0_0010,
-
-        [EnumMember(Value = "follow_requested")]
-        FollowRequested = 0b0_0100,
-
-        [EnumMember(Value = "blocking")]
-        Blocking = 0b0_1000,
-
-        [EnumMember(Value = "muting")]
-        Muting = 0b1_0000,
+        public const string None = "none";
+        public const string Following = "following";
+        public const string FollowedBy = "followed_by";
+        public const string FollowRequested = "follow_requested";
+        public const string Blocking = "blocking";
+        public const string Muting = "muting";
     }
 }

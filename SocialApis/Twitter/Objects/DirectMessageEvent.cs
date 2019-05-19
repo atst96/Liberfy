@@ -10,8 +10,11 @@ namespace SocialApis.Twitter
     [DataContract]
     public class DirectMessageEvent
     {
+        /// <summary>
+        /// SocialApis.Twitter.DirectMessageEventTypes.*
+        /// </summary>
         [DataMember(Name = "type")]
-        public DirectMessageEventType Type { get; private set; }
+        public string Type { get; private set; }
 
         [DataMember(Name = "id")]
         public long Id { get; private set; }

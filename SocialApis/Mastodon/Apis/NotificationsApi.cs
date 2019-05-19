@@ -17,7 +17,10 @@ namespace SocialApis.Mastodon
             return this.Api.RestApiGetRequestAsync<Notification[]>("notifications", query);
         }
 
-        public Task<Notification[]> GetNotifications(NotificationType excludeType, IQuery query = null)
+        /// <param name="excludeType">SocialApis.Mastodon.NotificationTypes.*</param>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public Task<Notification[]> GetNotifications(string excludeType, IQuery query = null)
         {
             var _query = new Query(query);
             _query["exclude_type"] = excludeType;

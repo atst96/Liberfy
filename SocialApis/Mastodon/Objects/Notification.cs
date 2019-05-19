@@ -13,8 +13,11 @@ namespace SocialApis.Mastodon
         [DataMember(Name = "id"), Utf8Json.JsonFormatter(typeof(Formatters.StringToLongFormatter))]
         public long Id { get; private set; }
 
+        /// <summary>
+        /// SocialApis.Mastodon.NotificationTypes.*
+        /// </summary>
         [DataMember(Name = "type")]
-        public NotificationType Type { get; private set; }
+        public string Type { get; private set; }
 
         [DataMember(Name = "created_at")]
         public DateTimeOffset CreatedAt { get; private set; }

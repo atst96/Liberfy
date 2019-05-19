@@ -17,8 +17,11 @@ namespace SocialApis.Mastodon
         [DataMember(Name = "image")]
         public string Image { get; private set; }
 
+        /// <summary>
+        /// [string] SocialApis.Mastodon.CardTypes.*
+        /// </summary>
         [DataMember(Name = "type")]
-        public CardType Type { get; private set; }
+        public string Type { get; private set; }
 
         [DataMember(Name = "author_name")]
         public string AuthorName { get; private set; }

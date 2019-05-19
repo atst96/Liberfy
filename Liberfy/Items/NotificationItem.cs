@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MastodonApi = SocialApis.Mastodon;
 using MastodonNotification = SocialApis.Mastodon.Notification;
 
 namespace Liberfy
@@ -29,24 +30,24 @@ namespace Liberfy
 
             switch (item.Type)
             {
-                case SocialApis.Mastodon.NotificationType.Reblog:
+                case MastodonApi.NotificationTypes.Reblog:
                     this.Type = ItemType.RetweetActivity;
                     this.Status = account.DataStore.RegisterStatus(item.Status);
                     this.Account = account.DataStore.RegisterAccount(item.Account);
                     break;
 
-                case SocialApis.Mastodon.NotificationType.Favourite:
+                case MastodonApi.NotificationTypes.Favourite:
                     this.Type = ItemType.FavoriteActivity;
                     this.Status = account.DataStore.RegisterStatus(item.Status);
                     this.Account = account.DataStore.RegisterAccount(item.Account);
                     break;
 
-                case SocialApis.Mastodon.NotificationType.Follow:
+                case MastodonApi.NotificationTypes.Follow:
                     this.Type = ItemType.FollowActivity;
                     this.Account = account.DataStore.RegisterAccount(item.Account);
                     break;
 
-                case SocialApis.Mastodon.NotificationType.Mention:
+                default:
                     throw new NotSupportedException();
             }
         }

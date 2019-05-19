@@ -57,6 +57,14 @@
             <Setter Property="Margin" Value="0 8 0 0" />
         </Style>
 
+        <CollectionViewSource
+            x:Key="accountsViewSource"
+            Source="{Binding Accounts, Mode=OneTime}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="HostName" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+
         <Thickness x:Key="ContainerMargin">12</Thickness>
 
         <Style x:Key="ElementsContainerStyle" TargetType="{x:Type Panel}">
@@ -321,12 +329,13 @@
                                     </Button>
                                 </ToolBar>
 
-                                <ListBox
-                                    Style="{StaticResource {x:Type ListBox}}"
+                                <ListView
                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                    ItemsSource="{Binding Accounts, Mode=OneTime}"
+                                    ItemsSource="{Binding Source={StaticResource accountsViewSource}, Mode=OneTime}"
                                     ItemTemplate="{StaticResource AccountItemTemplate}"
-                                    SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"/>
+                                    SelectedItem="{Binding SelectedAccount, Mode=TwoWay}">
+                                    <!--<ListView.GroupStyle></ListView.GroupStyle>-->
+                                </ListView>
                             </DockPanel>
                         </Border>
 

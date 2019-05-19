@@ -58,7 +58,7 @@ namespace Liberfy.Services.Mastodon
         {
             foreach (var notification in notifications)
             {
-                if (notification.Type == NotificationType.Mention)
+                if (notification.Type == NotificationTypes.Mention)
                 {
                     yield return new StatusItem(notification.Status, this._account);
                 }

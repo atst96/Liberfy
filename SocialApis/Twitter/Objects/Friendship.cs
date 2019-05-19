@@ -19,19 +19,10 @@ namespace SocialApis.Twitter
         [DataMember(Name = "id")]
         public long Id { get; set; }
 
+        /// <summary>
+        /// SocialApis.Twitter.FriendshipConnections.*
+        /// </summary>
         [DataMember(Name = "connections")]
-        public FriendshipConnection[] Connections { get; set; }
-
-        public FriendshipConnection GetFlaggedConnections()
-        {
-            var connection = default(FriendshipConnection);
-
-            for (int i = 0; i < this.Connections.Length; ++i)
-            {
-                connection |= this.Connections[i];
-            }
-
-            return connection;
-        }
+        public string[] Connections { get; set; }
     }
 }

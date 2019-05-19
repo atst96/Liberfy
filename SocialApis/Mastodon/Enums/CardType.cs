@@ -1,12 +1,10 @@
-﻿using System.Runtime.Serialization;
-
-namespace SocialApis.Mastodon
+﻿namespace SocialApis.Mastodon
 {
-    public enum CardType
+    public static class CardTypes
     {
-        [EnumMember(Value = "link")]  Link,
-        [EnumMember(Value = "photo")] Photo,
-        [EnumMember(Value = "video")] Video,
-        [EnumMember(Value = "rich")]  Rich,
+        public const string Link = "link";
+        public const string Photo = "photo";
+        public const string Video = "video";
+        public const string Rich = "rich";
     }
 }

@@ -187,6 +187,8 @@
     <Compile Include="Components\ProfileImageChache.cs" />
     <Compile Include="Services\Common\IAccountAuthenticator.cs" />
     <Compile Include="Services\Common\PollItem.cs" />
+    <Compile Include="Services\Mastodon\MastodonValueConverter.cs" />
+    <Compile Include="Services\Twitter\TwitterValueConverter.cs" />
     <Compile Include="TemplateSelectors\TimelineViewItemTemplateSelector.cs" />
     <Compile Include="Utilieis\ImageUtility.cs" />
     <Compile Include="Services\Mastodon\MastodonAccountAuthenticator.cs" />
