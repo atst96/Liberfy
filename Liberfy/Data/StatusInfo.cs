@@ -54,7 +54,6 @@ namespace Liberfy
         public string SourceName { get; set; }
         public string SourceUrl { get; set; }
 
-        public bool IsQuotedStatus { get; set; }
         public StatusInfo QuotedStatus { get; set; }
 
         public string SpoilerText { get; set; }

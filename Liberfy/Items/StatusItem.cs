@@ -141,7 +141,6 @@ namespace Liberfy
             }
         }
 
-        // TODO: 何のために作ったメソッドかを忘れた
         // public void RaiseCreatedAtProeprtyChanged() => this.RaisePropertyChanged(nameof(CreatedAt));
     }
 }

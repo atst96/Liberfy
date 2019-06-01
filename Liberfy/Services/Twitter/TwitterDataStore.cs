@@ -80,10 +80,7 @@ namespace Liberfy.Services.Twitter
 
             if (this.Statuses.TryGetValue(id, out info))
             {
-                if (!App.Status.IsAccountLoaded)
-                {
-                    this.UpdateStatusInfo(info, status);
-                }
+                this.UpdateStatusInfo(info, status);
             }
             else
             {
@@ -106,25 +103,19 @@ namespace Liberfy.Services.Twitter
                 FilterLevel = status.FilterLevel,
                 InReplyToStatusId = status.InReplyToStatusId ?? -1,
                 InReplyToUserId = status.InReplyToUserId ?? -1,
-
-                IsQuotedStatus = status.IsQuotedStatus && status.QuotedStatus != null,
-
                 Language = status.Language,
                 PossiblySensitive = status.PossiblySensitive,
                 Text = status.FullText ?? status.Text,
                 User = this.RegisterAccount(status.User),
-
-                Attachments = status.ExtendedEntities?.Media
-                    .Select(m => new Attachment(m))
-                    .ToArray() ?? new Attachment[0],
+                Attachments = GetAttachments(status.ExtendedEntities?.Media)
             };
 
-            if (info.IsQuotedStatus)
+            if (status.QuotedStatus != null)
             {
                 info.QuotedStatus = this.RegisterStatus(status.QuotedStatus);
             }
 
-            (info.SourceUrl, info.SourceName) = status.ParseSource();
+            (info.SourceUrl, info.SourceName) = ExpandClientInfo(status);
 
             info.SetTextEntityBuilder(new TwitterTextTokenBuilder(info.Text ?? "", status.Entities));
 
@@ -133,10 +124,33 @@ namespace Liberfy.Services.Twitter
             return info;
         }
 
+        private static Attachment[] GetAttachments(SocialApis.Twitter.MediaEntity[] entities)
+        {
+            var results = new Attachment[entities?.Length ?? 0];
+
+            for (int idx = 0; idx < results.Length; ++idx)
+            {
+                results[idx] = new Attachment(entities[idx]);
+            }
+
+            return results;
+        }
+
+        private static (string url, string sourceName) ExpandClientInfo(Status status)
+        {
+            var match = Regexes.TwitterSourceHtml.Match(status.Source);
+
+            return match?.Success ?? false
+                ? (string.Empty, status.Source)
+                : (match.Groups["url"].Value, match.Groups["name"].Value);
+        }
+
         private void UpdateStatusInfo(StatusInfo info, Status status)
         {
             if ((status.RetweetedStatus ?? status).Id != info.Id)
+            {
                 throw new ArgumentException();
+            }
 
             info.FavoriteCount = status.FavoriteCount ?? info.FavoriteCount;
             info.RetweetCount = status.RetweetCount ?? info.RetweetCount;

@@ -27,7 +27,10 @@ namespace Liberfy.Services.Mastodon
 
             if (this.Accounts.TryGetValue(id, out info))
             {
-                this.UpdateAccountInfo(info, account);
+                if (!App.Status.IsAccountLoaded)
+                {
+                    this.UpdateAccountInfo(info, account);
+                }
             }
             else
             {
@@ -82,10 +85,7 @@ namespace Liberfy.Services.Mastodon
 
             if (this.Statuses.TryGetValue(id, out info))
             {
-                if (!App.Status.IsAccountLoaded)
-                {
-                    this.UpdateStatusInfo(info, status);
-                }
+                this.UpdateStatusInfo(info, status);
             }
             else
             {
@@ -114,9 +114,7 @@ namespace Liberfy.Services.Mastodon
                 SpoilerText = status.SpoilerText,
                 Text = status.Content,
                 User = this.RegisterAccount(status.Account),
-                Attachments = status.MediaAttachments
-                    .Select(m => new Model.Attachment(m))
-                    .ToArray() ?? new Model.Attachment[0],
+                Attachments = GetAttachments(status.MediaAttachments),
             };
 
             if (status.Application != null)
@@ -130,6 +128,18 @@ namespace Liberfy.Services.Mastodon
             this.UpdateStatusInfo(info, status);
 
             return info;
+        }
+
+        private static Model.Attachment[] GetAttachments(SocialApis.Mastodon.Attachment[] attachments)
+        {
+            var results = new Model.Attachment[attachments?.Length ?? 0];
+
+            for (int idx = 0; idx < results.Length; ++idx)
+            {
+                results[idx] = new Model.Attachment(attachments[idx]);
+            }
+
+            return results;
         }
 
         private void UpdateStatusInfo(StatusInfo info, Status status)
