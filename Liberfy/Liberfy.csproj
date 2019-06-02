@@ -217,7 +217,6 @@
     <Compile Include="Services\Common\IAccount.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Services\Common\ITextTokenBuilder.cs" />
-    <Compile Include="Services\Common\IDataStore.cs" />
     <Compile Include="Services\Common\IServiceConfiguration.cs" />
     <Compile Include="Services\Common\IApiGateway.cs" />
     <Compile Include="Services\Mastodon\MastodonApiGateway.cs" />
