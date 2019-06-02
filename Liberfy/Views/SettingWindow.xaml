@@ -332,7 +332,7 @@
                                 <ListView
                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
                                     ItemsSource="{Binding Source={StaticResource accountsViewSource}, Mode=OneTime}"
-                                    ItemTemplate="{StaticResource AccountItemTemplate}"
+                                    ItemTemplate="{StaticResource GeneralAccountTemplate}"
                                     SelectedItem="{Binding SelectedAccount, Mode=TwoWay}">
                                     <!--<ListView.GroupStyle></ListView.GroupStyle>-->
                                 </ListView>

@@ -20,9 +20,11 @@ namespace Liberfy
     {
         ServiceType Service { get; }
         long Id { get; }
-        Uri Host { get; }
+        Uri Instance { get; }
         DateTimeOffset CreatedAt { get; }
-        string LongUserName { get; }
+        string Name { get; }
+        string UserName { get; }
+        string FullName { get; }
         string Description { get; }
         IEnumerable<IEntity> DescriptionEntities { get; }
         IEnumerable<IEntity> UrlEntities { get; }
@@ -30,11 +32,9 @@ namespace Liberfy
         int FollowingsCount { get; }
         string Language { get; }
         string Location { get; }
-        string Name { get; }
         string ProfileBannerUrl { get; }
         string ProfileImageUrl { get; }
         bool IsProtected { get; }
-        string ScreenName { get; }
         int StatusesCount { get; }
         bool IsSuspended { get; }
         string Url { get; }

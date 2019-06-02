@@ -383,7 +383,7 @@
                             Style="{StaticResource UserNameLinkText}"
                             CommandParameter="{Binding User, Mode=OneTime}"
                             Command="{Binding Account.Commands.OpenUserWindowCommand, Mode=OneTime}">
-                            <Run FontWeight="Bold" Text="{Binding User.Name, Mode=OneWay}" /><Run Text="{Binding User.LongUserName, Mode=OneWay, StringFormat='{}@{0}'}" />
+                            <Run FontWeight="Bold" Text="{Binding User.Name, Mode=OneWay}" /><Run Text="{Binding User.UserName, Mode=OneWay, StringFormat='{}@{0}'}" />
                         </Hyperlink>
                     </TextBlock>
                 </DockPanel>
@@ -443,7 +443,7 @@
                                 Command="{Binding Account.Commands.OpenUserWindowCommand}"
                                 CommandParameter="{Binding RetweetUser, Mode=OneTime}">
                                 <Run Text="{Binding RetweetUser.Name, Mode=OneTime}" FontWeight="Bold" /><!--
-                             --><Run Text="{Binding RetweetUser.ScreenName, Mode=OneTime, StringFormat='{}@{0}'}" />
+                             --><Run Text="{Binding RetweetUser.UserName, Mode=OneTime, StringFormat='{}@{0}'}" />
                             </Hyperlink>
                         </TextBlock>
                     </DockPanel>
@@ -696,7 +696,7 @@
                     CommandParameter="{Binding Account, Mode=OneTime}">
                     <Run FontWeight="Bold" Text="{Binding Account.Name, Mode=OneWay}" /><!--
                  --><LineBreak /><!--
-                 --><Run Text="{Binding Account.LongUserName, Mode=OneWay}" />
+                 --><Run Text="{Binding Account.UserName, Mode=OneWay}" />
                 </Hyperlink>
             </TextBlock>
         </Grid>
@@ -704,31 +704,32 @@
 
     <!--#endregion-->
 
-    <DataTemplate x:Key="AccountItemTemplate" DataType="{x:Type app:IAccount}">
+    <DataTemplate x:Key="GeneralAccountTemplate" DataType="{x:Type app:IAccount}">
         <Grid DataContext="{Binding Info, Mode=OneTime}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
             <Image
-                Margin="0 0 8 0" Width="36" Height="36"
-                b:TimelineBehavior.ProfileImage="{Binding Mode=OneTime}"
-                RenderOptions.BitmapScalingMode="HighQuality" />
+                Margin="0,0,8,0"
+                Width="36" Height="36"
+                RenderOptions.BitmapScalingMode="HighQuality"
+                b:TimelineBehavior.ProfileImage="{Binding Mode=OneTime}" />
 
             <app:GeometryIcon
                 Grid.Column="1"
-                Margin="0 4 4 4"
+                Margin="0,4,4,4"
                 Width="18" Height="18"
-                app:ElementBehavior.Visible="{Binding IsProtected, Mode=OneWay}"
-                Data="{StaticResource FontAwesome.Icon.Lock}" />
+                Data="{StaticResource FontAwesome.Icon.Lock}"
+                app:ElementBehavior.Visible="{Binding IsProtected, Mode=OneWay}" />
 
-            <StackPanel 
-                Grid.Column="2" 
+            <StackPanel
+                Grid.Column="2"
                 VerticalAlignment="Center">
                 <TextBlock Text="{Binding Name, Mode=OneWay}" FontWeight="Bold" />
-                <TextBlock Text="{Binding ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+                <TextBlock Text="{Binding FullName, Mode=OneWay}" />
             </StackPanel>
         </Grid>
     </DataTemplate>

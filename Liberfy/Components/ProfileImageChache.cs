@@ -139,7 +139,7 @@ namespace Liberfy
             {
                 ["user_id"] = userInfo.Id,
                 ["service_id"] = (int)userInfo.Service,
-                ["host_url"] = userInfo.Host?.Host ?? "",
+                ["host_url"] = userInfo.Instance?.Host ?? "",
             };
         }
 

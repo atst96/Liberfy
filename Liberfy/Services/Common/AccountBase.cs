@@ -211,7 +211,7 @@ namespace Liberfy
             Service = this.Service,
             Id = this.Id,
             Name = this.Info.Name,
-            ScreenName = this.Info.ScreenName,
+            ScreenName = this.Info.UserName,
             IsProtected = this.Info.IsProtected,
             ProfileImageUrl = this.Info.ProfileImageUrl,
             Token = ApiTokenInfo.FromTokens(this.Tokens),

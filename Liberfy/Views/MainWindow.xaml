@@ -84,8 +84,7 @@
                                 <Hyperlink Style="{StaticResource MetadataLinkText}">
                                     <Run Text="{Binding Account.Info.Name, Mode=OneWay}" FontWeight="Black" /><!--
                                  --><LineBreak /><!--
-                                 --><Run Text="{Binding Account.Info.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" /><!--
-                                 --><Run Text="{Binding Account.HostName, Mode=OneWay, StringFormat='{}@{0}'}" />
+                                 --><Run Text="{Binding Account.Info.FullName, Mode=OneWay, StringFormat='{}@{0}'}" />
                                 </Hyperlink>
                             </TextBlock>
 
@@ -249,7 +248,7 @@
                                                         <ContentPresenter
                                                             VerticalAlignment="Center"
                                                             HorizontalAlignment="Left"
-                                                            ContentTemplate="{StaticResource AccountItemTemplate}"/>
+                                                            ContentTemplate="{StaticResource GeneralAccountTemplate}"/>
 
                                                         <StackPanel
                                                             Grid.Column="2"

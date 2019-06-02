@@ -15,13 +15,19 @@ namespace Liberfy
 
         public long Id { get; }
 
-        public Uri Host { get; }
+        public Uri Instance { get; }
 
         private DateTimeOffset _createdAt;
         public DateTimeOffset CreatedAt => this._createdAt;
 
-        private string _longUserName;
-        public string LongUserName => this._longUserName;
+        private string _name;
+        public string Name => this._name;
+
+        private string _userName;
+        public string UserName => this._userName;
+
+        private string _fullName;
+        public string FullName => this._fullName;
 
         private string _description;
         public string Description => this._description;
@@ -38,9 +44,6 @@ namespace Liberfy
         private string _location;
         public string Location => this._location;
 
-        private string _name;
-        public string Name => this._name;
-
         private string _profileBannerUrl;
         public string ProfileBannerUrl => this._profileBannerUrl;
 
@@ -49,9 +52,6 @@ namespace Liberfy
 
         private bool _isProtected;
         public bool IsProtected => this._isProtected;
-
-        private string _screenName;
-        public string ScreenName => this._screenName;
 
         private int _statusCount;
         public int StatusesCount => this._statusCount;
@@ -75,10 +75,10 @@ namespace Liberfy
 
         public MastodonUserInfo(Uri host, AccountItem item)
         {
-            this.Host = host;
+            this.Instance = host;
 
             this.Id = item.Id;
-            this._screenName = item.ScreenName;
+            this._userName = item.ScreenName;
             this._name = item.Name;
             this._isProtected = item.IsProtected;
             this._profileImageUrl = item.ProfileImageUrl;
@@ -86,7 +86,7 @@ namespace Liberfy
 
         public MastodonUserInfo(Uri host, Account account)
         {
-            this.Host = host;
+            this.Instance = host;
 
             this.Id = account.Id;
             this._createdAt = account.CreatedAt;
@@ -98,7 +98,6 @@ namespace Liberfy
         {
             var batch = new BatchPropertyChanges();
 
-            batch.Set(ref this._longUserName, account.Acct, nameof(this.LongUserName));
             batch.Set(ref this._followersCount, account.FollowersCount, nameof(this.FollowersCount));
             batch.Set(ref this._followingsCount, account.FollowingCount, nameof(this.FollowingsCount));
             //batch.Set(ref this._language, account.Language, nameof(this.Language));
@@ -107,9 +106,17 @@ namespace Liberfy
             batch.Set(ref this._profileBannerUrl, account.Header, nameof(this.ProfileBannerUrl));
             batch.Set(ref this._profileImageUrl, account.Avatar, nameof(this.ProfileImageUrl));
             batch.Set(ref this._isProtected, account.IsLocked, nameof(this.IsProtected));
-            batch.Set(ref this._screenName, account.UserName, nameof(this.ScreenName));
             batch.Set(ref this._statusCount, account.StatusesCount, nameof(this.StatusesCount));
             batch.Set(ref this._remoteUrl, account.Url, nameof(this.RemoteUrl));
+
+            if (batch.Set(ref this._userName, account.Acct, nameof(this.UserName)) || this._fullName == null)
+            {
+                var longUserName = string.Equals(account.UserName, account.Acct)
+                    ? account.Acct + "@" + this.Instance.Host
+                    : account.Acct;
+
+                batch.Set(ref this._fullName, longUserName, nameof(this.FullName));
+            }
 
             if (batch.Set(ref this._description, account.Note, nameof(this.Description)))
             {
@@ -143,7 +150,7 @@ namespace Liberfy
 
         public bool Equals(MastodonUserInfo other)
         {
-            return this.Host == other.Host && this.Id == other.Id;
+            return this.Instance == other.Instance && this.Id == other.Id;
         }
     }
 }

@@ -174,7 +174,7 @@
                 FontSize="12"
                 Foreground="#FF888888"
                 TextWrapping="Wrap"
-                Text="{Binding User.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+                Text="{Binding User.FullName, Mode=OneWay}" />
 
             <TextBlock
                 Margin="4"

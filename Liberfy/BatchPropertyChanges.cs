@@ -45,10 +45,6 @@ namespace Liberfy
             }
         }
 
-        private void NotifyImpl(string propertyName)
-        {
-        }
-
         public void Clear()
         {
             this._changedPropertyNames.Clear();

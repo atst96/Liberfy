@@ -199,7 +199,7 @@
                             TextWrapping="NoWrap"
                             VerticalAlignment="Center"
                             TextTrimming="CharacterEllipsis"
-                            Text="{Binding Info.ScreenName, Mode=OneWay, StringFormat='{}@{0}'}" />
+                            Text="{Binding Info.FullName, Mode=OneWay}" />
 
                         <app:GeometryIcon
                             Grid.Column="2"
@@ -213,7 +213,7 @@
                             <ListBox
                                 SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
                                 ItemsSource="{Binding Accounts, Mode=OneTime}"
-                                ItemTemplate="{StaticResource AccountItemTemplate}" />
+                                ItemTemplate="{StaticResource GeneralAccountTemplate}" />
                         </app:PopupDecorator>
                     </app:DropDownButton.PopupContent>
                 </app:DropDownButton>

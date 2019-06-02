@@ -16,13 +16,19 @@ namespace Liberfy
 
         public long Id { get; }
 
-        public Uri Host { get; }
+        public Uri Instance { get; }
 
         private DateTimeOffset _createdAt;
         public DateTimeOffset CreatedAt => this._createdAt;
 
-        private string _longUserName;
-        public string LongUserName => this._longUserName;
+        private string _name;
+        public string Name => this._name;
+
+        private string _userName;
+        public string UserName => this._userName;
+
+        private string _fullName;
+        public string FullName => this._fullName;
 
         private string _description;
         public string Description => this._description;
@@ -39,9 +45,6 @@ namespace Liberfy
         private string _location;
         public string Location => this._location;
 
-        private string _name;
-        public string Name => this._name;
-
         private string _profileBannerUrl;
         public string ProfileBannerUrl => this._profileBannerUrl;
 
@@ -50,9 +53,6 @@ namespace Liberfy
 
         private bool _isProtected;
         public bool IsProtected => this._isProtected;
-
-        private string _screenName;
-        public string ScreenName => this._screenName;
 
         private int _statusCount;
         public int StatusesCount => this._statusCount;
@@ -103,7 +103,7 @@ namespace Liberfy
         public TwitterUserInfo(AccountItem item)
         {
             this.Id = item.Id;
-            this._screenName = item.ScreenName;
+            this._userName = item.ScreenName;
             this._name = item.Name;
             this._isProtected = item.IsProtected;
             this._profileImageUrl = item.ProfileImageUrl;
@@ -126,7 +126,6 @@ namespace Liberfy
             var batch = new BatchPropertyChanges();
 
             batch.Set(ref this._createdAt, user.CreatedAt, nameof(this.CreatedAt));
-            batch.Set(ref this._longUserName, user.ScreenName, nameof(this.LongUserName));
             batch.Set(ref this._followersCount, user.FollowersCount, nameof(this.FollowersCount));
             batch.Set(ref this._followingCount, user.FriendsCount, nameof(this.FollowersCount));
             batch.Set(ref this._language, user.Language, nameof(this.Language));
@@ -135,10 +134,15 @@ namespace Liberfy
             batch.Set(ref this._profileBannerUrl, user.ProfileBannerUrl, nameof(this.ProfileBannerUrl));
             batch.Set(ref this._profileImageUrl, user.ProfileImageUrl, nameof(this.ProfileImageUrl));
             batch.Set(ref this._isProtected, user.IsProtected, nameof(this.IsProtected));
-            batch.Set(ref this._screenName, user.ScreenName, nameof(this.ScreenName));
             batch.Set(ref this._statusCount, user.StatusesCount, nameof(this.StatusesCount));
             batch.Set(ref this._remoteUrl, RemoteUrlBase + user.ScreenName, nameof(this.RemoteUrl));
             batch.Set(ref this._isSuspended, user.IsSuspended ?? false, nameof(this.IsSuspended));
+
+            if (batch.Set(ref this._userName, user.ScreenName, nameof(this.UserName)) || this._fullName == null)
+            {
+                var longUserName = user.ScreenName + "@twitter.com";
+                batch.Set(ref this._fullName, longUserName, nameof(this.FullName));
+            }
 
             if (batch.Set(ref this._description, user.Description ?? string.Empty, nameof(this.Description)))
             {

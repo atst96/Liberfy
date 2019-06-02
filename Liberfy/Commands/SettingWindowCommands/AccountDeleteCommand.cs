@@ -27,7 +27,7 @@ namespace Liberfy.Commands.SettingWindowCommands
         {
             var user = parameter;
 
-            var message = $"このアカウントを一覧から削除しますか？\n { user.Info.Name }@{ user.Info.ScreenName }";
+            var message = $"このアカウントを一覧から削除しますか？\n { user.Info.Name }@{ user.Info.UserName }";
 
             if (this._viewModel.DialogService.Confirm(message))
             {
