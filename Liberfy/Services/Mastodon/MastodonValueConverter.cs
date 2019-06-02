@@ -26,6 +26,7 @@ namespace Liberfy
 
         private static readonly IReadOnlyDictionary<string, AttachmentType> _stringAttachmentTypeMap = new Dictionary<string, AttachmentType>
         {
+            [AttachmentTypes.Unknown] = AttachmentType.Unknown,
             [AttachmentTypes.Image] = AttachmentType.Photo,
             [AttachmentTypes.GifVideo] = AttachmentType.Gif,
             [AttachmentTypes.Video] = AttachmentType.Video,

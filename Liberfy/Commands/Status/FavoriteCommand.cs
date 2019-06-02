@@ -25,7 +25,16 @@ namespace Liberfy.Commands.Status
 
         protected override void Execute(object parameter)
         {
-            this._account.ApiGateway.Favorite(this._item);
+            var apiGateway = this._account.ApiGateway;
+
+            if (this._item.Reaction.IsRetweeted)
+            {
+                apiGateway.Unfavorite(this._item);
+            }
+            else
+            {
+                apiGateway.Favorite(this._item);
+            }
         }
     }
 }

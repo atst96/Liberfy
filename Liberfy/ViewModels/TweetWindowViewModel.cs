@@ -173,13 +173,13 @@ namespace Liberfy.ViewModels
             set => SetProperty(ref _closeOnPostComplated, value);
         }
 
-        public StatusInfo ReplyToStatus { get; private set; }
+        public IStatusInfo ReplyToStatus { get; private set; }
         public bool HasReplyStatus { get; private set; } = false;
 
-        public UserInfo ReplyUser { get; private set; }
+        public IUserInfo ReplyUser { get; private set; }
         public bool HasReplyUser { get; private set; } = false;
 
-        public void SetReplyToUser(UserInfo user)
+        public void SetReplyToUser(IUserInfo user)
         {
             this.ReplyUser = user;
             this.HasReplyUser = user != null;

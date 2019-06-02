@@ -25,7 +25,17 @@ namespace Liberfy.Commands.Status
 
         protected override void Execute(object parameter)
         {
-            this._account.ApiGateway.Retweet(this._item);
+            var apiGateway = this._account.ApiGateway;
+            var item = this._item;
+
+            if (this._item.Reaction.IsRetweeted)
+            {
+                apiGateway.Unretweet(item);
+            }
+            else
+            {
+                apiGateway.Retweet(item);
+            }
         }
     }
 }

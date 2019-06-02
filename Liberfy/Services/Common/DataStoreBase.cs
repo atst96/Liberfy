@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Liberfy.Settings;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,20 +11,22 @@ namespace Liberfy
 {
     internal abstract class DataStoreBase<IAccount, IStatus>
     {
-        public ConcurrentDictionary<long, UserInfo> Accounts { get; }
-        public ConcurrentDictionary<long, StatusInfo> Statuses { get; }
+        public ConcurrentDictionary<long, IUserInfo<IAccount>> Accounts { get; }
+        public ConcurrentDictionary<long, IStatusInfo<IStatus>> Statuses { get; }
 
         protected DataStoreBase()
         {
-            this.Accounts = new ConcurrentDictionary<long, UserInfo>();
-            this.Statuses = new ConcurrentDictionary<long, StatusInfo>();
+            this.Accounts = new ConcurrentDictionary<long, IUserInfo<IAccount>>();
+            this.Statuses = new ConcurrentDictionary<long, IStatusInfo<IStatus>>();
 
             BindingOperations.EnableCollectionSynchronization(this.Accounts, new object());
             BindingOperations.EnableCollectionSynchronization(this.Statuses, new object());
         }
 
-        public abstract UserInfo RegisterAccount(IAccount account);
+        public abstract IUserInfo<IAccount> GetAccount(AccountItem item);
 
-        public abstract StatusInfo RegisterStatus(IStatus status);
+        public abstract IUserInfo<IAccount> RegisterAccount(IAccount account);
+
+        public abstract IStatusInfo<IStatus> RegisterStatus(IStatus status);
     }
 }

@@ -16,11 +16,11 @@ namespace Liberfy
 
         public DateTimeOffset CreatedAt { get; }
 
-        public StatusInfo Status { get; }
+        public IStatusInfo Status { get; }
 
         public IAccount Own { get; }
 
-        public UserInfo Account { get; }
+        public IUserInfo Account { get; }
 
         public NotificationItem(MastodonNotification item, MastodonAccount account)
         {

@@ -32,7 +32,7 @@ namespace Liberfy
     }
 
     internal abstract class AccountBase<TTokens, TTimeline, TUser, TStatus>
-        : NotificationObject, IAccount, IEquatable<UserInfo>
+        : NotificationObject, IAccount, IEquatable<IUserInfo>
             where TTokens : IApi
             where TTimeline : TimelineBase
     {
@@ -61,7 +61,7 @@ namespace Liberfy
             this.Tokens = this.TokensFromApiTokenInfo(tokens);
         }
 
-        public UserInfo Info { get; protected set; }
+        public IUserInfo Info { get; protected set; }
 
         public AccountCommandGroup Commands { get; }
 
@@ -84,8 +84,7 @@ namespace Liberfy
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
 
-            this.Info = this.DataStore.Accounts
-                .GetOrAdd(item.Id, _ => new UserInfo(hostUrl, item.Id, item.Name, item.ScreenName, item.IsProtected, item.ProfileImageUrl));
+            this.Info = this.DataStore.GetAccount(item);
 
             if (item.MutedIds?.Length > 0)
                 this.MutedIds.UnionWith(item.MutedIds);
@@ -98,7 +97,7 @@ namespace Liberfy
             this.IsLoggedIn = true;
         }
 
-        protected abstract UserInfo GetUserInfo(TUser account);
+        protected abstract IUserInfo GetUserInfo(TUser account);
 
         protected abstract TTokens TokensFromApiTokenInfo(ApiTokenInfo tokens);
 
@@ -180,19 +179,11 @@ namespace Liberfy
             }
         }
 
-        private SortedDictionary<long, StatusActivity> _statusActivity = new SortedDictionary<long, StatusActivity>();
+        private ConcurrentDictionary<long, StatusActivity> _statusActivities = new ConcurrentDictionary<long, StatusActivity>();
 
-        public StatusActivity GetActivity(long usreId)
+        public StatusActivity GetStatusActivity(long originalStatusId)
         {
-            StatusActivity activity = default;
-
-            if (!this._statusActivity.TryGetValue(usreId, out activity))
-            {
-                activity = new StatusActivity();
-                this._statusActivity.Add(usreId, activity);
-            }
-
-            return activity;
+            return this._statusActivities.GetOrAdd(originalStatusId, _ => new StatusActivity());
         }
 
         private HashSet<long> _followingIds;
@@ -237,10 +228,10 @@ namespace Liberfy
             this._mutedIds?.Clear();
             this._incomingIds?.Clear();
             this._outgoingIds?.Clear();
-            this._statusActivity.Clear();
+            this._statusActivities.Clear();
         }
 
-        public bool Equals(UserInfo other)
+        public bool Equals(IUserInfo other)
         {
             return this.Id == other.Id && this.Service == other.Service;
         }
@@ -252,7 +243,7 @@ namespace Liberfy
 
         public override bool Equals(object obj)
         {
-            return (obj is UserInfo user && this.Equals(user))
+            return (obj is IUserInfo user && this.Equals(user))
                 || (obj is IAccount account && this.Equals(account));
         }
 
@@ -270,7 +261,7 @@ namespace Liberfy
             this._mutedIds = null;
             this._incomingIds = null;
             this._outgoingIds = null;
-            this._statusActivity = null;
+            this._statusActivities = null;
             this.LockSharedObject = null;
         }
     }

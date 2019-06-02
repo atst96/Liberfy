@@ -12,7 +12,7 @@ namespace Liberfy.Commands
     {
         private readonly IAccount _account;
 
-        public Command<UserInfo> OpenUserWindowCommand { get; }
+        public Command<IUserInfo> OpenUserWindowCommand { get; }
 
         public AccountCommandGroup(IAccount account)
         {

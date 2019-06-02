@@ -84,40 +84,39 @@ namespace Liberfy.Services.Twitter
             await this._api.Statuses.Update(query).ConfigureAwait(false);
         }
 
+        private void UpdateStatusReaction(StatusItem item, Status status)
+        {
+            this._account.DataStore.RegisterStatus(status);
+
+            item.Reaction.Set(isFavorited: status.IsFavorited, isRetweeted: status.IsRetweeted);
+        }
+
         public async Task Favorite(StatusItem item)
         {
-            if (!item.Account.Equals(this._account))
-            {
-                return;
-            }
+            var status = await this._api.Favorites.Create(item.Id).ConfigureAwait(false);
 
-            var task = item.Reaction.IsFavorited
-                ? this._api.Favorites.Destroy(item.Id)
-                : this._api.Favorites.Create(item.Id);
+            this.UpdateStatusReaction(item, status);
+        }
 
-            var status = await task.ConfigureAwait(false);
+        public async Task Unfavorite(StatusItem item)
+        {
+            var status = await this._api.Favorites.Destroy(item.Id).ConfigureAwait(false);
 
-            var statusInfo = this._account.DataStore.RegisterStatus(status);
-
-            item.Reaction.IsFavorited = status.IsFavorited ?? !item.Reaction.IsFavorited;
+            this.UpdateStatusReaction(item, status);
         }
 
         public async Task Retweet(StatusItem item)
         {
-            if (!item.Account.Equals(this._account))
-            {
-                return;
-            }
+            var status = await this._api.Statuses.Retweet(item.Id).ConfigureAwait(false);
 
-            var task = item.Reaction.IsRetweeted
-               ? this._api.Statuses.Destroy(item.Id)
-               : this._api.Statuses.Retweet(item.Id);
+            this.UpdateStatusReaction(item, status);
+        }
 
-            var status = await task.ConfigureAwait(false);
+        public async Task Unretweet(StatusItem item)
+        {
+            var status = await this._api.Statuses.Destroy(item.Id).ConfigureAwait(false);
 
-            var statusInfo = this._account.DataStore.RegisterStatus(status);
-
-            item.Reaction.IsRetweeted = status.IsRetweeted ?? !item.Reaction.IsRetweeted;
+            this.UpdateStatusReaction(item, status);
         }
     }
 }

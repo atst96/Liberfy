@@ -20,9 +20,9 @@ namespace Liberfy
         public bool IsRetweet { get; }
         public bool IsReply { get; }
         public string InReplyToScreenName { get; }
-        public StatusInfo Status { get; }
-        public UserInfo User { get; }
-        public UserInfo RetweetUser { get; }
+        public IStatusInfo Status { get; }
+        public IUserInfo User { get; }
+        public IUserInfo RetweetUser { get; }
         public bool IsCurrentAccount { get; }
         public StatusActivity Reaction { get; }
         public IEnumerable<MediaEntityInfo> MediaEntities { get; }
@@ -45,41 +45,41 @@ namespace Liberfy
             this.Id = status.Id;
             this.Account = account;
 
-            var reaction = account.GetActivity(status.GetSourceId());
-            reaction.SetAll(status.IsFavorited ?? false, status.IsRetweeted ?? false);
+            var dataStore = account.DataStore;
 
-            StatusInfo statusInfo;
+            IStatusInfo info;
 
-            this.IsRetweet = status.RetweetedStatus != null;
-            if (this.IsRetweet)
+            if (status.RetweetedStatus != null)
             {
                 this.Type = ItemType.Retweet;
+                this.IsRetweet = true;
 
-                statusInfo = DataStore.Twitter.RegisterStatus(status.RetweetedStatus);
-                this.RetweetUser = DataStore.Twitter.RegisterAccount(status.User);
-
-                if (status.User.Id == account.Id)
-                    reaction.IsRetweeted = true;
+                info = dataStore.RegisterStatus(status.RetweetedStatus);
+                this.RetweetUser = dataStore.RegisterAccount(status.User);
             }
             else
             {
                 this.Type = ItemType.Status;
-                statusInfo = DataStore.Twitter.RegisterStatus(status);
 
-                this.IsReply = status.InReplyToStatusId.HasValue;
-                if (this.IsReply)
+                info = dataStore.RegisterStatus(status);
+
+                if (status.InReplyToStatusId.HasValue)
+                {
+                    this.IsReply = true;
                     this.InReplyToScreenName = status.InReplyToScreenName;
+                }
             }
 
 
-            this.Reaction = reaction;
+            this.Reaction = account.GetStatusActivity(info.Id);
+            this.Reaction.Set(status.IsFavorited, status.IsRetweeted);
 
-            this.Status = statusInfo;
-            this.User = statusInfo.User;
-            this.CreatedAt = statusInfo.CreatedAt;
-            this.MediaEntities = statusInfo.Attachments.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
+            this.Status = info;
+            this.User = info.User;
+            this.CreatedAt = info.CreatedAt;
+            this.MediaEntities = info.Attachments.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
             this.HasMediaEntities = this.MediaEntities?.Any() ?? false;
-            this.IsCurrentAccount = statusInfo.User.Id == account.Id;
+            this.IsCurrentAccount = info.User.Id == account.Id;
 
             this.User.PropertyChanged += this.OnUserPropertyChanged;
 
@@ -91,42 +91,40 @@ namespace Liberfy
             this.Id = status.Id;
             this.Account = account;
 
-            var reaction = account.GetActivity((status.Reblog??status).Id);
-            reaction.SetAll(status.Favourited ?? false, status.Reblogged ?? false);
+            IStatusInfo info;
 
-            StatusInfo statusInfo;
+            var dataStore = account.DataStore;
 
-            var dataStore = DataStore.Mastodon[account.Tokens.HostUrl];
-
-            this.IsRetweet = status.Reblog != null;
-            if (this.IsRetweet)
+            if (status.Reblog != null)
             {
                 this.Type = ItemType.Retweet;
+                this.IsRetweet = true;
 
-                statusInfo = dataStore.RegisterStatus(status.Reblog);
+                info = dataStore.RegisterStatus(status.Reblog);
                 this.RetweetUser = dataStore.RegisterAccount(status.Account);
-
-                if (status.Account.Id == account.Id)
-                    reaction.IsRetweeted = true;
             }
             else
             {
                 this.Type = ItemType.Status;
-                statusInfo = dataStore.RegisterStatus(status);
 
-                this.IsReply = status.InReplyToId.HasValue;
-                if (this.IsReply)
-                    this.InReplyToScreenName = status.Account.Acct;
+                info = dataStore.RegisterStatus(status);
+
+                if (status.InReplyToId.HasValue)
+                {
+                    this.IsReply = true;
+                    //this.InReplyToScreenName = status.InReplyToId;
+                }
             }
 
-            this.Reaction = reaction;
+            this.Reaction = account.GetStatusActivity(info.Id);
+            this.Reaction.Set(status.Favourited, status.Reblogged);
 
-            this.Status = statusInfo;
-            this.User = statusInfo.User;
-            this.CreatedAt = statusInfo.CreatedAt;
-            this.MediaEntities = statusInfo.Attachments.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
+            this.Status = info;
+            this.User = info.User;
+            this.CreatedAt = info.CreatedAt;
+            this.MediaEntities = info.Attachments.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
             this.HasMediaEntities = this.MediaEntities?.Any() ?? false;
-            this.IsCurrentAccount = statusInfo.User.Id == account.Id;
+            this.IsCurrentAccount = info.User.Id == account.Id;
 
             this.User.PropertyChanged += this.OnUserPropertyChanged;
 

@@ -17,7 +17,7 @@ namespace Liberfy
 {
     internal class ProfileImageCache
     {
-        private readonly ConcurrentDictionary<UserInfo, WeakReference<ImageCacheInfo>> _images = new ConcurrentDictionary<UserInfo, WeakReference<ImageCacheInfo>>();
+        private readonly ConcurrentDictionary<IUserInfo, WeakReference<ImageCacheInfo>> _images = new ConcurrentDictionary<IUserInfo, WeakReference<ImageCacheInfo>>();
         private readonly Database _dbConnection;
         private bool _isLoadTimelineMode = false;
         private SQLiteTransaction _sqlTransaction;
@@ -69,7 +69,7 @@ namespace Liberfy
             }
         }
 
-        public ImageCacheInfo GetCacheInfo(UserInfo userInfo)
+        public ImageCacheInfo GetCacheInfo(IUserInfo userInfo)
         {
             var reference = this._images.AddOrUpdate(userInfo, this.CreateCacheReference, this.UpdateCacheReference);
 
@@ -133,7 +133,7 @@ namespace Liberfy
             }
         }
 
-        private static Dictionary<string, object> CreateParameter(UserInfo userInfo)
+        private static Dictionary<string, object> CreateParameter(IUserInfo userInfo)
         {
             return new Dictionary<string, object>(5)
             {
@@ -182,7 +182,7 @@ namespace Liberfy
             }
         }
 
-        private bool TryDownloadImage(UserInfo userInfo, out MemoryStream imageStream)
+        private bool TryDownloadImage(IUserInfo userInfo, out MemoryStream imageStream)
         {
             try
             {
@@ -208,7 +208,7 @@ namespace Liberfy
             }
         }
 
-        private BitmapImage LoadImage(UserInfo userInfo)
+        private BitmapImage LoadImage(IUserInfo userInfo)
         {
             var imageUrl = userInfo.ProfileImageUrl;
 
@@ -241,12 +241,12 @@ namespace Liberfy
             return null;
         }
 
-        private async void SetImage(ImageCacheInfo cacheInfo, UserInfo userInfo)
+        private async void SetImage(ImageCacheInfo cacheInfo, IUserInfo userInfo)
         {
             cacheInfo.Image = await Task.Run(() => this.LoadImage(userInfo));
         }
 
-        private ImageCacheInfo CreateCache(UserInfo userInfo)
+        private ImageCacheInfo CreateCache(IUserInfo userInfo)
         {
             var cache = new ImageCacheInfo
             {
@@ -258,14 +258,14 @@ namespace Liberfy
             return cache;
         }
 
-        private WeakReference<ImageCacheInfo> CreateCacheReference(UserInfo userInfo)
+        private WeakReference<ImageCacheInfo> CreateCacheReference(IUserInfo userInfo)
         {
             var cache = this.CreateCache(userInfo);
 
             return new WeakReference<ImageCacheInfo>(cache);
         }
 
-        private ImageCacheInfo UpdateCache(UserInfo userInfo, ImageCacheInfo cacheInfo)
+        private ImageCacheInfo UpdateCache(IUserInfo userInfo, ImageCacheInfo cacheInfo)
         {
             if (cacheInfo.FileName != Path.GetFileName(userInfo.ProfileImageUrl))
             {
@@ -275,7 +275,7 @@ namespace Liberfy
             return cacheInfo;
         }
 
-        private WeakReference<ImageCacheInfo> UpdateCacheReference(UserInfo userInfo, WeakReference<ImageCacheInfo> reference)
+        private WeakReference<ImageCacheInfo> UpdateCacheReference(IUserInfo userInfo, WeakReference<ImageCacheInfo> reference)
         {
             if (reference.TryGetTarget(out ImageCacheInfo cacheInfo))
             {

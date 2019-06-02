@@ -12,6 +12,10 @@ namespace Liberfy.Services.Common
 
         Task Favorite(StatusItem item);
 
+        Task Unfavorite(StatusItem item);
+
         Task Retweet(StatusItem item);
+
+        Task Unretweet(StatusItem item);
     }
 }

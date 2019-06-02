@@ -39,6 +39,7 @@ namespace Liberfy.Model
 
     public enum AttachmentType
     {
+        Unknown,
         Photo,
         Gif,
         Video,

@@ -175,7 +175,7 @@ namespace Liberfy
             }
         }
 
-        protected override UserInfo GetUserInfo(User account)
+        protected override IUserInfo GetUserInfo(User account)
         {
             return this.DataStore.RegisterAccount(account);
         }

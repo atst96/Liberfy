@@ -10,7 +10,7 @@ using WpfMvvmToolkit;
 
 namespace Liberfy.Commands.Account
 {
-    internal class OpenUserWindowCommand : Command<UserInfo>
+    internal class OpenUserWindowCommand : Command<IUserInfo>
     {
         private readonly IAccount _account;
 
@@ -19,12 +19,12 @@ namespace Liberfy.Commands.Account
             this._account = account;
         }
 
-        protected override bool CanExecute(UserInfo parameter)
+        protected override bool CanExecute(IUserInfo parameter)
         {
             return true;
         }
 
-        protected override void Execute(UserInfo parameter)
+        protected override void Execute(IUserInfo parameter)
         {
             var (view, viewModel) = App.Instance.FindViewModelWithWindow<UserWindowViewModel>()
                 .FirstOrDefault(item => item.viewModel.Account.Equals(this._account) && item.viewModel.User.Equals(parameter));

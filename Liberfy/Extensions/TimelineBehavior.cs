@@ -19,71 +19,71 @@ namespace Liberfy.Behaviors
 {
     internal static class TimelineBehavior
     {
-        public static StatusInfo GetStatusInfo(DependencyObject obj)
+        public static IStatusInfo GetStatusInfo(DependencyObject obj)
         {
-            return (StatusInfo)obj.GetValue(StatusInfoProperty);
+            return (IStatusInfo)obj.GetValue(StatusInfoProperty);
         }
 
-        public static void SetStatusInfo(DependencyObject obj, StatusInfo value)
+        public static void SetStatusInfo(DependencyObject obj, IStatusInfo value)
         {
             obj.SetValue(StatusInfoProperty, value);
         }
 
         public static readonly DependencyProperty StatusInfoProperty =
             DependencyProperty.RegisterAttached("StatusInfo",
-                typeof(StatusInfo), typeof(TimelineBehavior),
+                typeof(IStatusInfo), typeof(TimelineBehavior),
                 new PropertyMetadata(null, StatusInfoChanged));
 
         private static async void StatusInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is TextBlock textBlock && e.NewValue is StatusInfo status)
+            if (d is TextBlock textBlock && e.NewValue is IStatusInfo status)
             {
                 await SetHyperlinkToPlainText(status.Entities, textBlock.Inlines);
             }
         }
 
 
-        public static UserInfo GetUserDescription(DependencyObject obj)
+        public static IUserInfo GetUserDescription(DependencyObject obj)
         {
-            return (UserInfo)obj.GetValue(UserDescriptionProperty);
+            return (IUserInfo)obj.GetValue(UserDescriptionProperty);
         }
 
-        public static void SetUserDescription(DependencyObject obj, UserInfo value)
+        public static void SetUserDescription(DependencyObject obj, IUserInfo value)
         {
             obj.SetValue(UserDescriptionProperty, value);
         }
 
         public static readonly DependencyProperty UserDescriptionProperty =
             DependencyProperty.RegisterAttached("UserDescription",
-                typeof(UserInfo), typeof(TimelineBehavior),
+                typeof(IUserInfo), typeof(TimelineBehavior),
                 new PropertyMetadata(null, UserDescriptionChanged));
 
         private static async void UserDescriptionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is TextBlock textBlock && e.NewValue is UserInfo user)
+            if (d is TextBlock textBlock && e.NewValue is IUserInfo user)
             {
                 await SetHyperlinkToPlainText(user.DescriptionEntities, textBlock.Inlines);
             }
         }
 
 
-        public static UserInfo GetUserUrl(DependencyObject obj)
+        public static IUserInfo GetUserUrl(DependencyObject obj)
         {
-            return (UserInfo)obj.GetValue(UserUrlProperty);
+            return (IUserInfo)obj.GetValue(UserUrlProperty);
         }
 
-        public static void SetUserUrl(DependencyObject obj, UserInfo value)
+        public static void SetUserUrl(DependencyObject obj, IUserInfo value)
         {
             obj.SetValue(UserUrlProperty, value);
         }
 
         public static readonly DependencyProperty UserUrlProperty =
             DependencyProperty.RegisterAttached("UserUrl",
-                typeof(UserInfo), typeof(TimelineBehavior), new PropertyMetadata(null, UserUrlChanged));
+                typeof(IUserInfo), typeof(TimelineBehavior), new PropertyMetadata(null, UserUrlChanged));
 
         private static async void UserUrlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is TextBlock textBlock && e.NewValue is UserInfo user)
+            if (d is TextBlock textBlock && e.NewValue is IUserInfo user)
             {
                 await SetHyperlinkToPlainText(user.UrlEntities, textBlock.Inlines);
             }
@@ -157,47 +157,25 @@ namespace Liberfy.Behaviors
 
                         link.Inlines.Add(entity.DisplayText);
 
-                        //switch (entity)
-                        //{
-                        //    case MentionEntity mention:
-                        //        link.Inlines.Add(text);
-                        //        break;
-
-                        //    case MediaEntity media:
-                        //        link.Inlines.Add(media.DisplayUrl);
-                        //        break;
-
-                        //    case UrlEntity url:
-                        //        link.Inlines.Add(url.DisplayUrl);
-                        //        break;
-
-                        //    case HashtagEntity symbol:
-                        //        link.Inlines.Add(text);
-                        //        break;
-
-                        //    default:
-                        //        throw new NotImplementedException();
-                        //}
-
                         inlines.Add(link);
                     }
                 }
             });
         }
 
-        public static UserInfo GetProfileImage(DependencyObject obj)
+        public static IUserInfo GetProfileImage(DependencyObject obj)
         {
-            return (UserInfo)obj.GetValue(ProfileImageProperty);
+            return (IUserInfo)obj.GetValue(ProfileImageProperty);
         }
 
-        public static void SetProfileImage(DependencyObject obj, UserInfo value)
+        public static void SetProfileImage(DependencyObject obj, IUserInfo value)
         {
             obj.SetValue(ProfileImageProperty, value);
         }
 
         public static readonly DependencyProperty ProfileImageProperty =
             DependencyProperty.RegisterAttached("ProfileImage",
-                typeof(UserInfo), typeof(TimelineBehavior),
+                typeof(IUserInfo), typeof(TimelineBehavior),
                 new PropertyMetadata(null, OnProfileImagePropertyChagned));
 
         private static async void OnProfileImagePropertyChagned(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -214,7 +192,7 @@ namespace Liberfy.Behaviors
                 return;
             }
 
-            if (e.NewValue is UserInfo userInfo)
+            if (e.NewValue is IUserInfo userInfo)
             {
                 var cacheInfo = App.ProfileImageCache.GetCacheInfo(userInfo);
 

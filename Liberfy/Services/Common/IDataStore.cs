@@ -9,7 +9,7 @@ namespace Liberfy
 {
     internal interface IDataStore
     {
-        ConcurrentDictionary<long, UserInfo> Accounts { get; }
-        ConcurrentDictionary<long, StatusInfo> Statuses { get; }
+        ConcurrentDictionary<long, IUserInfo> Accounts { get; }
+        ConcurrentDictionary<long, IStatusInfo> Statuses { get; }
     }
 }

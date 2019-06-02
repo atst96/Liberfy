@@ -85,7 +85,7 @@ namespace Liberfy
             return Task.CompletedTask;
         }
 
-        protected override UserInfo GetUserInfo(Account account)
+        protected override IUserInfo GetUserInfo(Account account)
         {
             return this.DataStore.RegisterAccount(account);
         }

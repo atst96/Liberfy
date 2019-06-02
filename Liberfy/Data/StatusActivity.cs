@@ -9,24 +9,31 @@ namespace Liberfy
 {
     internal class StatusActivity : NotificationObject
     {
-        public void SetAll(bool isFavorited, bool isRetweeted)
+        public void Set(bool? isFavorited = null, bool? isRetweeted = null)
         {
-            this.IsFavorited = isFavorited;
-            this.IsRetweeted = isRetweeted;
+            if (isFavorited.HasValue)
+            {
+                this.IsFavorited = isFavorited.Value;
+            }
+
+            if (isRetweeted.HasValue)
+            {
+                this.IsRetweeted = isRetweeted.Value;
+            }
         }
 
         private bool _isFavorited;
         public bool IsFavorited
         {
             get => this._isFavorited;
-            set => this.SetProperty(ref this._isFavorited, value);
+            private set => this.SetProperty(ref this._isFavorited, value);
         }
 
         private bool _isRetweeted;
         public bool IsRetweeted
         {
             get => this._isRetweeted;
-            set => this.SetProperty(ref this._isRetweeted, value);
+            private set => this.SetProperty(ref this._isRetweeted, value);
         }
     }
 }

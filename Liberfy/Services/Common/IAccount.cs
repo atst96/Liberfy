@@ -17,7 +17,7 @@ namespace Liberfy
         IApi Tokens { get; }
         IApiGateway ApiGateway { get; }
         IServiceConfiguration ServiceConfiguration { get; }
-        UserInfo Info { get; }
+        IUserInfo Info { get; }
         TimelineBase Timeline { get; }
         bool IsLoading { get; }
         bool IsLoggedIn { get; }
