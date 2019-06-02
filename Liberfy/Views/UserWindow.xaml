@@ -111,7 +111,7 @@
                         Style="{StaticResource NumberButtonHeader}">
                         <Label
                             Style="{StaticResource NumberButtonLabel}" 
-                            Content="{Binding User.FriendsCount, Mode=OneWay}" />
+                            Content="{Binding User.FollowingsCount, Mode=OneWay}" />
                     </HeaderedContentControl>
                 </Button>
                 <Button Style="{StaticResource NumberButton}">

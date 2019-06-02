@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -38,7 +39,7 @@ namespace Liberfy.Services.Mastodon
         private static void AddText(LinkedList<IEntity> entities, string text, Emoji[] emojis)
         {
             if (emojis?.Length == 0)
-            {
+            {   
                 AddText(entities, text);
                 return;
             }
@@ -92,7 +93,7 @@ namespace Liberfy.Services.Mastodon
             }
         }
 
-        public IEnumerable<IEntity> Build()
+        public IReadOnlyList<IEntity> Build()
         {
             const string externalLinkRel = "nofollow noopener";
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -15,10 +16,10 @@ namespace Liberfy
         public ServiceType Service { get; } = ServiceType.Twitter;
 
         public long Id { get; }
-        public long[] Contributors { get; }
-        public SocialApis.Twitter.Coordinates<SocialApis.Twitter.Point> Coordinates { get; set; }
+        public IReadOnlyList<long> Contributors { get; }
+        public SocialApis.Twitter.Coordinates<SocialApis.Twitter.Point> Coordinates { get; }
         public DateTimeOffset CreatedAt { get; }
-        public Attachment[] Attachments { get; }
+        public IReadOnlyList<Attachment> Attachments { get; }
         public string FilterLevel { get; }
         public long InReplyToStatusId { get; }
         public long InReplyToUserId { get; }
@@ -34,8 +35,8 @@ namespace Liberfy
         public StatusVisibility Visibility { get; }
 
         private ITextEntityBuilder _textEntitiesBuilder;
-        private IEnumerable<IEntity> _entities;
-        public IEnumerable<IEntity> Entities
+        private IReadOnlyList<IEntity> _entities;
+        public IReadOnlyList<IEntity> Entities
         {
             get
             {
@@ -91,7 +92,6 @@ namespace Liberfy
 
             if (status.Contributors != null)
             {
-
             }
 
             if (status.Coordinates != null)
@@ -124,23 +124,24 @@ namespace Liberfy
 
         private static Attachment[] GetAttachments(SocialApis.Twitter.MediaEntity[] entities)
         {
-            var results = new Attachment[entities?.Length ?? 0];
+            int length = entities?.Length ?? 0;
+            var attachments = new Attachment[length];
 
-            for (int idx = 0; idx < results.Length; ++idx)
+            for (int idx = 0; idx < length; ++idx)
             {
-                results[idx] = new Attachment(entities[idx]);
+                attachments[idx] = new Attachment(entities[idx]);
             }
 
-            return results;
+            return attachments;
         }
 
         private static (string url, string sourceName) ExpandClientInfo(Status status)
         {
             var match = Regexes.TwitterSourceHtml.Match(status.Source);
 
-            return match?.Success ?? false
-                ? (string.Empty, status.Source)
-                : (match.Groups["url"].Value, match.Groups["name"].Value);
+            return match.Success
+                ? (match.Groups["url"].Value, match.Groups["name"].Value)
+                : (string.Empty, match.Value);
         }
     }
 }

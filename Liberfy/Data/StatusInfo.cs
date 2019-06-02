@@ -19,11 +19,11 @@ namespace Liberfy
     {
         ServiceType Service { get; }
         long Id { get; }
-        long[] Contributors { get; }
+        IReadOnlyList<long> Contributors { get; }
         TwitterApi.Coordinates<TwitterApi.Point> Coordinates { get; }
         DateTimeOffset CreatedAt { get; }
-        IEnumerable<IEntity> Entities { get; }
-        Attachment[] Attachments { get; }
+        IReadOnlyList<IEntity> Entities { get; }
+        IReadOnlyList<Attachment> Attachments { get; }
         string FilterLevel { get; }
         long InReplyToStatusId { get; }
         long InReplyToUserId { get; }

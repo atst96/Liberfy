@@ -14,10 +14,10 @@ namespace Liberfy
         public ServiceType Service { get; } = ServiceType.Mastodon;
 
         public long Id { get; }
-        public long[] Contributors { get; }
-        public SocialApis.Twitter.Coordinates<SocialApis.Twitter.Point> Coordinates { get; set; }
+        public IReadOnlyList<long> Contributors { get; }
+        public SocialApis.Twitter.Coordinates<SocialApis.Twitter.Point> Coordinates { get; }
         public DateTimeOffset CreatedAt { get; }
-        public Model.Attachment[] Attachments { get; }
+        public IReadOnlyList<Model.Attachment> Attachments { get; }
         public string FilterLevel { get; }
         public long InReplyToStatusId { get; }
         public long InReplyToUserId { get; }
@@ -33,8 +33,8 @@ namespace Liberfy
         public StatusVisibility Visibility { get; }
 
         private ITextEntityBuilder _textEntitiesBuilder;
-        private IEnumerable<IEntity> _entities;
-        public IEnumerable<IEntity> Entities
+        private IReadOnlyList<IEntity> _entities;
+        public IReadOnlyList<IEntity> Entities
         {
             get
             {
@@ -104,9 +104,10 @@ namespace Liberfy
 
         private static Model.Attachment[] GetAttachments(SocialApis.Mastodon.Attachment[] attachments)
         {
-            var results = new Model.Attachment[attachments?.Length ?? 0];
+            int length = attachments?.Length ?? 0;
+            var results = new Model.Attachment[length];
 
-            for (int idx = 0; idx < results.Length; ++idx)
+            for (int idx = 0; idx < length; ++idx)
             {
                 results[idx] = new Model.Attachment(attachments[idx]);
             }

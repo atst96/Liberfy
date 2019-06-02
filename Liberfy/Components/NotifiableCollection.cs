@@ -99,13 +99,13 @@ namespace Liberfy
 
         public void AddRange(IEnumerable<T> collection)
         {
-            var items = NormalizeCollection(collection);
+            var changedItems = collection as IList ?? collection.ToArray();
 
-            this._list.AddRange(items);
+            this._list.AddRange(collection);
 
             this.RaiseCollectionChanged(
                 new NotifyCollectionChangedEventArgs(
-                    NotifyCollectionChangedAction.Add, (IList)items));
+                    NotifyCollectionChangedAction.Add, (IList)changedItems));
 
             this.ApplyItemsCount();
         }
@@ -123,13 +123,13 @@ namespace Liberfy
 
         public void InsertRange(int index, IEnumerable<T> collection)
         {
-            var items = NormalizeCollection(collection);
+            var changedItems = collection as IList ?? collection.ToArray();
 
-            this._list.InsertRange(index, items);
+            this._list.InsertRange(index, collection);
 
             this.RaiseCollectionChanged(
                 new NotifyCollectionChangedEventArgs(
-                    NotifyCollectionChangedAction.Add, (IList)items, index));
+                    NotifyCollectionChangedAction.Add, (IList)changedItems, index));
 
             this.ApplyItemsCount();
         }
@@ -290,11 +290,6 @@ namespace Liberfy
             this.HasItems = this.Count > 0;
 
             this.OnItmesCountChanged();
-        }
-
-        private static List<T> NormalizeCollection(IEnumerable<T> collection)
-        {
-            return collection.ToList();
         }
 
         public void Reset() => this.Clear();

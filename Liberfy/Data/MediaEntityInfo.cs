@@ -16,7 +16,7 @@ namespace Liberfy
 
         public StatusItem Item { get; }
 
-        public Attachment[] Entities { get; }
+        public IReadOnlyList<Attachment> Entities { get; }
 
         public Attachment CurrentAttachment { get; }
 

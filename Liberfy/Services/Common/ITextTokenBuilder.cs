@@ -9,6 +9,6 @@ namespace Liberfy
 {
     internal interface ITextEntityBuilder
     {
-        IEnumerable<IEntity> Build();
+        IReadOnlyList<IEntity> Build();
     }
 }

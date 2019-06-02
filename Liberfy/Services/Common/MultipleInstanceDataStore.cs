@@ -9,17 +9,17 @@ namespace Liberfy
 {
     internal class MultipleInstanceDataStore<T>
     {
-        private ConcurrentDictionary<string, T> _instances;
+        private readonly ConcurrentDictionary<Uri, T> _instances;
 
         public MultipleInstanceDataStore()
         {
-            this._instances = new ConcurrentDictionary<string, T>();
+            this._instances = new ConcurrentDictionary<Uri, T>();
         }
 
         public T this[Uri uri]
         {
-            get => this._instances.GetOrAdd(uri.Host, _ => (T)Activator.CreateInstance(typeof(T), uri));
-            set => this._instances.AddOrUpdate(uri.Host, value, (_, __) => value);
+            get => this._instances.GetOrAdd(uri, _ => (T)Activator.CreateInstance(typeof(T), uri));
+            set => this._instances.AddOrUpdate(uri, value, (_, __) => value);
         }
     }
 }
