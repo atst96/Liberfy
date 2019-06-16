@@ -19,7 +19,7 @@ namespace Liberfy.Properties {
     // または Visual Studio のようなツールを使用して自動生成されました。
     // メンバーを追加または削除するには、.ResX ファイルを編集して、/str オプションと共に
     // ResGen を実行し直すか、または VS プロジェクトをビルドし直します。
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -57,6 +57,37 @@ namespace Liberfy.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   &lt;!DOCTYPE html&gt;
+        ///&lt;html&gt;
+        ///&lt;head&gt;
+        ///    &lt;meta charset=&quot;UTF-8&quot;&gt;
+        ///    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
+        ///    &lt;style&gt;
+        ///        html, body {
+        ///            padding: 0;
+        ///            margin: 0;
+        ///            width: 100%;
+        ///            height: 100%;
+        ///            max-width: 100%;
+        ///            max-height: 100%;
+        ///            overflow: hidden;
+        ///        }
+        ///
+        ///        video#video_preview {
+        ///            padding: 0;
+        ///            margin: 0;
+        ///            width: 100%;
+        ///            height: 100%;
+        ///        }
+        ///    &lt;/ [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string VideoPlayerTemplate {
+            get {
+                return ResourceManager.GetString("VideoPlayerTemplate", resourceCulture);
             }
         }
     }

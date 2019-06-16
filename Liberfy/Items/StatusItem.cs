@@ -25,8 +25,9 @@ namespace Liberfy
         public IUserInfo RetweetUser { get; }
         public bool IsCurrentAccount { get; }
         public StatusActivity Reaction { get; }
-        public IEnumerable<MediaEntityInfo> MediaEntities { get; }
-        public bool HasMediaEntities { get; }
+
+        public bool HasMediaItems { get; }
+        public IEnumerable<MediaAttachmentInfo> MediaItems { get; }
 
         public StatusCommandGroup Commands { get; }
 
@@ -77,9 +78,11 @@ namespace Liberfy
             this.Status = info;
             this.User = info.User;
             this.CreatedAt = info.CreatedAt;
-            this.MediaEntities = info.Attachments.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
-            this.HasMediaEntities = this.MediaEntities?.Any() ?? false;
             this.IsCurrentAccount = info.User.Id == account.Id;
+
+            this.MediaItems = info.Attachments
+                .Select((item, index) => new MediaAttachmentInfo(this, index));
+            this.HasMediaItems = this.MediaItems.Any();
 
             this.User.PropertyChanged += this.OnUserPropertyChanged;
 
@@ -122,9 +125,11 @@ namespace Liberfy
             this.Status = info;
             this.User = info.User;
             this.CreatedAt = info.CreatedAt;
-            this.MediaEntities = info.Attachments.Select(mediaEntity => new MediaEntityInfo(account, this, mediaEntity));
-            this.HasMediaEntities = this.MediaEntities?.Any() ?? false;
             this.IsCurrentAccount = info.User.Id == account.Id;
+
+            this.MediaItems = info.Attachments
+                .Select((item, index) => new MediaAttachmentInfo(this, index));
+            this.HasMediaItems = this.MediaItems.Any();
 
             this.User.PropertyChanged += this.OnUserPropertyChanged;
 

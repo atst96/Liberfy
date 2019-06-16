@@ -91,5 +91,15 @@ namespace Liberfy.Components
                 Owner = this._view,
             }.ShowDialog();
         }
+
+        public void PreviewMedia(MediaAttachmentInfo mediaItem)
+        {
+            var previewWindow = new MediaPreviewWindow(mediaItem)
+            {
+                Owner = this._view,
+            };
+
+            previewWindow.Show();
+        }
     }
 }

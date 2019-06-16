@@ -6,7 +6,9 @@
     xmlns:app="clr-namespace:Liberfy"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:conv="clr-namespace:Liberfy.Converter"
-    xmlns:b="clr-namespace:Liberfy.Behaviors">
+    xmlns:b="clr-namespace:Liberfy.Behaviors"
+    xmlns:views="clr-namespace:Liberfy.Views"
+    xmlns:model="clr-namespace:Liberfy.Model">
 
     <conv:DummyConverter x:Key="DummyConverter" />
     <conv:LocalTimeConverter x:Key="LocalTimeConverter" />
@@ -242,16 +244,21 @@
                      Center="24, 24" />
 
 
-    <DataTemplate x:Key="MediaItemTemplate" DataType="{x:Type app:MediaEntityInfo}">
-        <Button Style="{StaticResource TimelineImageButton}">
+    <DataTemplate x:Key="MediaItemTemplate" DataType="{x:Type vm:MediaAttachmentInfo}">
+        <Button
+            Style="{StaticResource TimelineImageButton}"
+            Command="{Binding DataContext.MediaPreviewCommand, Mode=OneTime, RelativeSource={RelativeSource AncestorType={x:Type views:MainWindow}}}"
+            CommandParameter="{Binding Mode=OneTime}">
             <Grid>
                 <Image
-                    Source="{Binding CurrentAttachment.PreviewUrl, Mode=OneTime, IsAsync=True}" 
+                    Source="{Binding Item.PreviewUrl, Mode=OneTime, IsAsync=True}" 
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
                     Stretch="UniformToFill" />
 
                 <Border
+                    x:Name="PART_TextBorder"
+                    Visibility="Collapsed"
                     Margin="6"
                     Padding="8,3"
                     Background="#88000000"
@@ -267,20 +274,38 @@
         </Button>
 
         <DataTemplate.Triggers>
-            <DataTrigger Binding="{Binding CurrentAttachment.Type, Mode=OneTime}" Value="Photo">
-                <Setter TargetName="attachmentText" Property="Text" Value="PHOTO" />
-            </DataTrigger>
-
-            <DataTrigger Binding="{Binding CurrentAttachment.Type, Mode=OneTime}" Value="Gif">
+            <DataTrigger Binding="{Binding Item.Type, Mode=OneTime}" Value="Gif">
+                <Setter TargetName="PART_TextBorder" Property="Visibility" Value="Visible" />
                 <Setter TargetName="attachmentText" Property="Text" Value="GIF" />
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding CurrentAttachment.Type, Mode=OneTime}" Value="Video">
+            <DataTrigger Binding="{Binding Item.Type, Mode=OneTime}" Value="Video">
+                <Setter TargetName="PART_TextBorder" Property="Visibility" Value="Visible" />
                 <Setter TargetName="attachmentText" Property="Text" Value="VIDEO" />
             </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>
 
+    <DataTemplate
+        x:Key="PhotoAttachmentTemplate"
+        DataType="{x:Type model:Attachment}">
+        <Grid>
+            <Image
+                Stretch="Uniform"
+                StretchDirection="DownOnly"
+                Source="{Binding OriginalUrl, Mode=OneTime}"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch" />
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate
+        x:Key="VideoAttachmentTemplate"
+        DataType="{x:Type model:Attachment}">
+        <WebBrowser
+            app:ElementBehavior.WebBrowserVideoPlayerUrl="{Binding OriginalUrl, Mode=OneTime}" />
+    </DataTemplate>
+    
     <!--#region Item templates-->
 
     <DataTemplate x:Key="StatusItemTemplate" DataType="{x:Type app:StatusItem}">
@@ -396,7 +421,7 @@
 
                 <ItemsControl
                     x:Name="media"
-                    ItemsSource="{Binding MediaEntities, Mode=OneTime}"
+                    ItemsSource="{Binding MediaItems, Mode=OneTime}"
                     ItemTemplate="{StaticResource MediaItemTemplate}"
                     Visibility="{DynamicResource UI.Tweet.Attachment.Images.Visibility}">
                     <ItemsControl.ItemsPanel>
@@ -453,7 +478,7 @@
         </Grid>
 
         <DataTemplate.Triggers>
-            <DataTrigger Binding="{Binding HasMediaEntities, Mode=OneTime}" Value="False">
+            <DataTrigger Binding="{Binding HasMediaItems, Mode=OneTime}" Value="False">
                 <Setter TargetName="media" Property="Visibility" Value="Collapsed" />
             </DataTrigger>
         </DataTemplate.Triggers>

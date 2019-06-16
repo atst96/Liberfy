@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Liberfy
 {
@@ -59,8 +61,43 @@ namespace Liberfy
 
         public static readonly DependencyProperty CollapseIsNullProperty =
             DependencyProperty.RegisterAttached("CollapseIsNull",
-                typeof(object), typeof(ElementBehavior), 
+                typeof(object), typeof(ElementBehavior),
                 new PropertyMetadata(null,
                     (obj, args) => obj.SetValue(UIElement.VisibilityProperty, args.NewValue == null ? Visibility.Collapsed : Visibility.Visible)));
+
+
+
+        public static string GetWebBrowserVideoPlayerUrl(DependencyObject obj)
+        {
+            return (string)obj.GetValue(WebBrowserVideoPlayerUrlProperty);
+        }
+
+        public static void SetWebBrowserVideoPlayerUrl(DependencyObject obj, string value)
+        {
+            obj.SetValue(WebBrowserVideoPlayerUrlProperty, value);
+        }
+
+        public static readonly DependencyProperty WebBrowserVideoPlayerUrlProperty =
+            DependencyProperty.RegisterAttached("WebBrowserVideoPlayerUrl",
+                typeof(string), typeof(ElementBehavior),
+                new PropertyMetadata(null, OnWebBrowserVideoPlayerUrlChanged));
+
+        private static void OnWebBrowserVideoPlayerUrlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(d is WebBrowser webBrowser))
+                throw new NotImplementedException();
+
+            if (e.NewValue is string videoUrl)
+            {
+                var videoPlayerTemplate = Properties.Resources.VideoPlayerTemplate;
+                var html = videoPlayerTemplate.Replace("{%video_url%}", WebUtility.HtmlEncode(videoUrl));
+
+                webBrowser.NavigateToString(html);
+            }
+            else
+            {
+                webBrowser.Navigate("about:blank");
+            }
+        }
     }
 }

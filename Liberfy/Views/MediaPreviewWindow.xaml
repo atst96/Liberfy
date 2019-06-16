@@ -1,0 +1,131 @@
+﻿<Window
+    x:Class="Liberfy.Views.MediaPreviewWindow"
+    x:ClassModifier="internal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="MediaPreviewWindow" Height="450" Width="800"
+    xmlns:app="clr-namespace:Liberfy"
+    xmlns:vm="clr-namespace:Liberfy.ViewModels"
+    xmlns:tplsel="clr-namespace:Liberfy.TemplateSelectors"
+    xmlns:model="clr-namespace:Liberfy.Model"
+    DataContext="{app:ViewModelConnector vm:MediaPreviewWindowViewModel}"
+    d:DataContext="{d:DesignInstance vm:MediaPreviewWindowViewModel, IsDesignTimeCreatable=True}">
+    <Grid
+        Background="#FF444444">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ContentPresenter
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Content="{Binding SelectedItem, ElementName=attachmentList}">
+            <ContentPresenter.ContentTemplateSelector>
+                <tplsel:AttachmentTemplateSelector />
+            </ContentPresenter.ContentTemplateSelector>
+        </ContentPresenter>
+
+        <Grid
+            Grid.Row="1"
+            Background="#FF333333"
+            app:ElementBehavior.Visible="{Binding IsShowNavigator, Mode=OneWay}" />
+
+        <Grid
+            Grid.Row="1"
+            HorizontalAlignment="Center"
+            app:ElementBehavior.Visible="{Binding IsShowNavigator, Mode=OneWay}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="40" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                Grid.Column="0"
+                Margin="0,0,4px,0"
+                Padding="10"
+                Style="{StaticResource SimpleButtonStyle}"
+                Background="Transparent"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Command="{Binding SelectPreviousAttachmentCommand, Mode=OneTime}">
+                <app:GeometryIcon
+                    Width="12" Height="12"
+                    Data="{StaticResource FontAwesome.Icon.ChevronLeft}" />
+            </Button>
+            
+            <Button
+                Grid.Column="2"
+                Margin="4px,0,0,0"
+                Padding="10"
+                Style="{StaticResource SimpleButtonStyle}"
+                Background="Transparent"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Command="{Binding SelectNextAttachmentCommand, Mode=OneTime}">
+                <app:GeometryIcon
+                    Width="12" Height="12"
+                    Data="{StaticResource FontAwesome.Icon.ChevronRight}" />
+            </Button>
+
+            <ListBox
+                x:Name="attachmentList"
+                Grid.Column="1"
+                BorderThickness="0"
+                Background="Transparent"
+                ItemsSource="{Binding Attachments, Mode=OneWay}"
+                SelectedIndex="{Binding SelectedAttachmentIndex, Mode=TwoWay}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type model:Attachment}">
+                        <Image
+                            Stretch="UniformToFill"
+                            Source="{Binding PreviewUrl, Mode=OneTime}"
+                            RenderOptions.BitmapScalingMode="HighQuality" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="8,6" />
+                        <Setter Property="Width" Value="80" />
+                        <Setter Property="Height" Value="80" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Grid
+                                        x:Name="PART_Grid">
+                                        <ContentPresenter
+                                            Margin="{TemplateBinding Padding}"
+                                            ContentSource="Content"
+                                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch" />
+                                    </Grid>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="PART_Grid" Property="Background" Value="#44000000" />
+                                        </Trigger>
+
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="PART_Grid" Property="Background" Value="#22FFFFFF" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </Grid>
+    </Grid>
+</Window>

@@ -22,9 +22,22 @@ namespace Liberfy.Model
             this.Id = media.Id;
             this.Url = media.Url;
             this.PreviewUrl = media.MediaUrl;
-            this.OriginalUrl = media.MediaUrl;
             this.Description = media.Unwound?.Description;
             this.Type = TwitterValueConverter.ToAttachmentType(media.Type);
+
+            if (!media.VideoInfo.HasValue)
+            {
+                this.OriginalUrl = media.MediaUrl;
+            }
+            else
+            {
+                var videoList = media.VideoInfo.Value.Variants;
+                var videoItem = videoList
+                    .Where(video => video.ContentType.Equals("video/mp4"))
+                    .FirstOrDefault();
+
+                this.OriginalUrl = videoItem.Url;
+            }
         }
 
         public Attachment(MastodonApi.Attachment attachment)
@@ -34,6 +47,18 @@ namespace Liberfy.Model
             this.PreviewUrl = attachment.PreviewUrl;
             this.Description = attachment.Description;
             this.Type = MastodonValueConverter.ToAttachmentType(attachment.Type);
+
+            this.OriginalUrl = attachment.PreviewUrl;
+
+            var meta = attachment.Meta;
+            //if (meta.Original != null)
+            //{
+            //    this.OriginalUrl = attachment.RemoteUrl;
+            //}
+            //else
+            //{
+            //    this.OriginalUrl = attachment.RemoteUrl;
+            //}
         }
     }
 

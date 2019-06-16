@@ -19,6 +19,8 @@ namespace Liberfy.ViewModels
             this.Accounts = AccountManager.Accounts;
             this.SelectedAccount = this.Accounts.FirstOrDefault();
             this.WindowStatus = App.Setting.Window.Main;
+
+            this.MediaPreviewCommand = this.RegisterCommand(new DelegateCommand<MediaAttachmentInfo>(this.MediaPreview));
         }
 
         public IEnumerable<IAccount> Accounts { get; }
@@ -44,5 +46,12 @@ namespace Liberfy.ViewModels
         public Command<IAccount> OpenTweetWindowCommand => this._openTweetWindowCommand ??= this.RegisterCommand(new OpenTweetWindowCommand(this));
 
         public IEnumerable<ColumnBase> Columns { get; } = TimelineBase.Columns;
+
+        public Command<MediaAttachmentInfo> MediaPreviewCommand { get; }
+
+        private void MediaPreview(MediaAttachmentInfo mediaItemInfo)
+        {
+            this.WindowService.PreviewMedia(mediaItemInfo);
+        }
     }
 }
