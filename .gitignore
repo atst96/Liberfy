@@ -4,10 +4,9 @@ obj/
 .vs/
 /Liberfy/Liberfy.csproj.user
 /Liberfy.VC.db
-/Liberfy/Defines_secret.cs
+/Liberfy/Config.cs
 /Liberfy/obj
 /Liberfy/dev_*.cs
 /packages
 /ApiTest
-/Liberfy/Config.Develop.cs
 /SyncToy_*.dat
