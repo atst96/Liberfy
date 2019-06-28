@@ -4,7 +4,6 @@ obj/
 .vs/
 /Liberfy/Liberfy.csproj.user
 /Liberfy.VC.db
-/Liberfy/Config.cs
 /Liberfy/obj
 /Liberfy/dev_*.cs
 /packages
