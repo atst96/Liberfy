@@ -84,53 +84,49 @@ namespace Liberfy
         private static Bitmap ResizeImage(Bitmap srcBitmap, int width, int height)
         {
             var destImage = new Bitmap(width, height);
+            using var g = Graphics.FromImage(destImage);
 
-            using (var g = Graphics.FromImage(destImage))
-            {
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.DrawImage(srcBitmap, 0, 0, width, height);
-            }
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.DrawImage(srcBitmap, 0, 0, width, height);
 
             return destImage;
         }
 
         private static void ShrinkImageData(ref MemoryStream refStream, int imageSize = 128)
         {
-            using (var srcImage = new Bitmap(refStream))
+            using var srcImage = new Bitmap(refStream);
+
+            if (srcImage.Width <= imageSize && srcImage.Height <= imageSize)
             {
-                if (srcImage.Width <= imageSize && srcImage.Height <= imageSize)
-                {
-                    refStream.Position = 0;
-                    return;
-                }
-
-                int resizeWidth, resizeHeight;
-
-                if (srcImage.Width > srcImage.Height)
-                {
-                    resizeHeight = (int)(imageSize * (srcImage.Height / (double)srcImage.Width));
-                    resizeWidth = imageSize;
-                }
-                else if (srcImage.Width < srcImage.Height)
-                {
-                    resizeWidth = (int)(imageSize * (srcImage.Width / (double)srcImage.Height));
-                    resizeHeight = imageSize;
-                }
-                else
-                {
-                    resizeWidth = imageSize;
-                    resizeHeight = imageSize;
-                }
-
-                using (var srcStream = refStream)
-                using (var destImage = ResizeImage(srcImage, resizeWidth, resizeHeight))
-                {
-                    var imageStream = new MemoryStream();
-                    destImage.Save(imageStream, ImageFormat.Tiff);
-
-                    refStream = imageStream;
-                }
+                refStream.Position = 0;
+                return;
             }
+
+            int resizeWidth, resizeHeight;
+
+            if (srcImage.Width > srcImage.Height)
+            {
+                resizeHeight = (int)(imageSize * (srcImage.Height / (double)srcImage.Width));
+                resizeWidth = imageSize;
+            }
+            else if (srcImage.Width < srcImage.Height)
+            {
+                resizeWidth = (int)(imageSize * (srcImage.Width / (double)srcImage.Height));
+                resizeHeight = imageSize;
+            }
+            else
+            {
+                resizeWidth = imageSize;
+                resizeHeight = imageSize;
+            }
+
+            using var destImage = ResizeImage(srcImage, resizeWidth, resizeHeight);
+            var imageStream = new MemoryStream();
+
+            destImage.Save(imageStream, ImageFormat.Tiff);
+            refStream.Dispose();
+
+            refStream = imageStream;
         }
 
         private static Dictionary<string, object> CreateParameter(IUserInfo userInfo)
@@ -145,26 +141,25 @@ namespace Liberfy
 
         private bool TryFindCache(IDictionary<string, object> @params, string imageFileName, out byte[] imageData)
         {
-            var database = this._dbConnection;
+            var db = this._dbConnection;
 
-            if (database == null || !database.IsConnected)
+            if (db == null || !db.IsConnected)
             {
                 imageData = null;
                 return false;
             }
 
-            using (var query = database.ExecuteReader(Database.QueryCollection.SelectProfileImageCacheData, @params))
-            {
-                if (query.Read())
-                {
-                    var filename = query["filename"] as string;
-                    var data = query["image_data"] as byte[];
+            using var query = db.ExecuteReader(Database.QueryCollection.SelectProfileImageCacheData, @params);
 
-                    if (imageFileName == filename && data?.Length > 0)
-                    {
-                        imageData = data;
-                        return true;
-                    }
+            if (query.Read())
+            {
+                var filename = query["filename"] as string;
+                var data = query["image_data"] as byte[];
+
+                if (imageFileName == filename && data?.Length > 0)
+                {
+                    imageData = data;
+                    return true;
                 }
             }
 
@@ -188,16 +183,15 @@ namespace Liberfy
             {
                 var request = WebRequest.CreateHttp(userInfo.ProfileImageUrl);
 
-                using (var response = request.GetResponse())
-                using (var stream = response.GetResponseStream())
-                {
-                    var dataStream = new MemoryStream();
-                    stream.CopyTo(dataStream);
+                var response = request.GetResponse();
+                var stream = response.GetResponseStream();
 
-                    ProfileImageCache.ShrinkImageData(ref dataStream);
+                var dataStream = new MemoryStream();
+                stream.CopyTo(dataStream);
 
-                    imageStream = dataStream;
-                }
+                ProfileImageCache.ShrinkImageData(ref dataStream);
+
+                imageStream = dataStream;
 
                 return true;
             }

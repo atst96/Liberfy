@@ -69,59 +69,54 @@ namespace Liberfy
 
         public SQLiteDataReader ExecuteReader(string query)
         {
-            using (var command = this.CreateCommand(query))
-            {
-                return command.ExecuteReader();
-            }
+            using var command = this.CreateCommand(query);
+
+            return command.ExecuteReader();
         }
 
         public SQLiteDataReader ExecuteReader(string query, IDictionary<string, object> values)
         {
             var columns = values.Keys;
 
-            using (var command = this.CreateCommand(query))
+            using var command = this.CreateCommand(query);
+
+            foreach (var kvp in values)
             {
-                foreach (var kvp in values)
-                {
-                    command.Parameters.AddWithValue(kvp.Key, kvp.Value);
-                }
-
-                command.Prepare();
-
-                return command.ExecuteReader();
+                command.Parameters.AddWithValue(kvp.Key, kvp.Value);
             }
+
+            command.Prepare();
+
+            return command.ExecuteReader();
         }
 
         public void ExecuteNonQuery(string query)
         {
-            using (var command = this.CreateCommand(query))
-            {
-                command.ExecuteNonQuery();
-            }
+            using var command = this.CreateCommand(query);
+
+            command.ExecuteNonQuery();
         }
 
         public void ExecuteNonQuery(string query, IDictionary<string, object> values)
         {
-            using (var command = this.CreateCommand(query))
-            {
-                foreach (var kvp in values)
-                {
-                    command.Parameters.AddWithValue(kvp.Key, kvp.Value);
-                }
+            using var command = this.CreateCommand(query);
 
-                command.ExecuteNonQuery();
+            foreach (var kvp in values)
+            {
+                command.Parameters.AddWithValue(kvp.Key, kvp.Value);
             }
+
+            command.ExecuteNonQuery();
         }
 
         public IEnumerable<SQLiteDataReader> Select(string tableName)
         {
-            using (var command = this.CreateCommand("SELECT * FROM " + tableName))
-            using (var reader = command.ExecuteReader())
+            using var command = this.CreateCommand("SELECT * FROM " + tableName);
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
             {
-                while (reader.Read())
-                {
-                    yield return reader;
-                }
+                yield return reader;
             }
         }
 
@@ -132,31 +127,28 @@ namespace Liberfy
             var columnsText = string.Join(",", columns);
             var valuesText = string.Join(",", columns.Select(key => "@" + key));
 
-            using (var command = CreateCommand())
+            using var command = this.CreateCommand();
+
+            command.CommandText = $"INSERT INTO {tableName} ({columnsText}) VALUES ({valuesText})";
+
+            foreach (var kvp in values)
             {
-                command.CommandText = $"INSERT INTO {tableName} ({columnsText}) VALUES ({valuesText})";
-
-                foreach (var kvp in values)
-                {
-                    command.Parameters.AddWithValue(kvp.Key, kvp.Value);
-                }
-
-                command.Prepare();
-
-                command.ExecuteNonQuery();
+                command.Parameters.AddWithValue(kvp.Key, kvp.Value);
             }
+
+            command.Prepare();
+
+            command.ExecuteNonQuery();
         }
 
         public IList<string> EnumerateTableNames()
         {
             var tableNames = new List<string>();
+            using var reader = this.ExecuteReader(QueryCollection.SelectTables);
 
-            using (var reader = ExecuteReader(QueryCollection.SelectTables))
+            while (reader.Read())
             {
-                while (reader.Read())
-                {
-                    tableNames.Add(reader.GetString(0));
-                }
+                tableNames.Add(reader.GetString(0));
             }
 
             return tableNames;

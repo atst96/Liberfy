@@ -45,18 +45,16 @@ namespace Liberfy.ViewModels
 
         private bool GetAutoStartupEnabled()
         {
-            using (var reg = CreateAutoStartuRegSubKey())
-            {
-                var path = Regex.Escape(App.AssemblyInfo.Location);
+            using var reg = this.CreateAutoStartuRegSubKey();
+            var path = Regex.Escape(App.AssemblyInfo.Location);
 
-                return reg.GetValue(App.Name) is string regKeyValue
-                    && !string.IsNullOrEmpty(regKeyValue)
-                    && Regex.IsMatch(regKeyValue, $@"^(""{path}""|{path})(?<params>\s+.*)?$", RegexOptions.IgnoreCase);
-            }
+            return reg.GetValue(App.Name) is string regKeyValue
+                && !string.IsNullOrEmpty(regKeyValue)
+                && Regex.IsMatch(regKeyValue, $@"^(""{path}""|{path})(?<params>\s+.*)?$", RegexOptions.IgnoreCase);
         }
 
         public bool IsAccountPage { get; private set; }
-        
+
         private int _tabPageIndex;
         public int TabPageIndex
         {
@@ -91,16 +89,15 @@ namespace Liberfy.ViewModels
                     bool isAutoStartupEnabled = this.GetAutoStartupEnabled();
                     if (object.Equals(isAutoStartupEnabled, value)) return;
 
-                    using (var reg = this.CreateAutoStartuRegSubKey())
+                    using var reg = this.CreateAutoStartuRegSubKey();
+
+                    if (isAutoStartupEnabled)
                     {
-                        if (isAutoStartupEnabled)
-                        {
-                            reg.DeleteValue(App.Name);
-                        }
-                        else
-                        {
-                            reg.SetValue(App.Name, $"\"{App.AssemblyInfo.Location}\" /startup");
-                        }
+                        reg.DeleteValue(App.Name);
+                    }
+                    else
+                    {
+                        reg.SetValue(App.Name, $"\"{App.AssemblyInfo.Location}\" /startup");
                     }
 
                     this.DialogService.InformationMessage($"自動起動を{(value ? "有効" : "無効")}にしました");
@@ -129,7 +126,7 @@ namespace Liberfy.ViewModels
 
         public IReadOnlyDictionary<TextFormattingMode, string> TextRenderingModeList { get; } = new Dictionary<TextFormattingMode, string>
         {
-            [TextFormattingMode.Ideal  ] = "標準",
+            [TextFormattingMode.Ideal] = "標準",
             [TextFormattingMode.Display] = "GDI互換",
         };
 

@@ -19,16 +19,13 @@ namespace Liberfy.Utilieis
 
         public static async Task<T> DeserializeFileAsync<T>(string path)
         {
-            var stream = FileContentUtility.OpenRead(path);
+            using var stream = FileContentUtility.OpenRead(path);
             if (stream == null)
             {
                 return default;
             }
 
-            using (stream)
-            {
-                return await DeserializeAsync<T>(stream).ConfigureAwait(false);
-            }
+            return await DeserializeAsync<T>(stream).ConfigureAwait(false);
         }
 
         public static Task SerializeAsync<T>(T @object, Stream stream)
@@ -38,17 +35,13 @@ namespace Liberfy.Utilieis
 
         public static async Task SerializeFileAsync<T>(T @object, string path)
         {
-            using (var bufferStream = new MemoryStream())
-            {
-                await SerializeAsync(@object, bufferStream).ConfigureAwait(false);
+            using var bufferStream = new MemoryStream();
+            await SerializeAsync(@object, bufferStream).ConfigureAwait(false);
 
-                using (var outputStream = FileContentUtility.OpenCreate(path))
-                {
-                    bufferStream.Seek(0, SeekOrigin.Begin);
+            using var outputStream = FileContentUtility.OpenCreate(path);
+            bufferStream.Seek(0, SeekOrigin.Begin);
 
-                    await bufferStream.CopyToAsync(outputStream).ConfigureAwait(false);
-                }
-            }
+            await bufferStream.CopyToAsync(outputStream).ConfigureAwait(false);
         }
     }
 }

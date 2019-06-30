@@ -38,26 +38,24 @@ namespace Liberfy.Commands
 
             try
             {
-                using (var player = await GetPlayerFromId(parameter))
+                using var player = await GetPlayerFromId(parameter);
+                var media = await player.GetCurrentMedia();
+
+                this._viewModel.TextBoxController.Insert(ReplaceMediaAlias(media, Setting.NowPlayingFormat));
+
+                if (Setting.InsertThumbnailAtNowPlayying)
                 {
-                    var media = await player.GetCurrentMedia();
-
-                    this._viewModel.TextBoxController.Insert(ReplaceMediaAlias(media, Setting.NowPlayingFormat));
-
-                    if (Setting.InsertThumbnailAtNowPlayying)
+                    try
                     {
-                        try
+                        foreach (var stream in media.Artworks)
                         {
-                            foreach (var stream in media.Artworks)
-                            {
-                                var image = ImageUtility.BitmapSourceFromStream(stream);
-                                var attachment = UploadMedia.FromBitmapSource(image, UploadMedia.DisplayExtensions.Artwork);
+                            var image = ImageUtility.BitmapSourceFromStream(stream);
+                            var attachment = UploadMedia.FromBitmapSource(image, UploadMedia.DisplayExtensions.Artwork);
 
-                                this._viewModel.PostParameters.Attachments.Add(attachment);
-                            }
+                            this._viewModel.PostParameters.Attachments.Add(attachment);
                         }
-                        catch { /* pass */ }
                     }
+                    catch { /* pass */ }
                 }
             }
             catch (Exception ex)

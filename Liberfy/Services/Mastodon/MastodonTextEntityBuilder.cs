@@ -39,7 +39,7 @@ namespace Liberfy.Services.Mastodon
         private static void AddText(LinkedList<IEntity> entities, string text, Emoji[] emojis)
         {
             if (emojis?.Length == 0)
-            {   
+            {
                 AddText(entities, text);
                 return;
             }
@@ -106,7 +106,7 @@ namespace Liberfy.Services.Mastodon
 
             var entities = new LinkedList<IEntity>();
 
-            var sgmlReader = new SgmlReader
+            using var sgmlReader = new SgmlReader
             {
                 DocType = "html",
                 IgnoreDtd = true,
@@ -114,102 +114,99 @@ namespace Liberfy.Services.Mastodon
                 InputStream = new StringReader(string.Concat("<div>", content, "</div>")),
             };
 
-            using (sgmlReader)
+            var rootElement = XElement.Load(sgmlReader, LoadOptions.PreserveWhitespace);
+
+            foreach (var topParagraphElement in rootElement.Elements())
             {
-                var rootElement = XElement.Load(sgmlReader, LoadOptions.PreserveWhitespace);
+                if (topParagraphElement.Name != "p")
+                    throw new NotSupportedException();
 
-                foreach (var topParagraphElement in rootElement.Elements())
+                if (entities.Count > 0)
                 {
-                    if (topParagraphElement.Name != "p")
-                        throw new NotSupportedException();
+                    AddText(entities, "\n", this._emojis);
+                }
 
-                    if (entities.Count > 0)
+                foreach (var secLvNode in topParagraphElement.Nodes())
+                {
+                    if (secLvNode is XText secLvTextNode)
                     {
-                        AddText(entities, "\n", this._emojis);
+                        var value = secLvTextNode.Value;
+                        AddText(entities, value, this._emojis);
                     }
-
-                    foreach (var secLvNode in topParagraphElement.Nodes())
+                    else if (secLvNode.NodeType == System.Xml.XmlNodeType.Element)
                     {
-                        if (secLvNode is XText secLvTextNode)
+                        var secLvEl = XElement.Load(secLvNode.CreateReader());
+
+                        if (secLvEl.Name == "br")
                         {
-                            var value = secLvTextNode.Value;
-                            AddText(entities, value, this._emojis);
+                            AddText(entities, "\n");
                         }
-                        else if (secLvNode.NodeType == System.Xml.XmlNodeType.Element)
+                        else if (secLvEl.Name == "a")
                         {
-                            var secLvEl = XElement.Load(secLvNode.CreateReader());
+                            var classNames = secLvEl.Attribute("class")?.Value;
+                            var rels = secLvEl.Attribute("rel")?.Value;
 
-                            if (secLvEl.Name == "br")
+                            if (classNames == hashtagElementClassName)
                             {
-                                AddText(entities, "\n");
+                                var text = secLvEl.Value;
+                                // Hashtag
+                                entities.AddLast(new HashtagEntity(text));
                             }
-                            else if (secLvEl.Name == "a")
+                            else if (rels == externalLinkRel)
                             {
-                                var classNames = secLvEl.Attribute("class")?.Value;
-                                var rels = secLvEl.Attribute("rel")?.Value;
+                                var link = secLvEl.Attribute("href")?.Value;
 
-                                if (classNames == hashtagElementClassName)
+                                var text = default(string);
+
+                                if (secLvEl.HasElements)
                                 {
-                                    var text = secLvEl.Value;
-                                    // Hashtag
-                                    entities.AddLast(new HashtagEntity(text));
-                                }
-                                else if (rels == externalLinkRel)
-                                {
-                                    var link = secLvEl.Attribute("href")?.Value;
+                                    var texts = secLvEl.Elements()
+                                        .Where(thirdEl => thirdEl.Attribute("class")?.Value != "invisible")
+                                        .Select(thirdEl => thirdEl.Value);
 
-                                    var text = default(string);
-
-                                    if (secLvEl.HasElements)
-                                    {
-                                        var texts = secLvEl.Elements()
-                                            .Where(thirdEl => thirdEl.Attribute("class")?.Value != "invisible")
-                                            .Select(thirdEl => thirdEl.Value);
-
-                                        text = string.Concat(texts);
-                                    }
-                                    else
-                                    {
-                                        text = secLvEl.Value;
-                                    }
-
-                                    // Link
-                                    entities.AddLast(new UrlEntity(link, text));
+                                    text = string.Concat(texts);
                                 }
                                 else
                                 {
-                                    throw new NotImplementedException();
+                                    text = secLvEl.Value;
                                 }
+
+                                // Link
+                                entities.AddLast(new UrlEntity(link, text));
                             }
-                            else if (secLvEl.Name == "span")
+                            else
                             {
-                                if (!secLvEl.HasAttributes)
-                                {
-                                    AddText(entities, secLvEl.Value);
-                                }
-                                else if (secLvEl.Attribute("class")?.Value == mentionContainerClassName)
-                                {
-                                    var anchorElement = secLvEl.Elements().First();
-                                    var anchorElementClassNames = anchorElement.Attribute("class")?.Value;
+                                throw new NotImplementedException();
+                            }
+                        }
+                        else if (secLvEl.Name == "span")
+                        {
+                            if (!secLvEl.HasAttributes)
+                            {
+                                AddText(entities, secLvEl.Value);
+                            }
+                            else if (secLvEl.Attribute("class")?.Value == mentionContainerClassName)
+                            {
+                                var anchorElement = secLvEl.Elements().First();
+                                var anchorElementClassNames = anchorElement.Attribute("class")?.Value;
 
-                                    if (anchorElementClassNames == mentionAnchorClassName)
-                                    {
-                                        var link = anchorElement.Attribute("href")?.Value ?? string.Empty;
-                                        var text = anchorElement.Value;
-
-                                        // Anchorlink
-                                        entities.AddLast(new MentionEntity(text, text.Substring(1)));
-                                    }
-                                }
-                                else
+                                if (anchorElementClassNames == mentionAnchorClassName)
                                 {
-                                    throw new NotImplementedException();
+                                    var link = anchorElement.Attribute("href")?.Value ?? string.Empty;
+                                    var text = anchorElement.Value;
+
+                                    // Anchorlink
+                                    entities.AddLast(new MentionEntity(text, text.Substring(1)));
                                 }
                             }
                             else
                             {
-                                throw new NotImplementedException(secLvEl.Name.ToString());
+                                throw new NotImplementedException();
                             }
+                        }
+                        else
+                        {
+                            throw new NotImplementedException(secLvEl.Name.ToString());
                         }
                     }
                 }

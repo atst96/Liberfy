@@ -119,7 +119,7 @@ namespace Liberfy.Components
 
         public static TaskDialogResult ShowTaskDialog(IntPtr hWnd, string message, string caption, string instruction, TaskDialogStandardButtons buttons, TaskDialogStandardIcon icon)
         {
-            var taskDialog = new TaskDialog()
+            using var taskDialog = new TaskDialog()
             {
                 OwnerWindowHandle = hWnd,
                 Text = message,
@@ -130,10 +130,7 @@ namespace Liberfy.Components
                 StartupLocation = TaskDialogStartupLocation.CenterOwner,
             };
 
-            using (taskDialog)
-            {
-                return taskDialog.Show();
-            }
+            return taskDialog.Show();
         }
 
         public void WarningMessage(string message, string instruction = null, string caption = null)
