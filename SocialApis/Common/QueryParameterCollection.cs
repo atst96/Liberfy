@@ -49,14 +49,14 @@ namespace SocialApis
             }
             else if (value is ValueGroup separateParams)
             {
-                var values = separateParams.Select(val => WebUtility.UrlEncode(Query.ValueToString(val)));
+                var values = separateParams.Select(val => Query.ValueToString(val));
                 var valueText = string.Join(separateParams.SeparateText, values);
 
-                this.Add(parameterName, valueText);
+                this.Add(parameterName, WebUtility.UrlEncode(valueText));
             }
             else if (value is string stringValue)
             {
-                this.Add(parameterName, stringValue);
+                this.Add(parameterName, WebUtility.UrlEncode(stringValue));
             }
             else if (value is IEnumerable collection)
             {

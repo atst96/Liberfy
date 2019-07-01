@@ -81,7 +81,6 @@ namespace SocialApis
             }
 
             parameters.Clear();
-            parameters = null;
         }
 
         private static readonly Hashtable _typeHandles = new Hashtable();
@@ -95,6 +94,10 @@ namespace SocialApis
             else if (value is string stringValue)
             {
                 return nested ? $"\"{stringValue}\"" : stringValue;
+            }
+            else if (value is ValueGroup valueGroup)
+            {
+                return string.Join(valueGroup.SeparateText, valueGroup.Select(v => ValueToString(v)));
             }
             else
             {
