@@ -69,7 +69,15 @@ namespace Liberfy
 
             encoder.Frames.Add(frame);
             encoder.Save(stream);
-            encoder = null;
+        }
+
+        public static byte[] ToByteArray<T>(this BitmapSource bitmapSource) where T : BitmapEncoder
+        {
+            using var stream = new MemoryStream();
+
+            bitmapSource.SaveToStream<T>(stream);
+
+            return stream.ToArray();
         }
     }
 }

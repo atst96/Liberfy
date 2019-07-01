@@ -24,20 +24,20 @@ namespace Liberfy.Services.Twitter
 
         private async Task<long> UploadAttachment(UploadMedia attachment)
         {
-            attachment.SourceStream.Position = 0;
+            using var stream = attachment.GetDataStream();
 
-            bool isVideoUpload = attachment.MediaType.HasFlag(ViewModels.MediaType.Video);
+            bool isVideoUpload = attachment.MediaType.HasFlag(MediaType.Video);
             var uploadMediaType = isVideoUpload ? MimeTypes.Video.Mp4 : MimeTypes.OctetStream;
 
             Task<MediaResponse> task;
 
             if (isVideoUpload)
             {
-                task = this._api.Media.ChunkedUpload(attachment.SourceStream, uploadMediaType, null, attachment);
+                task = this._api.Media.ChunkedUpload(stream, uploadMediaType, null, attachment);
             }
             else
             {
-                task = this._api.Media.Upload(attachment.SourceStream, progressReceiver: attachment);
+                task = this._api.Media.Upload(stream, null, attachment);
             }
 
             var result = await task.ConfigureAwait(false);

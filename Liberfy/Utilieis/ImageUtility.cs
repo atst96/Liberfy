@@ -18,7 +18,7 @@ namespace Liberfy.Utilities
             return decoder is GifBitmapDecoder && decoder.Frames.Count > 1;
         }
 
-        public static BitmapImage BitmapSourceFromStream(Stream stream)
+        public static BitmapImage CreateImage(Stream stream)
         {
             var bitmapSource = new BitmapImage();
 
@@ -34,6 +34,18 @@ namespace Liberfy.Utilities
             }
 
             return bitmapSource;
+        }
+
+        public static BitmapImage FromFile(Uri uri)
+        {
+            var bitmapImage = new BitmapImage(uri);
+
+            if (bitmapImage.CanFreeze)
+            {
+                bitmapImage.Freeze();
+            }
+
+            return bitmapImage;
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Liberfy.Commands
                     {
                         foreach (var stream in media.Artworks)
                         {
-                            var image = ImageUtility.BitmapSourceFromStream(stream);
+                            var image = ImageUtility.CreateImage(stream);
                             var attachment = UploadMedia.FromBitmapSource(image, UploadMedia.DisplayExtensions.Artwork);
 
                             this._viewModel.PostParameters.Attachments.Add(attachment);

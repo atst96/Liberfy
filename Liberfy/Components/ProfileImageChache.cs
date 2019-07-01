@@ -216,7 +216,7 @@ namespace Liberfy
             var @params = CreateParameter(userInfo);
             if (this.TryFindCache(@params, imageFileName, out var imageData))
             {
-                return ImageUtility.BitmapSourceFromStream(new MemoryStream(imageData));
+                return ImageUtility.CreateImage(new MemoryStream(imageData));
             }
 
             if (this.TryDownloadImage(userInfo, out var imageStream))
@@ -226,7 +226,7 @@ namespace Liberfy
 
                 this.WriteCache(@params);
 
-                return ImageUtility.BitmapSourceFromStream(imageStream);
+                return ImageUtility.CreateImage(imageStream);
             }
 
             @params.Clear();

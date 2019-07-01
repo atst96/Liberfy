@@ -29,6 +29,7 @@ namespace Liberfy.Commands
         {
             if (Clipboard.ContainsImage())
             {
+                // TODO: できれば画像データ（byte配列など）で取得したい
                 var attachment = UploadMedia.FromBitmapSource(Clipboard.GetImage(), UploadMedia.DisplayExtensions.Clipboard);
 
                 this._viewModel.PostParameters.Attachments.Add(attachment);
