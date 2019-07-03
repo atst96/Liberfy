@@ -580,8 +580,8 @@
         <Setter Property="Background" Value="White" />
         <Setter Property="TitleBarActiveBackground" Value="{StaticResource Window.TitleBar.Active.Background}" />
         <Setter Property="TitleBarInactiveBackground" Value="{StaticResource Window.TitleBar.Inactive.Background}" />
-        <Setter Property="ActiveBorderBrush" Value="{StaticResource Window.Active.BorderBrush}" />
-        <Setter Property="InactiveBorderBrush" Value="{StaticResource Window.Inactive.BorderBrush}" />
+        <!--<Setter Property="ActiveBorderBrush" Value="{StaticResource Window.Active.BorderBrush}" />-->
+        <!--<Setter Property="InactiveBorderBrush" Value="{StaticResource Window.Inactive.BorderBrush}" />-->
         <Setter Property="TitleBarActiveForeground" Value="{StaticResource Window.TitleBar.Active.Foreground}" />
         <Setter Property="TitleBarInactiveForeground" Value="{StaticResource Window.TitleBar.Inactive.Foreground}" />
     </Style>

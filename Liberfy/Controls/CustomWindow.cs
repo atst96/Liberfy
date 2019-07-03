@@ -28,6 +28,7 @@ namespace Liberfy
         private double _borderPadWidth = 4;
         private double _resizeBorderWidth = SystemParameters.ResizeFrameVerticalBorderWidth;
         private readonly Thickness _maximizedBorderMargin;
+        private Thickness _normalBorderMargin;
         private double _scale;
 
         private WindowChrome _chrome;
@@ -50,8 +51,7 @@ namespace Liberfy
             var chrome = new WindowChrome
             {
                 UseAeroCaptionButtons = false,
-                CornerRadius = new CornerRadius(0.0),
-                GlassFrameThickness = new Thickness(1.0),
+                NonClientFrameEdges = NonClientFrameEdges.Left | NonClientFrameEdges.Bottom | NonClientFrameEdges.Right,
             };
 
             this._chrome = chrome;
@@ -67,9 +67,19 @@ namespace Liberfy
 
             this.CommandBindings.AddRange(commandBindings);
 
-            this._maximizedBorderMargin = new Thickness(this._resizeBorderWidth + this._borderPadWidth);
+            double marginWidth = this._resizeBorderWidth + this._borderPadWidth;
+
+            this._maximizedBorderMargin = new Thickness(this._resizeBorderWidth, marginWidth, this._resizeBorderWidth, this._resizeBorderWidth);
 
             this.SetScale(VisualTreeHelper.GetDpi(this));
+        }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+
+            this.UpdateWindowDecoration();
+            this.UpdateTitleBarColorization();
         }
 
         #region CommandBindign Methods
@@ -104,6 +114,11 @@ namespace Liberfy
         public void SetScale(in DpiScale dpi)
         {
             this._scale = dpi.DpiScaleX;
+
+            this._normalBorderMargin = new Thickness(0.0d)
+            {
+                Top = 1 / this._scale,
+            };
         }
 
         private void SetCaptionHeight(double height)
@@ -113,36 +128,12 @@ namespace Liberfy
 
         private void SetPadding(Thickness thickness)
         {
-            this._container?.SetValue(Border.PaddingProperty, Rescale(thickness, this._scale));
+            this._container?.SetValue(Border.MarginProperty, Rescale(thickness, this._scale));
         }
 
         private void SetTitleBarForeground(Brush textBrush)
         {
             this._titleBarPanel?.SetValue(TextBlock.ForegroundProperty, textBrush);
-        }
-
-        private void SetWindowBorderThickness(in Thickness thickness)
-        {
-            var scaledThickness = Rescale(thickness, this._scale);
-            this._container?.SetValue(Border.BorderThicknessProperty, scaledThickness);
-
-            double width = 0.0d, height = 0.0d;
-
-            if (this.WindowState == System.Windows.WindowState.Normal)
-            {
-                width = scaledThickness.Right + this._resizeBorderWidth;
-                height = scaledThickness.Top + this._resizeBorderWidth;
-            }
-
-            if (this._actionButtonBorderRight != null)
-            {
-                this._actionButtonBorderRight.Width = width;
-            }
-
-            if (this._actionButtonBorderTop != null)
-            {
-                this._actionButtonBorderTop.Height = height;
-            }
         }
 
         private void SetWindowBorderBrush(Brush brush)
@@ -246,7 +237,6 @@ namespace Liberfy
         {
             if (this.WindowState == System.Windows.WindowState.Maximized)
             {
-                this.SetWindowBorderThickness(new Thickness(0));
                 this.SetPadding(this._maximizedBorderMargin);
 
                 double captionHeightOffset = Rescale(this._borderPadWidth, this._scale);
@@ -254,8 +244,7 @@ namespace Liberfy
             }
             else
             {
-                this.SetWindowBorderThickness(this.BorderThickness);
-                this.SetPadding(new Thickness(0));
+                this.SetPadding(this._normalBorderMargin);
 
                 double captionHeightOffset = Rescale(this.BorderThickness.Top, this._scale) - this._borderPadWidth;
                 this.SetCaptionHeight(captionHeightOffset + this.CaptionHeight);
