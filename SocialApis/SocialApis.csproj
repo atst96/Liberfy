@@ -1,6 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+  </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,9 +10,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SocialApis</RootNamespace>
     <AssemblyName>SocialApis</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <Authors>atst</Authors>
+    <Company>atst_96</Company>
+    <Version>0.8.0</Version>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,178 +36,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.4.0\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Utf8Json, Version=1.3.7.0, Culture=neutral, PublicKeyToken=8a73d3ba7e392e27, processorArchitecture=MSIL">
-      <HintPath>..\packages\Utf8Json.1.3.7\lib\net45\Utf8Json.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Utf8Json" Version="1.3.7" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Common\BoundaryWriter.cs" />
-    <Compile Include="Common\EncodingUtility.cs" />
-    <Compile Include="Common\Extensions.cs" />
-    <Compile Include="Common\JsonUtility.cs" />
-    <Compile Include="Common\HttpContentTypes.cs" />
-    <Compile Include="Common\QueryParameterCollection.cs" />
-    <Compile Include="Common\Regex.cs" />
-    <Compile Include="Common\HttpMethods.cs" />
-    <Compile Include="Common\ValueGroup.cs" />
-    <Compile Include="Common\SequentialSurrogateTextReader.cs" />
-    <Compile Include="Formatters\NullableValueFormatter.cs" />
-    <Compile Include="Formatters\TimeSpanFormatter.cs" />
-    <Compile Include="Formatters\StringToIntFormatter.cs" />
-    <Compile Include="Formatters\StringToLongFormatter.cs" />
-    <Compile Include="Formatters\StringToNullableLongFormatter.cs" />
-    <Compile Include="Mastodon\Apis\AccountsApi.cs" />
-    <Compile Include="Mastodon\Apis\BlocksApi.cs" />
-    <Compile Include="Mastodon\Apis\DomainBlocksApi.cs" />
-    <Compile Include="Mastodon\Apis\FavouritesApi.cs" />
-    <Compile Include="Mastodon\Apis\FollowRequestsApi.cs" />
-    <Compile Include="Mastodon\Apis\FollowsApi.cs" />
-    <Compile Include="Mastodon\Apis\InstancesApi.cs" />
-    <Compile Include="Mastodon\Apis\ListsApi.cs" />
-    <Compile Include="Mastodon\Apis\MediaApi.cs" />
-    <Compile Include="Mastodon\Apis\MutesApi.cs" />
-    <Compile Include="Mastodon\Apis\NotificationsApi.cs" />
-    <Compile Include="Mastodon\Apis\OAuthApi.cs" />
-    <Compile Include="Mastodon\Apis\ReportsApi.cs" />
-    <Compile Include="Mastodon\Apis\SearchApi.cs" />
-    <Compile Include="Mastodon\Apis\StatusesApi.cs" />
-    <Compile Include="Mastodon\Apis\StreamingApi.cs" />
-    <Compile Include="Mastodon\Apis\TimelinesApi.cs" />
-    <Compile Include="Mastodon\Enums\AttachmentType.cs" />
-    <Compile Include="Mastodon\Enums\CardType.cs" />
-    <Compile Include="Mastodon\Enums\NotificationType.cs" />
-    <Compile Include="Mastodon\Enums\StatusVisibility.cs" />
-    <Compile Include="Mastodon\Objects\Tag.cs" />
-    <Compile Include="Mastodon\IMastodonStreamResolver.cs" />
-    <Compile Include="Mastodon\MastodonError.cs" />
-    <Compile Include="Mastodon\MastodonException.cs" />
-    <Compile Include="Mastodon\MastodonHttpStreamingReceiver.cs" />
-    <Compile Include="Mastodon\Objects\AccessTokenResponse.cs" />
-    <Compile Include="Mastodon\Objects\Account.cs" />
-    <Compile Include="Mastodon\Objects\Application.cs" />
-    <Compile Include="Mastodon\Objects\Attachment.cs" />
-    <Compile Include="Mastodon\Objects\AttachmentMeta.cs" />
-    <Compile Include="Mastodon\Objects\Card.cs" />
-    <Compile Include="Mastodon\Objects\ClientKeyInfo.cs" />
-    <Compile Include="Mastodon\Objects\Context.cs" />
-    <Compile Include="Mastodon\Objects\Emoji.cs" />
-    <Compile Include="Mastodon\Objects\FieldItem.cs" />
-    <Compile Include="Mastodon\Objects\Instance.cs" />
-    <Compile Include="Mastodon\Objects\InstanceUrls.cs" />
-    <Compile Include="Mastodon\Objects\List.cs" />
-    <Compile Include="Mastodon\Objects\Mention.cs" />
-    <Compile Include="Mastodon\Objects\Notification.cs" />
-    <Compile Include="Mastodon\Objects\Meta.cs" />
-    <Compile Include="Mastodon\Objects\Poll.cs" />
-    <Compile Include="Mastodon\Objects\PollOption.cs" />
-    <Compile Include="Mastodon\Objects\Relationship.cs" />
-    <Compile Include="Mastodon\Objects\Report.cs" />
-    <Compile Include="Mastodon\Objects\Results.cs" />
-    <Compile Include="Mastodon\Objects\Status.cs" />
-    <Compile Include="Mastodon\ApiBase.cs" />
-    <Compile Include="Mastodon\MastodonApi.cs" />
-    <Compile Include="Common\MimeTypes.cs" />
-    <Compile Include="Common\StreamUtility.cs" />
-    <Compile Include="Twitter\Apis\AccountApi.cs" />
-    <Compile Include="Formatters\TwitterTimeFormatConverter.cs" />
-    <Compile Include="Common\IRateLimit.cs" />
-    <Compile Include="Common\RateLimit.cs" />
-    <Compile Include="Twitter\Apis\BlocksApi.cs" />
-    <Compile Include="Twitter\Apis\CollectionsApi.cs" />
-    <Compile Include="Twitter\Apis\DirectMessageApi.cs" />
-    <Compile Include="Twitter\Apis\FavoritesApi.cs" />
-    <Compile Include="Twitter\Apis\FollowersApi.cs" />
-    <Compile Include="Twitter\Apis\FriendsApi.cs" />
-    <Compile Include="Twitter\Apis\FriendshipsApi.cs" />
-    <Compile Include="Twitter\Apis\MediaApi.cs" />
-    <Compile Include="Twitter\Apis\MutesApi.cs" />
-    <Compile Include="Twitter\Apis\SearchApi.cs" />
-    <Compile Include="Twitter\Apis\StatusesApi.cs" />
-    <Compile Include="Twitter\Apis\ApiBase.cs" />
-    <Compile Include="Twitter\Apis\UsersApi.cs" />
-    <Compile Include="Twitter\Enums\CoordinateType.cs" />
-    <Compile Include="Twitter\Enums\DirectMessageEventType.cs" />
-    <Compile Include="Twitter\Enums\FriendshipConnection.cs" />
-    <Compile Include="Twitter\Enums\MediaType.cs" />
-    <Compile Include="Twitter\Objects\App.cs" />
-    <Compile Include="Twitter\Objects\Coordinates.cs" />
-    <Compile Include="Twitter\Objects\DirectMessage.cs" />
-    <Compile Include="Twitter\Objects\DirectMessageCreate.cs" />
-    <Compile Include="Twitter\Objects\DirectMessageData.cs" />
-    <Compile Include="Twitter\Objects\DirectMessageEvent.cs" />
-    <Compile Include="Twitter\Objects\DirectMessageTarget.cs" />
-    <Compile Include="Twitter\Objects\Entities\Entities.cs" />
-    <Compile Include="Twitter\Objects\Entities\EntityBase.cs" />
-    <Compile Include="Twitter\Objects\Entities\ExtendedEntities.cs" />
-    <Compile Include="Twitter\Objects\Entities\HashtagEntity.cs" />
-    <Compile Include="Twitter\Objects\Entities\MediaEntity.cs" />
-    <Compile Include="Twitter\Objects\Entities\MediaSizes.cs" />
-    <Compile Include="Twitter\Objects\Entities\PollEntity.cs" />
-    <Compile Include="Twitter\Objects\Entities\MediaSize.cs" />
-    <Compile Include="Twitter\Objects\Entities\PollOption.cs" />
-    <Compile Include="Twitter\Objects\ExtendedTweet.cs" />
-    <Compile Include="Twitter\Objects\Friendship.cs" />
-    <Compile Include="Twitter\Objects\List.cs" />
-    <Compile Include="Twitter\Objects\MediaDescription.cs" />
-    <Compile Include="Twitter\Objects\MediaVideoInfo.cs" />
-    <Compile Include="Twitter\Objects\Point.cs" />
-    <Compile Include="Twitter\Objects\ProcessingInfo.cs" />
-    <Compile Include="Twitter\Objects\UploadImageInfo.cs" />
-    <Compile Include="Twitter\Objects\IdObject.cs" />
-    <Compile Include="Twitter\Objects\Media.cs" />
-    <Compile Include="Twitter\Objects\Places.cs" />
-    <Compile Include="Twitter\Objects\UploadVideoInfo.cs" />
-    <Compile Include="Twitter\Objects\Entities\UserEntities.cs" />
-    <Compile Include="Twitter\Objects\VideoVariant.cs" />
-    <Compile Include="Twitter\Responses\CursoredIdsResponse.cs" />
-    <Compile Include="Twitter\Responses\CursoredUsersResponse.cs" />
-    <Compile Include="Twitter\Responses\DirectMessageListResponse.cs" />
-    <Compile Include="Twitter\Responses\DirectMessageSingleResponse.cs" />
-    <Compile Include="Twitter\Responses\ListedResponse.cs" />
-    <Compile Include="Twitter\Responses\MediaResponse.cs" />
-    <Compile Include="Twitter\Responses\StatusResponse.cs" />
-    <Compile Include="Twitter\Responses\UserResponse.cs" />
-    <Compile Include="Twitter\Objects\Status.cs" />
-    <Compile Include="Twitter\Objects\Entities\UrlEntity.cs" />
-    <Compile Include="Twitter\Objects\UrlUnwound.cs" />
-    <Compile Include="Twitter\Objects\User.cs" />
-    <Compile Include="Twitter\Objects\Entities\UserMentionEntity.cs" />
-    <Compile Include="Twitter\TwitterErrorContainer.cs" />
-    <Compile Include="Common\IApi.cs" />
-    <Compile Include="Common\OAuthHelper.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Common\Query.cs" />
-    <Compile Include="Twitter\TwitterError.cs" />
-    <Compile Include="Twitter\TwitterException.cs" />
-    <Compile Include="Twitter\TwitterResponse.cs" />
-    <Compile Include="Twitter\Apis\OAuthApi.cs" />
-    <Compile Include="Twitter\RequestTokenResponse.cs" />
-    <Compile Include="Twitter\TwitterApi.cs" />
-    <Compile Include="Common\UploadProgress.cs" />
-    <Compile Include="Common\WebUtility.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="README.md" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
