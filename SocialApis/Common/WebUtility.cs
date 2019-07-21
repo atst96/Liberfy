@@ -72,13 +72,10 @@ namespace SocialApis
 
                 if (queryString != null)
                 {
-                    using (var stream = request.GetRequestStream())
-                    {
-                        var data = EncodingUtility.UTF8.GetBytes(queryString);
-                        stream.Write(data, 0, data.Length);
+                    using var stream = request.GetRequestStream();
+                    var data = EncodingUtility.UTF8.GetBytes(queryString);
 
-                        data = null;
-                    }
+                    stream.Write(data, 0, data.Length);
                 }
             }
 
@@ -121,10 +118,9 @@ namespace SocialApis
 
         public static async Task<string> SendRequestText(HttpWebRequest request)
         {
-            using (var response = await request.GetResponseAsync().ConfigureAwait(false))
-            {
-                return await response.GetResponseStream().ReadToEndAsync().ConfigureAwait(false);
-            }
+            using var response = await request.GetResponseAsync().ConfigureAwait(false);
+
+            return await response.GetResponseStream().ReadToEndAsync().ConfigureAwait(false);
         }
 
         public static async Task SendRequest(HttpWebRequest request)
@@ -134,10 +130,9 @@ namespace SocialApis
 
         public static async Task<T> SendRequest<T>(HttpWebRequest request) where T : class
         {
-            using (var response = await request.GetResponseAsync().ConfigureAwait(false))
-            {
-                return await JsonUtility.DeserializeAsync<T>(response.GetResponseStream()).ConfigureAwait(false);
-            }
+            using var response = await request.GetResponseAsync().ConfigureAwait(false);
+
+            return await JsonUtility.DeserializeAsync<T>(response.GetResponseStream()).ConfigureAwait(false);
         }
 
         public static string UrlEncode(string value)

@@ -104,13 +104,11 @@ namespace SocialApis
                 throw new ArgumentNullException(nameof(signatureBase));
 
             var hashKey = EncodingUtility.UTF8.GetBytes(consumerSecret + "&" + apiTokenSecret);
+            using var algorythm = new HMACSHA1(hashKey);
             var data = EncodingUtility.ASCII.GetBytes(signatureBase);
+            var hash = algorythm.ComputeHash(data);
 
-            using (var algorythm = new HMACSHA1(hashKey))
-            {
-                var hash = algorythm.ComputeHash(data);
-                return Convert.ToBase64String(hash);
-            }
+            return Convert.ToBase64String(hash);
         }
     }
 }
