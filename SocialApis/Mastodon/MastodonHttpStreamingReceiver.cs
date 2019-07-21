@@ -27,50 +27,49 @@ namespace SocialApis.Mastodon
             {
                 var res = this._response;
 
-                using (var reader = new StreamReader(res.GetResponseStream(), WebUtility.UTF8Encoding))
+                using var reader = new StreamReader(res.GetResponseStream(), WebUtility.UTF8Encoding);
+
+                string line;
+
+                do
                 {
-                    string line;
+                    line = reader.ReadLine();
 
-                    do
+                    if (string.IsNullOrEmpty(line) || !line.StartsWith("event:"))
                     {
-                        line = reader.ReadLine();
+                        continue;
+                    }
 
-                        if (string.IsNullOrEmpty(line) || !line.StartsWith("event:"))
-                        {
-                            continue;
-                        }
+                    var eventName = line.Substring(7);
 
-                        var eventName = line.Substring(7);
+                    if ((line = reader.ReadLine()) == null)
+                    {
+                        break;
+                    }
 
-                        if ((line = reader.ReadLine()) == null)
-                        {
+                    var data = line.Substring(6);
+
+                    switch (eventName)
+                    {
+                        case "update":
+                            var status = JsonUtility.Deserialize<Status>(data);
+                            this._streamResolver.OnStreamingUpdate(status);
                             break;
-                        }
 
-                        var data = line.Substring(6);
+                        case "notification":
+                            var notification = JsonUtility.Deserialize<Notification>(data);
+                            this._streamResolver.OnStreamingNotification(notification);
+                            break;
 
-                        switch (eventName)
-                        {
-                            case "update":
-                                var status = JsonUtility.Deserialize<Status>(data);
-                                this._streamResolver.OnStreamingUpdate(status);
-                                break;
+                        case "delete":
+                            this._streamResolver.OnStreamingDelete(long.Parse(data));
+                            break;
 
-                            case "notification":
-                                var notification = JsonUtility.Deserialize<Notification>(data);
-                                this._streamResolver.OnStreamingNotification(notification);
-                                break;
+                        case "filter_changed":
+                            break;
+                    }
 
-                            case "delete":
-                                this._streamResolver.OnStreamingDelete(long.Parse(data));
-                                break;
-
-                            case "filter_changed":
-                                break;
-                        }
-
-                    } while (line != null && !this._isClosing);
-                }
+                } while (line != null && !this._isClosing);
             });
         }
 

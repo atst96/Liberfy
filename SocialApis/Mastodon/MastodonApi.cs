@@ -60,52 +60,52 @@ namespace SocialApis.Mastodon
         }
 
         public OAuthApi _oauth;
-        public OAuthApi OAuth => this._oauth ?? (this._oauth = new OAuthApi(this));
+        public OAuthApi OAuth => this._oauth ??= new OAuthApi(this);
 
         private AccountsApi _accounts;
-        public AccountsApi Accounts => this._accounts ?? (this._accounts = new AccountsApi(this));
+        public AccountsApi Accounts => this._accounts ??= new AccountsApi(this);
 
         private DomainBlocksApi _domainBlocks;
-        public DomainBlocksApi DomainBlocks => this._domainBlocks ?? (this._domainBlocks = new DomainBlocksApi(this));
+        public DomainBlocksApi DomainBlocks => this._domainBlocks ??= new DomainBlocksApi(this);
 
         private FavouritesApi _favourites;
-        public FavouritesApi Favourites => this._favourites ?? (this._favourites = new FavouritesApi(this));
+        public FavouritesApi Favourites => this._favourites ??= new FavouritesApi(this);
 
         private FollowRequestsApi _followRequests;
-        public FollowRequestsApi FollowRequests => this._followRequests ?? (this._followRequests = new FollowRequestsApi(this));
+        public FollowRequestsApi FollowRequests => this._followRequests ??= new FollowRequestsApi(this);
 
         private FollowsApi _follows;
-        public FollowsApi Follows => this._follows ?? (this._follows = new FollowsApi(this));
+        public FollowsApi Follows => this._follows ??= new FollowsApi(this);
 
         private InstancesApi _instances;
-        public InstancesApi Instances => this._instances ?? (this._instances = new InstancesApi(this));
+        public InstancesApi Instances => this._instances ??= new InstancesApi(this);
 
         private ListsApi _list;
-        public ListsApi List => this._list ?? (this._list = new ListsApi(this));
+        public ListsApi List => this._list ??= new ListsApi(this);
 
         private MediaApi _media;
-        public MediaApi Media => this._media ?? (this._media = new MediaApi(this));
+        public MediaApi Media => this._media ??= new MediaApi(this);
 
         private MutesApi _mutes;
-        public MutesApi Mutes => this._mutes ?? (this._mutes = new MutesApi(this));
+        public MutesApi Mutes => this._mutes ??= new MutesApi(this);
 
         private NotificationsApi _notifications;
-        public NotificationsApi Notifications => this._notifications ?? (this._notifications = new NotificationsApi(this));
+        public NotificationsApi Notifications => this._notifications ??= new NotificationsApi(this);
 
         private ReportsApi _report;
-        public ReportsApi Report => this._report ?? (this._report = new ReportsApi(this));
+        public ReportsApi Report => this._report ??= new ReportsApi(this);
 
         private SearchApi _search;
-        public SearchApi Search => this._search ?? (this._search = new SearchApi(this));
+        public SearchApi Search => this._search ??= new SearchApi(this);
 
         private StatusesApi _statuses;
-        public StatusesApi Statuses => this._statuses ?? (this._statuses = new StatusesApi(this));
+        public StatusesApi Statuses => this._statuses ??= new StatusesApi(this);
 
         private StreamingApi _streaming;
-        public StreamingApi Streaming => this._streaming ?? (this._streaming = new StreamingApi(this));
+        public StreamingApi Streaming => this._streaming ??= new StreamingApi(this);
 
         private TimelinesApi _timelines;
-        public TimelinesApi Timelines => this._timelines ?? (this._timelines = new TimelinesApi(this));
+        public TimelinesApi Timelines => this._timelines ??= new TimelinesApi(this);
 
         public static class Apps
         {
@@ -201,10 +201,9 @@ namespace SocialApis.Mastodon
         {
             try
             {
-                using (var response = await request.GetResponseAsync().ConfigureAwait(false))
-                {
-                    return await response.GetResponseStream().ReadToEndAsync().ConfigureAwait(false);
-                }
+                using var response = await request.GetResponseAsync().ConfigureAwait(false);
+
+                return await response.GetResponseStream().ReadToEndAsync().ConfigureAwait(false);
             }
             catch (WebException wex) when (wex.Response != null)
             {
@@ -228,18 +227,16 @@ namespace SocialApis.Mastodon
         {
             try
             {
-                using (var response = await request.GetResponseAsync().ConfigureAwait(false))
-                using (var stream = response.GetResponseStream())
+                using var response = await request.GetResponseAsync().ConfigureAwait(false);
+                using var stream = response.GetResponseStream();
+                var obj = await JsonUtility.DeserializeAsync<T>(stream).ConfigureAwait(false);
+
+                if (obj is IRateLimit rlObj)
                 {
-                    var obj = await JsonUtility.DeserializeAsync<T>(stream).ConfigureAwait(false);
-
-                    if (obj is IRateLimit rlObj)
-                    {
-                        rlObj.RateLimit = RateLimit.FromHeaders(response.Headers);
-                    }
-
-                    return obj;
+                    rlObj.RateLimit = RateLimit.FromHeaders(response.Headers);
                 }
+
+                return obj;
             }
             catch (WebException wex) when (wex.Response != null)
             {
