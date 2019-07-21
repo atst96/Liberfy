@@ -7,80 +7,79 @@ using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
-	public class MediaApi : ApiBase
-	{
-		internal MediaApi(MastodonApi tokens) : base(tokens)
-		{
-		}
+    public class MediaApi : ApiBase
+    {
+        internal MediaApi(MastodonApi tokens) : base(tokens)
+        {
+        }
 
-		public async Task<Attachment> Upload(Stream file, string description = null, float[] focus = null, IProgress<UploadProgress> progress = null)
-		{
-			if (focus != null && focus.Length != 2)
-			{
-				throw new ArgumentException(nameof(focus));
-			}
+        public async Task<Attachment> Upload(Stream file, string description = null, float[] focus = null, IProgress<UploadProgress> progress = null)
+        {
+            if (focus != null && focus.Length != 2)
+            {
+                throw new ArgumentException(nameof(focus));
+            }
 
-			var boundary = OAuthHelper.GenerateNonce();
+            var boundary = OAuthHelper.GenerateNonce();
 
-			var request = this.Api.CreateCustomRestApiRequest(HttpMethods.POST, "media");
-			request.ContentType = "multipart/form-data; boundary=" + boundary;
+            var request = this.Api.CreateCustomRestApiRequest(HttpMethods.POST, "media");
+            request.ContentType = "multipart/form-data; boundary=" + boundary;
 
-			using (var requestStream = await request.GetRequestStreamAsync().ConfigureAwait(false))
-			using (var writer = new StreamWriter(requestStream, EncodingUtility.UTF8))
-			{
-				writer.WriteLine("--" + boundary);
-				writer.WriteLine(@"Content-Disposition: form-data; name=""file""; filename=""image""");
-				writer.WriteLine();
-				writer.Flush();
+            using var requestStream = await request.GetRequestStreamAsync().ConfigureAwait(false);
+            using var writer = new StreamWriter(requestStream, EncodingUtility.UTF8);
 
-				await file.UploadCopyToAsync(requestStream, progress).ConfigureAwait(false);
+            writer.WriteLine("--" + boundary);
+            writer.WriteLine(@"Content-Disposition: form-data; name=""file""; filename=""image""");
+            writer.WriteLine();
+            writer.Flush();
 
-				writer.WriteLine();
+            await file.UploadCopyToAsync(requestStream, progress).ConfigureAwait(false);
 
-				if (description?.Length > 0)
-				{
-					writer.WriteLine("--" + boundary);
-					writer.WriteLine(@"Content-Disposition: form-data; name=""description""");
-					writer.WriteLine();
-					writer.WriteLine(description);
-				}
+            writer.WriteLine();
 
-				if (focus != null)
-				{
-					writer.WriteLine("--" + boundary);
-					writer.WriteLine(@"Content-Disposition: form-data; name=""focus""");
-					writer.WriteLine();
-					writer.WriteLine(string.Join(",", focus));
-				}
+            if (description?.Length > 0)
+            {
+                writer.WriteLine("--" + boundary);
+                writer.WriteLine(@"Content-Disposition: form-data; name=""description""");
+                writer.WriteLine();
+                writer.WriteLine(description);
+            }
 
-				writer.WriteLine("--" + boundary + "--");
+            if (focus != null)
+            {
+                writer.WriteLine("--" + boundary);
+                writer.WriteLine(@"Content-Disposition: form-data; name=""focus""");
+                writer.WriteLine();
+                writer.WriteLine(string.Join(",", focus));
+            }
 
-				writer.Flush();
-			}
+            writer.WriteLine("--" + boundary + "--");
 
-			return await this.Api.SendRequest<Attachment>(request).ConfigureAwait(false);
-		}
+            writer.Flush();
 
-		public Task<Attachment> Edit(long mediaId, string description = null, float[] focus = null)
-		{
-			if (focus != null && focus.Length != 2)
-			{
-				throw new ArgumentException(nameof(focus));
-			}
+            return await this.Api.SendRequest<Attachment>(request).ConfigureAwait(false);
+        }
 
-			var query = new Query();
+        public Task<Attachment> Edit(long mediaId, string description = null, float[] focus = null)
+        {
+            if (focus != null && focus.Length != 2)
+            {
+                throw new ArgumentException(nameof(focus));
+            }
 
-			if (description != null)
-			{
-				query["description"] = description;
-			}
+            var query = new Query();
 
-			if (focus != null)
-			{
-				query["focus"] = string.Join(",", focus);
-			}
+            if (description != null)
+            {
+                query["description"] = description;
+            }
 
-			return this.Api.RestApiPutRequestAsync<Attachment>($"media/{ mediaId }", query);
-		}
-	}
+            if (focus != null)
+            {
+                query["focus"] = string.Join(",", focus);
+            }
+
+            return this.Api.RestApiPutRequestAsync<Attachment>($"media/{ mediaId }", query);
+        }
+    }
 }
