@@ -50,43 +50,43 @@ namespace SocialApis.Twitter
         }
 
         private OAuthApi _oauth;
-        public OAuthApi OAuth => this._oauth ?? (this._oauth = new OAuthApi(this));
+        public OAuthApi OAuth => this._oauth ??= new OAuthApi(this);
 
         private AccountApi _account;
-        public AccountApi Account => this._account ?? (this._account = new AccountApi(this));
+        public AccountApi Account => this._account ??= new AccountApi(this);
 
         private StatusesApi _statuses;
-        public StatusesApi Statuses => this._statuses ?? (this._statuses = new StatusesApi(this));
+        public StatusesApi Statuses => this._statuses ??= new StatusesApi(this);
 
         private DirectMessageApi _directMessageApi;
-        public DirectMessageApi DirectMessage => this._directMessageApi ?? (this._directMessageApi = new DirectMessageApi(this));
+        public DirectMessageApi DirectMessage => this._directMessageApi ??= new DirectMessageApi(this);
 
         private FavoritesApi _favorites;
-        public FavoritesApi Favorites => this._favorites ?? (this._favorites = new FavoritesApi(this));
+        public FavoritesApi Favorites => this._favorites ??= new FavoritesApi(this);
 
         private CollectionsApi _collections;
-        public CollectionsApi Collections => this._collections ?? (this._collections = new CollectionsApi(this));
+        public CollectionsApi Collections => this._collections ??= new CollectionsApi(this);
 
         private MediaApi _mediaApi;
-        public MediaApi Media => this._mediaApi ?? (this._mediaApi = new MediaApi(this));
+        public MediaApi Media => this._mediaApi ??= new MediaApi(this);
 
         private BlocksApi _blocks;
-        public BlocksApi Blocks => this._blocks ?? (this._blocks = new BlocksApi(this));
+        public BlocksApi Blocks => this._blocks ??= new BlocksApi(this);
 
         private MutesApi _mutes;
-        public MutesApi Mutes => this._mutes ?? (this._mutes = new MutesApi(this));
+        public MutesApi Mutes => this._mutes ??= new MutesApi(this);
 
         private UsersApi _users;
-        public UsersApi Users => this._users ?? (this._users = new UsersApi(this));
+        public UsersApi Users => this._users ??= new UsersApi(this);
 
         private FollowersApi _followers;
-        public FollowersApi Followers => this._followers ?? (this._followers = new FollowersApi(this));
+        public FollowersApi Followers => this._followers ??= new FollowersApi(this);
 
         private FriendsApi _friends;
-        public FriendsApi Friends => this._friends ?? (this._friends = new FriendsApi(this));
+        public FriendsApi Friends => this._friends ??= new FriendsApi(this);
 
         private FriendshipsApi _friendships;
-        public FriendshipsApi Friendships => this._friendships ?? (this._friendships = new FriendshipsApi(this));
+        public FriendshipsApi Friendships => this._friendships ??= new FriendshipsApi(this);
 
         private const string RestApiBaseUrl = "https://api.twitter.com/1.1/";
 
@@ -104,19 +104,16 @@ namespace SocialApis.Twitter
         {
             try
             {
-                using (var response = await request.GetResponseAsync().ConfigureAwait(false))
+                using var response = await request.GetResponseAsync().ConfigureAwait(false);
+                var stream = response.GetResponseStream();
+                var obj = await JsonUtility.DeserializeAsync<T>(stream).ConfigureAwait(false);
+
+                if (obj is IRateLimit rlObj)
                 {
-                    var stream = response.GetResponseStream();
-                    var obj = await JsonUtility.DeserializeAsync<T>(stream)
-                        .ConfigureAwait(false);
-
-                    if (obj is IRateLimit rlObj)
-                    {
-                        rlObj.RateLimit = RateLimit.FromHeaders(response.Headers);
-                    }
-
-                    return obj;
+                    rlObj.RateLimit = RateLimit.FromHeaders(response.Headers);
                 }
+
+                return obj;
             }
             catch (WebException wex) when (wex.Response != null)
             {

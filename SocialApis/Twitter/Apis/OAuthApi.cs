@@ -24,11 +24,9 @@ namespace SocialApis.Twitter.Apis
                 parameters[OAuthHelper.OAuthParameters.Callback] = callbackUrl;
 
             var request = WebUtility.CreateOAuthRequest(HttpMethods.POST, endpoint, this.Api, parameters);
+            using var response = await request.GetResponseAsync().ConfigureAwait(false);
 
-            using (var response = await request.GetResponseAsync().ConfigureAwait(false))
-            {
-                return new RequestTokenResponse(StreamUtility.ReadToEnd(response.GetResponseStream()));
-            }
+            return new RequestTokenResponse(StreamUtility.ReadToEnd(response.GetResponseStream()));
         }
 
         public Task<TwitterApi> AccessToken(RequestTokenResponse response, string verifier)
@@ -57,37 +55,35 @@ namespace SocialApis.Twitter.Apis
 
             var request = WebUtility.CreateOAuthRequest(HttpMethods.POST, endpoint, this.Api, parameters);
 
-            using (var response = await request.GetResponseAsync().ConfigureAwait(false))
-            using (var sr = new StreamReader(response.GetResponseStream(), EncodingUtility.UTF8))
+            using var response = await request.GetResponseAsync().ConfigureAwait(false);
+            using var sr = new StreamReader(response.GetResponseStream(), EncodingUtility.UTF8);
+            char[] splitCharacters = { '=' };
+
+            foreach (var pair in sr.ReadToEnd().Split('&'))
             {
-                char[] splitCharacters = { '=' };
+                var tokens = pair.Split(splitCharacters, 2);
 
-                foreach (var pair in sr.ReadToEnd().Split('&'))
+                switch (tokens[0])
                 {
-                    var tokens = pair.Split(splitCharacters, 2);
+                    case "oauth_token":
+                        this.Api.AccessToken = tokens[1];
+                        break;
 
-                    switch (tokens[0])
-                    {
-                        case "oauth_token":
-                            this.Api.AccessToken = tokens[1];
-                            break;
+                    case "oauth_token_secret":
+                        this.Api.AccessTokenSecret = tokens[1];
+                        break;
 
-                        case "oauth_token_secret":
-                            this.Api.AccessTokenSecret = tokens[1];
-                            break;
+                    case "user_id":
+                        this.Api.UserId = long.TryParse(tokens[1], out var userId) ? userId : -1;
+                        break;
 
-                        case "user_id":
-                            this.Api.UserId = long.TryParse(tokens[1], out var userId) ? userId : -1;
-                            break;
-
-                        case "screen_name":
-                            this.Api.ScreenName = tokens[1];
-                            break;
-                    }
+                    case "screen_name":
+                        this.Api.ScreenName = tokens[1];
+                        break;
                 }
-
-                return this.Api;
             }
+
+            return this.Api;
         }
     }
 }
