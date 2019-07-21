@@ -26,27 +26,22 @@ namespace SocialApis.Twitter
 
         internal static TwitterException FromWebException(WebException wex)
         {
-            using (var response = wex.Response.GetResponseStream())
+            using var response = wex.Response.GetResponseStream();
+
+            try
             {
-                try
-                {
-                    var errors = JsonUtility.Deserialize<TwitterErrorContainer>(response);
+                var errors = JsonUtility.Deserialize<TwitterErrorContainer>(response);
 
-                    return new TwitterException(wex, errors.Errors);
-                }
-                catch (Utf8Json.JsonParsingException ex)
-                {
-                    response.Position = 0;
+                return new TwitterException(wex, errors.Errors);
+            }
+            catch (Utf8Json.JsonParsingException ex)
+            {
+                response.Position = 0;
 
-                    var message = ex.Message;
+                using var reader = new StreamReader(response, EncodingUtility.UTF8);
+                var message = string.Concat(ex.Message, "\n\n", reader.ReadToEnd());
 
-                    using (var reader = new StreamReader(response, EncodingUtility.UTF8))
-                    {
-                        message += "\n\n" + reader.ReadToEnd();
-                    }
-
-                    throw new Exception(message, ex);
-                }
+                throw new Exception(message, ex);
             }
         }
     }

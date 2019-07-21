@@ -37,30 +37,29 @@ namespace SocialApis.Twitter.Apis
         {
             var request = CreateMultipartRequester(this.Api, out var boundary);
 
-            using (var requestStream = await request.GetRequestStreamAsync().ConfigureAwait(false))
-            using (var writer = new StreamWriter(requestStream, EncodingUtility.UTF8))
+            using var requestStream = await request.GetRequestStreamAsync().ConfigureAwait(false);
+            using var writer = new StreamWriter(requestStream, EncodingUtility.UTF8);
+
+            writer.WriteLine($"--{ boundary }");
+            writer.WriteLine("Content-Disposition: form-data; name=\"media\"");
+            writer.WriteLine();
+            writer.Flush();
+
+            await contentStream.UploadCopyToAsync(requestStream, progressReceiver).ConfigureAwait(false);
+
+            writer.WriteLine();
+
+            if (additionalOwners != null)
             {
                 writer.WriteLine($"--{ boundary }");
-                writer.WriteLine("Content-Disposition: form-data; name=\"media\"");
+                writer.WriteLine("Content-Disposition: form-data; name=\"additional_owners\"");
                 writer.WriteLine();
-                writer.Flush();
-
-                await contentStream.UploadCopyToAsync(requestStream, progressReceiver).ConfigureAwait(false);
-
-                writer.WriteLine();
-
-                if (additionalOwners != null)
-                {
-                    writer.WriteLine($"--{ boundary }");
-                    writer.WriteLine("Content-Disposition: form-data; name=\"additional_owners\"");
-                    writer.WriteLine();
-                    writer.WriteLine(string.Join(",", additionalOwners));
-                }
-
-                writer.WriteLine($"--{ boundary }--");
-
-                writer.Flush();
+                writer.WriteLine(string.Join(",", additionalOwners));
             }
+
+            writer.WriteLine($"--{ boundary }--");
+
+            writer.Flush();
 
             return await this.Api.SendRequest<MediaResponse>(request).ConfigureAwait(false);
         }
@@ -154,28 +153,27 @@ namespace SocialApis.Twitter.Apis
 
                 byte[] data = new byte[SendBufferLength];
 
-                using (var stream = request.GetRequestStream())
+                using var stream = request.GetRequestStream();
+
+                dataStr.Position = 0;
+
+                int uploadedSize = progress.UploadedSize;
+
+                while (dataRemaining > 0)
                 {
-                    dataStr.Position = 0;
+                    if (SendBufferLength > dataRemaining)
+                        dataSize = dataRemaining;
 
-                    int uploadedSize = progress.UploadedSize;
+                    dataStr.Read(data, 0, dataSize);
+                    stream.Write(data, 0, dataSize);
 
-                    while (dataRemaining > 0)
+                    dataRemaining -= dataSize;
+
+                    if (progressReceiver != null)
                     {
-                        if (SendBufferLength > dataRemaining)
-                            dataSize = dataRemaining;
-
-                        dataStr.Read(data, 0, dataSize);
-                        stream.Write(data, 0, dataSize);
-
-                        dataRemaining -= dataSize;
-
-                        if (progressReceiver != null)
-                        {
-                            progress.UploadedSize = uploadedSize + (int)((1 - (dataRemaining / (double)dataStr.Length)) * segmentSize);
-                            progress.UploadPercentage = progress.UploadedSize / (double)progress.TotalSize;
-                            progressReceiver.Report(progress);
-                        }
+                        progress.UploadedSize = uploadedSize + (int)((1 - (dataRemaining / (double)dataStr.Length)) * segmentSize);
+                        progress.UploadPercentage = progress.UploadedSize / (double)progress.TotalSize;
+                        progressReceiver.Report(progress);
                     }
                 }
 
@@ -186,10 +184,9 @@ namespace SocialApis.Twitter.Apis
 
             try
             {
-                using (var response = await request.GetResponseAsync().ConfigureAwait(false))
-                {
-                    return await response.GetResponseStream().ReadToEndAsync().ConfigureAwait(false);
-                }
+                using var response = await request.GetResponseAsync().ConfigureAwait(false);
+
+                return await response.GetResponseStream().ReadToEndAsync().ConfigureAwait(false);
             }
             catch (WebException wex) when (wex.Response != null)
             {
