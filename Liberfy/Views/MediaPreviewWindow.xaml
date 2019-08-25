@@ -11,6 +11,8 @@
     xmlns:vm="clr-namespace:Liberfy.ViewModels"
     xmlns:tplsel="clr-namespace:Liberfy.TemplateSelectors"
     xmlns:model="clr-namespace:Liberfy.Model"
+    UseLayoutRounding="True"
+    SnapsToDevicePixels="True"
     DataContext="{app:ViewModelConnector vm:MediaPreviewWindowViewModel}"
     d:DataContext="{d:DesignInstance vm:MediaPreviewWindowViewModel, IsDesignTimeCreatable=True}">
     <Grid

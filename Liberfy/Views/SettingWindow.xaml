@@ -15,6 +15,7 @@
     mc:Ignorable="d"
     ResizeMode="NoResize"
     UseLayoutRounding="True"
+    SnapsToDevicePixels="True"
     TextOptions.TextFormattingMode="Display"
     Title="設定" Height="540" Width="760"
     FontFamily="{StaticResource UIFont}"

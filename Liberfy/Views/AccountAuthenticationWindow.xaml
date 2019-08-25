@@ -13,6 +13,7 @@
     Height="360" Width="460"
     FontFamily="Meiryo"
     UseLayoutRounding="True"
+    SnapsToDevicePixels="True"
     ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
     SizeToContent="Manual"
     DataContext="{app:ViewModelConnector vm:AccountAuthenticationWindowViewModel}"

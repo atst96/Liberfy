@@ -15,6 +15,7 @@
     d:DesignWidth="500" d:DesignHeight="500"
     FontFamily="Meiryo"
     UseLayoutRounding="True"
+    SnapsToDevicePixels="True"
     WindowStartupLocation="CenterOwner"
     DataContext="{app:ViewModelConnector vm:TweetWindowViewModel}"
     d:DataContext="{d:DesignInstance vm:TweetWindowViewModel, IsDesignTimeCreatable=True}"

@@ -13,6 +13,8 @@
     FontFamily="Meiryo"
     SizeToContent="Height"
     ResizeMode="NoResize"
+    UseLayoutRounding="True"
+    SnapsToDevicePixels="True"
     WindowStyle="SingleBorderWindow"
     WindowStartupLocation="CenterOwner"
     d:DataContext="{d:DesignInstance {x:Type vm:UserWindowViewModel}, IsDesignTimeCreatable=True}">
