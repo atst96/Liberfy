@@ -1,5 +1,4 @@
-﻿using MessagePack;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -36,19 +35,15 @@ namespace Liberfy
 
         public bool IsValidItem { get; set; }
 
-        [Key("type")]
         [DataMember(Name = "type")]
         public MuteType Type { get; private set; }
 
-        [Key("search")]
         [DataMember(Name = "search")]
         public SearchMode Search { get; private set; }
 
-        [Key("text")]
         [DataMember(Name = "text")]
         public string Text { get; private set; }
 
-        [Key("enabled")]
         [DataMember(Name = "enabled")]
         public bool IsEnabled { get; set; } = true;
 
