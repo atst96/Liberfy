@@ -1,5 +1,4 @@
-﻿using MessagePack;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -11,19 +10,15 @@ namespace Liberfy
     [DataContract]
     internal class ColumnSetting : ICloneable
     {
-        [Key("service")]
         [DataMember(Name = "service")]
         public ServiceType Service { get; set; }
 
-        [Key("user_id")]
         [DataMember(Name = "user_id")]
         public long UserId { get; set; }
 
-        [Key("type")]
         [DataMember(Name = "type")]
         public ColumnType Type { get; set; }
 
-        [Key("options")]
         [DataMember(Name = "options", EmitDefaultValue = false)]
         public IDictionary<string, IConvertible> Options { get; set; }
 

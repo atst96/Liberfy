@@ -1,5 +1,4 @@
-﻿using MessagePack;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -12,23 +11,18 @@ namespace Liberfy
     [DataContract]
     internal class WindowStatus
     {
-        [Key("top")]
         [DataMember(Name = "top")]
         public double? Top { get; set; }
 
-        [Key("left")]
         [DataMember(Name = "left")]
         public double? Left { get; set; }
         
-        [Key("width")]
         [DataMember(Name = "width")]
         public double? Width { get; set; }
 
-        [Key("height")]
         [DataMember(Name = "height")]
         public double? Height { get; set; }
 
-        [Key("state")]
         [DataMember(Name = "window.state")]
         public WindowState? State { get; set; }
 

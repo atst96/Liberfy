@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Liberfy.Components;
 using Utf8Json;
 
 namespace Liberfy.Utilieis
@@ -12,9 +13,18 @@ namespace Liberfy.Utilieis
     {
         private static IJsonFormatterResolver _jsonFormatterResolver { get; } = Utf8Json.Resolvers.StandardResolver.AllowPrivate;
 
-        public static Task<T> DeserializeAsync<T>(Stream stream)
+        public static async Task<T> DeserializeAsync<T>(Stream stream)
         {
-            return JsonSerializer.DeserializeAsync<T>(stream, _jsonFormatterResolver);
+            var @object = await JsonSerializer
+                .DeserializeAsync<T>(stream, _jsonFormatterResolver)
+                .ConfigureAwait(false);
+
+            if (@object is IJsonFile jsonData)
+            {
+                jsonData.OnDeserialized();
+            }
+
+            return @object;
         }
 
         public static async Task<T> DeserializeFileAsync<T>(string path)
@@ -30,6 +40,11 @@ namespace Liberfy.Utilieis
 
         public static Task SerializeAsync<T>(T @object, Stream stream)
         {
+            if (@object is IJsonFile jsonData)
+            {
+                jsonData.OnSerialize();
+            }
+
             return JsonSerializer.SerializeAsync(stream, @object, _jsonFormatterResolver);
         }
 
