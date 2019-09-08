@@ -15,15 +15,15 @@ namespace Liberfy
 {
     internal static class AccountBase
     {
-        public static IAccount FromSetting(AccountItem item)
+        public static IAccount FromSetting(AccountSettingBase item)
         {
-            switch (item.Service)
+            switch (item)
             {
-                case ServiceType.Twitter:
-                    return new TwitterAccount(item);
+                case TwitterAccountItem twitterItem:
+                    return new TwitterAccount(twitterItem);
 
-                case ServiceType.Mastodon:
-                    return new MastodonAccount(item);
+                case MastodonAccountItem mastodonItem:
+                    return new MastodonAccount(mastodonItem);
 
                 default:
                     throw new NotImplementedException();
@@ -31,35 +31,30 @@ namespace Liberfy
         }
     }
 
-    internal abstract class AccountBase<TTokens, TTimeline, TUser, TStatus>
+    internal abstract class AccountBase<TApi, TTimeline, TUser, TStatus>
         : NotificationObject, IAccount, IEquatable<IUserInfo>
-            where TTokens : IApi
+            where TApi : IApi
             where TTimeline : TimelineBase
     {
+        public string ItemId { get; }
+
         public abstract long Id { get; protected set; }
 
         public string HostName { get; }
 
         public abstract ServiceType Service { get; }
 
-        public TTokens Tokens { get; private set; }
-
         public abstract IApiGateway ApiGateway { get; }
 
         public abstract IServiceConfiguration ServiceConfiguration { get; }
 
-        public abstract DataStoreBase<TUser, TStatus> DataStore { get; }
+        public TApi Api { get; protected set; }
 
-        IApi IAccount.Tokens => this.Tokens;
+        public abstract DataStoreBase<TUser, TStatus> DataStore { get; }
 
         protected static Setting Setting { get; } = App.Setting;
 
         protected object LockSharedObject = new object();
-
-        public void SetClient(ApiTokenInfo tokens)
-        {
-            this.Tokens = this.TokensFromApiTokenInfo(tokens);
-        }
 
         public IUserInfo Info { get; protected set; }
 
@@ -69,37 +64,37 @@ namespace Liberfy
 
         TimelineBase IAccount.Timeline => this.Timeline;
 
-        private AccountBase(long id, Uri host, ApiTokenInfo tokens)
+        private AccountBase(long id, Uri hostUrl)
         {
             this.Id = id;
-            this.SetClient(tokens);
             this.Timeline = this.CreateTimeline();
-            this.HostName = host?.Host;
+            this.HostName = hostUrl?.Host;
             this.Commands = new AccountCommandGroup(this);
         }
 
-        protected AccountBase(Uri hostUrl, AccountItem item)
-            : this(item.Id, hostUrl, item.Token)
+        protected AccountBase(long userId, Uri hostUrl, TApi api, AccountSettingBase item)
+            : this(userId, hostUrl)
         {
             if (item == null)
+            {
                 throw new ArgumentNullException(nameof(item));
+            }
 
+            this.ItemId = item.ItemId;
+            this.Api = api;
             this.Info = this.DataStore.GetAccount(item);
-
-            if (item.MutedIds?.Length > 0)
-                this.MutedIds.UnionWith(item.MutedIds);
         }
 
-        protected AccountBase(long userId, Uri hostUrl, TUser account, IApi tokens)
-            : this(userId, hostUrl, ApiTokenInfo.FromTokens(tokens))
+        protected AccountBase(long userId, Uri hostUrl, TApi api, TUser account)
+            : this(userId, hostUrl)
         {
+            this.ItemId = AccountManager.GenerateUniqueId();
+            this.Api = api;
             this.Info = this.GetUserInfo(account);
             this.IsLoggedIn = true;
         }
 
         protected abstract IUserInfo GetUserInfo(TUser account);
-
-        protected abstract TTokens TokensFromApiTokenInfo(ApiTokenInfo tokens);
 
         protected abstract TTimeline CreateTimeline();
 
@@ -186,48 +181,13 @@ namespace Liberfy
             return this._statusActivities.GetOrAdd(originalStatusId, _ => new StatusActivity());
         }
 
-        private HashSet<long> _followingIds;
-        public HashSet<long> FollowingIds => this._followersIds ?? (this._followersIds = new HashSet<long>());
-
-        private HashSet<long> _followersIds;
-        public HashSet<long> FollowersIds => this._followersIds ?? (this._followersIds = new HashSet<long>());
-
-        private HashSet<long> _blockedIds;
-        public HashSet<long> BlockedIds => this._blockedIds ?? (this._blockedIds = new HashSet<long>());
-
-        private HashSet<long> _mutedIds;
-        public HashSet<long> MutedIds => this._mutedIds ?? (this._mutedIds = new HashSet<long>());
-
-        private HashSet<long> _incomingIds;
-        public HashSet<long> IncomingIds => this._incomingIds ?? (this._incomingIds = new HashSet<long>());
-
-        private HashSet<long> _outgoingIds = new HashSet<long>();
-        public HashSet<long> OutgoingIds => this._outgoingIds ?? (this._outgoingIds = new HashSet<long>());
-
         public abstract IValidator Validator { get; }
 
-        public AccountItem ToSetting() => new AccountItem
-        {
-            Service = this.Service,
-            Id = this.Id,
-            Name = this.Info.Name,
-            ScreenName = this.Info.UserName,
-            IsProtected = this.Info.IsProtected,
-            ProfileImageUrl = this.Info.ProfileImageUrl,
-            Token = ApiTokenInfo.FromTokens(this.Tokens),
-            //Columns = this.Timeline.Columns?.Select(c => c.GetOption()),
-            MutedIds = this._mutedIds?.ToArray(),
-        };
+        public abstract AccountSettingBase ToSetting();
 
         public virtual void Unload()
         {
             this.Timeline?.Unload();
-            this._followingIds?.Clear();
-            this._followersIds?.Clear();
-            this._blockedIds?.Clear();
-            this._mutedIds?.Clear();
-            this._incomingIds?.Clear();
-            this._outgoingIds?.Clear();
             this._statusActivities.Clear();
         }
 
@@ -252,15 +212,16 @@ namespace Liberfy
             return $"{ this.Id }.Liberfy.Account.{ this.Service }".GetHashCode();
         }
 
+        void IAccount.SetApiTokens(IApi api)
+        {
+            this.SetApiTokens((TApi)api);
+        }
+
+        public abstract void SetApiTokens(TApi api);
+
         ~AccountBase()
         {
             // this.Tokens = null;
-            this._followingIds = null;
-            this._followersIds = null;
-            this._blockedIds = null;
-            this._mutedIds = null;
-            this._incomingIds = null;
-            this._outgoingIds = null;
             this._statusActivities = null;
             this.LockSharedObject = null;
         }

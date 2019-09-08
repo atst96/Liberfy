@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Liberfy.Services;
@@ -15,20 +16,37 @@ namespace Liberfy
 
         public override ServiceType Service { get; } = ServiceType.Mastodon;
 
-        public MastodonAccount(AccountItem item)
-            : base(item.Token.HostUrl, item)
+        public MastodonAccount(MastodonAccountItem item)
+            : base(item.Id, item.InstanceUrl, item.CreateApi(), item)
         {
         }
 
         public MastodonAccount(MastodonApi tokens, Account account)
-            : base(account.Id, tokens.HostUrl, account, tokens)
+            : base(account.Id, tokens.HostUrl, tokens, account)
         {
         }
 
         //public override IAccountCommandGroup Commands { get; } = null;
 
+        private static readonly IDictionary<Uri, MastodonDataStore> _instanceDataStoreMap = new Dictionary<Uri, MastodonDataStore>();
+
+        public static MastodonDataStore GetDataSotre(Uri hostUrl)
+        {
+            if (_instanceDataStoreMap.TryGetValue(hostUrl, out var dataStore))
+            {
+                return dataStore;
+            }
+            else
+            {
+                dataStore = new MastodonDataStore(hostUrl);
+
+                _instanceDataStoreMap.Add(hostUrl, dataStore);
+                return dataStore;
+            }
+        }
+
         private MastodonDataStore _dataStore;
-        public override DataStoreBase<Account, Status> DataStore => _dataStore ?? (_dataStore = global::Liberfy.DataStore.Mastodon[this.Tokens.HostUrl]);
+        public override DataStoreBase<Account, Status> DataStore => this._dataStore ??= GetDataSotre(this.Api.HostUrl);
 
         public override IValidator Validator { get; } = new MastodonValidator(int.MaxValue);
 
@@ -36,11 +54,6 @@ namespace Liberfy
 
         private IApiGateway _apiGateway;
         public override IApiGateway ApiGateway => this._apiGateway ?? (this._apiGateway = new MastodonApiGateway(this));
-
-        protected override MastodonApi TokensFromApiTokenInfo(ApiTokenInfo tokens)
-        {
-            return new MastodonApi(tokens.HostUrl, tokens.ConsumerKey, tokens.ConsumerSecret, tokens.AccessToken);
-        }
 
         protected override MastodonTimeline CreateTimeline() => new MastodonTimeline(this);
 
@@ -57,7 +70,7 @@ namespace Liberfy
         {
             try
             {
-                var user = await this.Tokens.Accounts.VerifyCredentials().ConfigureAwait(false);
+                var user = await this.Api.Accounts.VerifyCredentials().ConfigureAwait(false);
 
                 this.Id = user.Id;
 
@@ -88,6 +101,28 @@ namespace Liberfy
         protected override IUserInfo GetUserInfo(Account account)
         {
             return this.DataStore.RegisterAccount(account);
+        }
+
+        public override void SetApiTokens(MastodonApi api)
+        {
+            this.Api = api;
+        }
+
+        public override AccountSettingBase ToSetting()
+        {
+            return new MastodonAccountItem
+            {
+                ItemId = this.ItemId,
+                InstanceUrl = this.Api.HostUrl,
+                Id = this.Info.Id,
+                UserName = this.Info.UserName,
+                DisplayName = this.Info.Name,
+                Avatar = this.Info.ProfileImageUrl,
+                Locked = this.Info.IsProtected,
+                ClientId = this.Api.ClientId,
+                ClientSecret = this.Api.ClientSecret,
+                AccessToken = this.Api.AccessToken,
+            };
         }
     }
 }

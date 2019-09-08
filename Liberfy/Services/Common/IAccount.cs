@@ -12,9 +12,9 @@ namespace Liberfy
 {
     internal interface IAccount : IEquatable<IAccount>
     {
+        string ItemId { get; }
         long Id { get; }
         ServiceType Service { get; }
-        IApi Tokens { get; }
         IApiGateway ApiGateway { get; }
         IServiceConfiguration ServiceConfiguration { get; }
         IUserInfo Info { get; }
@@ -25,8 +25,8 @@ namespace Liberfy
         IValidator Validator { get; }
         ValueTask<bool> Login();
         Task LoadDetails();
-        void SetClient(ApiTokenInfo tokens);
         void Unload();
-        AccountItem ToSetting();
+        void SetApiTokens(IApi api);
+        AccountSettingBase ToSetting();
     }
 }

@@ -14,12 +14,11 @@ namespace Liberfy.Services.Twitter
     internal class TwitterApiGateway : IApiGateway
     {
         private readonly TwitterAccount _account;
-        private readonly TwitterApi _api;
+        private TwitterApi _api => this._account.Api;
 
         public TwitterApiGateway(TwitterAccount account)
         {
             this._account = account;
-            this._api = account.Tokens;
         }
 
         private async Task<long> UploadAttachment(UploadMedia attachment)

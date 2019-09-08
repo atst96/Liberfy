@@ -22,14 +22,14 @@ namespace Liberfy
 
         public override ServiceType Service { get; } = ServiceType.Twitter;
 
-        public TwitterAccount(AccountItem accountItem)
-            : base(ServerHostUrl, accountItem)
+        public TwitterAccount(TwitterAccountItem item)
+            : base(item.Id, ServerHostUrl, item.CreateApi(), item)
         {
             this.Validator = new TwitterValidator(this);
         }
 
-        public TwitterAccount(TwitterApi tokens, User account)
-            : base((long)account.Id, ServerHostUrl, account, tokens)
+        public TwitterAccount(TwitterApi api, User account)
+            : base((long)account.Id, ServerHostUrl, api, account)
         {
             this.Validator = new TwitterValidator(this);
         }
@@ -46,16 +46,6 @@ namespace Liberfy
         private IApiGateway _apiGateway;
         public override IApiGateway ApiGateway => this._apiGateway ?? (this._apiGateway = new TwitterApiGateway(this));
 
-        protected override TwitterApi TokensFromApiTokenInfo(ApiTokenInfo tokens)
-        {
-            return new TwitterApi(
-                tokens.ConsumerKey,
-                tokens.ConsumerSecret,
-                tokens.AccessToken,
-                tokens.AccessTokenSecret
-            );
-        }
-
         protected override TwitterTimeline CreateTimeline() => new TwitterTimeline(this);
 
         public override async Task Load()
@@ -71,7 +61,7 @@ namespace Liberfy
         {
             try
             {
-                var user = await this.Tokens.Account.VerifyCredentials(new Query
+                var user = await this.Api.Account.VerifyCredentials(new Query
                 {
                     ["include_entities"] = true,
                     ["skip_status"] = true,
@@ -105,81 +95,36 @@ namespace Liberfy
         {
             Task[] tasks =
             {
-                this.GetFollowingIds(),
-                this.GetFollowerIds(),
-                this.GetBlockedIds(),
-                this.GetMutedIds(),
-                this.GetOutgoingIds(),
-                this.GetIncomingIds()
             };
 
             return Task.WhenAll(tasks);
         }
 
-        #region GetDetailsメソッド郡
-
-        private Task GetFollowingIds()
-        {
-            return this.GetIdsAndSetList(this.Tokens.Friends.Ids, this.FollowingIds, "フォロー中一覧");
-        }
-
-        private Task GetFollowerIds()
-        {
-            return this.GetIdsAndSetList(this.Tokens.Followers.Ids, this.FollowersIds, "フォロワー一覧");
-        }
-
-        private Task GetBlockedIds()
-        {
-            return Setting.GetBlockedIdsAtLoadingAccount
-                ? this.GetIdsAndSetList(this.Tokens.Blocks.Ids, this.BlockedIds, "ブロック中一覧")
-                : Task.CompletedTask;
-        }
-
-        private Task GetMutedIds()
-        {
-            return Setting.GetMutedIdsAtLoadingAccount
-                ? this.GetIdsAndSetList(this.Tokens.Mutes.Ids, this.MutedIds, "ミュート中一覧")
-                : Task.CompletedTask;
-        }
-
-        private Task GetIncomingIds()
-        {
-            return this.Info.IsProtected
-                ? this.GetIdsAndSetList(this.Tokens.Friendships.Incoming, this.IncomingIds, "フォロー申請一覧")
-                : Task.CompletedTask;
-        }
-
-        private Task GetOutgoingIds()
-        {
-            return this.GetIdsAndSetList(this.Tokens.Friendships.Outgoing, this.OutgoingIds, "フォロー申請中一覧");
-        }
-
-        private async Task GetIdsAndSetList(Func<int, Task<CursoredIdsResponse>> apiCallFunc, HashSet<long> hashSet, string dataLabel)
-        {
-            try
-            {
-                int? cursor = null;
-
-                do
-                {
-                    var ids = await apiCallFunc(cursor ?? -1).ConfigureAwait(false);
-                    cursor = ids.NextCursor;
-
-                    hashSet.UnionWith(ids.Ids);
-                }
-                while (cursor.HasValue && cursor.Value > 0);
-            }
-            catch (Exception ex)
-            {
-                this.SetErrorMessage(dataLabel, ex.Message);
-            }
-        }
-
         protected override IUserInfo GetUserInfo(User account)
         {
-            return this.DataStore.RegisterAccount(account);
+            throw new NotImplementedException();
         }
 
-        #endregion GetDetails
+        public override void SetApiTokens(TwitterApi api)
+        {
+            this.Api = api;
+        }
+
+        public override AccountSettingBase ToSetting()
+        {
+            return new TwitterAccountItem
+            {
+                ItemId = this.ItemId,
+                Id = this.Id,
+                Name = this.Info.Name,
+                ScreenName = this.Info.UserName,
+                ProfileImageUrl = this.Info.ProfileImageUrl,
+                IsProtected = this.Info.IsProtected,
+                ConsumerKey = this.Api.ConsumerKey,
+                ConsumerSecret = this.Api.ConsumerSecret,
+                AccessToken = this.Api.AccessToken,
+                AccessTokenSecret = this.Api.AccessTokenSecret,
+            };
+        }
     }
 }

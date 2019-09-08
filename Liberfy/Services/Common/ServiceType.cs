@@ -13,6 +13,6 @@ namespace Liberfy
         Twitter = 1,
 
         [EnumMember(Value = "mastodon")]
-        Mastodon,
+        Mastodon = 2,
     }
 }

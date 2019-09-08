@@ -23,7 +23,7 @@ namespace Liberfy
             BindingOperations.EnableCollectionSynchronization(this.Statuses, new object());
         }
 
-        public abstract IUserInfo<IAccount> GetAccount(AccountItem item);
+        public abstract IUserInfo<IAccount> GetAccount(AccountSettingBase item);
 
         public abstract IUserInfo<IAccount> RegisterAccount(IAccount account);
 

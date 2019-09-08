@@ -86,6 +86,7 @@ namespace Liberfy
             catch (Exception ex)
             {
                 DialogService.ShowTaskDialog(IntPtr.Zero, ex.GetMessage(), null, null, TaskDialogStandardButtons.Close, TaskDialogStandardIcon.Error); ;
+                Debug.WriteLine(ex.StackTrace);
                 this.ForceShutdown();
                 return;
             }
@@ -120,7 +121,7 @@ namespace Liberfy
 
         private void LoadSettings()
         {
-            var loadAccountsTask = ParseSettingAsync<AccountSetting>(GetLocalFilePath(Defaults.AccountsFile));
+            var loadAccountsTask = ParseSettingAsync<AccountSettings>(GetLocalFilePath(Defaults.AccountsFile));
             var loadSettingTask = ParseSettingAsync<Setting>(GetLocalFilePath(Defaults.SettingFile));
 
             Task.WaitAll(loadAccountsTask, loadSettingTask);
@@ -134,12 +135,12 @@ namespace Liberfy
 
                 if (accounts?.Any() ?? false)
                 {
-                    this.LoadAccounts(accounts);
+                    this.InitializeSavedAccounts(accounts);
                 }
 
                 if (columns?.Any() ?? false)
                 {
-                    this.LoadColumns(columns);
+                    this.InitializeSavedColumns(columns);
                 }
             }
 
@@ -147,7 +148,7 @@ namespace Liberfy
             Setting = loadSettingTask.Result ?? new Setting();
         }
 
-        private void LoadAccounts(IEnumerable<AccountItem> accounts)
+        private void InitializeSavedAccounts(IEnumerable<AccountSettingBase> accounts)
         {
             foreach (var accountSetting in accounts.Distinct())
             {
@@ -155,7 +156,7 @@ namespace Liberfy
             }
         }
 
-        private void LoadColumns(IEnumerable<ColumnSetting> columns)
+        private void InitializeSavedColumns(IEnumerable<ColumnSetting> columns)
         {
             foreach (var columnSetting in columns)
             {
@@ -224,7 +225,7 @@ namespace Liberfy
 
         private void SaveSettings()
         {
-            var accountsSetting = new AccountSetting
+            var accountsSetting = new AccountSettings
             {
                 Accounts = AccountManager.Accounts.Select(a => a.ToSetting()),
                 Columns = TimelineBase.Columns.Select(c => c.GetOption()),

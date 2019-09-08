@@ -13,9 +13,10 @@ namespace Liberfy.Services.Twitter
 {
     internal class TwitterDataStore : DataStoreBase<User, Status>
     {
-        public override IUserInfo<User> GetAccount(AccountItem item)
+        public override IUserInfo<User> GetAccount(AccountSettingBase item)
         {
-            return this.Accounts.GetOrAdd(item.Id, id => new TwitterUserInfo(item));
+            var twitterItem = (TwitterAccountItem)item;
+            return this.Accounts.GetOrAdd(twitterItem.Id, id => new TwitterUserInfo(twitterItem));
         }
 
         public override IUserInfo<User> RegisterAccount(User account)

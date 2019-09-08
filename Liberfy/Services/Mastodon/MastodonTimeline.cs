@@ -14,7 +14,7 @@ namespace Liberfy.Services.Mastodon
 
         private readonly long _userId;
         private readonly MastodonAccount _account;
-        public MastodonApi _tokens => _account.Tokens;
+        public MastodonApi _tokens => _account.Api;
 
         private IDisposable _streamDisposer;
 

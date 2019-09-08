@@ -39,7 +39,7 @@ namespace Liberfy.SocialServices.Twitter
                 {
                     sw.Restart();
 
-                    var statuses = await this._account.Tokens.Statuses.HomeTimeline(new Query
+                    var statuses = await this._account.Api.Statuses.HomeTimeline(new Query
                     {
                         ["since_id"] = this.LatestStatusId,
                         ["count"] = 200,

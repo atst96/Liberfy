@@ -100,7 +100,7 @@ namespace Liberfy
             }
         }
 
-        public TwitterUserInfo(AccountItem item)
+        public TwitterUserInfo(TwitterAccountItem item)
         {
             this.Id = item.Id;
             this._userName = item.ScreenName;

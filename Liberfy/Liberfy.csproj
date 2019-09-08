@@ -82,6 +82,7 @@
     <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Runtime.Serialization" />
@@ -109,6 +110,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Components\JsonFormatters\AccountSettingsIEnumerableFormatter.cs" />
     <Compile Include="BatchPropertyChanges.cs" />
     <Compile Include="Commands\Account\AccountCommandGroup.cs" />
     <Compile Include="Commands\MainWindow\ShowSettingDialogCommand.cs" />
@@ -130,6 +132,7 @@
     <Compile Include="Data\Info\AppInfo.cs" />
     <Compile Include="Data\Info\Info.cs" />
     <Compile Include="Data\Info\OSInfo.cs" />
+    <Compile Include="Components\JsonFormatters\InterfaceEnumerableFormatter.cs" />
     <Compile Include="Items\NotificationItem.cs" />
     <Compile Include="Model\ApplicationStatus.cs" />
     <Compile Include="Commands\AccountAuthenticationWindowCommands\CancelCommand.cs" />
@@ -170,6 +173,8 @@
     <Compile Include="Services\Twitter\TwitterStatusInfo.cs" />
     <Compile Include="Services\Twitter\TwitterUserInfo.cs" />
     <Compile Include="Services\Twitter\TwitterValueConverter.cs" />
+    <Compile Include="Settings\MastodonAccountItem.cs" />
+    <Compile Include="Settings\TwitterAccountItem.cs" />
     <Compile Include="TemplateSelectors\AttachmentTemplateSelector.cs" />
     <Compile Include="TemplateSelectors\TimelineViewItemTemplateSelector.cs" />
     <Compile Include="Utilieis\ImageUtility.cs" />
@@ -212,9 +217,9 @@
     <Compile Include="Model\AccountManager.cs" />
     <Compile Include="Data\Attachment.cs" />
     <Compile Include="Data\Entities.cs" />
-    <Compile Include="Model\Setting\ClientKeyCache.cs" />
-    <Compile Include="Model\Setting\ColumnSetting.cs" />
-    <Compile Include="Model\Setting\WindowSettings.cs" />
+    <Compile Include="Settings\ClientKeyCache.cs" />
+    <Compile Include="Settings\ColumnSetting.cs" />
+    <Compile Include="Settings\WindowSettings.cs" />
     <Compile Include="Components\ObserverDispose.cs" />
     <Compile Include="Services\Config\ISocialConfig.cs" />
     <Compile Include="Services\Config\MastodonConfig.cs" />
@@ -229,8 +234,7 @@
     <Compile Include="Defaults.cs" />
     <Compile Include="Components\MathEx.cs" />
     <Compile Include="Controls\MediaPanel.cs" />
-    <Compile Include="Model\Setting\AccountItem.cs" />
-    <Compile Include="Model\Setting\ApiToken.cs" />
+    <Compile Include="Settings\AccountSettingBase.cs" />
     <Compile Include="Behaviors\TextBoxBehavior.cs" />
     <Compile Include="Extensions\TextBoxController.cs" />
     <Compile Include="TemplateSelectors\TimelineItemTemplateSelector.cs" />
@@ -263,10 +267,10 @@
     <Compile Include="Items\IItem.cs" />
     <Compile Include="Items\StatusItem.cs" />
     <Compile Include="Data\StatusActivity.cs" />
-    <Compile Include="Model\Setting\Mute.cs" />
-    <Compile Include="Model\Setting\Setting.cs" />
-    <Compile Include="Model\Setting\AccountSetting.cs" />
-    <Compile Include="Model\Setting\WindowStatus.cs" />
+    <Compile Include="Settings\Mute.cs" />
+    <Compile Include="Settings\Setting.cs" />
+    <Compile Include="Settings\AccountSettings.cs" />
+    <Compile Include="Settings\WindowStatus.cs" />
     <Compile Include="Components\Mvvm\ViewModelConnector.cs" />
     <Compile Include="Data\StatusInfo.cs" />
     <Compile Include="Data\IUserInfo.cs" />

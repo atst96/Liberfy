@@ -30,6 +30,26 @@ namespace Liberfy
             return null;
         }
 
+        private static readonly Random _random = new Random();
+
+        /// <summary>
+        /// アカウント識別IDを生成する。
+        /// </summary>
+        /// <returns>アカウント識別ID</returns>
+        public static string GenerateUniqueId()
+        {
+            while (true)
+            {
+                int value = _random.Next(short.MaxValue, int.MaxValue);
+                var id = value.ToString("x");
+
+                if (!AccountManager.Accounts.Any(a => a.ItemId == id))
+                {
+                    return id;
+                }
+            }
+        }
+
         public static async Task Register(IAccountAuthenticator authenticator)
         {
             if (authenticator == null)
@@ -48,7 +68,7 @@ namespace Liberfy
 
                 if (account != null)
                 {
-                    account.SetClient(ApiTokenInfo.FromTokens(api));
+                    account.SetApiTokens(api);
                 }
                 else
                 {
@@ -67,7 +87,7 @@ namespace Liberfy
 
                 if (account != null)
                 {
-                    account.SetClient(ApiTokenInfo.FromTokens(api));
+                    account.SetApiTokens(api);
                 }
                 else
                 {

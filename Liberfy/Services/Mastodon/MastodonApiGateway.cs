@@ -18,7 +18,7 @@ namespace Liberfy.Services.Mastodon
         public MastodonApiGateway(MastodonAccount account)
         {
             this._account = account;
-            this._api = account.Tokens;
+            this._api = account.Api;
         }
 
         private async Task<long> UploadAttachment(UploadMedia attachment)

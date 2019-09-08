@@ -20,9 +20,10 @@ namespace Liberfy.Services.Mastodon
             this._host = host;
         }
 
-        public override IUserInfo<Account> GetAccount(AccountItem item)
+        public override IUserInfo<Account> GetAccount(AccountSettingBase item)
         {
-            return this.Accounts.GetOrAdd(item.Id, id => new MastodonUserInfo(this._host, item));
+            var mastodonItem = (MastodonAccountItem)item;
+            return this.Accounts.GetOrAdd(mastodonItem.Id, id => new MastodonUserInfo(this._host, mastodonItem));
         }
 
         public override IUserInfo<Account> RegisterAccount(Account account)

@@ -73,15 +73,15 @@ namespace Liberfy
         private IEnumerable<IEntity> _urlEntities;
         public IEnumerable<IEntity> UrlEntities => this._urlEntities;
 
-        public MastodonUserInfo(Uri host, AccountItem item)
+        public MastodonUserInfo(Uri host, MastodonAccountItem item)
         {
             this.Instance = host;
 
             this.Id = item.Id;
-            this._userName = item.ScreenName;
-            this._name = item.Name;
-            this._isProtected = item.IsProtected;
-            this._profileImageUrl = item.ProfileImageUrl;
+            this._userName = item.UserName;
+            this._name = item.DisplayName;
+            this._isProtected = item.Locked;
+            this._profileImageUrl = item.Avatar;
         }
 
         public MastodonUserInfo(Uri host, Account account)
