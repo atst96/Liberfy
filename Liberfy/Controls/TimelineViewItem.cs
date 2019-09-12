@@ -76,7 +76,11 @@ namespace Liberfy
 
         protected override Size MeasureOverride(Size constraint)
         {
-            constraint.Width = this._container.ItemWidth;
+            if (this._container != null)
+            {
+                constraint.Width = this._container.ItemWidth;
+            }
+
             return base.MeasureOverride(constraint);
         }
     }
