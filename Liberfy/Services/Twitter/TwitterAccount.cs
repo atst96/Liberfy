@@ -102,7 +102,7 @@ namespace Liberfy
 
         protected override IUserInfo GetUserInfo(User account)
         {
-            throw new NotImplementedException();
+            return this.DataStore.RegisterAccount(account);
         }
 
         public override void SetApiTokens(TwitterApi api)
