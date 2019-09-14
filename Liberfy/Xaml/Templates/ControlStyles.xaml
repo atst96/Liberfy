@@ -266,15 +266,39 @@
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 
-    <Style x:Key="QuotedTweetButtonStyle" BasedOn="{StaticResource {x:Type Button}}" TargetType="{x:Type Button}">
-        <Setter Property="OverridesDefaultStyle" Value="False" />
+    <Style x:Key="QuotedTweetButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Height" Value="auto" />
-        <Setter Property="Foreground" Value="#000" />
+        <Setter Property="Foreground" Value="#333333" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="#aaa" />
+        <Setter Property="BorderThickness" Value="8,0,0,0" />
+        <Setter Property="BorderBrush" Value="#AACCCCCC" />
+        <Setter Property="Background" Value="#AAEEEEEE" />
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border
+                        x:Name="border"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="#EECCCCCC" />
+                            <Setter TargetName="border" Property="Background" Value="#EEEAEAEA" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Thickness x:Key="TimelineItemEntityMargin">4 0 4 4</Thickness>

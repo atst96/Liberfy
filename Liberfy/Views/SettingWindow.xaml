@@ -1031,18 +1031,19 @@
                                             DockPanel.Dock="Top"
                                             Margin="{StaticResource TimelineItemEntityMargin}">
                                             <Button
-                                                Padding="8 5"
+                                                Padding="8"
                                                 Style="{StaticResource QuotedTweetButtonStyle}"
                                                 FontSize="{StaticResource UIFontSize}"
                                                 VerticalContentAlignment="Stretch" Height="auto"
                                                 app:ElementBehavior.Visible="{Binding Setting.TimelineStatusShowQuotedTweet, Mode=OneWay}">
                                                 <DockPanel>
-                                                    <Border
+                                                    <Button
                                                         Width="80"
                                                         Margin="6 0 0 0"
                                                         DockPanel.Dock="Right"
                                                         BorderThickness="1"
-                                                        BorderBrush="#6888"/>
+                                                        BorderBrush="#6888"
+                                                        Style="{StaticResource TimelineImageButton}" />
 
                                                     <DockPanel DockPanel.Dock="Top">
                                                         <TextBlock
