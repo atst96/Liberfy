@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:conv="clr-namespace:Liberfy.Converter"
     xmlns:local="clr-namespace:Liberfy"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
     xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:app="clr-namespace:Liberfy"
     StartupUri="Views/MainWindow.xaml"
@@ -44,7 +44,7 @@
             <tb:TaskbarIcon
                 x:Key="taskbarIcon"
                 Visibility="Collapsed"
-                IconSource="Icons/app_tasktray.ico" />
+                IconSource="pack://application:,,,/Icons/app_tasktray.ico" />
 
             <!--#region Converters -->
 

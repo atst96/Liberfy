@@ -1,434 +1,62 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2BBC1D87-8B7F-46D3-9648-AC2F2C5A3C88}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Liberfy</RootNamespace>
-    <AssemblyName>Liberfy</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
-    <Prefer32Bit>false</Prefer32Bit>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <LangVersion>8.0</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <LangVersion>preview</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Authors>atst</Authors>
+    <Version>0.8.0.0</Version>
+    <Company />
+    <PackageProjectUrl>https://github.com/atst1996/Liberfy</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/atst1996/Liberfy</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Icons\app.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Liberfy.App</StartupObject>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>false</SignManifests>
+    <StartupObject></StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\WPF NotifyIcon\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
-    </Reference>
-    <Reference Include="NowPlayingLib, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\NowPlayingLib\NowPlayingLib.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationFramework.Aero" />
-    <Reference Include="PresentationFramework.Aero2" />
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.Entity" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Design" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="Components\JsonFormatters\AccountSettingsIEnumerableFormatter.cs" />
-    <Compile Include="BatchPropertyChanges.cs" />
-    <Compile Include="Commands\Account\AccountCommandGroup.cs" />
-    <Compile Include="Commands\MainWindow\ShowSettingDialogCommand.cs" />
-    <Compile Include="Commands\SettingWindowCommands\AccountAddCommand.cs" />
-    <Compile Include="Commands\SettingWindowCommands\ColumnAddCommand.cs" />
-    <Compile Include="Commands\Status\FavoriteCommand.cs" />
-    <Compile Include="Commands\Account\OpenUserWindowCommand.cs" />
-    <Compile Include="Commands\Status\ReplyCommand.cs" />
-    <Compile Include="Commands\Status\RetweetCommand.cs" />
-    <Compile Include="Commands\Status\StatusCommandGroup.cs" />
-    <Compile Include="Commands\TweetWindow\AddPollItemCommand.cs" />
-    <Compile Include="Commands\TweetWindow\RemovePollItemCommand.cs" />
-    <Compile Include="Components\Database.cs" />
-    <Compile Include="Components\IJsonFile.cs" />
-    <Compile Include="Components\ImageCacheInfo.cs" />
-    <Compile Include="Components\UISettingManager.cs" />
-    <Compile Include="Components\ValueConverter.cs" />
-    <Compile Include="Controls\CustomWindow.cs" />
-    <Compile Include="Data\Info\AppInfo.cs" />
-    <Compile Include="Data\Info\Info.cs" />
-    <Compile Include="Data\Info\OSInfo.cs" />
-    <Compile Include="Components\JsonFormatters\InterfaceEnumerableFormatter.cs" />
-    <Compile Include="Items\NotificationItem.cs" />
-    <Compile Include="Model\ApplicationStatus.cs" />
-    <Compile Include="Commands\AccountAuthenticationWindowCommands\CancelCommand.cs" />
-    <Compile Include="Commands\AccountAuthenticationWindowCommands\NextCommand.cs" />
-    <Compile Include="Commands\AccountAuthenticationWindowCommands\CopyClipboardCommand.cs" />
-    <Compile Include="Commands\SettingWindowCommands\AccountDeleteCommand.cs" />
-    <Compile Include="Commands\SettingWindowCommands\AccountMoveDownCommand.cs" />
-    <Compile Include="Commands\SettingWindowCommands\AccountMoveUpCommand.cs" />
-    <Compile Include="Commands\SettingWindowCommands\InsertNowPlayingParameterCommand.cs" />
-    <Compile Include="Commands\SettingWindowCommands\ResetNowPlayingFormatCommand.cs" />
-    <Compile Include="Components\IDisposableCommand.cs" />
-    <Compile Include="Components\Services\WindowService.cs" />
-    <Compile Include="Controls\BusyIndicator.xaml.cs">
-      <DependentUpon>BusyIndicator.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\ColumnManager.cs" />
-    <Compile Include="Commands\Column\ColumnRemoveCommand.cs" />
-    <Compile Include="Commands\Column\ColumnMoveLeftCommand.cs" />
-    <Compile Include="Commands\Column\ColumnMoveRightCommand.cs" />
-    <Compile Include="Commands\OpenTweetWindowCommand.cs" />
-    <Compile Include="Commands\TweetWindow\AddImageCommand.cs" />
-    <Compile Include="Commands\TweetWindow\DragDropCommand.cs" />
-    <Compile Include="Commands\TweetWindow\InsertNowPlayingCommand.cs" />
-    <Compile Include="Commands\TweetWindow\PasteImageCommand.cs" />
-    <Compile Include="Commands\TweetWindow\PostCommand.cs" />
-    <Compile Include="Commands\TweetWindow\RemoveMediaCommand.cs" />
-    <Compile Include="Components\NotifiableCollection.cs" />
-    <Compile Include="Controls\DropDownButton.cs" />
-    <Compile Include="Controls\DropDownMenuButton.cs" />
-    <Compile Include="Controls\PopupDecorator.cs" />
-    <Compile Include="Extensions\WebExtensions.cs" />
-    <Compile Include="Components\ProfileImageChache.cs" />
-    <Compile Include="Services\Common\IAccountAuthenticator.cs" />
-    <Compile Include="Services\Common\PollItem.cs" />
-    <Compile Include="Services\Mastodon\MastodonStatusInfo.cs" />
-    <Compile Include="Services\Mastodon\MastodonUserInfo.cs" />
-    <Compile Include="Services\Mastodon\MastodonValueConverter.cs" />
-    <Compile Include="Services\Twitter\TwitterStatusInfo.cs" />
-    <Compile Include="Services\Twitter\TwitterUserInfo.cs" />
-    <Compile Include="Services\Twitter\TwitterValueConverter.cs" />
-    <Compile Include="Settings\MastodonAccountItem.cs" />
-    <Compile Include="Settings\TwitterAccountItem.cs" />
-    <Compile Include="TemplateSelectors\AttachmentTemplateSelector.cs" />
-    <Compile Include="TemplateSelectors\TimelineViewItemTemplateSelector.cs" />
-    <Compile Include="Utilieis\ImageUtility.cs" />
-    <Compile Include="Services\Mastodon\MastodonAccountAuthenticator.cs" />
-    <Compile Include="Services\Common\ServicePostParameters.cs" />
-    <Compile Include="Services\Common\DataStoreBase.cs" />
-    <Compile Include="Enums\StatusVisibility.cs" />
-    <Compile Include="Extensions\CollectionExtensions.cs" />
-    <Compile Include="Extensions\LinqToXmlHtmlExtensions.cs" />
-    <Compile Include="Extensions\TimelineBehavior.cs" />
-    <Compile Include="Commands\AppCommands.cs" />
-    <Compile Include="Components\SequentialSurrogateTextReader.cs" />
-    <Compile Include="Controls\GeometryIcon.cs" />
-    <Compile Include="Controls\TimelineViewItem.cs" />
-    <Compile Include="Converters\EnumBoolConverter.cs" />
-    <Compile Include="Behaviors\PasteImageBehavior.cs" />
-    <Compile Include="Behaviors\DragDropBehavior.cs" />
-    <Compile Include="Components\DragDropHelper.cs" />
-    <Compile Include="Extensions\SocialApisExtensions.cs" />
-    <Compile Include="Extensions\WpfExtensions.cs" />
-    <Compile Include="Services\Mastodon\MastodonTextEntityBuilder.cs" />
-    <Compile Include="Services\Common\IAccount.cs" />
-    <Compile Include="Config.cs" />
-    <Compile Include="Services\Common\ITextTokenBuilder.cs" />
-    <Compile Include="Services\Common\IServiceConfiguration.cs" />
-    <Compile Include="Services\Common\IApiGateway.cs" />
-    <Compile Include="Services\Mastodon\MastodonApiGateway.cs" />
-    <Compile Include="Services\Mastodon\MastodonDataStore.cs" />
-    <Compile Include="Services\Common\MultipleInstanceDataStore.cs" />
-    <Compile Include="Services\Common\IValidator.cs" />
-    <Compile Include="Services\Mastodon\MastodonServiceConfiguration.cs" />
-    <Compile Include="Services\Mastodon\MastodonValidator.cs" />
-    <Compile Include="Services\Twitter\TextEntityStartPositionCompare.cs" />
-    <Compile Include="Services\Twitter\TwitterApiGateway.cs" />
-    <Compile Include="Services\Twitter\TwitterServiceConfiguration.cs" />
-    <Compile Include="Services\Twitter\TwitterValidator.cs" />
-    <Compile Include="Services\Common\ServiceType.cs" />
-    <Compile Include="Services\Common\IAccountCommandGroup.cs" />
-    <Compile Include="Components\IUnsubscribableObserver.cs" />
-    <Compile Include="Model\AccountManager.cs" />
-    <Compile Include="Data\Attachment.cs" />
-    <Compile Include="Data\Entities.cs" />
-    <Compile Include="Settings\ClientKeyCache.cs" />
-    <Compile Include="Settings\ColumnSetting.cs" />
-    <Compile Include="Settings\WindowSettings.cs" />
-    <Compile Include="Components\ObserverDispose.cs" />
-    <Compile Include="Services\Config\ISocialConfig.cs" />
-    <Compile Include="Services\Config\MastodonConfig.cs" />
-    <Compile Include="Services\Config\TwitterConfig.cs" />
-    <Compile Include="Services\Twitter\FakeStreaming.cs" />
-    <Compile Include="TemplateSelectors\ColumnOptionTemplateSelector.cs" />
-    <Compile Include="Components\Regexes.cs" />
-    <Compile Include="Converters\Converters.cs" />
-    <Compile Include="Data\DataStore.cs" />
-    <Compile Include="Components\DictionaryEx.cs" />
-    <Compile Include="Extensions\ElementBehavior.cs" />
-    <Compile Include="Defaults.cs" />
-    <Compile Include="Components\MathEx.cs" />
-    <Compile Include="Controls\MediaPanel.cs" />
-    <Compile Include="Settings\AccountSettingBase.cs" />
-    <Compile Include="Behaviors\TextBoxBehavior.cs" />
-    <Compile Include="Extensions\TextBoxController.cs" />
-    <Compile Include="TemplateSelectors\TimelineItemTemplateSelector.cs" />
-    <Compile Include="Controls\TimelineView.cs" />
-    <Compile Include="Services\Twitter\TwitterTextTokenBuilder.cs" />
-    <Compile Include="Services\Twitter\TwitterDataStore.cs" />
-    <Compile Include="Services\Twitter\TwitterAccountAuthenticator.cs" />
-    <Compile Include="Utilieis\FileContentUtility.cs" />
-    <Compile Include="Services\Common\AccountBase.cs" />
-    <Compile Include="Services\Mastodon\MastodonAccount.cs" />
-    <Compile Include="Utilieis\JsonUtility.cs" />
-    <Compile Include="ViewModels\AccountAuthenticationWindowViewModel.cs" />
-    <Compile Include="Columns\HomeColumn.cs" />
-    <Compile Include="Columns\NotificationColumn.cs" />
-    <Compile Include="ViewModels\MediaAttachmentInfo.cs" />
-    <Compile Include="ViewModels\MediaPreviewWindowViewModel.cs" />
-    <Compile Include="ViewModels\SettingWindowViewModel.View.cs" />
-    <Compile Include="Services\Twitter\TwitterAccount.cs" />
-    <Compile Include="Services\Mastodon\MastodonTimeline.cs" />
-    <Compile Include="Services\Common\TimelineBase.cs" />
-    <Compile Include="ViewModels\UploadMedia.cs" />
-    <Compile Include="Data\UILocalize.cs" />
-    <Compile Include="Columns\Base\ColumnBase.cs" />
-    <Compile Include="Columns\ListColumn.cs" />
-    <Compile Include="Columns\MessageColumn.cs" />
-    <Compile Include="Columns\SearchColumn.cs" />
-    <Compile Include="Columns\Base\SearchColumnBase.cs" />
-    <Compile Include="Columns\Base\StatusColumnBase.cs" />
-    <Compile Include="Columns\StreamSearchColumn.cs" />
-    <Compile Include="Items\IItem.cs" />
-    <Compile Include="Items\StatusItem.cs" />
-    <Compile Include="Data\StatusActivity.cs" />
-    <Compile Include="Settings\Mute.cs" />
-    <Compile Include="Settings\Setting.cs" />
-    <Compile Include="Settings\AccountSettings.cs" />
-    <Compile Include="Settings\WindowStatus.cs" />
-    <Compile Include="Components\Mvvm\ViewModelConnector.cs" />
-    <Compile Include="Data\StatusInfo.cs" />
-    <Compile Include="Data\IUserInfo.cs" />
-    <Compile Include="Services\Twitter\TwitterTimeline.cs" />
-    <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="ViewModels\SettingWindowViewModel.cs" />
-    <Compile Include="ViewModels\TweetWindowViewModel.cs" />
-    <Compile Include="ViewModels\UserWindowViewModel.cs" />
-    <Compile Include="Views\AccountAuthenticationWindow.xaml.cs">
-      <DependentUpon>AccountAuthenticationWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MediaPreviewWindow.xaml.cs">
-      <DependentUpon>MediaPreviewWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SettingWindow.xaml.cs">
-      <DependentUpon>SettingWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\TweetWindow.xaml.cs">
-      <DependentUpon>TweetWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\UserWindow.xaml.cs">
-      <DependentUpon>UserWindow.xaml</DependentUpon>
-    </Compile>
-    <Page Include="Controls\BusyIndicator.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\MediaPreviewWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Xaml\Themes\Generic.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\AccountAuthenticationWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Extensions\Extensions.cs" />
-    <Compile Include="Views\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="Views\SettingWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\TweetWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\UserWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Xaml\Templates\ControlStyles.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Xaml\Templates\DataTemplates.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Xaml\Icons.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Components\Services\DialogService.cs" />
-    <Compile Include="Components\NotificationObject.cs" />
-    <Compile Include="Components\Mvvm\ViewModelBase.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="app.manifest" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <AppDesigner Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
+    <None Remove="Icons\app.ico" />
+    <None Remove="Icons\app_tasktray.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\app.ico" />
     <Resource Include="Icons\app_tasktray.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.5 %28x86 および x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SocialApis\SocialApis.csproj">
-      <Project>{033aa2be-b09c-4442-b283-c4ba1ead8018}</Project>
-      <Name>SocialApis</Name>
-    </ProjectReference>
+    <EmbeddedResource Include="Xaml\Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\VideoPlayerTemplate.html" />
   </ItemGroup>
-  <Import Project="..\WpfMvvmToolkit\WpfMvvmToolkit.projitems" Label="Shared" />
   <ItemGroup>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.0.1" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.3.3" />
     <PackageReference Include="SgmlReader" Version="1.8.11" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.111" />
+    <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
     <PackageReference Include="ToriatamaText" Version="1.1.0.0" />
     <PackageReference Include="Utf8Json" Version="1.3.7" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.110.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.110.0\build\net46\System.Data.SQLite.Core.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.110.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.110.0\build\net46\System.Data.SQLite.Core.targets'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <ProjectReference Include="..\SocialApis\SocialApis.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Hardcodet.Wpf.TaskbarNotification">
+      <HintPath>..\WPF NotifyIcon\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
+    </Reference>
+    <Reference Include="NowPlayingLib">
+      <HintPath>..\NowPlayingLib\NowPlayingLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Xaml\Templates\ControlStyles.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Xaml\Templates\DataTemplates.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <Import Project="..\WpfMvvmToolkit\WpfMvvmToolkit.projitems" Label="Shared" />
 </Project>
