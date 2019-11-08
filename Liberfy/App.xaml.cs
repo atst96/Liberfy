@@ -111,10 +111,10 @@ namespace Liberfy
 
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol =
-                 SecurityProtocolType.Ssl3
-                 | SecurityProtocolType.Tls
+                 SecurityProtocolType.Tls
                  | SecurityProtocolType.Tls11
-                 | SecurityProtocolType.Tls12;
+                 | SecurityProtocolType.Tls12
+                 | SecurityProtocolType.Tls13;
 
             this.StartTimeline();
         }
