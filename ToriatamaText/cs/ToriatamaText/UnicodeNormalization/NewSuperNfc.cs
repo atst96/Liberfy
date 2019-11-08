@@ -7,7 +7,7 @@ namespace ToriatamaText.UnicodeNormalization
 {
     using static Tables;
 
-    static class NewSuperNfc
+    public static class NewSuperNfc
     {
         private const int SBase = 0xAC00,
             LBase = 0x1100, VBase = 0x1161, TBase = 0x11A7,

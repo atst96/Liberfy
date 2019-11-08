@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace ToriatamaText.Collections
 {
-    struct MiniList<T>
+    public struct MiniList<T>
     {
         public T[] InnerArray { get; set; }
 

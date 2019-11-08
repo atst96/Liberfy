@@ -33,7 +33,10 @@ namespace ToriatamaText.Test.ConformanceYaml
 
             using (var sr = new StreamReader(testFile))
             {
-                var deserializer = new Deserializer(namingConvention: new UnderscoredNamingConvention(), ignoreUnmatched: true);
+                var deserializer = new DeserializerBuilder()
+                    .WithNamingConvention(UnderscoredNamingConvention.Instance)
+                    .IgnoreUnmatchedProperties()
+                    .Build();
                 return deserializer.Deserialize<YamlRoot<ValidateTests>>(sr).Tests;
             }
         }
