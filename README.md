@@ -33,6 +33,7 @@ static class Config
 ## ライセンス
 - Liberfy のソースコードは[MITライセンス](https://github.com/atst1996/Liberfy/blob/master/LICENSE)の下で配布しています。
 - Liberfy では以下のライブラリおよびデータを使用しています。各ライセンスについては[NOTICE.md](https://github.com/atst1996/Liberfy/blob/master/NOTICE.md)に記載しています。
+　- Emoji.Wpf
   - Font Awesome
   - MessagePack for C#
   - NowPlayingLib

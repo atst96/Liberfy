@@ -7,18 +7,17 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Liberfy.Model;
 using Sgml;
-using SocialApis.Mastodon;
 
 namespace Liberfy.Services.Mastodon
 {
     internal class MastodonTextEntityBuilder : ITextEntityBuilder
     {
         private readonly string _content;
-        private readonly Emoji[] _emojis;
+        private readonly SocialApis.Mastodon.Emoji[] _emojis;
 
         private readonly static Regex _emojiRegex = new Regex(":(?<code>[a-zA-Z0-9_\\-]+):", RegexOptions.Multiline | RegexOptions.Compiled);
 
-        public MastodonTextEntityBuilder(string content, Emoji[] emojis)
+        public MastodonTextEntityBuilder(string content, SocialApis.Mastodon.Emoji[] emojis)
         {
             this._content = content;
             this._emojis = emojis;
@@ -36,7 +35,7 @@ namespace Liberfy.Services.Mastodon
             }
         }
 
-        private static void AddText(LinkedList<IEntity> entities, string text, Emoji[] emojis)
+        private static void AddText(LinkedList<IEntity> entities, string text, SocialApis.Mastodon.Emoji[] emojis)
         {
             if (emojis?.Length == 0)
             {
@@ -62,7 +61,7 @@ namespace Liberfy.Services.Mastodon
 
                 var shortCode = m.Groups["code"].Value;
 
-                Emoji emoji = default;
+                SocialApis.Mastodon.Emoji emoji = default;
                 foreach (var e in emojis)
                 {
                     if (e.ShortCode == shortCode)
