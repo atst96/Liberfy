@@ -9,6 +9,10 @@ namespace Liberfy
 {
     internal class ImageCacheInfo : NotificationObject
     {
+        private volatile int _taskId;
+        public int CreateTaskId() => ++this._taskId;
+        public int GetCurrentTaskId() => this._taskId;
+
         private string _fileName;
         public string FileName
         {

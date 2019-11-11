@@ -91,8 +91,6 @@ namespace Liberfy
                 return;
             }
 
-            ProfileImageCache = new ProfileImageCache(_cacheDatabaseConnection);
-
             this.UIManager = new UISettingManager(this, App.Setting);
             this.UIManager.Apply();
 
@@ -172,6 +170,8 @@ namespace Liberfy
         private void StartTimeline()
         {
             _cacheDatabaseConnection = new Database(Defaults.ImageCacheFile);
+
+            ProfileImageCache = new ProfileImageCache(_cacheDatabaseConnection);
 
             ProfileImageCache.BeginLoadTimelineMode();
 
