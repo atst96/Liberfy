@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Cache;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -34,11 +36,15 @@ namespace Liberfy.Behaviors
                 typeof(IStatusInfo), typeof(TimelineBehavior),
                 new PropertyMetadata(null, StatusInfoChanged));
 
-        private static async void StatusInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void StatusInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is TextBlock textBlock && e.NewValue is IStatusInfo status)
             {
-                await SetHyperlinkToPlainText(status.Entities, textBlock.Inlines);
+                var inlineContainer = textBlock.Inlines;
+                var newInlines = CretaeInlines(status.Entities);
+
+                inlineContainer.Clear();
+                inlineContainer.AddRange(newInlines);
             }
         }
 
@@ -62,7 +68,11 @@ namespace Liberfy.Behaviors
         {
             if (d is TextBlock textBlock && e.NewValue is IUserInfo user)
             {
-                await SetHyperlinkToPlainText(user.DescriptionEntities, textBlock.Inlines);
+                var inlineContainer = textBlock.Inlines;
+                var newInlines = CretaeInlines(user.DescriptionEntities);
+
+                inlineContainer.Clear();
+                inlineContainer.AddRange(newInlines);
             }
         }
 
@@ -81,11 +91,15 @@ namespace Liberfy.Behaviors
             DependencyProperty.RegisterAttached("UserUrl",
                 typeof(IUserInfo), typeof(TimelineBehavior), new PropertyMetadata(null, UserUrlChanged));
 
-        private static async void UserUrlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void UserUrlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is TextBlock textBlock && e.NewValue is IUserInfo user)
             {
-                await SetHyperlinkToPlainText(user.UrlEntities, textBlock.Inlines);
+                var inlineContainer = textBlock.Inlines;
+                var newInlines = CretaeInlines(user.UrlEntities);
+
+                inlineContainer.Clear();
+                inlineContainer.AddRange(newInlines);
             }
         }
 
@@ -126,41 +140,62 @@ namespace Liberfy.Behaviors
             return image;
         }
 
-        private static DispatcherOperation SetHyperlinkToPlainText(IEnumerable<IEntity> entities, InlineCollection inlines)
+        private static IEnumerable<Inline> CretaeInlines(IEnumerable<IEntity> entities)
         {
-            return Application.Current.Dispatcher.InvokeAsync(() =>
+            var inlines = new List<Inline>(entities.Count() * 3);
+
+            foreach (var entity in entities)
             {
-                inlines.Clear();
-
-                foreach (var entity in entities)
+                if (entity is PlainTextEntity)
                 {
-                    if (entity is PlainTextEntity)
-                    {
-                        inlines.Add(entity.DisplayText);
-                    }
-                    else if (entity is EmojiEntity emojiEntity)
-                    {
-                        var source = TimelineBehavior.ImageSourceFromUri(emojiEntity.ImageUrl);
-                        var imageElement = TimelineBehavior.ImageFromImageSousrce(source);
+                    var text = entity.DisplayText;
+                    int pos = 0;
 
-                        imageElement.ToolTip = emojiEntity.DisplayText;
-
-                        inlines.Add(new InlineUIContainer(imageElement));
-                    }
-                    else
+                    foreach (Match m in Emoji.Wpf.EmojiData.MatchMultiple.Matches(entity.DisplayText))
                     {
-                        var link = new Hyperlink()
+                        if (m.Index != pos)
                         {
-                            Cursor = Cursors.Hand,
-                            CommandParameter = entity,
-                        };
+                            inlines.Add(new Run(text[pos..m.Index]));
+                        }
 
-                        link.Inlines.Add(entity.DisplayText);
+                        inlines.Add(new Emoji.Wpf.EmojiInline
+                        {
+                            FallbackBrush = Brushes.Black,
+                            Text = text[m.Index..(m.Index + m.Length)],
+                        });
 
-                        inlines.Add(link);
+                        pos = m.Index + m.Length;
+                    }
+
+                    if (pos < text.Length - 1)
+                    {
+                        inlines.Add(new Run(text[pos..]));
                     }
                 }
-            });
+                else if (entity is EmojiEntity emojiEntity)
+                {
+                    var source = TimelineBehavior.ImageSourceFromUri(emojiEntity.ImageUrl);
+                    var imageElement = TimelineBehavior.ImageFromImageSousrce(source);
+
+                    imageElement.ToolTip = emojiEntity.DisplayText;
+
+                    inlines.Add(new InlineUIContainer(imageElement));
+                }
+                else
+                {
+                    var link = new Hyperlink()
+                    {
+                        Cursor = Cursors.Hand,
+                        CommandParameter = entity,
+                    };
+
+                    link.Inlines.Add(entity.DisplayText);
+
+                    inlines.Add(link);
+                }
+            }
+
+            return inlines;
         }
 
         public static IUserInfo GetProfileImage(DependencyObject obj)

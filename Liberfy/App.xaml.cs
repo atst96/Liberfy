@@ -91,8 +91,6 @@ namespace Liberfy
                 return;
             }
 
-            ProfileImageCache = new ProfileImageCache(_cacheDatabaseConnection);
-
             this.UIManager = new UISettingManager(this, App.Setting);
             this.UIManager.Apply();
 
@@ -111,10 +109,10 @@ namespace Liberfy
 
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol =
-                 SecurityProtocolType.Ssl3
-                 | SecurityProtocolType.Tls
+                 SecurityProtocolType.Tls
                  | SecurityProtocolType.Tls11
-                 | SecurityProtocolType.Tls12;
+                 | SecurityProtocolType.Tls12
+                 | SecurityProtocolType.Tls13;
 
             this.StartTimeline();
         }
@@ -172,6 +170,8 @@ namespace Liberfy
         private void StartTimeline()
         {
             _cacheDatabaseConnection = new Database(Defaults.ImageCacheFile);
+
+            ProfileImageCache = new ProfileImageCache(_cacheDatabaseConnection);
 
             ProfileImageCache.BeginLoadTimelineMode();
 
