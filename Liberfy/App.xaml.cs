@@ -16,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -277,22 +278,41 @@ namespace Liberfy
             base.OnExit(e);
         }
 
-        internal static bool Open(string path)
+        /// <summary>指定パスを開く</summary>
+        /// <param name="path">パス</param>
+        internal static void Open(string path)
         {
+            // https://brockallen.com/2016/09/24/process-start-for-urls-on-net-core/
+
             try
             {
                 Process.Start(path);
-                return true;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    var escapedPath = path.Replace("&", "^&");
+                    var processStartInfo = new ProcessStartInfo("cmd", $"/c start {escapedPath}")
+                    {
+                        CreateNoWindow = true,
+                    };
+
+                    Process.Start(processStartInfo);
+                }
+
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+
+                throw;
             }
         }
 
-        internal static bool Open(Uri uri)
+        /// <summary>指定URIを開く</summary>
+        /// <param name="uri">URI</param>
+        internal static void Open(Uri uri)
         {
-            return Open(uri.AbsoluteUri);
+            App.Open(uri.AbsoluteUri);
         }
 
         public T FindResource<T>(object resourceKey)
