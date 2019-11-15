@@ -102,6 +102,9 @@ namespace Liberfy
 
             TaskbarIcon = this.TryFindResource("taskbarIcon") as TaskbarIcon;
 
+            _cacheDatabaseConnection = new Database(Defaults.ImageCacheFile);
+            ProfileImageCache = new ProfileImageCache(_cacheDatabaseConnection); ;
+
             if (AccountManager.Count == 0 && !this.RequestInitialUserSettings())
             {
                 this.ForceShutdown();
@@ -170,10 +173,6 @@ namespace Liberfy
 
         private void StartTimeline()
         {
-            _cacheDatabaseConnection = new Database(Defaults.ImageCacheFile);
-
-            ProfileImageCache = new ProfileImageCache(_cacheDatabaseConnection);
-
             ProfileImageCache.BeginLoadTimelineMode();
 
             var tasks = AccountManager.Accounts.AsParallel().Select(a => a.Load());
@@ -299,6 +298,7 @@ namespace Liberfy
                     };
 
                     Process.Start(processStartInfo);
+                    return;
                 }
 
                 Console.WriteLine(ex.Message);
