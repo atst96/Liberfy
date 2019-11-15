@@ -23,7 +23,7 @@
 
   <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
     <application>
-      <!-- このアプリケーションがテストされ、協働するようテストされた Windows バージョンの
+      <!-- このアプリケーションがテストされ、動作するよう設計された Windows バージョンの
            一覧。適切な要素をコメント解除すると、最も互換性のある環境を Windows が
            自動的に選択します。-->
 

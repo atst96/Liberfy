@@ -14,6 +14,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject></StartupObject>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Icons\app.ico" />
