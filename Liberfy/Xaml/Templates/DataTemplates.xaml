@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:vm="clr-namespace:Liberfy.ViewModels"
     xmlns:app="clr-namespace:Liberfy"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
     xmlns:conv="clr-namespace:Liberfy.Converter"
     xmlns:b="clr-namespace:Liberfy.Behaviors"
     xmlns:views="clr-namespace:Liberfy.Views"
