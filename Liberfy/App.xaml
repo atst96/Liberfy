@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:conv="clr-namespace:Liberfy.Converter"
+    xmlns:convs="clr-namespace:Liberfy.Converters"
     xmlns:local="clr-namespace:Liberfy"
     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
     xmlns:tb="http://www.hardcodet.net/taskbar"
@@ -12,117 +13,124 @@
     ShutdownMode="OnLastWindowClose">
     <Application.Resources>
         <ResourceDictionary>
-            <sys:Double x:Key="UI.Column.Width">300</sys:Double>
-
-            <sys:Double x:Key="UI.Tweet.ProfileImage.Width">40</sys:Double>
-            <Visibility x:Key="UI.Tweet.ProfileImage.Visibility">Visible</Visibility>
-            <Visibility x:Key="UI.Tweet.Attachment.Images.Visibility">Visible</Visibility>
-            <Visibility x:Key="UI.Tweet.Attachment.QuotedTweet.Visibility">Visible</Visibility>
-            <Visibility x:Key="UI.Tweet.ClientName.Visibility">Visible</Visibility>
-            <x:Null x:Key="UI.Tweet.ProfileImage.Clip"></x:Null>
-
-            <Thickness x:Key="ToolBarItemPadding">8 6</Thickness>
-            <Thickness x:Key="ToolBarIconPadding">4</Thickness>
-
-            <sys:Double x:Key="UIFontSize">12</sys:Double>
-
-            <FontFamily x:Key="UIFont">Meiryo</FontFamily>
-
-            <SolidColorBrush x:Key="Brush.Favorite" Color="Red" />
-            <SolidColorBrush x:Key="Brush.Retweet" Color="Green" />
-
-            <LinearGradientBrush
-                x:Key="Brush.RetweetFavorite" StartPoint="1,0" EndPoint="0,1">
-                <GradientStop Offset="0.0" Color="Red" />
-                <GradientStop Offset="0.5" Color="Red" />
-                <GradientStop Offset="0.5" Color="Green" />
-                <GradientStop Offset="1.0" Color="Green" />
-            </LinearGradientBrush>
-
-            <conv:DummyConverter x:Key="DummyConverter" />
-
-            <tb:TaskbarIcon
-                x:Key="taskbarIcon"
-                Visibility="Collapsed"
-                IconSource="pack://application:,,,/Icons/app_tasktray.ico" />
-
-            <!--#region Converters -->
-
-            <conv:BoolInverter x:Key="BoolInverter" />
-            <conv:IsNotNullConverter x:Key="IsNotNullConverter" />
-
-            <!--#endregion-->
-
-            <Style x:Key="GeneralTimelineViewItemStyle" TargetType="{x:Type app:TimelineViewItem}">
-                <Setter Property="Padding" Value="0" />
-                <Setter Property="Margin" Value="0" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type app:TimelineViewItem}">
-                            <Border
-                                x:Name="border"
-                                Padding="8"
-                                Background="Transparent"
-                                BorderBrush="Transparent"
-                                BorderThickness="0 0 0 1"
-                                VerticalAlignment="Bottom">
-                                <ContentPresenter
-                                    VerticalAlignment="Top"
-                                    Content="{TemplateBinding Content}"
-                                    ContentTemplate="{TemplateBinding ContentTemplate}"
-                                    ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
-                            </Border>
-
-                            <ControlTemplate.Triggers>
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsRetweetedItem" Value="False" />
-                                        <Condition Property="IsMouseOver" Value="False" />
-                                    </MultiTrigger.Conditions>
-                                    <Setter TargetName="border" Property="Background" Value="Transparent" />
-                                    <Setter TargetName="border" Property="BorderBrush" Value="#27B3B3B3" />
-                                </MultiTrigger>
-
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsRetweetedItem" Value="False" />
-                                        <Condition Property="IsMouseOver" Value="True" />
-                                    </MultiTrigger.Conditions>
-                                    <Setter TargetName="border" Property="Background" Value="#27B3B3B3" />
-                                    <Setter TargetName="border" Property="BorderBrush" Value="#27B3B3B3" />
-                                </MultiTrigger>
-
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsMouseOver" Value="False" />
-                                        <Condition Property="IsRetweetedItem" Value="True" />
-                                    </MultiTrigger.Conditions>
-                                    <Setter TargetName="border" Property="Background" Value="#10008F23" />
-                                    <Setter TargetName="border" Property="BorderBrush" Value="#27008F23" />
-                                </MultiTrigger>
-
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsMouseOver" Value="True" />
-                                        <Condition Property="IsRetweetedItem" Value="True" />
-                                    </MultiTrigger.Conditions>
-                                    <Setter TargetName="border" Property="Background" Value="#27008F23" />
-                                    <Setter TargetName="border" Property="BorderBrush" Value="#27008F23" />
-                                </MultiTrigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style
-                x:Key="StatusTimelineViewItemStyle"
-                TargetType="{x:Type app:TimelineViewItem}"
-                BasedOn="{StaticResource GeneralTimelineViewItemStyle}">
-                <Setter Property="IsRetweetedItem" Value="{Binding IsRetweet, Mode=OneTime}" />
-            </Style>
-            
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <sys:Double x:Key="UI.Column.Width">300</sys:Double>
+
+                    <sys:Double x:Key="UI.Tweet.ProfileImage.Width">40</sys:Double>
+                    <Visibility x:Key="UI.Tweet.ProfileImage.Visibility">Visible</Visibility>
+                    <Visibility x:Key="UI.Tweet.Attachment.Images.Visibility">Visible</Visibility>
+                    <Visibility x:Key="UI.Tweet.Attachment.QuotedTweet.Visibility">Visible</Visibility>
+                    <Visibility x:Key="UI.Tweet.ClientName.Visibility">Visible</Visibility>
+                    <x:Null x:Key="UI.Tweet.ProfileImage.Clip"></x:Null>
+
+                    <Thickness x:Key="ToolBarItemPadding">8 6</Thickness>
+                    <Thickness x:Key="ToolBarIconPadding">4</Thickness>
+
+                    <sys:Double x:Key="UIFontSize">12</sys:Double>
+
+                    <FontFamily x:Key="UIFont">Meiryo</FontFamily>
+
+                    <SolidColorBrush x:Key="Brush.Favorite" Color="Red" />
+                    <SolidColorBrush x:Key="Brush.Retweet" Color="Green" />
+
+                    <LinearGradientBrush
+                        x:Key="Brush.RetweetFavorite" StartPoint="1,0" EndPoint="0,1">
+                        <GradientStop Offset="0.0" Color="Red" />
+                        <GradientStop Offset="0.5" Color="Red" />
+                        <GradientStop Offset="0.5" Color="Green" />
+                        <GradientStop Offset="1.0" Color="Green" />
+                    </LinearGradientBrush>
+
+                    <conv:DummyConverter x:Key="DummyConverter" />
+
+                    <tb:TaskbarIcon
+                        x:Key="taskbarIcon"
+                        Visibility="Collapsed"
+                        IconSource="pack://application:,,,/Icons/app_tasktray.ico" />
+
+                    <!--#region Converters -->
+
+                    <conv:BoolInverter x:Key="BoolInverter" />
+                    <conv:IsNotNullConverter x:Key="IsNotNullConverter" />
+                    <conv:ServiceTypeToNameConverter x:Key="ServiceTypeToNameConverter" />
+                    <convs:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+                    <!--#endregion-->
+
+                    <!--#region Thickness-->
+                    <Thickness x:Key="BottomOnlyThickness" Bottom="1" />
+                    <!--#endregion-->
+
+                    <Style x:Key="GeneralTimelineViewItemStyle" TargetType="{x:Type app:TimelineViewItem}">
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type app:TimelineViewItem}">
+                                    <Border
+                                        x:Name="border"
+                                        Padding="8"
+                                        Background="Transparent"
+                                        BorderBrush="Transparent"
+                                        BorderThickness="0 0 0 1"
+                                        VerticalAlignment="Bottom">
+                                        <ContentPresenter
+                                            VerticalAlignment="Top"
+                                            Content="{TemplateBinding Content}"
+                                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                                            ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
+                                    </Border>
+
+                                    <ControlTemplate.Triggers>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsRetweetedItem" Value="False" />
+                                                <Condition Property="IsMouseOver" Value="False" />
+                                            </MultiTrigger.Conditions>
+                                            <Setter TargetName="border" Property="Background" Value="Transparent" />
+                                            <Setter TargetName="border" Property="BorderBrush" Value="#27B3B3B3" />
+                                        </MultiTrigger>
+
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsRetweetedItem" Value="False" />
+                                                <Condition Property="IsMouseOver" Value="True" />
+                                            </MultiTrigger.Conditions>
+                                            <Setter TargetName="border" Property="Background" Value="#27B3B3B3" />
+                                            <Setter TargetName="border" Property="BorderBrush" Value="#27B3B3B3" />
+                                        </MultiTrigger>
+
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsMouseOver" Value="False" />
+                                                <Condition Property="IsRetweetedItem" Value="True" />
+                                            </MultiTrigger.Conditions>
+                                            <Setter TargetName="border" Property="Background" Value="#10008F23" />
+                                            <Setter TargetName="border" Property="BorderBrush" Value="#27008F23" />
+                                        </MultiTrigger>
+
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsMouseOver" Value="True" />
+                                                <Condition Property="IsRetweetedItem" Value="True" />
+                                            </MultiTrigger.Conditions>
+                                            <Setter TargetName="border" Property="Background" Value="#27008F23" />
+                                            <Setter TargetName="border" Property="BorderBrush" Value="#27008F23" />
+                                        </MultiTrigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+
+                    <Style
+                        x:Key="StatusTimelineViewItemStyle"
+                        TargetType="{x:Type app:TimelineViewItem}"
+                        BasedOn="{StaticResource GeneralTimelineViewItemStyle}">
+                        <Setter Property="IsRetweetedItem" Value="{Binding IsRetweet, Mode=OneTime}" />
+                    </Style>
+                </ResourceDictionary>
                 <ResourceDictionary Source="Xaml\Icons.xaml" />
                 <ResourceDictionary Source="Xaml\Themes\Generic.xaml" />
                 <ResourceDictionary Source="Xaml\Templates\ControlStyles.xaml" />

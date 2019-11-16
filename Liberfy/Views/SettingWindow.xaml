@@ -12,6 +12,7 @@
     xmlns:b="clr-namespace:Liberfy.Behaviors"
     xmlns:conv="clr-namespace:Liberfy.Converter"
     xmlns:vm="clr-namespace:Liberfy.ViewModels"
+    xmlns:selectors="clr-namespace:Liberfy.TemplateSelectors"
     mc:Ignorable="d"
     ResizeMode="NoResize"
     UseLayoutRounding="True"
@@ -25,6 +26,7 @@
     <Window.Resources>
         <sys:Double x:Key="tabItemWidth">120</sys:Double>
         <conv:EnumBoolConverter x:Key="EnumBoolConverter" />
+        <selectors:AccountTemplateSelector x:Key="AccountTemplateSelector" />
 
         <conv:LocalizeNameConverter
             x:Key="MuteTypeLocalizer"
@@ -62,7 +64,7 @@
             x:Key="accountsViewSource"
             Source="{Binding Accounts, Mode=OneTime}">
             <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="HostName" />
+                <PropertyGroupDescription PropertyName="Service" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
 
@@ -346,19 +348,6 @@
                                     </Button>
                                     <Separator />
                                     <Button
-                                        CommandParameter="{Binding SelectedAccount}"
-                                        Command="{Binding AccountMoveUpCommand, Mode=OneTime}">
-                                        <app:GeometryIcon
-                                            Data="{StaticResource FontAwesome.Icon.ChevronUp}" />
-                                    </Button>
-                                    <Button
-                                        CommandParameter="{Binding SelectedAccount}"
-                                        Command="{Binding AccountMoveDownCommand, Mode=OneTime}">
-                                        <app:GeometryIcon
-                                            Data="{StaticResource FontAwesome.Icon.ChevronDown}" />
-                                    </Button>
-                                    <Separator />
-                                    <Button
                                         Foreground="Red"
                                         CommandParameter="{Binding SelectedAccount}"
                                         Command="{Binding AccountDeleteCommand, Mode=OneTime}">
@@ -367,13 +356,28 @@
                                     </Button>
                                 </ToolBar>
 
-                                <ListView
+                                <ListBox
                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
                                     ItemsSource="{Binding Source={StaticResource accountsViewSource}, Mode=OneTime}"
-                                    ItemTemplate="{StaticResource GeneralAccountTemplate}"
+                                    ItemTemplateSelector="{StaticResource AccountTemplateSelector}"
                                     SelectedItem="{Binding SelectedAccount, Mode=TwoWay}">
-                                    <!--<ListView.GroupStyle></ListView.GroupStyle>-->
-                                </ListView>
+                                    <ItemsControl.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                            <Setter Property="Padding" Value="8" />
+                                        </Style>
+                                    </ItemsControl.ItemContainerStyle>
+                                    <ItemsControl.GroupStyle>
+                                        <GroupStyle
+                                            ContainerStyle="{StaticResource GroupItemStyle}">
+                                            <GroupStyle.HeaderTemplate>
+                                                <DataTemplate DataType="{x:Type app:AccountBase}">
+                                                    <TextBlock
+                                                        Text="{Binding Name, Mode=OneTime, Converter={StaticResource ServiceTypeToNameConverter}}" />
+                                                </DataTemplate>
+                                            </GroupStyle.HeaderTemplate>
+                                        </GroupStyle>
+                                    </ItemsControl.GroupStyle>
+                                </ListBox>
                             </DockPanel>
                         </Border>
 
@@ -1562,7 +1566,7 @@
                             <ListView.GroupStyle>
                                 <GroupStyle
                                     HidesIfEmpty="False"
-                                    ContainerStyle="{StaticResource ListViewGroupItemStyle}" />
+                                    ContainerStyle="{StaticResource GroupItemStyle}" />
                             </ListView.GroupStyle>
                         </ListView>
                     </DockPanel>

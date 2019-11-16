@@ -227,19 +227,11 @@ namespace Liberfy.ViewModels
 
         internal void RaiseCanExecuteAccountCommands()
         {
-            this._accountMoveUpCommand?.RaiseCanExecute();
-            this._accountMoveDownCommand?.RaiseCanExecute();
             this._accountDeleteCommand?.RaiseCanExecute();
         }
 
         private Command<IAccount> _accountDeleteCommand;
         public Command<IAccount> AccountDeleteCommand => this._accountDeleteCommand ??= this.RegisterCommand(new AccountDeleteCommand(this));
-
-        private Command<IAccount> _accountMoveUpCommand;
-        public Command<IAccount> AccountMoveUpCommand => this._accountMoveUpCommand ??= this.RegisterCommand(new AccountMoveUpCommand(this));
-
-        private Command<IAccount> _accountMoveDownCommand;
-        public Command<IAccount> AccountMoveDownCommand => this._accountMoveDownCommand ??= this.RegisterCommand(new AccountMoveDownCommand(this));
 
         #endregion Commands for account
 

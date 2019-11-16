@@ -33,7 +33,7 @@ namespace Liberfy
     /// </summary>
     internal partial class App : Application
     {
-        internal const bool __DEBUG_LoadTimeline = true;
+        internal const bool __DEBUG_LoadTimeline = false;
 
         internal static App Instance { get; private set; }
 

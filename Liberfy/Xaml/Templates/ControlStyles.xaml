@@ -487,6 +487,37 @@
         </Setter>
     </Style>
 
+    <ControlTemplate x:Key="GroupItemTemplate" TargetType="{x:Type GroupItem}">
+        <StackPanel>
+            <Label
+                DockPanel.Dock="Top"
+                Padding="6,4"
+                FontWeight="Bold"
+                TabIndex="0"
+                IsTabStop="False"
+                BorderBrush="Gainsboro"
+                BorderThickness="{StaticResource BottomOnlyThickness}"
+                Content="{TemplateBinding Content}"
+                ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                ContentTemplate="{TemplateBinding ContentTemplate}"
+                ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}">
+                <Label.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                        <GradientStop Color="#FFE6E6E6"/>
+                        <GradientStop Color="#FFF1F1F1" Offset="1"/>
+                    </LinearGradientBrush>
+                </Label.Background>
+            </Label>
+
+            <ItemsPresenter
+                KeyboardNavigation.TabNavigation="Once" />
+        </StackPanel>
+    </ControlTemplate>
+
+    <Style x:Key="GroupItemStyle" TargetType="{x:Type GroupItem}">
+        <Setter Property="Template" Value="{StaticResource GroupItemTemplate}" />
+    </Style>
+
     <ControlTemplate x:Key="CustomWindowTemplate" TargetType="{x:Type app:CustomWindow}">
         <Border
             x:Name="PART_Container"
