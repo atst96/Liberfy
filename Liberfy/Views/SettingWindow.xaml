@@ -7,12 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:Liberfy"
     xmlns:app="clr-namespace:Liberfy"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:b="clr-namespace:Liberfy.Behaviors"
     xmlns:conv="clr-namespace:Liberfy.Converter"
     xmlns:vm="clr-namespace:Liberfy.ViewModels"
     xmlns:selectors="clr-namespace:Liberfy.TemplateSelectors"
+    xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
     mc:Ignorable="d"
     ResizeMode="NoResize"
     UseLayoutRounding="True"
@@ -62,10 +63,22 @@
 
         <CollectionViewSource
             x:Key="accountsViewSource"
-            Source="{Binding Accounts, Mode=OneTime}">
+            Source="{Binding Accounts, Mode=OneTime}"
+            IsLiveGroupingRequested="True"
+            IsLiveSortingRequested="True">
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="Service" />
             </CollectionViewSource.GroupDescriptions>
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Service" />
+            </CollectionViewSource.SortDescriptions>
+            <CollectionViewSource.LiveGroupingProperties>
+                <sys:String>Service</sys:String>
+            </CollectionViewSource.LiveGroupingProperties>
+            <CollectionViewSource.LiveSortingProperties>
+                <sys:String>Service</sys:String>
+                <sys:String>ItemId</sys:String>
+            </CollectionViewSource.LiveSortingProperties>
         </CollectionViewSource>
 
         <Thickness x:Key="ContainerMargin">12</Thickness>
@@ -778,7 +791,6 @@
 
         <TabItem Header="カラム">
             <TabControl>
-
                 <TabItem Header="カラム">
                     <DockPanel>
                         <Border
