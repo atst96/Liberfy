@@ -601,7 +601,7 @@
                         VerticalAlignment="Stretch"
                         app:CustomWindow.IsHitTestVisible="False" />
                 </Grid>
-                
+
                 <AdornerDecorator Grid.Row="1">
                     <ContentPresenter />
                 </AdornerDecorator>
@@ -705,5 +705,90 @@
     </Style>
 
     <!--#endregion-->
+
+    <ControlTemplate
+        x:Key="WizardPanelTemplate"
+        TargetType="{x:Type app:WizardPanel}">
+        <Border
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            Background="{TemplateBinding Background}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                
+                <Border
+                    Grid.Row="1"
+                    DockPanel.Dock="Bottom"
+                    Padding="5"
+                    Background="{TemplateBinding ButtonPanelBackground}">
+                    <StackPanel
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                        <app:BusyIndicator
+                            Margin="0 0 8 0"
+                            Width="18" Height="18"
+                            VerticalAlignment="Center"
+                            IsBusy="{TemplateBinding IsBusy}"
+                            Visibility="{TemplateBinding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                        <Button
+                            x:Name="PART_PreviousButton"
+                            Margin="4" Padding="18,4"
+                            Content="前へ(_P)"
+                            Command="{TemplateBinding PreviousCommand}"
+                            Visibility="{TemplateBinding IsShowPreviousButton, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                        <Button
+                            x:Name="PART_NextButton"
+                            Margin="4" Padding="18,4"
+                            Content="次へ(_N)"
+                            Command="{TemplateBinding NextCommand}"
+                            Visibility="{TemplateBinding IsShowNextButton, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                        <Button
+                            x:Name="PART_CancelButton"
+                            Margin="4" Padding="18,4"
+                            Content="閉じる(_C)"
+                            Command="{TemplateBinding CancelCommand}"
+                            Visibility="{TemplateBinding IsShowCancelButton, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    </StackPanel>
+                </Border>
+                
+                <ContentPresenter
+                    x:Name="PART_SelectedContentHost"
+                    Grid.Row="0"
+                    Margin="{TemplateBinding Padding}"
+                    ContentSource="SelectedContent"
+                    ContentStringFormat="{TemplateBinding ItemStringFormat}"
+                    ContentTemplate="{TemplateBinding ItemTemplate}"
+                    ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" />
+            </Grid>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsEmphasisPreviousButton" Value="True">
+                <Setter TargetName="PART_PreviousButton" Property="Style" Value="{StaticResource Button.Primary}" />
+            </Trigger>
+            
+            <Trigger Property="IsEmphasisNextButton" Value="True">
+                <Setter TargetName="PART_NextButton" Property="Style" Value="{StaticResource Button.Primary}" />
+            </Trigger>
+
+            <Trigger Property="IsEmphasisCancelButton" Value="True">
+                <Setter TargetName="PART_CancelButton" Property="Style" Value="{StaticResource Button.Danger}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style
+        x:Key="{x:Type app:WizardPanel}"
+        TargetType="{x:Type app:WizardPanel}">
+        <Setter Property="ButtonPanelBackground" Value="#EEEEEE" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Template" Value="{StaticResource WizardPanelTemplate}" />
+    </Style>
 
 </ResourceDictionary>
