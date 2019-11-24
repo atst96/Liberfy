@@ -28,45 +28,39 @@
     <Border
         BorderThickness="2"
         BorderBrush="#CCCCCC">
-        <DockPanel>
-            <Border
-                DockPanel.Dock="Bottom"
-                Padding="5" Background="#EEEEEE">
-                <StackPanel
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right">
-                    <app:BusyIndicator
-                        Margin="0 0 8 0"
-                        Width="18" Height="18"
-                        VerticalAlignment="Center"
-                        IsBusy="{Binding IsRunning, Mode=OneWay}"
-                        app:ElementBehavior.Visible="{Binding IsRunning, Mode=OneWay}" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
 
-                    <Button
-                        Margin="4" Padding="18 4"
-                        Content="次へ(_N)"
-                        Command="{Binding NextCommand, Mode=OneTime}" />
+            <Grid
+                Margin="18,18,18,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
 
-                    <Button
-                        Margin="4" Padding="18 4"
-                        Content="閉じる(_C)"
-                        Style="{StaticResource Button.Danger}"
-                        Command="{Binding CancelCommand, Mode=OneTime}" />
-                </StackPanel>
-            </Border>
-
-            <TabControl
-                Margin="0" Padding="0"
-                SelectedIndex="{Binding AuthenticationPhase, Mode=TwoWay}"
-                Background="Transparent"
-                BorderThickness="0"
-                Style="{StaticResource HeaderlessTabControl}">
-                <TabItem>
-                    <StackPanel Margin="18">
-                        <Label
-                            Padding="0" FontSize="20"
-                            Content="アカウント認証" />
-
+                <Label
+                    Grid.Column="1"
+                    Padding="0"
+                    FontSize="20"
+                    Content="アカウントの追加"
+                    VerticalAlignment="Center" />
+            </Grid>
+        
+            <app:WizardPanel
+                Grid.Row="1"
+                Padding="18,6,18,18"
+                IsEmphasisNextButton="True"
+                IsShowPreviousButton="False"
+                NextCommand="{Binding NextCommand, Mode=OneTime}"
+                CancelCommand="{Binding CancelCommand, Mode=OneTime}"
+                IsBusy="{Binding IsRunning, Mode=OneWay}"
+                SelectedIndex="{Binding AuthenticationPhase, Mode=TwoWay, FallbackValue=0}"
+                Style="{StaticResource {x:Type app:WizardPanel}}">
+                <app:WizardPage>
+                    <StackPanel>
                         <Grid Margin="0,4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="140" />
@@ -75,7 +69,7 @@
 
                             <HeaderedContentControl
                                 Margin="0,4" Grid.Column="0"
-                                Header="サービス名">
+                                Header="サービス">
                                 <ComboBox
                                     ItemsSource="{Binding ServiceNames, Mode=OneTime}"
                                     DisplayMemberPath="Value"
@@ -97,7 +91,7 @@
                         <CheckBox 
                             Margin="0,6"
                             IsChecked="{Binding OverrideKey,Mode=TwoWay}"
-                            Content="Liberfy以外のAPIキーを使用する"
+                            Content="APIキーを入力する"
                             HorizontalAlignment="Left" />
 
                         <HeaderedContentControl
@@ -119,10 +113,10 @@
                             Foreground="Red" FontWeight="Bold"
                             Text="{Binding Error, Mode=OneWay}" />
                     </StackPanel>
-                </TabItem>
+                </app:WizardPage>
 
-                <TabItem>
-                    <Grid Margin="18">
+                <app:WizardPage>
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="auto" />
@@ -163,10 +157,10 @@
                             </Hyperlink>
                         </TextBlock>
                     </Grid>
-                </TabItem>
+                </app:WizardPage>
 
-                <TabItem>
-                    <Grid Margin="18">
+                <app:WizardPage>
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition />
@@ -187,8 +181,8 @@
                             Padding="0" FontSize="20"
                             Content="認証エラー" />
                     </Grid>
-                </TabItem>
-            </TabControl>
-        </DockPanel>
+                </app:WizardPage>
+            </app:WizardPanel>
+        </Grid>
     </Border>
 </Window>

@@ -38,8 +38,6 @@ namespace Liberfy
         [DefaultValue(false)]
         public bool IsMainView { get; set; } = false;
 
-        private static readonly Type _providerType = typeof(IProvideValueTarget);
-
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             if (this.InstanceType != null)

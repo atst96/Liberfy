@@ -516,6 +516,13 @@
         <Setter Property="HasDropShadow" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        <Setter Property="TextBlock.TextAlignment" Value="Justify" />
+        <Setter Property="Foreground" Value="#000000" />
+        <Setter Property="FontStyle" Value="Normal" />
+        <Setter Property="FontStretch" Value="Normal" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="FontFamily" Value="{StaticResource UIFont}" />
+        <Setter Property="FontSize" Value="{StaticResource {x:Static SystemFonts.MessageFontSizeKey}}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContextMenu}">
@@ -817,6 +824,17 @@
                         HorizontalScrollBarVisibility="Hidden"
                         VerticalScrollBarVisibility="Hidden" />
                 </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ContextMenu">
+            <Setter.Value>
+                <ContextMenu Style="{StaticResource {x:Type ContextMenu}}">
+                    <MenuItem Command="{x:Static ApplicationCommands.Cut}" />
+                    <MenuItem Command="{x:Static ApplicationCommands.Copy}" />
+                    <MenuItem Command="{x:Static ApplicationCommands.Paste}" />
+                    <Separator />
+                    <MenuItem Command="{x:Static ApplicationCommands.SelectAll}" />
+                </ContextMenu>
             </Setter.Value>
         </Setter>
     </Style>
