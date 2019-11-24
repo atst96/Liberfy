@@ -201,9 +201,9 @@
                     Style="{DynamicResource {x:Static ToolBar.ToggleButtonStyleKey}}">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
                         <app:GeometryIcon
@@ -216,7 +216,6 @@
                             VerticalAlignment="Center" />
 
                         <app:GeometryIcon
-                            Grid.Column="2"
                             Margin="4 0 2 0" Width="10"
                             HorizontalAlignment="Center" VerticalAlignment="Center"
                             Data="{StaticResource FontAwesome.Icon.ChevronDown}" />

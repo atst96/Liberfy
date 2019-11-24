@@ -409,7 +409,9 @@
         <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="FontSize" Value="7.5pt" />
         <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
-    </Style>
+        <Setter Property="Width" Value="45" />
+        <Setter Property="Height" Value="29" />
+   </Style>
 
     <Style x:Key="NormalCaptionButton" TargetType="Button" BasedOn="{StaticResource CaptionButtonBase}">
         <Setter Property="Template">
@@ -554,7 +556,6 @@
                         app:CustomWindow.IsHitTestVisible="True" >
                         <Button
                             x:Name="PART_MinimizeButton"
-                            Width="45"
                             Content="&#xE921;"
                             ToolTip="最小化"
                             Command="{x:Static SystemCommands.MinimizeWindowCommand}"
@@ -562,7 +563,6 @@
 
                         <Button
                             x:Name="PART_MaximizeButton"
-                            Width="45"
                             Content="&#xE922;"
                             ToolTip="最大化"
                             Command="{x:Static SystemCommands.MaximizeWindowCommand}"
@@ -570,7 +570,6 @@
 
                         <Button
                             x:Name="PART_RestoreButton"
-                            Width="45"
                             Content="&#xE923;"
                             ToolTip="元に戻す"
                             Command="{x:Static SystemCommands.RestoreWindowCommand}"
@@ -578,7 +577,6 @@
 
                         <Button
                             x:Name="PART_CloseButton"
-                            Width="45"
                             Content="&#xE8BB;"
                             ToolTip="閉じる"
                             Command="{x:Static SystemCommands.CloseWindowCommand}"
