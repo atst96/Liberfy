@@ -35,44 +35,71 @@ namespace Liberfy
     {
         internal const bool __DEBUG_LoadTimeline = true;
 
+        /// <summary>
+        /// Appのインスタンス
+        /// </summary>
         internal static App Instance { get; private set; }
 
+        /// <summary>
+        /// 設定データ
+        /// </summary>
         internal static Setting Setting { get; private set; }
 
+        /// <summary>
+        /// アプリケーションの実行状態
+        /// </summary>
         public static ApplicationStatus Status { get; } = new ApplicationStatus();
 
+        /// <summary>
+        /// アセンブリ情報
+        /// </summary>
         internal static readonly Assembly AssemblyInfo = Assembly.GetExecutingAssembly();
 
         private static Database _cacheDatabaseConnection;
         public static ProfileImageCache ProfileImageCache { get; private set; }
 
         public const string Name = "Liberfy";
-        public const string CodeName = "Francium";
         public const string Version = "0.2.3.1";
 
         public bool IsRequireSaveSetting { get; private set; } = true;
 
         internal static DictionaryEx<NotifyCode, bool> NotificationEvents { get; } = new DictionaryEx<NotifyCode, bool>();
 
-        internal static TaskbarIcon TaskbarIcon { get; private set; }
+        internal TaskbarIcon TaskbarIcon { get; private set; }
 
         public UISettingManager UIManager { get; private set; }
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public App() : base()
         {
-            App.Instance = (App)Application.Current;
+            App.Instance = this;
         }
 
+        /// <summary>
+        /// アセンブリが配置されているディレクトリを取得する。
+        /// </summary>
+        /// <returns></returns>
         public static string GetLocalDirectory()
         {
             return Path.GetDirectoryName(AssemblyInfo.Location);
         }
 
+        /// <summary>
+        /// 指定の相対パスからアセンブリのディレクトリ配下にあるファイルの絶対パスを取得する。
+        /// </summary>
+        /// <param name="filename">相対パス</param>
+        /// <returns>ファイルの絶対パス</returns>
         public static string GetLocalFilePath(string filename)
         {
             return Path.Combine(GetLocalDirectory(), filename);
         }
 
+        /// <summary>
+        /// アプリケーションの起動
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -86,7 +113,8 @@ namespace Liberfy
             }
             catch (Exception ex)
             {
-                DialogService.ShowTaskDialog(IntPtr.Zero, ex.GetMessage(), null, null, TaskDialogStandardButtons.Close, TaskDialogStandardIcon.Error); ;
+                DialogService.ShowTaskDialog(IntPtr.Zero, ex.GetMessage(), null, null, TaskDialogStandardButtons.Close, TaskDialogStandardIcon.Error);
+                Debug.WriteLine(ex.Message);
                 Debug.WriteLine(ex.StackTrace);
                 this.ForceShutdown();
                 return;
@@ -95,41 +123,34 @@ namespace Liberfy
             this.UIManager = new UISettingManager(this, App.Setting);
             this.UIManager.Apply();
 
-            foreach (var muteItem in Setting.Mute.AsParallel())
-            {
-                muteItem.Apply();
-            }
-
-            TaskbarIcon = this.TryFindResource("taskbarIcon") as TaskbarIcon;
+            this.TaskbarIcon = this.TryFindResource("taskbarIcon") as TaskbarIcon;
 
             _cacheDatabaseConnection = new Database(Defaults.ImageCacheFile);
             ProfileImageCache = new ProfileImageCache(_cacheDatabaseConnection); ;
 
-            if (AccountManager.Count == 0 && !this.RequestInitialUserSettings())
+            if (AccountManager.Count == 0 && !this.IsNeedInitialUserSettings())
             {
                 this.ForceShutdown();
                 return;
             }
 
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol =
-                 SecurityProtocolType.Tls
-                 | SecurityProtocolType.Tls11
-                 | SecurityProtocolType.Tls12
-                 | SecurityProtocolType.Tls13;
+            this.SetNetworkConnectConfiguration();
 
-            this.StartTimeline();
+            this.StartClient();
         }
 
+        /// <summary>
+        /// 設定データを読み込む。
+        /// </summary>
         private void LoadSettings()
         {
-            var loadAccountsTask = ParseSettingAsync<AccountSettings>(GetLocalFilePath(Defaults.AccountsFile));
-            var loadSettingTask = ParseSettingAsync<Setting>(GetLocalFilePath(Defaults.SettingFile));
+            var accountsSettingTask = ParseSettingAsync<AccountSettings>(GetLocalFilePath(Defaults.AccountsFile));
+            var generalSettingsTask = ParseSettingAsync<Setting>(GetLocalFilePath(Defaults.SettingFile));
 
-            Task.WaitAll(loadAccountsTask, loadSettingTask);
+            Task.WaitAll(accountsSettingTask, generalSettingsTask);
 
             // 登録アカウントの読み込み
-            var accountsSetting = loadAccountsTask.Result;
+            var accountsSetting = accountsSettingTask.Result;
 
             if (accountsSetting != null)
             {
@@ -147,9 +168,13 @@ namespace Liberfy
             }
 
             // 設定の読み込み
-            Setting = loadSettingTask.Result ?? new Setting();
+            Setting = generalSettingsTask.Result ?? new Setting();
         }
 
+        /// <summary>
+        /// 設定データからアカウント情報を読み込む。
+        /// </summary>
+        /// <param name="accounts"></param>
         private void InitializeSavedAccounts(IEnumerable<AccountSettingBase> accounts)
         {
             foreach (var accountSetting in accounts.Distinct())
@@ -158,6 +183,10 @@ namespace Liberfy
             }
         }
 
+        /// <summary>
+        /// 設定データからカラム情報を読み込む。
+        /// </summary>
+        /// <param name="columns"></param>
         private void InitializeSavedColumns(IEnumerable<ColumnSetting> columns)
         {
             foreach (var columnSetting in columns)
@@ -171,7 +200,23 @@ namespace Liberfy
             }
         }
 
-        private void StartTimeline()
+        /// <summary>
+        /// ネットワークの接続設定を行う。
+        /// </summary>
+        private void SetNetworkConnectConfiguration()
+        {
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol =
+                 SecurityProtocolType.Tls
+                 | SecurityProtocolType.Tls11
+                 | SecurityProtocolType.Tls12
+                 | SecurityProtocolType.Tls13;
+        }
+
+        /// <summary>
+        /// クライアントの処理を開始する。
+        /// </summary>
+        private void StartClient()
         {
             ProfileImageCache.BeginLoadTimelineMode();
 
@@ -185,7 +230,11 @@ namespace Liberfy
             TaskScheduler.FromCurrentSynchronizationContext());
         }
 
-        private bool RequestInitialUserSettings()
+        /// <summary>
+        /// ユーザ登録が必要化どうかを返す。
+        /// </summary>
+        /// <returns>ユーザ登録処理が必要かどうか</returns>
+        private bool IsNeedInitialUserSettings()
         {
             var tempShutdownMode = this.ShutdownMode;
             this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -199,6 +248,11 @@ namespace Liberfy
             return AccountManager.Count > 0;
         }
 
+        /// <summary>
+        /// システムのセッション切断時
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnSystemSessionEnding(object sender, SessionEndingEventArgs e)
         {
             if (e.Reason == SessionEndReasons.Logoff)
@@ -211,6 +265,12 @@ namespace Liberfy
             }
         }
 
+        /// <summary>
+        /// 設定ファイルを読み込む。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         private static async Task<T> ParseSettingAsync<T>(string filename) where T : class
         {
             try
@@ -223,6 +283,9 @@ namespace Liberfy
             }
         }
 
+        /// <summary>
+        /// すべての設定を保存する。
+        /// </summary>
         private void SaveSettings()
         {
             var accountsSetting = new AccountSettings
@@ -244,6 +307,13 @@ namespace Liberfy
             }
         }
 
+        /// <summary>
+        /// 設定データを保存する。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="filename"></param>
+        /// <param name="setting"></param>
+        /// <returns></returns>
         private static async Task SaveSetting<T>(string filename, T setting) where T : class
         {
             try
@@ -256,6 +326,9 @@ namespace Liberfy
             }
         }
 
+        /// <summary>
+        /// 強制終了する。
+        /// </summary>
         public void ForceShutdown()
         {
             this.IsRequireSaveSetting = true;
@@ -263,6 +336,10 @@ namespace Liberfy
             this.Shutdown();
         }
 
+        /// <summary>
+        /// アプリケーション終了時
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnExit(ExitEventArgs e)
         {
             SystemEvents.SessionEnding -= this.OnSystemSessionEnding;
@@ -277,8 +354,10 @@ namespace Liberfy
             base.OnExit(e);
         }
 
-        /// <summary>指定パスを開く</summary>
-        /// <param name="path">パス</param>
+        /// <summary>
+        /// 指定のパスを開く
+        /// </summary>
+        /// <param name="path"></param>
         internal static void Open(string path)
         {
             // https://brockallen.com/2016/09/24/process-start-for-urls-on-net-core/
@@ -301,35 +380,56 @@ namespace Liberfy
                     return;
                 }
 
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
-
                 throw;
             }
         }
 
-        /// <summary>指定URIを開く</summary>
+        /// <summary>
+        /// 指定URIを開く
+        /// </summary>
         /// <param name="uri">URI</param>
         internal static void Open(Uri uri)
         {
             App.Open(uri.AbsoluteUri);
         }
 
+        /// <summary>
+        /// リソースの格納値を取得する。
+        /// </summary>
+        /// <typeparam name="T">型</typeparam>
+        /// <param name="resourceKey">リソースキー</param>
+        /// <returns>格納値</returns>
         public T FindResource<T>(object resourceKey)
         {
-            return this.FindResource(resourceKey).CastOrDefault<T>();
+            return this.FindResource(resourceKey) is T tValue ? tValue : default;
         }
 
+        /// <summary>
+        /// リソースの格納値を取得を試行する。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="resourceKey"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public T TryFindResource<T>(object resourceKey)
         {
-            return this.TryFindResource(resourceKey).CastOrDefault<T>();
+            return this.TryFindResource(resourceKey) is T tValue ? tValue : default;
         }
 
+        /// <summary>
+        /// ウィンドウを列挙する。
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Window> EnumerateWindows()
         {
             return this.Windows.Cast<Window>();
         }
 
+        /// <summary>
+        /// ウィンドウ一覧からViewModelを列挙する。
+        /// </summary>
+        /// <typeparam name="T">ViewModelの型</typeparam>
+        /// <returns>ViewModel一覧</returns>
         public IEnumerable<T> FindViewModel<T>() where T : ViewModelBase
         {
             return this.EnumerateWindows()
@@ -337,12 +437,22 @@ namespace Liberfy
                 .Where(vm => vm != null);
         }
 
+        /// <summary>
+        /// 特定の型のViewModelが指定されているウィンドウを列挙する。
+        /// </summary>
+        /// <typeparam name="T">ViewModelの型</typeparam>
+        /// <returns></returns>
         public IEnumerable<Window> FindViewModelWindow<T>() where T : ViewModelBase
         {
             return this.EnumerateWindows()
                 .Where(w => w.DataContext is T);
         }
 
+        /// <summary>
+        /// 特定の型のViewModelが指定されているウィンドウとViewModelを列挙する。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public IEnumerable<(Window view, T viewModel)> FindViewModelWithWindow<T>() where T : ViewModelBase
         {
             foreach (var window in this.EnumerateWindows())

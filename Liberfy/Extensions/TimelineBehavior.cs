@@ -213,7 +213,7 @@ namespace Liberfy.Behaviors
                 typeof(IUserInfo), typeof(TimelineBehavior),
                 new PropertyMetadata(null, OnProfileImagePropertyChagned));
 
-        private static async void OnProfileImagePropertyChagned(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnProfileImagePropertyChagned(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var image = d as Image;
             if (image == null)
@@ -231,7 +231,7 @@ namespace Liberfy.Behaviors
             {
                 var cacheInfo = App.ProfileImageCache.GetCacheInfo(userInfo);
 
-                var binding = new Binding("Image")
+                var binding = new Binding(nameof(cacheInfo.Image))
                 {
                     Source = cacheInfo,
                     Mode = BindingMode.OneWay,
