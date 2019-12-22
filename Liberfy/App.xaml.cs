@@ -5,11 +5,9 @@ using Liberfy.Utilieis;
 using Liberfy.ViewModels;
 using Liberfy.Views;
 using Microsoft.Win32;
-using Microsoft.Windows.Themes;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -17,14 +15,8 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Media;
-using System.Windows.Navigation;
-using Utf8Json;
 
 namespace Liberfy
 {
@@ -107,9 +99,11 @@ namespace Liberfy
             // 作業ディレクトリの再指定（自動起動時に作業ディレクトリが変わってしまう対策）
             Directory.SetCurrentDirectory(GetLocalDirectory());
 
+            // 設定ファイルを読み込む
             try
             {
-                this.LoadSettings();
+                var task = this.LoadSettings();
+                task.Wait();
             }
             catch (Exception ex)
             {
@@ -140,35 +134,28 @@ namespace Liberfy
         }
 
         /// <summary>
-        /// 設定データを読み込む。
+        /// 設定を読み込む。
         /// </summary>
-        private void LoadSettings()
+        /// <returns></returns>
+        private async Task LoadSettings()
         {
-            var accountsSettingTask = ParseSettingAsync<AccountSettings>(GetLocalFilePath(Defaults.AccountsFile));
-            var generalSettingsTask = ParseSettingAsync<Setting>(GetLocalFilePath(Defaults.SettingFile));
+            var (generalSettings, accountSettings) = await SettingUtility.LoadSettings().ConfigureAwait(false);
 
-            Task.WaitAll(accountsSettingTask, generalSettingsTask);
+            // 一般設定
+            Setting = generalSettings;
 
-            // 登録アカウントの読み込み
-            var accountsSetting = accountsSettingTask.Result;
+            // アカウント設定
+            var (accounts, columns) = (accountSettings.Accounts, accountSettings.Columns);
 
-            if (accountsSetting != null)
+            if (accounts?.Any() ?? false)
             {
-                var (accounts, columns) = (accountsSetting.Accounts, accountsSetting.Columns);
-
-                if (accounts?.Any() ?? false)
-                {
-                    this.InitializeSavedAccounts(accounts);
-                }
-
-                if (columns?.Any() ?? false)
-                {
-                    this.InitializeSavedColumns(columns);
-                }
+                this.InitializeSavedAccounts(accounts);
             }
 
-            // 設定の読み込み
-            Setting = generalSettingsTask.Result ?? new Setting();
+            if (columns?.Any() ?? false)
+            {
+                this.InitializeSavedColumns(columns);
+            }
         }
 
         /// <summary>
@@ -266,63 +253,26 @@ namespace Liberfy
         }
 
         /// <summary>
-        /// 設定ファイルを読み込む。
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="filename"></param>
-        /// <returns></returns>
-        private static async Task<T> ParseSettingAsync<T>(string filename) where T : class
-        {
-            try
-            {
-                return await JsonUtility.DeserializeFileAsync<T>(filename).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"設定ファイル \"{filename}\" の読み込みに失敗しました。\n{ex.GetMessage()}", ex);
-            }
-        }
-
-        /// <summary>
         /// すべての設定を保存する。
         /// </summary>
         private void SaveSettings()
         {
-            var accountsSetting = new AccountSettings
-            {
-                Accounts = AccountManager.Accounts.Select(a => a.ToSetting()),
-                Columns = TimelineBase.Columns.Select(c => c.GetOption()),
-            };
-
-            var saveSettingTask = SaveSetting(GetLocalFilePath(Defaults.SettingFile), App.Setting);
-            var saveAccountsTask = SaveSetting(GetLocalFilePath(Defaults.AccountsFile), accountsSetting);
-
             try
             {
-                Task.WaitAll(saveSettingTask, saveAccountsTask);
+                var setting = App.Setting;
+                var accountsSetting = new AccountSettings
+                {
+                    Accounts = AccountManager.Accounts.Select(a => a.ToSetting()),
+                    Columns = TimelineBase.Columns.Select(c => c.GetOption()),
+                };
+
+
+                var task = SettingUtility.SaveSettings(setting, accountsSetting);
+                task.Wait();
             }
             catch (Exception ex)
             {
                 DialogService.ShowTaskDialog(IntPtr.Zero, ex.GetMessage(), null, null, TaskDialogStandardButtons.Close, TaskDialogStandardIcon.Error);
-            }
-        }
-
-        /// <summary>
-        /// 設定データを保存する。
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="filename"></param>
-        /// <param name="setting"></param>
-        /// <returns></returns>
-        private static async Task SaveSetting<T>(string filename, T setting) where T : class
-        {
-            try
-            {
-                await JsonUtility.SerializeFileAsync(setting, filename).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"設定 \"{filename}\" の保存に失敗しました。\n{ex.GetMessage()}", ex);
             }
         }
 
