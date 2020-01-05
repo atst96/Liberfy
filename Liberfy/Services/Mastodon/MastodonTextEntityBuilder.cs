@@ -10,49 +10,62 @@ using Sgml;
 
 namespace Liberfy.Services.Mastodon
 {
+    /// <summary>
+    /// トゥート表示用のエンティティを生成するクラス
+    /// </summary>
     internal class MastodonTextEntityBuilder : ITextEntityBuilder
     {
+        /// <summary>
+        /// 表示内容
+        /// </summary>
         private readonly string _content;
+
+        /// <summary>
+        /// 絵文字一覧
+        /// </summary>
         private readonly SocialApis.Mastodon.Emoji[] _emojis;
 
+        /// <summary>
+        /// 絵文字検出用の正規表現
+        /// </summary>
         private readonly static Regex _emojiRegex = new Regex(":(?<code>[a-zA-Z0-9_\\-]+):", RegexOptions.Multiline | RegexOptions.Compiled);
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="emojis"></param>
         public MastodonTextEntityBuilder(string content, SocialApis.Mastodon.Emoji[] emojis)
         {
             this._content = content;
             this._emojis = emojis;
         }
 
-        private static void AddText(LinkedList<IEntity> entities, string text)
-        {
-            if (entities.Last?.Value is PlainTextEntity textEntity)
-            {
-                textEntity.DisplayText += text;
-            }
-            else
-            {
-                entities.AddLast(new PlainTextEntity(text));
-            }
-        }
-
-        private static void AddText(LinkedList<IEntity> entities, string text, SocialApis.Mastodon.Emoji[] emojis)
+        /// <summary>
+        /// エンティティのコレクションに文字列を追加する
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <param name="text"></param>
+        /// <param name="emojis"></param>
+        private static void AddText(TextEntityCollection entities, string text, SocialApis.Mastodon.Emoji[] emojis)
         {
             if (emojis?.Length == 0)
             {
-                AddText(entities, text);
+                entities.AddText(text);
                 return;
             }
 
             var matches = _emojiRegex.Matches(text);
             if (matches.Count == 0)
             {
-                AddText(entities, text);
-                return;
+                entities.AddText(text);
             }
 
             if (matches[0].Index != 0)
             {
-                AddText(entities, text.Substring(0, matches[0].Index));
+                var firstText = text.Substring(0, matches[0].Index);
+
+                entities.AddText(firstText);
             }
 
             for (int i = 0; i < matches.Count; ++i)
@@ -73,25 +86,33 @@ namespace Liberfy.Services.Mastodon
 
                 if (emoji == default)
                 {
-                    AddText(entities, m.Value);
+                    entities.AddText(m.Value);
                 }
                 else
                 {
-                    entities.AddLast(new EmojiEntity(emoji));
+                    entities.Add(new EmojiEntity(emoji));
                 }
 
                 if (i < matches.Count - 1)
                 {
                     var nextMatch = matches[i + 1];
-                    AddText(entities, text.Substring(m.Index + m.Value.Length, nextMatch.Index - m.Index - m.Value.Length));
+                    var content = text.Substring(m.Index + m.Value.Length, nextMatch.Index - m.Index - m.Value.Length);
+
+                    entities.AddText(content);
                 }
                 else if (m.Index + m.Value.Length != text.Length)
                 {
-                    AddText(entities, text.Substring(m.Index + m.Value.Length));
+                    var content = text.Substring(m.Index + m.Value.Length);
+
+                    entities.AddText(content);
                 }
             }
         }
 
+        /// <summary>
+        /// 表示用のエンティティを生成する
+        /// </summary>
+        /// <returns></returns>
         public IReadOnlyList<IEntity> Build()
         {
             const string externalLinkRel = "nofollow noopener";
@@ -103,7 +124,7 @@ namespace Liberfy.Services.Mastodon
 
             var content = this._content.Replace("<br>", "<br/>", StringComparison.OrdinalIgnoreCase);
 
-            var entities = new LinkedList<IEntity>();
+            var entities = new TextEntityCollection();
 
             using var sgmlReader = new SgmlReader
             {
@@ -132,13 +153,11 @@ namespace Liberfy.Services.Mastodon
                         var value = secLvTextNode.Value;
                         AddText(entities, value, this._emojis);
                     }
-                    else if (secLvNode.NodeType == System.Xml.XmlNodeType.Element)
+                    else if(secLvNode is XElement secLvEl)
                     {
-                        var secLvEl = XElement.Load(secLvNode.CreateReader());
-
                         if (secLvEl.Name == "br")
                         {
-                            AddText(entities, "\n");
+                            entities.AddText("\n");
                         }
                         else if (secLvEl.Name == "a")
                         {
@@ -149,7 +168,7 @@ namespace Liberfy.Services.Mastodon
                             {
                                 var text = secLvEl.Value;
                                 // Hashtag
-                                entities.AddLast(new HashtagEntity(text));
+                                entities.Add(new HashtagEntity(text));
                             }
                             else if (rels == externalLinkRel)
                             {
@@ -171,18 +190,18 @@ namespace Liberfy.Services.Mastodon
                                 }
 
                                 // Link
-                                entities.AddLast(new UrlEntity(link, text));
+                                entities.Add(new UrlEntity(link, text));
                             }
                             else
                             {
-                                throw new NotImplementedException();
+                                throw new NotImplementedException("Unknown link type.");
                             }
                         }
                         else if (secLvEl.Name == "span")
                         {
                             if (!secLvEl.HasAttributes)
                             {
-                                AddText(entities, secLvEl.Value);
+                                entities.AddText(secLvEl.Value);
                             }
                             else if (secLvEl.Attribute("class")?.Value == mentionContainerClassName)
                             {
@@ -195,17 +214,17 @@ namespace Liberfy.Services.Mastodon
                                     var text = anchorElement.Value;
 
                                     // Anchorlink
-                                    entities.AddLast(new MentionEntity(text, text.Substring(1)));
+                                    entities.Add(new MentionEntity(text, text.Substring(1)));
                                 }
                             }
                             else
                             {
-                                throw new NotImplementedException();
+                                throw new NotImplementedException("Unknown span type.");
                             }
                         }
                         else
                         {
-                            throw new NotImplementedException(secLvEl.Name.ToString());
+                            throw new NotImplementedException("Unknown element: " + secLvEl.Name);
                         }
                     }
                 }

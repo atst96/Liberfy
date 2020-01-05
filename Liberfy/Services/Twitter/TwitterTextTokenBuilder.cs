@@ -10,185 +10,162 @@ using TwitterApi = SocialApis.Twitter;
 
 namespace Liberfy.Services.Twitter
 {
+    /// <summary>
+    /// ツイート表示用エンティティを生成するクラス
+    /// </summary>
     internal class TwitterTextTokenBuilder : ITextEntityBuilder
     {
-        private string _text;
-        private TwitterApi.Entities _entities;
+        /// <summary>
+        /// 表示内容
+        /// </summary>
+        private string _content;
 
-        public TwitterTextTokenBuilder(string text, TwitterApi.Entities entities)
+        /// <summary>
+        /// 変換前エンティティのリスト
+        /// </summary>
+        private TwitterApi.Entities _entityGroup;
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="content">文字列</param>
+        /// <param name="entityGroup">エンティティ</param>
+        public TwitterTextTokenBuilder(string content, TwitterApi.Entities entityGroup)
         {
-            this._text = text ?? throw new ArgumentNullException(nameof(text));
-            this._entities = entities;
+            this._content = content ?? throw new ArgumentNullException(nameof(content));
+            this._entityGroup = entityGroup;
         }
 
-        private static void InsertEntityImpl(IList<TwitterApi.EntityBase[]> list, TwitterApi.EntityBase[] entities, ref int count)
+        /// <summary>
+        /// エンティティを列挙する
+        /// </summary>
+        /// <param name="entityGroup"></param>
+        /// <returns>エンティティ一覧</returns>
+        public static TwitterApi.EntityBase[] EnumerateEntity(TwitterApi.Entities entityGroup)
         {
-            if (entities?.Length > 0)
+            return new TwitterApi.EntityBase[][]
             {
-                list.Add(entities);
-                count += entities.Length;
+                entityGroup?.Hashtags,
+                entityGroup?.Symbols,
+                entityGroup?.Urls,
+                entityGroup?.UserMentions,
+                entityGroup?.Media,
             }
+            .Where(entities => entities?.Length > 0)
+            .SelectMany(entities => entities)
+            .OrderBy(entity => entity.IndexStart)
+            .ToArray();
         }
 
-        public static TwitterApi.EntityBase[] EnumerateEntity(TwitterApi.Entities entities)
+        /// <summary>
+        /// エンティティを変換する
+        /// </summary>
+        /// <param name="textReader"></param>
+        /// <param name="rawEntity"></param>
+        /// <returns></returns>
+        private static IEntity CreateEntity(SequentialSurrogateTextReader textReader, TwitterApi.EntityBase rawEntity)
         {
-            if (entities == null)
+            var content = textReader.String;
+            int startIndex = textReader.Cursor;
+            int length = textReader.GetNextLength(rawEntity.IndexEnd - rawEntity.IndexStart);
+
+            return rawEntity switch
             {
-                return new TwitterApi.EntityBase[0];
-            }
-
-            var entitiesList = new List<TwitterApi.EntityBase[]>(5);
-
-            int count = 0;
-
-            InsertEntityImpl(entitiesList, entities.Hashtags, ref count);
-            InsertEntityImpl(entitiesList, entities.Symbols, ref count);
-            InsertEntityImpl(entitiesList, entities.Urls, ref count);
-            InsertEntityImpl(entitiesList, entities.UserMentions, ref count);
-            InsertEntityImpl(entitiesList, entities.Media, ref count);
-
-            if (count == 0)
-            {
-                return new TwitterApi.EntityBase[0];
-            }
-
-            var entityList = new TwitterApi.EntityBase[count];
-            int idx = 0;
-
-            foreach (var entities_ in entitiesList)
-            {
-                foreach (var entity in entities_)
-                {
-                    entityList[idx++] = entity;
-                }
-            }
-
-            Array.Sort(entityList, TextEntityStartPositionCompare.Instance);
-
-            entitiesList.Clear();
-            entitiesList = null;
-
-            return entityList;
+                TwitterApi.HashtagEntity hashtag => new HashtagEntity(content.Substring(startIndex, length), hashtag),
+                TwitterApi.MediaEntity media => new MediaEntity(media),
+                TwitterApi.UrlEntity url => new UrlEntity(url),
+                TwitterApi.UserMentionEntity user => new MentionEntity(content.Substring(startIndex, length), user),
+                _ => throw new NotImplementedException(),
+            };
         }
 
-        private static IEntity CreateElement(SequentialSurrogateTextReader textReader, TwitterApi.EntityBase entity)
-        {
-            IEntity element = default;
-
-            var sourceText = textReader.String;
-            int indexStart = textReader.Cursor;
-            int length = textReader.GetNextLength(entity.IndexEnd - entity.IndexStart);
-
-            switch (entity)
-            {
-                case TwitterApi.HashtagEntity hashtag:
-                    element = new HashtagEntity(sourceText.Substring(indexStart, length), hashtag);
-                    break;
-
-                case TwitterApi.MediaEntity media:
-                    element = new MediaEntity(media);
-                    break;
-
-                case TwitterApi.UrlEntity url:
-                    element = new UrlEntity(url);
-                    break;
-
-                case TwitterApi.UserMentionEntity user:
-                    element = new MentionEntity(sourceText.Substring(indexStart, length), user);
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-
-            if (element.DisplayText == null)
-            {
-                element.DisplayText = sourceText.Substring(indexStart, length);
-            }
-
-            return element;
-        }
-
+        /// <summary>
+        /// 表示用のエンティティを生成する
+        /// </summary>
+        /// <returns>エンティティのリスト</returns>
         public IReadOnlyList<IEntity> Build()
         {
-            var sourceText = this._text;
+            var content = this._content;
+            var rawEntities = EnumerateEntity(this._entityGroup);
 
-            var sourceTextEntities = EnumerateEntity(this._entities);
-
-            if (sourceTextEntities.Length == 0)
+            if (rawEntities.Length == 0)
             {
-                if (string.IsNullOrEmpty(sourceText))
-                {
-                    return new IEntity[0];
-                }
-                else
-                {
-                    return new IEntity[]
-                    {
-                        new PlainTextEntity(sourceText.DecodeHtml())
-                    };
-                }
+                // 処理対象のエンティティがなければ早期に抜ける
+                return string.IsNullOrEmpty(content)
+                    ? Array.Empty<IEntity>()
+                    : new[] { new PlainTextEntity(content.DecodeHtml()) };
             }
 
-            var textElementList = new List<IEntity>((sourceTextEntities.Length * 2) + 1);
-            var textReader = new SequentialSurrogateTextReader(sourceText);
+            var textReader = new SequentialSurrogateTextReader(content);
+            var entities = new List<IEntity>((rawEntities.Length * 2) + 1);
 
             int entityIdx = 0;
-            var entity = sourceTextEntities[entityIdx++];
+            var rawEntity = rawEntities[entityIdx++];
 
-            int firstEntitySourceTextPosition = sourceTextEntities[0].IndexStart;
-
-            if (firstEntitySourceTextPosition != 0)
+            
+            // 最初のエンティティに関する処理
             {
-                var entityText = textReader.ReadLength(firstEntitySourceTextPosition);
+                int firstEntityTextStartIndex = rawEntities[0].IndexStart;
 
-                textElementList.Add(new PlainTextEntity(entityText.DecodeHtml()));
+                if (firstEntityTextStartIndex != 0)
+                {
+                    // 最初のエンティティが先頭始まりでない（エンティティの前に文字列が存在する）場合、
+                    // 　エンティティより前の文字列を追加する
+                    var entityText = textReader.ReadLength(firstEntityTextStartIndex);
+
+                    entities.Add(new PlainTextEntity(entityText.DecodeHtml()));
+                }
             }
 
+            // 2番目以降のエンティティに関する処理
             do
             {
-                var textElement = CreateElement(textReader, entity);
-                textElementList.Add(textElement);
+                // エンティティを変換して追加
+                var entity = CreateEntity(textReader, rawEntity);
+                entities.Add(entity);
 
-                int previousSourceTextPosition = entity.IndexEnd;
+                int previousEntityTextEndIndex = rawEntity.IndexEnd;
 
-                if (entityIdx < sourceTextEntities.Length)
+                // 次のエンティティまでの文字列を追加
+                if (entityIdx < rawEntities.Length)
                 {
-                    // 次のエンティティが在る場合は現在のエンティティの終わりから次の開始位置までの文字列を追加する
+                    // 次のエンティティが存在する場合は、現エンティティの終了から次エンティティの開始までの文字列を追加する
+                    rawEntity = rawEntities[entityIdx++];
 
-                    entity = sourceTextEntities[entityIdx++];
+                    var entityText = textReader.ReadLength(rawEntity.IndexStart - previousEntityTextEndIndex);
 
-                    var entityText = textReader.ReadLength(entity.IndexStart - previousSourceTextPosition);
-
-                    textElementList.Add(new PlainTextEntity(entityText.DecodeHtml()));
+                    entities.Add(new PlainTextEntity(entityText.DecodeHtml()));
                 }
                 else
                 {
-                    entity = null;
+                    rawEntity = null;
 
-                    if (previousSourceTextPosition < sourceText.Length)
+                    if (previousEntityTextEndIndex < content.Length)
                     {
                         var entityText = textReader.ReadToEnd();
 
-                        textElementList.Add(new PlainTextEntity(entityText.DecodeHtml()));
+                        entities.Add(new PlainTextEntity(entityText.DecodeHtml()));
                     }
 
                     break;
                 }
             }
-            while (entity != null);
+            while (rawEntity != null);
 
-            var result = textElementList.ToArray();
+            var result = entities.ToArray();
 
-            textElementList.Clear();
+            entities.Clear();
 
             return result;
         }
 
+        /// <summary>
+        /// デストラクタ
+        /// </summary>
         ~TwitterTextTokenBuilder()
         {
-            this._text = null;
-            this._entities = null;
+            this._content = null;
+            this._entityGroup = null;
         }
     }
 }
