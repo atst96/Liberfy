@@ -4,32 +4,50 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Liberfy.Components;
 using Utf8Json;
 
 namespace Liberfy.Utilieis
 {
+    /// <summary>
+    /// JSON処理に関するクラス
+    /// </summary>
     internal static class JsonUtility
     {
+        /// <summary>
+        /// JSONフォーマッタ
+        /// </summary>
         private static IJsonFormatterResolver _jsonFormatterResolver { get; } = Utf8Json.Resolvers.StandardResolver.AllowPrivate;
 
+        /// <summary>
+        /// ストリームからJSONデータをデシリアライズする
+        /// </summary>
+        /// <typeparam name="T">型</typeparam>
+        /// <param name="stream">ストリーム</param>
+        /// <returns>Task<typeparamref name="T"/></returns>
         public static async Task<T> DeserializeAsync<T>(Stream stream)
         {
             var @object = await JsonSerializer
                 .DeserializeAsync<T>(stream, _jsonFormatterResolver)
                 .ConfigureAwait(false);
 
-            if (@object is IJsonFile jsonData)
+            if (@object is IJsonFile jsonObject)
             {
-                jsonData.OnDeserialized();
+                jsonObject.OnDeserialized();
             }
 
             return @object;
         }
 
+        /// <summary>
+        /// ファイルからJSONデータをデシリアライズする
+        /// </summary>
+        /// <typeparam name="T">型</typeparam>
+        /// <param name="path">ファイルパス</param>
+        /// <returns>Task<typeparamref name="T"/></returns>
         public static async Task<T> DeserializeFileAsync<T>(string path)
         {
-            using var stream = FileContentUtility.OpenRead(path);
+            using var stream = FileContentUtility.OpenRead(path, isAsync: true);
+
             if (stream == null)
             {
                 return default;
@@ -38,25 +56,39 @@ namespace Liberfy.Utilieis
             return await DeserializeAsync<T>(stream).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// オブジェクトをJSONデータにシリアライズしてStreamに書き込む
+        /// </summary>
+        /// <typeparam name="T">型</typeparam>
+        /// <param name="object">オブジェクト</param>
+        /// <param name="stream">出力先ストリーム</param>
+        /// <returns>Task</returns>
         public static Task SerializeAsync<T>(T @object, Stream stream)
         {
-            if (@object is IJsonFile jsonData)
+            if (@object is IJsonFile jsonObject)
             {
-                jsonData.OnSerialize();
+                jsonObject.OnSerialize();
             }
 
             return JsonSerializer.SerializeAsync(stream, @object, _jsonFormatterResolver);
         }
 
+        /// <summary>
+        /// オブジェクトをJSONデータにシリアライズしてファイルに書き込む
+        /// </summary>
+        /// <typeparam name="T">型</typeparam>
+        /// <param name="object">オブジェクト</param>
+        /// <param name="path">ファイルパス</param>
+        /// <returns>Task</returns>
         public static async Task SerializeFileAsync<T>(T @object, string path)
         {
-            using var bufferStream = new MemoryStream();
-            await SerializeAsync(@object, bufferStream).ConfigureAwait(false);
+            using var buffer = new MemoryStream();
+            await SerializeAsync(@object, buffer).ConfigureAwait(false);
 
-            using var outputStream = FileContentUtility.OpenCreate(path);
-            bufferStream.Seek(0, SeekOrigin.Begin);
+            using var output = FileContentUtility.OpenCreate(path, isAsync: true, bufferSize: (int)buffer.Length);
+            buffer.Seek(0, SeekOrigin.Begin);
 
-            await bufferStream.CopyToAsync(outputStream).ConfigureAwait(false);
+            await buffer.CopyToAsync(output).ConfigureAwait(false);
         }
     }
 }
