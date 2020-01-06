@@ -65,7 +65,7 @@ namespace Liberfy.Model
         {
             this.DisplayName = displayName;
             this.UserName = screenName;
-            this.DisplayText = screenName;
+            this.DisplayText = displayName;
         }
     }
 

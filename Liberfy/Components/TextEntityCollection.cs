@@ -38,6 +38,14 @@ namespace Liberfy
                 this.Add(new PlainTextEntity(content));
             }
         }
+        
+        /// <summary>
+        /// 改行を追加する
+        /// </summary>
+        public void AddNewLine()
+        {
+            this.AddText("\n");
+        }
 
         /// <summary>
         /// 配列を生成する

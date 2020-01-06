@@ -28,7 +28,22 @@ namespace Liberfy.Services.Mastodon
         /// <summary>
         /// 絵文字検出用の正規表現
         /// </summary>
-        private readonly static Regex _emojiRegex = new Regex(":(?<code>[a-zA-Z0-9_\\-]+):", RegexOptions.Multiline | RegexOptions.Compiled);
+        private readonly static Regex EmojiRegex = new Regex(":(?<code>[a-zA-Z0-9_\\-]+):", RegexOptions.Multiline | RegexOptions.Compiled);
+
+        /// <summary>
+        /// メンションのクラス名
+        /// </summary>
+        private static readonly string[] MentionElementClassNames = { "u-url", "mention" };
+
+        /// <summary>
+        /// メンションの親クラス名
+        /// </summary>
+        private const string MentionParentElementClassName = "h-card";
+
+        /// <summary>
+        /// ハッシュタグのクラス名
+        /// </summary>
+        private static readonly string[] HashtagElementClassNames = { "mention", "hashtag" };
 
         /// <summary>
         /// コンストラクタ
@@ -42,7 +57,7 @@ namespace Liberfy.Services.Mastodon
         }
 
         /// <summary>
-        /// エンティティのコレクションに文字列を追加する
+        /// エンティティのコレクションに文字列と絵文字を追加する
         /// </summary>
         /// <param name="entities"></param>
         /// <param name="text"></param>
@@ -55,7 +70,7 @@ namespace Liberfy.Services.Mastodon
                 return;
             }
 
-            var matches = _emojiRegex.Matches(text);
+            var matches = EmojiRegex.Matches(text);
             if (matches.Count == 0)
             {
                 entities.AddText(text);
@@ -110,18 +125,129 @@ namespace Liberfy.Services.Mastodon
         }
 
         /// <summary>
+        /// XElementから文字列を抽出する
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        private string GetString(XElement element)
+        {
+            var text = "";
+
+            foreach (var node in element.Nodes())
+            {
+                if (node is XText textNode)
+                {
+                    text += textNode.Value;
+                    continue;
+                }
+
+                if (node is XElement elementNode)
+                {
+                    var classes = (elementNode.Attribute("class")?.Value ?? "").Split(" ");
+
+                    if (classes.Contains("invisible"))
+                    {
+                        continue;
+                    }
+
+                    text += this.GetString(elementNode);
+                    continue;
+                }
+            }
+
+            return text;
+        }
+
+        /// <summary>
+        /// XElementからエンティティを生成する
+        /// </summary>
+        /// <param name="entityCollection"></param>
+        /// <param name="rootEntity"></param>
+        private void ParseEntity(TextEntityCollection entityCollection, XElement rootEntity)
+        {
+            foreach (var node in rootEntity.Nodes())
+            {
+                if (node is XText textNode)
+                {
+                    // 文字列
+                    AddText(entityCollection, textNode.Value, this._emojis);
+                    continue;
+                }
+
+                if (node is XElement elementNode)
+                {
+                    var tagName = elementNode.Name;
+
+                    if (tagName == "br")
+                    {
+                        // 改行
+                        entityCollection.AddNewLine();
+                        continue;
+                    }
+
+                    if (tagName == "a")
+                    {
+                        // アンカーリンク
+                        var href = elementNode.Attribute("href")?.Value;
+                        var text = this.GetString(elementNode);
+                        var classes = elementNode.GetClassNames();
+
+                        if (elementNode.Parent is XElement parentElement)
+                        {
+                            if (MentionElementClassNames.All(classes.Contains))
+                            {
+                                var parentNodeClasses = parentElement.GetClassNames();
+                                if (parentNodeClasses.Contains(MentionParentElementClassName))
+                                {
+                                    // メンション
+                                    var anchorText = this.GetString(elementNode);
+                                    entityCollection.Add(new MentionEntity(anchorText, anchorText.Substring(1)));
+                                    continue;
+                                }
+                            }
+                        }
+                        else if (HashtagElementClassNames.All(classes.Contains))
+                        {
+                            // ハッシュタグ
+                            var hashtagText = this.GetString(elementNode);
+                            entityCollection.Add(new HashtagEntity(hashtagText));
+                            continue;
+                        }
+
+                        entityCollection.Add(new UrlEntity(href, text));
+                        continue;
+                    }
+
+                    if (tagName == "span")
+                    {
+                        // spanタグ
+                        this.ParseEntity(entityCollection, elementNode);
+                        continue;
+                    }
+
+                    if (tagName == "p")
+                    {
+                        // pタグ
+
+                        // 直前の要素があれば改行する
+                        if (entityCollection.LastEntity != null)
+                        {
+                            entityCollection.AddNewLine();
+                        }
+
+                        this.ParseEntity(entityCollection, elementNode);
+                        continue;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// 表示用のエンティティを生成する
         /// </summary>
         /// <returns></returns>
         public IReadOnlyList<IEntity> Build()
         {
-            const string externalLinkRel = "nofollow noopener";
-
-            const string hashtagElementClassName = "mention hashtag";
-
-            const string mentionContainerClassName = "h-card";
-            const string mentionAnchorClassName = "u-url mention";
-
             var content = this._content.Replace("<br>", "<br/>", StringComparison.OrdinalIgnoreCase);
 
             var entities = new TextEntityCollection();
@@ -136,99 +262,7 @@ namespace Liberfy.Services.Mastodon
 
             var rootElement = XElement.Load(sgmlReader, LoadOptions.PreserveWhitespace);
 
-            foreach (var topParagraphElement in rootElement.Elements())
-            {
-                if (topParagraphElement.Name != "p")
-                    throw new NotSupportedException();
-
-                if (entities.Count > 0)
-                {
-                    AddText(entities, "\n", this._emojis);
-                }
-
-                foreach (var secLvNode in topParagraphElement.Nodes())
-                {
-                    if (secLvNode is XText secLvTextNode)
-                    {
-                        var value = secLvTextNode.Value;
-                        AddText(entities, value, this._emojis);
-                    }
-                    else if(secLvNode is XElement secLvEl)
-                    {
-                        if (secLvEl.Name == "br")
-                        {
-                            entities.AddText("\n");
-                        }
-                        else if (secLvEl.Name == "a")
-                        {
-                            var classNames = secLvEl.Attribute("class")?.Value;
-                            var rels = secLvEl.Attribute("rel")?.Value;
-
-                            if (classNames == hashtagElementClassName)
-                            {
-                                var text = secLvEl.Value;
-                                // Hashtag
-                                entities.Add(new HashtagEntity(text));
-                            }
-                            else if (rels == externalLinkRel)
-                            {
-                                var link = secLvEl.Attribute("href")?.Value;
-
-                                var text = default(string);
-
-                                if (secLvEl.HasElements)
-                                {
-                                    var texts = secLvEl.Elements()
-                                        .Where(thirdEl => thirdEl.Attribute("class")?.Value != "invisible")
-                                        .Select(thirdEl => thirdEl.Value);
-
-                                    text = string.Concat(texts);
-                                }
-                                else
-                                {
-                                    text = secLvEl.Value;
-                                }
-
-                                // Link
-                                entities.Add(new UrlEntity(link, text));
-                            }
-                            else
-                            {
-                                throw new NotImplementedException("Unknown link type.");
-                            }
-                        }
-                        else if (secLvEl.Name == "span")
-                        {
-                            if (!secLvEl.HasAttributes)
-                            {
-                                entities.AddText(secLvEl.Value);
-                            }
-                            else if (secLvEl.Attribute("class")?.Value == mentionContainerClassName)
-                            {
-                                var anchorElement = secLvEl.Elements().First();
-                                var anchorElementClassNames = anchorElement.Attribute("class")?.Value;
-
-                                if (anchorElementClassNames == mentionAnchorClassName)
-                                {
-                                    var link = anchorElement.Attribute("href")?.Value ?? string.Empty;
-                                    var text = anchorElement.Value;
-
-                                    // Anchorlink
-                                    entities.Add(new MentionEntity(text, text.Substring(1)));
-                                }
-                            }
-                            else
-                            {
-                                throw new NotImplementedException("Unknown span type.");
-                            }
-                        }
-                        else
-                        {
-                            throw new NotImplementedException("Unknown element: " + secLvEl.Name);
-                        }
-                    }
-                }
-            }
+            this.ParseEntity(entities, rootElement);
 
             return entities.ToArray();
         }
