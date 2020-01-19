@@ -218,12 +218,5 @@ namespace Liberfy
         }
 
         public abstract void SetApiTokens(TApi api);
-
-        ~AccountBase()
-        {
-            // this.Tokens = null;
-            this._statusActivities = null;
-            this.LockSharedObject = null;
-        }
     }
 }

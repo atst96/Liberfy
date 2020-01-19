@@ -65,9 +65,9 @@ namespace Liberfy.Services.Twitter
         /// <returns></returns>
         private static IEntity CreateEntity(SequentialSurrogateTextReader textReader, TwitterApi.EntityBase rawEntity)
         {
-            var content = textReader.String;
-            int startIndex = textReader.Cursor;
-            int length = textReader.GetNextLength(rawEntity.IndexEnd - rawEntity.IndexStart);
+            var content = textReader.Content;
+            int startIndex = textReader.RawCursor;
+            int length = textReader.GetRawLength(rawEntity.IndexEnd - rawEntity.IndexStart);
 
             return rawEntity switch
             {
@@ -157,15 +157,6 @@ namespace Liberfy.Services.Twitter
             entities.Clear();
 
             return result;
-        }
-
-        /// <summary>
-        /// デストラクタ
-        /// </summary>
-        ~TwitterTextTokenBuilder()
-        {
-            this._content = null;
-            this._entityGroup = null;
         }
     }
 }

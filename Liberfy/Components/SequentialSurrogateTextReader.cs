@@ -8,60 +8,51 @@ namespace Liberfy
 {
     internal class SequentialSurrogateTextReader
     {
-        private string _string;
-        public String String => this._string;
+        public string Content { get; private set; }
 
-        private int _cursor = 0;
-        public int Cursor => this._cursor;
+        public int RawCursor { get; private set; }
 
-        public SequentialSurrogateTextReader(string text)
+        public SequentialSurrogateTextReader(string content)
         {
-            this._string = text;
+            this.Content = content;
         }
 
-        ~SequentialSurrogateTextReader()
+        public int GetRawLength(int length)
         {
-            this._cursor = 0;
-            this._string = null;
-        }
-
-        public int GetNextLength(int length)
-        {
-            int strLen = this._string.Length;
-            int startTextPosition = this._cursor;
+            int startTextPosition = this.RawCursor;
             int endTextPosition = startTextPosition + length;
 
             for (int textIndex = startTextPosition; textIndex < endTextPosition; ++textIndex)
             {
-                if (char.IsHighSurrogate(this._string, textIndex))
+                if (char.IsHighSurrogate(this.Content, textIndex))
                 {
-                    // サロゲートペア文字(UTF-16 2byte + 2byte = 2文字)を1文字としてカウントする
+                    // サロゲートペア文字を1文字としてカウントする
                     ++endTextPosition;
                 }
             }
 
-            this._cursor = endTextPosition;
+            this.RawCursor = endTextPosition;
 
             return endTextPosition - startTextPosition;
         }
 
         public string ReadLength(int length)
         {
-            int startIndex = this._cursor;
-            return this._string.Substring(startIndex, this.GetNextLength(length));
+            int startIndex = this.RawCursor;
+
+            return this.Content.Substring(startIndex, this.GetRawLength(length));
         }
 
         public string ReadToEnd()
         {
-            int cursor = this._cursor;
-            this._cursor = this._string.Length;
+            int cursor = this.RawCursor;
+            this.RawCursor = this.Content.Length;
 
-            if (cursor >= this._string.Length)
-                return string.Empty;
-            else
-                return this._string.Substring(cursor);
+            return cursor >= this.Content.Length
+                ? string.Empty
+                : this.Content.Substring(cursor);
         }
 
-        public void SkipLength(int length) => this.GetNextLength(length);
+        public void SkipLength(int length) => this.GetRawLength(length);
     }
 }
