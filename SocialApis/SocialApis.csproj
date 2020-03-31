@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>SocialApis</AssemblyName>
+    <RootNamespace>SocialApis</RootNamespace>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -9,8 +11,6 @@
     <ProjectGuid>{033AA2BE-B09C-4442-B283-C4BA1EAD8018}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SocialApis</RootNamespace>
-    <AssemblyName>SocialApis</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <Authors>atst</Authors>
