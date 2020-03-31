@@ -5,16 +5,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:conv="clr-namespace:Liberfy.Converter"
     xmlns:convs="clr-namespace:Liberfy.Converters"
-    xmlns:local="clr-namespace:Liberfy"
+    xmlns:app="clr-namespace:Liberfy"
     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
     xmlns:tb="http://www.hardcodet.net/taskbar"
-    xmlns:app="clr-namespace:Liberfy"
     StartupUri="Views/MainWindow.xaml"
     ShutdownMode="OnLastWindowClose">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary>
+                <app:SharedResourceDictionary>
                     <sys:Double x:Key="UI.Column.Width">300</sys:Double>
 
                     <sys:Double x:Key="UI.Tweet.ProfileImage.Width">40</sys:Double>
@@ -130,11 +129,11 @@
                         BasedOn="{StaticResource GeneralTimelineViewItemStyle}">
                         <Setter Property="IsRetweetedItem" Value="{Binding IsRetweet, Mode=OneTime}" />
                     </Style>
-                </ResourceDictionary>
-                <ResourceDictionary Source="Xaml\Icons.xaml" />
-                <ResourceDictionary Source="Xaml\Themes\Generic.xaml" />
-                <ResourceDictionary Source="Xaml\Templates\ControlStyles.xaml" />
-                <ResourceDictionary Source="Xaml\Templates\DataTemplates.xaml" />
+                </app:SharedResourceDictionary>
+                <app:SharedResourceDictionary Source="Xaml\Icons.xaml" />
+                <app:SharedResourceDictionary Source="Xaml\Themes\Generic.xaml" />
+                <app:SharedResourceDictionary Source="Xaml\Templates\ControlStyles.xaml" />
+                <app:SharedResourceDictionary Source="Xaml\Templates\DataTemplates.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
