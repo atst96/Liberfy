@@ -8,6 +8,11 @@ namespace Liberfy
 {
     internal static partial class Config
     {
+        public static class Debug
+        {
+            public const bool LoadTimeline = false;
+        }
+
         public static partial class Twitter
         {
             //public const string @ConsumerKey = "";

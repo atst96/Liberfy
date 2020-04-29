@@ -10,6 +10,9 @@
     <RepositoryUrl>https://github.com/atst1996/Liberfy</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup>
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+  <PropertyGroup>
     <ApplicationIcon>Icons\app.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
