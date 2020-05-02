@@ -174,6 +174,68 @@
                 </DockPanel>
             </Border>
         </DataTemplate>
+        
+        <Duration x:Key="SideBarAnimationDuration">0:0:0.7</Duration>
+        <QuarticEase x:Key="SideBarPanelEase" EasingMode="EaseOut" />
+
+        <!--サイドバーを開くアニメーション-->
+        <Storyboard
+            x:Key="ShowSideBarPanelStobyarod"
+            FillBehavior="HoldEnd">
+            <DoubleAnimation
+                Storyboard.TargetName="PART_SideBarPanel"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                Duration="{StaticResource SideBarAnimationDuration}"
+                EasingFunction="{StaticResource SideBarPanelEase}"
+                To="0.0" />
+            <DoubleAnimation
+                Storyboard.TargetName="PART_TimelineView"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                Duration="{StaticResource SideBarAnimationDuration}"
+                EasingFunction="{StaticResource SideBarPanelEase}"
+                To="240.0" />
+            <DoubleAnimation
+                Storyboard.TargetName="PART_TimelineView"
+                Storyboard.TargetProperty="(UIElement.Opacity)"
+                Duration="{StaticResource SideBarAnimationDuration}"
+                EasingFunction="{StaticResource SideBarPanelEase}"
+                To="0.4" />
+            <BooleanAnimationUsingKeyFrames
+                Storyboard.TargetName="PART_TimelineView"
+                Storyboard.TargetProperty="(UIElement.IsHitTestVisible)">
+                <DiscreteBooleanKeyFrame KeyTime="0:0:0.0" Value="False" />
+            </BooleanAnimationUsingKeyFrames>
+        </Storyboard>
+        
+        <!--サイドバーを閉じるアニメーション-->
+        <Storyboard
+            x:Key="CloseSideBarPanelStoryboard"
+            Duration="0:0:5.0"
+            FillBehavior="HoldEnd">
+            <DoubleAnimation
+                Storyboard.TargetName="PART_SideBarPanel"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                Duration="{StaticResource SideBarAnimationDuration}"
+                EasingFunction="{StaticResource SideBarPanelEase}"
+                To="-239.0" />
+            <DoubleAnimation
+                Storyboard.TargetName="PART_TimelineView"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                Duration="{StaticResource SideBarAnimationDuration}"
+                EasingFunction="{StaticResource SideBarPanelEase}"
+                To="0.0" />
+            <DoubleAnimation
+                Storyboard.TargetName="PART_TimelineView"
+                Storyboard.TargetProperty="(UIElement.Opacity)"
+                Duration="{StaticResource SideBarAnimationDuration}"
+                EasingFunction="{StaticResource SideBarPanelEase}"
+                To="1.0" />
+            <BooleanAnimationUsingKeyFrames
+                Storyboard.TargetName="PART_TimelineView"
+                Storyboard.TargetProperty="(UIElement.IsHitTestVisible)">
+                <DiscreteBooleanKeyFrame KeyTime="0:0:1.0" Value="True" />
+            </BooleanAnimationUsingKeyFrames>
+        </Storyboard>
     </Window.Resources>
 
     <app:CustomWindow.TitleBarContent>
@@ -308,23 +370,28 @@
         </Grid>
     </app:CustomWindow.TitleBarContent>
 
-    <Grid>
+    <Grid ClipToBounds="True">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="42" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
         <ScrollViewer
-            x:Name="timelineViewr"
+            x:Name="PART_TimelineView"
+            Margin="1,0,0,0"
             Grid.Column="1"
             Background="Transparent"
             PanningMode="HorizontalOnly"
             VerticalScrollBarVisibility="Hidden"
-            HorizontalScrollBarVisibility="Auto">
+            HorizontalScrollBarVisibility="Auto"
+            ClipToBounds="True">
+            <ScrollViewer.RenderTransform>
+                <TranslateTransform X="240" />
+            </ScrollViewer.RenderTransform>
             <ItemsControl
                 ItemsSource="{Binding Columns, Mode=OneTime}"
                 ItemTemplate="{StaticResource ColumnTemplate}"
-                Height="{Binding ViewportHeight, ElementName=timelineViewr, Mode=OneWay}">
+                Height="{Binding ViewportHeight, ElementName=PART_TimelineView, Mode=OneWay}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" Margin="3" />
@@ -340,5 +407,65 @@
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
         </ScrollViewer>
+
+        <Border
+            x:Name="PART_SideBarPanel"
+            Grid.Column="1"
+            ClipToBounds="True"
+            Width="240"
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Left"
+            Background="{DynamicResource ToolBar.Static.Background}"
+            BorderThickness="0,0,1,0"
+            BorderBrush="{DynamicResource ToolBar.Static.BorderBrush}">
+            <Border.RenderTransform>
+                <TranslateTransform X="0" />
+            </Border.RenderTransform>
+        </Border>
+
+        <StackPanel
+            Grid.Column="0"
+            Width="42"
+            ClipToBounds="True"
+            Background="{DynamicResource ToolBar.Static.Background}">
+            <Button
+                Width="42" Height="42"
+                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                Open
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="Button.Click">
+                        <BeginStoryboard Storyboard="{StaticResource ShowSideBarPanelStobyarod}" />
+                    </EventTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <Button
+                Width="42" Height="42"
+                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                Close
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="Button.Click">
+                        <BeginStoryboard Storyboard="{StaticResource CloseSideBarPanelStoryboard}" />
+                    </EventTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <Button
+                Width="42" Height="42"
+                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
+
+            <Button
+                Width="42" Height="42"
+                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
+        </StackPanel>
     </Grid>
+    
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard
+                x:Name="bsb1"
+                Storyboard="{StaticResource CloseSideBarPanelStoryboard}" />
+            <SkipStoryboardToFill BeginStoryboardName="bsb1" />
+        </EventTrigger>
+    </Window.Triggers>
 </app:CustomWindow>
