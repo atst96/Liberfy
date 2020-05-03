@@ -9,11 +9,13 @@
     Title="MediaPreviewWindow" Height="450" Width="800"
     xmlns:app="clr-namespace:Liberfy"
     xmlns:vm="clr-namespace:Liberfy.ViewModels"
+    xmlns:view="clr-namespace:Liberfy.Views"
     xmlns:tplsel="clr-namespace:Liberfy.TemplateSelectors"
     xmlns:model="clr-namespace:Liberfy.Model"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
     UseLayoutRounding="True"
     SnapsToDevicePixels="True"
-    DataContext="{app:ViewModelConnector vm:MediaPreviewWindowViewModel}"
     d:DataContext="{d:DesignInstance vm:MediaPreviewWindowViewModel, IsDesignTimeCreatable=True}">
     <Grid
         Background="#FF444444">
@@ -130,4 +132,14 @@
             </ListBox>
         </Grid>
     </Grid>
+
+    <i:Interaction.Triggers>
+        <l:InteractionMessageTrigger
+            MessageKey="MsgKey_PreviewAttachment"
+            Messenger="{Binding Messenger, Mode=OneTime}">
+            <l:TransitionInteractionMessageAction
+                Mode="Modal" IsOwned="True"
+                WindowType="{x:Type view:MediaPreviewWindow}" />
+        </l:InteractionMessageTrigger>
+    </i:Interaction.Triggers>
 </Window>

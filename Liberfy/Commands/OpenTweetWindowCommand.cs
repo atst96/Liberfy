@@ -1,13 +1,15 @@
 ﻿using System.Linq;
+using Liberfy.ViewModels;
+using Livet.Messaging;
 using WpfMvvmToolkit;
 
 namespace Liberfy.Commands
 {
     internal class OpenTweetWindowCommand : Command<IAccount>
     {
-        private ViewModels.MainWindowViewModel _viewModel;
+        private readonly MainWindowViewModel _viewModel;
 
-        public OpenTweetWindowCommand(ViewModels.MainWindowViewModel viewModel)
+        public OpenTweetWindowCommand(MainWindowViewModel viewModel)
         {
             this._viewModel = viewModel;
         }
@@ -17,9 +19,11 @@ namespace Liberfy.Commands
         protected override void Execute(IAccount parameter)
         {
             var account = parameter ?? AccountManager.Accounts.FirstOrDefault();
+            var viewModel = new TweetWindowViewModel();
 
-            this._viewModel.WindowService.OpenTweetWindow(account);
+            viewModel.SetPostAccount(account);
 
+            this._viewModel.Messenger.Raise(new TransitionMessage(viewModel, "MsgKey_OpenTweetDialog"));
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Liberfy.Commands;
-using Liberfy.Commands.MainWindow;
+using Livet.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +17,8 @@ namespace Liberfy.ViewModels
         public MainWindowViewModel() : base()
         {
             this.Accounts = AccountManager.Accounts;
-            this.SelectedAccount = this.Accounts.FirstOrDefault();
-            this.WindowStatus = App.Setting.Window.Main;
+            this.SelectedAccount = this.Accounts?.FirstOrDefault();
+            this.WindowStatus = App.Setting?.Window?.Main;
 
             this.MediaPreviewCommand = this.RegisterCommand(new DelegateCommand<MediaAttachmentInfo>(this.MediaPreview));
         }
@@ -39,9 +39,6 @@ namespace Liberfy.ViewModels
             this._initialized = true;
         }
 
-        private Command _showSettingDialog;
-        public Command ShowSettingDialog => this._showSettingDialog ??= this.RegisterCommand(new ShowSettingDialogCommand(this));
-
         private Command<IAccount> _openTweetWindowCommand;
         public Command<IAccount> OpenTweetWindowCommand => this._openTweetWindowCommand ??= this.RegisterCommand(new OpenTweetWindowCommand(this));
 
@@ -51,7 +48,10 @@ namespace Liberfy.ViewModels
 
         private void MediaPreview(MediaAttachmentInfo mediaItemInfo)
         {
-            this.WindowService.PreviewMedia(mediaItemInfo);
+            var viewModel = new MediaPreviewWindowViewModel();
+            viewModel.SetMediaItemInfo(mediaItemInfo);
+
+            this.Messenger.Raise(new TransitionMessage(viewModel, "MsgKey_PreviewAttachment"));
         }
     }
 }

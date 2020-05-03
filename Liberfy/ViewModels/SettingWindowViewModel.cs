@@ -13,6 +13,7 @@ using SocialApis;
 using Liberfy.Commands.SettingWindowCommands;
 using Liberfy.Components;
 using WpfMvvmToolkit;
+using Livet.Messaging;
 
 namespace Liberfy.ViewModels
 {
@@ -100,12 +101,10 @@ namespace Liberfy.ViewModels
                         reg.SetValue(App.Name, $"\"{App.AssemblyInfo.Location}\" /startup");
                     }
 
-                    this.DialogService.InformationMessage($"自動起動を{(value ? "有効" : "無効")}にしました");
-
                 }
                 catch (Exception ex)
                 {
-                    this.DialogService.ErrorMessage("自動起動の設定に失敗しました: " + ex.Message);
+                    this.Messenger.Raise(new InformationMessage("自動起動の設定に失敗しました: " + ex.Message, App.Name, MessageBoxImage.Information, "MsgKey_FailSetStartup"));
                 }
 
                 this.RaisePropertyChanged(nameof(this.AutoStartup));
@@ -217,13 +216,6 @@ namespace Liberfy.ViewModels
         }
 
         #region Commands for account
-
-        #region Command: AccountAddCommand
-
-        private Command _accountAddCommand;
-        public Command AccountAddCommand => this._accountAddCommand ??= this.RegisterCommand(new AccountAddCommand(this));
-
-        #endregion
 
         internal void RaiseCanExecuteAccountCommands()
         {
@@ -538,12 +530,18 @@ namespace Liberfy.ViewModels
         {
             if (AccountManager.Count == 0)
             {
-                return this.DialogService.Confirm("アカウントが登録されていません。終了しますか？");
+                var message = new ConfirmationMessage("アカウントが登録されていません。終了しますか？", App.Name, "MsgKey_GeneralConfirm");
+                this.Messenger.Raise(message);
+
+                return message.Response ?? false;
             }
 
             if (!EnumerateFontName(this.TimelineFontFamily).Any())
             {
-                return this.DialogService.Confirm("フォントが指定されていません。続行しますか？");
+                var message = new ConfirmationMessage("フォントが指定されていません。続行しますか？", App.Name, "MsgKey_GeneralConfirm");
+                this.Messenger.Raise(message);
+
+                return message.Response ?? false;
             }
 
             return true;

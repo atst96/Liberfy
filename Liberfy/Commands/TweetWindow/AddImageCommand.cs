@@ -1,4 +1,5 @@
 ﻿using Liberfy.ViewModels;
+using Livet.Messaging.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using static Liberfy.Defaults;
 
 namespace Liberfy.Commands
 {
-    internal class AddImageCommand : Command<string>
+    internal class AddImageCommand : Command<OpeningFileSelectionMessage>
     {
         private TweetWindowViewModel _viewModel;
 
@@ -18,36 +19,20 @@ namespace Liberfy.Commands
             this._viewModel = viewModel;
         }
 
-        private static readonly IDictionary<string, string[]> UploadableExtensionFilter = CreateExtensionFilter();
-
-        protected override bool CanExecute(string parameter)
+        protected override bool CanExecute(OpeningFileSelectionMessage parameter)
         {
-            return !this._viewModel.IsUploading;
+            return parameter.Response?.Length > 0;
         }
 
-        protected override void Execute(string parameter)
+        protected override void Execute(OpeningFileSelectionMessage parameter)
         {
-            var files = this._viewModel.DialogService.SelectOpenFiles("アップロードするメディアを選択", UploadableExtensionFilter);
+            var files = parameter.Response;
 
             if (files?.Any() == true && TweetWindowViewModel.HasEnableMediaFiles(files))
             {
                 this._viewModel.PostParameters.Attachments.AddRange(files.Select(path => UploadMedia.FromFile(path)));
                 this._viewModel.UpdateCanPost();
             }
-        }
-
-        private static IDictionary<string, string[]> CreateExtensionFilter()
-        {
-            // OpenFileDialogで用いる拡張子フィルタの生成
-            // e.g. 表示名|*.ext1|表示名(拡張子複数指定)|*.ext2;*.ext2|...
-
-            return new Dictionary<string, string[]>
-            {
-                ["アップロード可能なメディア"] = UploadableMediaExtensions,
-                ["画像ファイル"] = ImageExtensions,
-                ["動画ファイル"] = VideoExtensions,
-                ["すべてのファイル"] = new[] { ".*" },
-            };
         }
     }
 }

@@ -35,6 +35,7 @@ static class Config
 - Liberfy では以下のライブラリおよびデータを使用しています。各ライセンスについては[NOTICE.md](https://github.com/atst1996/Liberfy/blob/master/NOTICE.md)に記載しています。
 　- Emoji.Wpf
   - Font Awesome
+  - Livet
   - MessagePack for C#
   - NowPlayingLib
   - SgmlReader

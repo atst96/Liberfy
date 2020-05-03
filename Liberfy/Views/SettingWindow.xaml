@@ -14,6 +14,8 @@
     xmlns:vm="clr-namespace:Liberfy.ViewModels"
     xmlns:selectors="clr-namespace:Liberfy.TemplateSelectors"
     xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+    xmlns:v="clr-namespace:Liberfy.Views"
     mc:Ignorable="d"
     ResizeMode="NoResize"
     UseLayoutRounding="True"
@@ -21,9 +23,10 @@
     TextOptions.TextFormattingMode="Display"
     Title="設定" Height="540" Width="760"
     FontFamily="{StaticResource UIFont}"
-    Style="{StaticResource {x:Type app:CustomWindow}}"
-    DataContext="{app:ViewModelConnector vm:SettingWindowViewModel}"
-    d:DataContext="{d:DesignInstance vm:SettingWindowViewModel, IsDesignTimeCreatable=True}">
+    Style="{StaticResource {x:Type app:CustomWindow}}">
+    <Window.DataContext>
+        <vm:SettingWindowViewModel />
+    </Window.DataContext>
     <Window.Resources>
         <sys:Double x:Key="tabItemWidth">120</sys:Double>
         <conv:EnumBoolConverter x:Key="EnumBoolConverter" />
@@ -354,10 +357,20 @@
                                     Style="{StaticResource ToolBarStyle}">
                                     <Button
                                         FontWeight="Normal"
-                                        Padding="{StaticResource ToolBarIconPadding}"
-                                        Command="{Binding AccountAddCommand, Mode=OneTime}">
+                                        Padding="{StaticResource ToolBarIconPadding}">
                                         <app:GeometryIcon
                                             Data="{StaticResource FontAwesome.Icon.UserPlus}" />
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="Click">
+                                                <l:TransitionInteractionMessageAction>
+                                                    <l:DirectInteractionMessage>
+                                                        <l:TransitionMessage
+                                                            Mode="Modal"
+                                                            WindowType="{x:Type v:AccountAuthenticationWindow}" />
+                                                    </l:DirectInteractionMessage>
+                                                </l:TransitionInteractionMessageAction>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
                                     </Button>
                                     <Separator />
                                     <Button
@@ -1665,4 +1678,16 @@
             </StackPanel>
         </TabItem>
     </TabControl>
+
+    <i:Interaction.Triggers>
+        <l:InteractionMessageTrigger MessageKey="MsgKey_FailSetStartup" Messenger="{Binding Messenger, Mode=OneTime}">
+            <l:InformationDialogInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+        <l:InteractionMessageTrigger MessageKey="MsgKey_GeneralConfirm" Messenger="{Binding Messenger, Mode=OneTime}">
+            <l:ConfirmationDialogInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+        <l:InteractionMessageTrigger MessageKey="MsgKey_WindowAction" Messenger="{Binding Messenger}">
+            <l:WindowInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+    </i:Interaction.Triggers>
 </app:CustomWindow>

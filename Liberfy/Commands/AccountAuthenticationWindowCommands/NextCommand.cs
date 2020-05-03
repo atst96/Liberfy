@@ -1,9 +1,12 @@
 ﻿using Liberfy.ViewModels;
+using Livet.Messaging;
+using Livet.Messaging.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using WpfMvvmToolkit;
 
 namespace Liberfy.Commands.AccountAuthenticationWindowCommands
@@ -126,7 +129,7 @@ namespace Liberfy.Commands.AccountAuthenticationWindowCommands
                 }
                 catch (Exception ex)
                 {
-                    this._viewModel.DialogService.ErrorMessage(ex.GetMessage());
+                    this._viewModel.Messenger.Raise(new InformationMessage(ex.Message, App.Name, MessageBoxImage.Error, "MsgKey_InformationMessage"));
                 }
 
                 this.IsRunning = false;
@@ -141,7 +144,7 @@ namespace Liberfy.Commands.AccountAuthenticationWindowCommands
                 {
                     await this.AccountAuthenticator.GetAccessToken(this.VerificationCode);
                     await AccountManager.Register(this.AccountAuthenticator);
-                    this._viewModel.DialogService.Close(false);
+                    this._viewModel.Messenger.Raise(new WindowActionMessage(WindowAction.Close, "MsgKey_WindowAction"));
                 }
                 catch (Exception ex)
                 {

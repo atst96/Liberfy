@@ -1,11 +1,13 @@
 ﻿using Liberfy.Utilities;
 using Liberfy.ViewModels;
+using Livet.Messaging;
 using NowPlayingLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using WpfMvvmToolkit;
 
 namespace Liberfy.Commands
@@ -31,8 +33,7 @@ namespace Liberfy.Commands
         {
             if (!IsPlayerRunning(parameter))
             {
-                this._viewModel.DialogService.ErrorMessage("プレーヤが起動しているか確認してください。", "再生情報の取得に失敗しました。");
-
+                this._viewModel.Messenger.Raise(new InformationMessage("再生情報の取得に失敗しました。:\nプレーヤが起動しているか確認してください。", App.Name, MessageBoxImage.Error, "MsgKey_InformationMessage"));
                 return;
             }
 
@@ -60,7 +61,8 @@ namespace Liberfy.Commands
             }
             catch (Exception ex)
             {
-                this._viewModel.DialogService.ErrorMessage($"プレーヤで楽曲が再生中かどうか確認してください。\n\nエラー：\n{ex.Message}", "再生情報の取得に失敗しました。");
+                this._viewModel.Messenger.Raise(new InformationMessage(
+                    $"再生情報の取得に失敗しました:\nプレーヤで楽曲が再生中かどうか確認してください。\n\nエラー：\n{ex.Message}", App.Name, MessageBoxImage.Error, "MsgKey_InformationMessage"));
             }
         }
 

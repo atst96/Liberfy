@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Liberfy.ViewModels;
+using Livet.Messaging;
 using WpfMvvmToolkit;
 
 namespace Liberfy.Commands.SettingWindowCommands
@@ -27,9 +29,13 @@ namespace Liberfy.Commands.SettingWindowCommands
         {
             var user = parameter;
 
-            var message = $"このアカウントを一覧から削除しますか？\n { user.Info.Name }@{ user.Info.UserName }";
+            var message = new ConfirmationMessage(
+                $"このアカウントを一覧から削除しますか？\n{user.Info.Name}@{user.Info.UserName}", App.Name,
+                MessageBoxImage.Question, "MsgKey_ConfirmMessage");
 
-            if (this._viewModel.DialogService.Confirm(message))
+            this._viewModel.Messenger.Raise(message);
+
+            if (message.Response ?? false)
             {
                 AccountManager.Remove(parameter);
                 parameter.Unload();

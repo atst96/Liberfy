@@ -1,6 +1,7 @@
 ﻿using Liberfy.Commands;
 using Liberfy.Commands.TweetWindow;
 using Liberfy.Services.Common;
+using Livet.Messaging.IO;
 using NowPlayingLib;
 using SocialApis.Twitter;
 using System;
@@ -330,8 +331,8 @@ namespace Liberfy.ViewModels
 
         #endregion
 
-        private Command<string> _addImageCommand;
-        public Command<string> AddImageCommand => this._addImageCommand ??= this.RegisterCommand(new AddImageCommand(this));
+        private Command<OpeningFileSelectionMessage> _addImageCommand;
+        public Command<OpeningFileSelectionMessage> AddImageCommand => this._addImageCommand ??= this.RegisterCommand(new AddImageCommand(this));
 
         private Command<UploadMedia> _removeMediaCommand;
         public Command<UploadMedia> RemoveMediaCommand => this._removeMediaCommand ??= this.RegisterCommand(new RemoveMediaCommand(this));
@@ -397,6 +398,28 @@ namespace Liberfy.ViewModels
             this.PostParameters.Attachments.DisposeAll();
 
             base.OnClosed();
+        }
+
+        public string Filter { get; } = GetFilter();
+
+        private static string GetFilter()
+        {
+            var filters = CreateExtensionFilter().Select(p => $"{p.name}|*{string.Join(";*", p.extentions)}");
+            return string.Join("|", filters);
+        }
+
+        private static IReadOnlyList<(string name, IReadOnlyList<string> extentions)> CreateExtensionFilter()
+        {
+            // OpenFileDialogで用いる拡張子フィルタの生成
+            // e.g. 表示名|*.ext1|表示名(拡張子複数指定)|*.ext2;*.ext2|...
+
+            return new (string, IReadOnlyList<string>)[]
+            {
+                ("アップロード可能なメディア", UploadableMediaExtensions),
+                ("画像ファイル", ImageExtensions),
+                ("動画ファイル", VideoExtensions),
+                ("すべてのファイル", new[] { ".*" }),
+            };
         }
     }
 }

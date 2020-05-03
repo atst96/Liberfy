@@ -9,6 +9,7 @@
     xmlns:app="clr-namespace:Liberfy"
     xmlns:vm="clr-namespace:Liberfy.ViewModels"
     xmlns:b="clr-namespace:Liberfy.Behaviors"
+    xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
     mc:Ignorable="d" AllowDrop="True"
     Title="ツイート"
     Width="453" Height="329"
@@ -17,7 +18,6 @@
     UseLayoutRounding="True"
     SnapsToDevicePixels="True"
     WindowStartupLocation="CenterOwner"
-    DataContext="{app:ViewModelConnector vm:TweetWindowViewModel}"
     d:DataContext="{d:DesignInstance vm:TweetWindowViewModel, IsDesignTimeCreatable=True}"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors">
     <Window.Resources>
@@ -129,11 +129,21 @@
                     <Button
                         VerticalAlignment="Stretch"
                         Padding="{StaticResource ToolBarItemPadding}"
-                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                        Command="{Binding AddImageCommand, Mode=OneTime}">
+                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                         <app:GeometryIcon
                             Width="18" Height="18"
                             Data="{StaticResource FontAwesome.Icon.Images}" />
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Click">
+                                <l:OpenFileDialogInteractionMessageAction>
+                                    <l:DirectInteractionMessage CallbackCommand="{Binding AddImageCommand, Mode=OneTime}">
+                                        <l:OpeningFileSelectionMessage
+                                            Title="アップロードするメディアを選択" MultiSelect="False"
+                                            Filter="{Binding Filter, Mode=OneTime}" />
+                                    </l:DirectInteractionMessage>
+                                </l:OpenFileDialogInteractionMessageAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                     </Button>
 
                     <app:DropDownButton
@@ -523,4 +533,16 @@
             </TextBlock>
         </Border>
     </Grid>
+
+    <i:Interaction.Triggers>
+        <l:InteractionMessageTrigger MessageKey="MsgKey_InformationMessage" Messenger="{Binding Messenger, Mode=OneTime}">
+            <l:InformationDialogInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+        <l:InteractionMessageTrigger MessageKey="MsgKey_ConfirmMessage" Messenger="{Binding Messenger, Mode=OneTime}">
+            <l:ConfirmationDialogInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+        <l:InteractionMessageTrigger MessageKey="MsgKey_WindowAction" Messenger="{Binding Messenger}">
+            <l:WindowInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+    </i:Interaction.Triggers>
 </Window>

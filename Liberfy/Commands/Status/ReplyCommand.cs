@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Liberfy.Components;
 using Liberfy.ViewModels;
+using Livet.Messaging;
 using WpfMvvmToolkit;
 
 namespace Liberfy.Commands.Status
@@ -27,7 +28,10 @@ namespace Liberfy.Commands.Status
         {
             var mainView = App.Instance.FindViewModel<MainWindowViewModel>().FirstOrDefault();
 
-            mainView.WindowService.OpenTweetWindow(this._item);
+            var viewModel = new TweetWindowViewModel();
+            viewModel.SetReplyToStatus(this._item);
+
+            mainView.Messenger.Raise(new TransitionMessage(viewModel, "MsgKey_OpenTweetDialog"));
         }
     }
 }

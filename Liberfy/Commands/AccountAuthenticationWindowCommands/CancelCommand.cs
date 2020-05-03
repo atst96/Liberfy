@@ -1,4 +1,5 @@
 ﻿using Liberfy.ViewModels;
+using Livet.Messaging.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace Liberfy.Commands.AccountAuthenticationWindowCommands
 
         protected override void Execute(object parameter)
         {
-            this._viewModel.DialogService.Close(false);
+            this._viewModel.Messenger.Raise(new WindowActionMessage(WindowAction.Close, "MsgKey_WindowAction"));
         }
     }
 }

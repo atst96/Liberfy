@@ -8,6 +8,8 @@
     xmlns:local="clr-namespace:Liberfy.Views"
     xmlns:vm="clr-namespace:Liberfy.ViewModels"
     xmlns:app="clr-namespace:Liberfy"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
     mc:Ignorable="d"
     Title="アカウント認証"
     Height="360" Width="460"
@@ -15,9 +17,10 @@
     UseLayoutRounding="True"
     SnapsToDevicePixels="True"
     ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
-    SizeToContent="Manual"
-    DataContext="{app:ViewModelConnector vm:AccountAuthenticationWindowViewModel}"
-    d:DataContext="{d:DesignInstance vm:AccountAuthenticationWindowViewModel, IsDesignTimeCreatable=True}">
+    SizeToContent="Manual">
+    <Window.DataContext>
+        <vm:AccountAuthenticationWindowViewModel />
+    </Window.DataContext>
     <WindowChrome.WindowChrome>
         <WindowChrome
             GlassFrameThickness="0"
@@ -185,4 +188,16 @@
             </app:WizardPanel>
         </Grid>
     </Border>
+
+    <i:Interaction.Triggers>
+        <l:InteractionMessageTrigger MessageKey="MsgKey_InformationMessage" Messenger="{Binding Messenger, Mode=OneTime}">
+            <l:InformationDialogInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+        <l:InteractionMessageTrigger MessageKey="MsgKey_ConfirmMessage" Messenger="{Binding Messenger, Mode=OneTime}">
+            <l:ConfirmationDialogInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+        <l:InteractionMessageTrigger MessageKey="MsgKey_WindowAction" Messenger="{Binding Messenger}">
+            <l:WindowInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+    </i:Interaction.Triggers>
 </Window>

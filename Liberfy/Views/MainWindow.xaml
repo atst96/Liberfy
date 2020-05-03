@@ -7,15 +7,19 @@
     xmlns:local="clr-namespace:Liberfy.Views"
     xmlns:app="clr-namespace:Liberfy"
     xmlns:b="clr-namespace:Liberfy.Behaviors"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
     x:Class="Liberfy.Views.MainWindow"
     x:ClassModifier="internal"
+    xmlns:msgs="clr-namespace:Liberfy.Messaging"
     mc:Ignorable="d" FontFamily="Meiryo"
     UseLayoutRounding="True"
     SnapsToDevicePixels="True"
     Title="Liberfy" Width="700" Height="500"
-    Style="{StaticResource {x:Type app:CustomWindow}}"
-    DataContext="{app:ViewModelConnector vm:MainWindowViewModel, IsMainView=True}"
-    d:DataContext="{d:DesignInstance vm:MainWindowViewModel, IsDesignTimeCreatable=True}">
+    Style="{StaticResource {x:Type app:CustomWindow}}">
+    <Window.DataContext>
+        <vm:MainWindowViewModel />
+    </Window.DataContext>
     <Window.Resources>
         <app:TimelineItemTemplateSelector x:Key="TimelineItemTemplateSelector" />
 
@@ -174,7 +178,7 @@
                 </DockPanel>
             </Border>
         </DataTemplate>
-        
+
         <Duration x:Key="SideBarAnimationDuration">0:0:0.7</Duration>
         <QuarticEase x:Key="SideBarPanelEase" EasingMode="EaseOut" />
 
@@ -206,7 +210,7 @@
                 <DiscreteBooleanKeyFrame KeyTime="0:0:0.0" Value="False" />
             </BooleanAnimationUsingKeyFrames>
         </Storyboard>
-        
+
         <!--サイドバーを閉じるアニメーション-->
         <Storyboard
             x:Key="CloseSideBarPanelStoryboard"
@@ -358,12 +362,22 @@
                 <Button
                     ToolTip="設定を開く" Padding="8 0"
                     VerticalAlignment="Stretch"
-                    Command="{Binding ShowSettingDialog, Mode=OneTime}"
                     Style="{DynamicResource {x:Static ToolBar.ButtonStyleKey}}">
                     <app:GeometryIcon
                         VerticalAlignment="Center"
                         Width="18" Height="18"
                         Data="{StaticResource FontAwesome.Icon.Cog}" />
+
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <!--設定ダイアログを開く-->
+                            <msgs:OpenSettingViewDialogAction>
+                                <l:DirectInteractionMessage>
+                                    <msgs:OpenSettingDialogMessage />
+                                </l:DirectInteractionMessage>
+                            </msgs:OpenSettingViewDialogAction>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </Button>
             </StackPanel>
 
@@ -459,7 +473,7 @@
                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
         </StackPanel>
     </Grid>
-    
+
     <Window.Triggers>
         <EventTrigger RoutedEvent="Loaded">
             <BeginStoryboard
@@ -468,4 +482,14 @@
             <SkipStoryboardToFill BeginStoryboardName="bsb1" />
         </EventTrigger>
     </Window.Triggers>
+
+    <i:Interaction.Triggers>
+        <l:InteractionMessageTrigger
+            MessageKey="MsgKey_OpenTweetDialog"
+            Messenger="{Binding Messenger, Mode=OneTime}">
+            <l:TransitionInteractionMessageAction
+                IsOwned="True" Mode="Modal"
+                WindowType="{x:Type local:TweetWindow}" />
+        </l:InteractionMessageTrigger>
+    </i:Interaction.Triggers>
 </app:CustomWindow>

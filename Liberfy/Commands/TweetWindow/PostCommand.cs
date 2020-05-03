@@ -1,10 +1,12 @@
 ﻿using Liberfy.ViewModels;
+using Livet.Messaging;
 using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using WpfMvvmToolkit;
 
 namespace Liberfy.Commands
@@ -43,7 +45,7 @@ namespace Liberfy.Commands
             }
             catch (Exception ex)
             {
-                this._viewModel.DialogService.ErrorMessage(ex.GetMessage(), "アップロードに失敗しました");
+                this._viewModel.Messenger.Raise(new InformationMessage($"アップロードに失敗しました:\n{ex.GetMessage()}", App.Name, MessageBoxImage.Error, "MsgKey_InformationMessage"));
             }
 
             foreach (var attachment in parameters.Attachments)

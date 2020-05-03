@@ -105,7 +105,7 @@ namespace Liberfy
             }
             catch (Exception ex)
             {
-                DialogService.ShowTaskDialog(IntPtr.Zero, ex.GetMessage(), null, null, TaskDialogStandardButtons.Close, TaskDialogStandardIcon.Error);
+                System.Windows.MessageBox.Show(ex.GetMessage(), App.Name, MessageBoxButton.OK, MessageBoxImage.Error);
                 Debug.WriteLine(ex.Message);
                 Debug.WriteLine(ex.StackTrace);
                 this.ForceShutdown();
@@ -270,7 +270,7 @@ namespace Liberfy
             }
             catch (Exception ex)
             {
-                DialogService.ShowTaskDialog(IntPtr.Zero, ex.GetMessage(), null, null, TaskDialogStandardButtons.Close, TaskDialogStandardIcon.Error);
+                System.Windows.MessageBox.Show(ex.Message, App.Name, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
