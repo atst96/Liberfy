@@ -1,4 +1,4 @@
-﻿using Liberfy.Utilities;
+﻿using Liberfy.Utils;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -261,7 +261,7 @@ namespace Liberfy
             {
                 this.AssertThread(cacheInfo, taskId);
                 this.Log("Image cache found. " + identifierText);
-                return ImageUtility.CreateImage(new MemoryStream(imageData));
+                return ImageUtil.CreateBitmapImage(new MemoryStream(imageData));
             }
 
             this.Log("Downloading image. " + identifierText);
@@ -278,7 +278,7 @@ namespace Liberfy
                 this.AssertThread(cacheInfo, taskId);
                 this.Log("Image cache saved.");
 
-                return ImageUtility.CreateImage(imageStream);
+                return ImageUtil.CreateBitmapImage(imageStream);
             }
 
             this.Log("Failed to download image. " + identifierText);

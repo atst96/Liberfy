@@ -10,12 +10,12 @@ namespace WpfMvvmToolkit
         private Predicate<T> _canExecute;
 
         public DelegateCommand(Action<T> execute)
-            : this(execute, DefaultCanExecute, false)
+            : this(execute, EmptyCanExecute, false)
         {
         }
 
         public DelegateCommand(Action<T> execute, bool hookRequerySuggested)
-            : this(execute, DefaultCanExecute, hookRequerySuggested)
+            : this(execute, EmptyCanExecute, hookRequerySuggested)
         {
         }
 
@@ -41,14 +41,14 @@ namespace WpfMvvmToolkit
             this._execute.Invoke(parameter);
         }
 
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            base.Dispose();
+            base.Dispose(disposing);
 
             this._execute = null;
             this._canExecute = null;
         }
 
-        internal static readonly Predicate<T> DefaultCanExecute = (_) => true;
+        public static bool EmptyCanExecute(T parameter) => true;
     }
 }

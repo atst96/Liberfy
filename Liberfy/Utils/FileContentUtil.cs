@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utf8Json;
+﻿using System.IO;
 
 namespace Liberfy.Utilieis
 {
     /// <summary>
     /// ファイル操作に関するクラス
     /// </summary>
-    internal static class FileContentUtility
+    internal static class FileContentUtil
     {
         /// <summary>
         /// ファイルを読み取りモードで開く

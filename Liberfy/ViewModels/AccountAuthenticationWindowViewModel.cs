@@ -53,14 +53,14 @@ namespace Liberfy.ViewModels
         public IList<string> CachedInstanceUrls
         {
             get => this._cachedInstanceUrls;
-            private set => this.SetProperty(ref this._cachedInstanceUrls, value);
+            private set => this.RaisePropertyChangedIfSet(ref this._cachedInstanceUrls, value);
         }
 
         private ISocialConfig _serviceConfig;
         public ISocialConfig ServiceConfig
         {
             get => this._serviceConfig;
-            private set => this.SetProperty(ref this._serviceConfig, value);
+            private set => this.RaisePropertyChangedIfSet(ref this._serviceConfig, value);
         }
 
         private ServiceType _selectedService = ServiceType.Twitter;
@@ -69,7 +69,7 @@ namespace Liberfy.ViewModels
             get => this._selectedService;
             set
             {
-                if (this.SetProperty(ref this._selectedService, value))
+                if (this.RaisePropertyChangedIfSet(ref this._selectedService, value))
                 {
                     this.OnSelectedServiceUpdated(value);
                 }
@@ -94,7 +94,7 @@ namespace Liberfy.ViewModels
                     throw new InvalidOperationException();
                 }
 
-                this.SetProperty(ref this._accountAuthenticator, value);
+                this.RaisePropertyChangedIfSet(ref this._accountAuthenticator, value);
             }
         }
 
@@ -104,7 +104,7 @@ namespace Liberfy.ViewModels
             get => this._overrideKey;
             set
             {
-                if (this.SetProperty(ref this._overrideKey, value))
+                if (this.RaisePropertyChangedIfSet(ref this._overrideKey, value))
                 {
                     this._nextCommand.RaiseCanExecute();
                 }
@@ -117,7 +117,7 @@ namespace Liberfy.ViewModels
             get => this._consumerKey;
             set
             {
-                if (this.SetProperty(ref this._consumerKey, value))
+                if (this.RaisePropertyChangedIfSet(ref this._consumerKey, value))
                 {
                     this._nextCommand.RaiseCanExecute();
                 }
@@ -130,7 +130,7 @@ namespace Liberfy.ViewModels
             get => this._consumerSecret;
             set
             {
-                if (this.SetProperty(ref this._consumerSecret, value))
+                if (this.RaisePropertyChangedIfSet(ref this._consumerSecret, value))
                 {
                     this._nextCommand.RaiseCanExecute();
                 }
@@ -143,7 +143,7 @@ namespace Liberfy.ViewModels
             get => this._instanceUrl;
             set
             {
-                if (this.SetProperty(ref this._instanceUrl, value))
+                if (this.RaisePropertyChangedIfSet(ref this._instanceUrl, value))
                 {
                     this._nextCommand.RaiseCanExecute();
                 }
@@ -156,7 +156,7 @@ namespace Liberfy.ViewModels
             get => this._error;
             set
             {
-                if (this.SetProperty(ref this._error, value))
+                if (this.RaisePropertyChangedIfSet(ref this._error, value))
                 {
                     this.HasError = !string.IsNullOrEmpty(value);
                     this.RaisePropertyChanged(nameof(this.HasError));
@@ -172,7 +172,7 @@ namespace Liberfy.ViewModels
             get => this._verificationCode;
             set
             {
-                if (this.SetProperty(ref this._verificationCode, value))
+                if (this.RaisePropertyChangedIfSet(ref this._verificationCode, value))
                 {
                     this._nextCommand.RaiseCanExecute();
                 }
@@ -185,7 +185,7 @@ namespace Liberfy.ViewModels
             get => this._authenticationPhase;
             set
             {
-                if (this.SetProperty(ref this._authenticationPhase, value))
+                if (this.RaisePropertyChangedIfSet(ref this._authenticationPhase, value))
                 {
                     this._nextCommand.RaiseCanExecute();
                 }
@@ -198,7 +198,7 @@ namespace Liberfy.ViewModels
             get => this._isRunning;
             set
             {
-                if (this.SetProperty(ref this._isRunning, value))
+                if (this.RaisePropertyChangedIfSet(ref this._isRunning, value))
                 {
                     this._nextCommand.RaiseCanExecute();
                 }

@@ -1,26 +1,36 @@
-﻿using Liberfy;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Windows.Input;
 
 namespace WpfMvvmToolkit
 {
+    /// <summary>
+    /// コマンド
+    /// </summary>
     public abstract class Command : IDisposableCommand
     {
         private readonly bool _hookRequerySuggested;
         private EventHandler _dummyCanExecuteChangedHandler;
         private readonly WeakCollection<EventHandler> _events = new WeakCollection<EventHandler>();
 
+        /// <summary>
+        /// コマンドを生成する。
+        /// </summary>
         protected Command()
         {
         }
 
+        /// <summary>
+        /// コマンドを生成する。
+        /// </summary>
+        /// <param name="hookRequerySuggested">CanExecute購読時にRequerySuggestedの購読を行うかどうかのフラグ</param>
         protected Command(bool hookRequerySuggested) : this()
         {
             this._hookRequerySuggested = hookRequerySuggested;
         }
 
+        /// <summary>
+        /// CanExecuteChangedイベントの購読または購読解除を行う。
+        /// </summary>
         event EventHandler ICommand.CanExecuteChanged
         {
             add
@@ -47,42 +57,72 @@ namespace WpfMvvmToolkit
             }
         }
 
+        /// <summary>
+        /// コマンド実行検証の抽象メソッド
+        /// </summary>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        protected abstract bool CanExecute(object parameter);
+
+        /// <summary>
+        /// コマンドが実行可能か検証する。
+        /// </summary>
+        /// <param name="parameter">パラメータ</param>
+        /// <returns></returns>
         bool ICommand.CanExecute(object parameter)
         {
             return this.CanExecute(parameter);
         }
 
+        /// <summary>
+        /// コマンド実行の抽象メソッド
+        /// </summary>
+        /// <param name="parameter"></param>
+        protected abstract void Execute(object parameter);
+
+        /// <summary>
+        /// コマンドを実行する。
+        /// </summary>
+        /// <param name="parameter"></param>
         void ICommand.Execute(object parameter)
         {
             this.Execute(parameter);
         }
 
-        protected abstract bool CanExecute(object parameter);
+        /// <summary>
+        /// コマンドのCanExecuteを実行する。
+        /// </summary>
+        public void RaiseCanExecute() => this._dummyCanExecuteChangedHandler?.Invoke(this, EventArgs.Empty);
 
-        protected abstract void Execute(object parameter);
-
-        public bool TryExecute() => this.TryExecute(null);
-
-        public bool TryExecute(object parameter)
+        /// <summary>
+        /// インスタンスを破棄する。
+        /// </summary>
+        public void Dispose()
         {
-            if (this.CanExecute(parameter))
-            {
-                this.Execute(parameter);
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-                return true;
+        /// <summary>
+        /// インスタンス破棄の仮想メソッド
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            foreach (var weakItem in this._events)
+            {
+                if (weakItem.TryGetTarget(out var targetDelegate))
+                {
+                    this._dummyCanExecuteChangedHandler -= targetDelegate;
+                }
             }
 
-            return false;
-        }
-
-        public void RaiseCanExecute()
-        {
-            this._dummyCanExecuteChangedHandler?.Invoke(this, EventArgs.Empty);
-        }
-
-        public virtual void Dispose()
-        {
             this._events.Clear();
         }
+
+        /// <summary>
+        /// デストラクタ
+        /// </summary>
+        ~Command() => this.Dispose(false);
     }
 }

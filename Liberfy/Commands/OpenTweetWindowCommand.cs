@@ -18,12 +18,7 @@ namespace Liberfy.Commands
 
         protected override void Execute(IAccount parameter)
         {
-            var account = parameter ?? AccountManager.Accounts.FirstOrDefault();
-            var viewModel = new TweetWindowViewModel();
-
-            viewModel.SetPostAccount(account);
-
-            this._viewModel.Messenger.Raise(new TransitionMessage(viewModel, "MsgKey_OpenTweetDialog"));
+            
         }
     }
 }

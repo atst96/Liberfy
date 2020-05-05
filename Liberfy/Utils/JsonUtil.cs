@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Utf8Json;
 
@@ -11,7 +7,7 @@ namespace Liberfy.Utilieis
     /// <summary>
     /// JSON処理に関するクラス
     /// </summary>
-    internal static class JsonUtility
+    internal static class JsonUtil
     {
         /// <summary>
         /// JSONフォーマッタ
@@ -46,7 +42,7 @@ namespace Liberfy.Utilieis
         /// <returns>Task<typeparamref name="T"/></returns>
         public static async Task<T> DeserializeFileAsync<T>(string path)
         {
-            using var stream = FileContentUtility.OpenRead(path, isAsync: true);
+            using var stream = FileContentUtil.OpenRead(path, isAsync: true);
 
             if (stream == null)
             {
@@ -85,7 +81,7 @@ namespace Liberfy.Utilieis
             using var buffer = new MemoryStream();
             await SerializeAsync(@object, buffer).ConfigureAwait(false);
 
-            using var output = FileContentUtility.OpenCreate(path, isAsync: true, bufferSize: (int)buffer.Length);
+            using var output = FileContentUtil.OpenCreate(path, isAsync: true, bufferSize: (int)buffer.Length);
             buffer.Seek(0, SeekOrigin.Begin);
 
             await buffer.CopyToAsync(output).ConfigureAwait(false);

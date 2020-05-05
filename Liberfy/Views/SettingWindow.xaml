@@ -1689,5 +1689,9 @@
         <l:InteractionMessageTrigger MessageKey="MsgKey_WindowAction" Messenger="{Binding Messenger}">
             <l:WindowInteractionMessageAction />
         </l:InteractionMessageTrigger>
+        <!--ウィンドウ終了時-->
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding CloseCommand, Mode=OneTime}" />
+        </i:EventTrigger>
     </i:Interaction.Triggers>
 </app:CustomWindow>

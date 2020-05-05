@@ -137,7 +137,7 @@ namespace Liberfy
         /// <returns></returns>
         private async Task LoadSettings()
         {
-            var (generalSettings, accountSettings) = await SettingUtility.LoadSettings().ConfigureAwait(false);
+            var (generalSettings, accountSettings) = await SettingUtil.LoadSettings().ConfigureAwait(false);
 
             // 一般設定
             Setting = generalSettings;
@@ -265,7 +265,7 @@ namespace Liberfy
                 };
 
 
-                var task = SettingUtility.SaveSettings(setting, accountsSetting);
+                var task = SettingUtil.SaveSettings(setting, accountsSetting);
                 task.Wait();
             }
             catch (Exception ex)

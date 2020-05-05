@@ -87,22 +87,22 @@ namespace WpfMvvmToolkit
 
         public Command CreateCommand(Action execute, Func<bool> canExecute = null, bool isHookRequerySuggested = false)
         {
-            return this.RegisterCommand(new DelegateCommand(execute, canExecute ?? DelegateCommand.DefaultCanExecute, isHookRequerySuggested));
+            return this.RegisterCommand(new DelegateCommand(execute, canExecute ?? DelegateCommand.EmptyCanExecute, isHookRequerySuggested));
         }
 
         public Command<T> CreateCommand<T>(Action<T> execute, Predicate<T> canExecute = null, bool isHookRequerySuggested = false)
         {
-            return this.RegisterCommand(new DelegateCommand<T>(execute, canExecute ?? DelegateCommand<T>.DefaultCanExecute, isHookRequerySuggested));
+            return this.RegisterCommand(new DelegateCommand<T>(execute, canExecute ?? DelegateCommand<T>.EmptyCanExecute, isHookRequerySuggested));
         }
 
         public Command CreateCommand(Func<Task> execute, Func<bool> canExecute = null, bool isHookRequerySuggested = false)
         {
-            return this.RegisterCommand(new AsyncDelegateCommand(execute, canExecute ?? AsyncDelegateCommand.DefaultCanExecute, isHookRequerySuggested));
+            return this.RegisterCommand(new AsyncDelegateCommand(execute, canExecute ?? AsyncDelegateCommand.EmptyCanExecute, isHookRequerySuggested));
         }
 
         public Command<T> CreateCommand<T>(Func<T, Task> execute, Predicate<T> canExecute = null, bool isHookRequerySuggested = false)
         {
-            return this.RegisterCommand(new AsyncDelegateCommand<T>(execute, canExecute ?? AsyncDelegateCommand<T>.DefaultCanExecute, isHookRequerySuggested));
+            return this.RegisterCommand(new AsyncDelegateCommand<T>(execute, canExecute ?? AsyncDelegateCommand<T>.EmptyCanExecute, isHookRequerySuggested));
         }
 
         public Command RegisterCommand(Command command)

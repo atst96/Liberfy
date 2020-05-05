@@ -1,78 +1,95 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace Liberfy.Behaviors
 {
+    /// <summary>
+    /// TextBox操作のビヘイビア
+    /// </summary>
     internal class TextBoxBehavior : Microsoft.Xaml.Behaviors.Behavior<TextBox>
     {
+        /// <summary>
+        /// ビヘイビアのデタッチ時
+        /// </summary>
         protected override void OnDetaching()
         {
-            this.Controller = null;
-
             base.OnDetaching();
+
+            this.Controller = null;
         }
 
+        /// <summary>
+        /// Controllerのプロパティ
+        /// </summary>
+        public static readonly DependencyProperty ControllerProperty =
+            DependencyProperty.Register(nameof(Controller),
+                typeof(TextBoxController), typeof(TextBoxBehavior), new PropertyMetadata(null, OnControllerPropertyChanged));
+
+        /// <summary>
+        /// TextBoxのコントローラを取得または設定する。
+        /// </summary>
         public TextBoxController Controller
         {
-            get => (TextBoxController)GetValue(ControllerProperty);
-            set => SetValue(ControllerProperty, value);
+            get => (TextBoxController)this.GetValue(ControllerProperty);
+            set => this.SetValue(ControllerProperty, value);
         }
 
         private void RegisterEvents(TextBoxController controller)
         {
-            controller.InsertHandler += OnTextInserted;
-            controller.SetCaretIndexHandler += OnCaretIndexSetted;
-            controller.FocusHandler += OnFocusHandlerCalled;
+            controller.InsertHandler += this.OnTextInserted;
+            controller.SetCaretIndexHandler += this.OnCaretIndexSetted;
+            controller.FocusHandler += this.OnFocusHandlerCalled;
         }
 
         private void UnregisterEvents(TextBoxController controller)
         {
-            controller.InsertHandler -= OnTextInserted;
-            controller.SetCaretIndexHandler -= OnCaretIndexSetted;
-            controller.FocusHandler -= OnFocusHandlerCalled;
+            controller.InsertHandler -= this.OnTextInserted;
+            controller.SetCaretIndexHandler -= this.OnCaretIndexSetted;
+            controller.FocusHandler -= this.OnFocusHandlerCalled;
         }
 
         private void OnCaretIndexSetted(object sender, int caretIndex)
         {
-            this.AssociatedObject.CaretIndex = caretIndex;
+            var textBox = this.AssociatedObject;
+            textBox.CaretIndex = caretIndex;
         }
 
         private void OnTextInserted(object sender, string text)
         {
             int startIndex = this.AssociatedObject.SelectionStart;
 
-            this.AssociatedObject.SelectedText = text ?? "";
+            var textBox = this.AssociatedObject;
+            textBox.SelectedText = text ?? "";
 
-            this.AssociatedObject.SelectionStart = startIndex + (text?.Length ?? 0);
-            this.AssociatedObject.SelectionLength = 0;
+            textBox.SelectionStart = startIndex + (text?.Length ?? 0);
+            textBox.SelectionLength = 0;
         }
 
         private void OnFocusHandlerCalled(object sender, EventArgs e)
         {
-            this.AssociatedObject.Focus();
+            var textBox = this.AssociatedObject;
+            textBox.Focus();
         }
 
-        public static readonly DependencyProperty ControllerProperty =
-            DependencyProperty.Register("Controller",
-                typeof(TextBoxController), typeof(TextBoxBehavior),
-                new PropertyMetadata(null, (obj, args) =>
-                {
-                    var behavior = (TextBoxBehavior)obj;
+        /// <summary>
+        /// Controllerプロパティ変更時
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnControllerPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (TextBoxBehavior)d;
 
-                    if (args.OldValue is TextBoxController oldController)
-                    {
-                        behavior.UnregisterEvents(oldController);
-                    }
+            if (e.OldValue is TextBoxController oldController)
+            {
+                behavior.UnregisterEvents(oldController);
+            }
 
-                    if (args.NewValue is TextBoxController newController)
-                    {
-                        behavior.RegisterEvents(newController);
-                    }
-                }));
+            if (e.NewValue is TextBoxController newController)
+            {
+                behavior.RegisterEvents(newController);
+            }
+        }
     }
 }

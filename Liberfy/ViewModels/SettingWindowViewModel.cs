@@ -14,6 +14,7 @@ using Liberfy.Commands.SettingWindowCommands;
 using Liberfy.Components;
 using WpfMvvmToolkit;
 using Livet.Messaging;
+using System.Windows.Input;
 
 namespace Liberfy.ViewModels
 {
@@ -62,7 +63,7 @@ namespace Liberfy.ViewModels
             get => this._tabPageIndex;
             set
             {
-                if (this.SetProperty(ref this._tabPageIndex, value))
+                if (this.RaisePropertyChangedIfSet(ref this._tabPageIndex, value))
                 {
                     this.IsAccountPage = value == 1;
                     this.RaisePropertyChanged(nameof(this.IsAccountPage));
@@ -133,14 +134,14 @@ namespace Liberfy.ViewModels
         public FontFamily TimelineViewFontFamily
         {
             get => this._timelineViewFontFamily;
-            set => this.SetProperty(ref this._timelineViewFontFamily, value);
+            set => this.RaisePropertyChangedIfSet(ref this._timelineViewFontFamily, value);
         }
 
         private double? _timelineFontSize = GlobalSetting.TimelineFontSize;
         public double? TimelineFontSize
         {
             get => this._timelineFontSize;
-            set => this.SetProperty(ref this._timelineFontSize, value);
+            set => this.RaisePropertyChangedIfSet(ref this._timelineFontSize, value);
         }
 
         private string _timelineFontFamilies = string.Join("\n", GlobalSetting.TimelineFont);
@@ -149,7 +150,7 @@ namespace Liberfy.ViewModels
             get => this._timelineFontFamilies;
             set
             {
-                if (this.SetProperty(ref this._timelineFontFamilies, value))
+                if (this.RaisePropertyChangedIfSet(ref this._timelineFontFamilies, value))
                 {
                     var fonts = EnumerateFontName(value);
 
@@ -162,7 +163,7 @@ namespace Liberfy.ViewModels
         public TextFormattingMode TimelineFontRenderingMode
         {
             get => this._timelineFontRenderingMode;
-            set => this.SetProperty(ref this._timelineFontRenderingMode, value);
+            set => this.RaisePropertyChangedIfSet(ref this._timelineFontRenderingMode, value);
         }
 
         private static IEnumerable<string> EnumerateFontName(string text)
@@ -179,7 +180,7 @@ namespace Liberfy.ViewModels
             get => this._selectedFontFamily;
             set
             {
-                if (this.SetProperty(ref this._selectedFontFamily, value))
+                if (this.RaisePropertyChangedIfSet(ref this._selectedFontFamily, value))
                 {
                     if (value != null)
                     {
@@ -208,7 +209,7 @@ namespace Liberfy.ViewModels
             get => this._selectedAccount;
             set
             {
-                if (this.SetProperty(ref this._selectedAccount, value))
+                if (this.RaisePropertyChangedIfSet(ref this._selectedAccount, value))
                 {
                     this.RaiseCanExecuteAccountCommands();
                 }
@@ -238,7 +239,7 @@ namespace Liberfy.ViewModels
             get => this._selectedColumnSetting;
             set
             {
-                if (this.SetProperty(ref _selectedColumnSetting, value))
+                if (this.RaisePropertyChangedIfSet(ref _selectedColumnSetting, value))
                 {
                     this.ColumnMoveUpCommand.RaiseCanExecute();
                     this.ColumnMoveDownCommand.RaiseCanExecute();
@@ -348,7 +349,7 @@ namespace Liberfy.ViewModels
             get => _tempMuteType;
             set
             {
-                if (this.SetProperty(ref this._tempMuteType, value))
+                if (this.RaisePropertyChangedIfSet(ref this._tempMuteType, value))
                 {
                     this._muteAddCommand.RaiseCanExecute();
                 }
@@ -361,7 +362,7 @@ namespace Liberfy.ViewModels
             get => this._tempMuteSearch;
             set
             {
-                if (this.SetProperty(ref this._tempMuteSearch, value))
+                if (this.RaisePropertyChangedIfSet(ref this._tempMuteSearch, value))
                 {
                     this._muteAddCommand.RaiseCanExecute();
                 }
@@ -374,7 +375,7 @@ namespace Liberfy.ViewModels
             get => this._tempMuteText;
             set
             {
-                if (this.SetProperty(ref this._tempMuteText, value))
+                if (this.RaisePropertyChangedIfSet(ref this._tempMuteText, value))
                 {
                     this._muteAddCommand.RaiseCanExecute();
                 }
@@ -387,7 +388,7 @@ namespace Liberfy.ViewModels
             get => this._selectedMute;
             set
             {
-                if (this.SetProperty(ref this._selectedMute, value))
+                if (this.RaisePropertyChangedIfSet(ref this._selectedMute, value))
                 {
                     this.MuteRemoveCommand.RaiseCanExecute();
                 }
@@ -526,7 +527,10 @@ namespace Liberfy.ViewModels
 
         #endregion Timeline settings
 
-        internal override bool CanClose()
+        private ICommand _closeCommand;
+        public ICommand CloseCommand => this._closeCommand ??= this.RegisterCommand(this.OnClose, this.OnCloseRequest);
+
+        private bool OnCloseRequest()
         {
             if (AccountManager.Count == 0)
             {
@@ -547,7 +551,7 @@ namespace Liberfy.ViewModels
             return true;
         }
 
-        internal override void OnClosed()
+        private void OnClose()
         {
             this.Setting.DefaultColumns.Clear();
             foreach (var column in this.DefaultColumns)

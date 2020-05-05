@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Liberfy.Settings;
 
 namespace Liberfy.Utilieis
 {
-    internal static class SettingUtility
+    /// <summary>
+    /// 設定データに関するクラス
+    /// </summary>
+    internal static class SettingUtil
     {
         /// <summary>
         /// すべての設定ファイルを読み込む。
@@ -15,8 +15,8 @@ namespace Liberfy.Utilieis
         /// <returns></returns>
         public static async Task<(Setting, AccountSettings)> LoadSettings()
         {
-            var generalSettingTask = SettingUtility.LoadGeneralSettings();
-            var accountSettingTask = SettingUtility.LoadAccountsSetting();
+            var generalSettingTask = SettingUtil.LoadGeneralSettings();
+            var accountSettingTask = SettingUtil.LoadAccountsSetting();
 
             await Task.WhenAll(generalSettingTask, accountSettingTask).ConfigureAwait(false);
 
@@ -57,7 +57,7 @@ namespace Liberfy.Utilieis
         {
             try
             {
-                return await JsonUtility.DeserializeFileAsync<T>(filename).ConfigureAwait(false);
+                return await JsonUtil.DeserializeFileAsync<T>(filename).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -72,8 +72,8 @@ namespace Liberfy.Utilieis
         public static Task SaveSettings(Setting generalSetting, AccountSettings accountSetting)
         {
             return Task.WhenAll(
-                SettingUtility.SaveGeneralSettings(generalSetting),
-                SettingUtility.SaveAccountsSettings(accountSetting));
+                SettingUtil.SaveGeneralSettings(generalSetting),
+                SettingUtil.SaveAccountsSettings(accountSetting));
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Liberfy.Utilieis
         {
             try
             {
-                await JsonUtility.SerializeFileAsync(setting, filename).ConfigureAwait(false);
+                await JsonUtil.SerializeFileAsync(setting, filename).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -104,7 +104,7 @@ namespace Liberfy.Utilieis
         {
             var filePath = App.GetLocalFilePath(Defaults.AccountsFile);
 
-            return SettingUtility.SaveSetting(filePath, accountSettings);
+            return SettingUtil.SaveSetting(filePath, accountSettings);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace Liberfy.Utilieis
         {
             var filePath = App.GetLocalFilePath(Defaults.SettingFile);
 
-            return SettingUtility.SaveSetting(filePath, setting);
+            return SettingUtil.SaveSetting(filePath, setting);
         }
     }
 }

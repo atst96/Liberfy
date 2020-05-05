@@ -1,6 +1,7 @@
 ﻿using Liberfy.Commands;
 using Liberfy.Commands.TweetWindow;
 using Liberfy.Services.Common;
+using Liberfy.Utils;
 using Livet.Messaging.IO;
 using NowPlayingLib;
 using SocialApis.Twitter;
@@ -16,6 +17,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WpfMvvmToolkit;
 using static Liberfy.Defaults;
@@ -34,7 +36,7 @@ namespace Liberfy.ViewModels
             get => this._selectedAccount;
             set
             {
-                if (this.SetProperty(ref this._selectedAccount, value))
+                if (this.RaisePropertyChangedIfSet(ref this._selectedAccount, value))
                 {
                     this.PostCommand.RaiseCanExecute();
                     this.ServiceConfiguration = value.ServiceConfiguration;
@@ -85,21 +87,21 @@ namespace Liberfy.ViewModels
         public IServiceConfiguration ServiceConfiguration
         {
             get => this._serviceConfiguration;
-            set => this.SetProperty(ref this._serviceConfiguration, value);
+            set => this.RaisePropertyChangedIfSet(ref this._serviceConfiguration, value);
         }
 
         private bool _isShowSpilerText;
         public bool IsShowSpoilerText
         {
             get => this._isShowSpilerText;
-            set => this.SetProperty(ref this._isShowSpilerText, value);
+            set => this.RaisePropertyChangedIfSet(ref this._isShowSpilerText, value);
         }
 
         private bool _isShowPolls;
         public bool IsShowPolls
         {
             get => this._isShowPolls;
-            set => this.SetProperty(ref this._isShowPolls, value);
+            set => this.RaisePropertyChangedIfSet(ref this._isShowPolls, value);
         }
 
         private void UpdateShowSpoilderText()
@@ -122,28 +124,28 @@ namespace Liberfy.ViewModels
         public int TextLength
         {
             get => this._textLength;
-            set => this.SetProperty(ref this._textLength, value);
+            set => this.RaisePropertyChangedIfSet(ref this._textLength, value);
         }
 
         private bool _canUpdateContent;
         public bool CanPostContent
         {
             get => this._canUpdateContent;
-            set => this.SetProperty(ref this._canUpdateContent, value);
+            set => this.RaisePropertyChangedIfSet(ref this._canUpdateContent, value);
         }
 
         private string _uploadStatusText;
         public string UploadStatusText
         {
             get => this._uploadStatusText;
-            set => this.SetProperty(ref this._uploadStatusText, value);
+            set => this.RaisePropertyChangedIfSet(ref this._uploadStatusText, value);
         }
 
         private bool _isUploading;
         public bool IsUploading
         {
             get => this._isUploading;
-            set => this.SetProperty(ref this._isUploading, value);
+            set => this.RaisePropertyChangedIfSet(ref this._isUploading, value);
         }
 
         internal void UpdateCanPost()
@@ -164,14 +166,14 @@ namespace Liberfy.ViewModels
         public bool IsSensitiveMedia
         {
             get => _isSensitiveMedia;
-            set => SetProperty(ref _isSensitiveMedia, value);
+            set => RaisePropertyChangedIfSet(ref _isSensitiveMedia, value);
         }
 
         private bool _closeOnPostComplated = Setting.CloseWindowAfterPostComplated;
         public bool CloseOnPostComplated
         {
             get => _closeOnPostComplated;
-            set => SetProperty(ref _closeOnPostComplated, value);
+            set => RaisePropertyChangedIfSet(ref _closeOnPostComplated, value);
         }
 
         public IStatusInfo ReplyToStatus { get; private set; }
@@ -309,7 +311,7 @@ namespace Liberfy.ViewModels
             get => this._isBusy;
             set
             {
-                if (this.SetProperty(ref this._isBusy, value))
+                if (this.RaisePropertyChangedIfSet(ref this._isBusy, value))
                 {
                     this._addImageCommand?.RaiseCanExecute();
                     this._postCommand?.RaiseCanExecute();
@@ -343,27 +345,90 @@ namespace Liberfy.ViewModels
         }
 
         private Command<IDataObject> _dragDropCommand;
-        public Command<IDataObject> DragDropCommand => this._dragDropCommand ??= this.RegisterCommand(new DragDropCommand(this));
+        public Command<IDataObject> DragDropCommand
+        {
+            get => this._dragDropCommand ??= this.RegisterCommand<IDataObject>(this.OnDragDrop, this.ValidateDragDrop);
+        }
+
+        private bool ValidateDragDrop(IDataObject dataObject)
+        {
+            if (this.IsBusy)
+            {
+                return false;
+            }
+
+            var dataType = DragDropUtil.GetDataType(dataObject);
+            switch (dataType)
+            {
+                case DragDropDataType.Text:
+                case DragDropDataType.Url:
+                    this.DropDescriptionMessage = "挿入";
+                    this.DragDropEffects = DragDropEffects.Copy;
+                    this.DropDescriptionIcon = DropImageType.Label;
+                    return true;
+
+                case DragDropDataType.FileDrop when TweetWindowViewModel.HasEnableMediaFiles(DragDropUtil.GetFileDrop(dataObject)):
+                    this.DropDescriptionMessage = "添付";
+                    this.DragDropEffects = DragDropEffects.Copy;
+                    this.DropDescriptionIcon = DropImageType.Copy;
+                    return true;
+
+                default:
+                    this.DropDescriptionMessage = "無効な形式";
+                    this.DragDropEffects = DragDropEffects.None;
+                    this.DropDescriptionIcon = DropImageType.None;
+                    return false;
+            }
+        }
+
+        private void OnDragDrop(IDataObject dataObject)
+        {
+            var dataType = DragDropUtil.GetDataType(dataObject);
+            switch (dataType)
+            {
+                case DragDropDataType.Text:
+                case DragDropDataType.Url:
+                    var tbController = this.TextBoxController;
+                    if (DragDropUtil.TryGetString(dataObject, out var value))
+                    {
+                        tbController.Insert(value);
+                        tbController.Focus();
+                    }
+                    return;
+
+                case DragDropDataType.FileDrop:
+                    var droppedFiles = DragDropUtil.GetFileDrop(dataObject);
+                    var filteredFils = GetEnableMediaFiles(droppedFiles).Select(path => UploadMedia.FromFile(path));
+                    this.PostParameters.Attachments.AddRange(filteredFils);
+                    this.UpdateCanPost();
+                    return;
+            }
+        }
+
+        private static IEnumerable<string> GetEnableMediaFiles(IEnumerable<string> files)
+        {
+            return files.Where(f => IsUploadableExtension(Path.GetExtension(f)));
+        }
 
         private DragDropEffects _dragDropEffects;
         public DragDropEffects DragDropEffects
         {
             get => this._dragDropEffects;
-            set => this.SetProperty(ref this._dragDropEffects, value);
+            set => this.RaisePropertyChangedIfSet(ref this._dragDropEffects, value);
         }
 
         private string _dropDescriptionMessage;
         public string DropDescriptionMessage
         {
             get => this._dropDescriptionMessage;
-            set => this.SetProperty(ref this._dropDescriptionMessage, value);
+            set => this.RaisePropertyChangedIfSet(ref this._dropDescriptionMessage, value);
         }
 
         private DropImageType _dropDescriptionIcon;
         public DropImageType DropDescriptionIcon
         {
             get => this._dropDescriptionIcon;
-            set => this.SetProperty(ref this._dropDescriptionIcon, value);
+            set => this.RaisePropertyChangedIfSet(ref this._dropDescriptionIcon, value);
         }
 
         public static bool HasEnableMediaFiles(StringCollection strCollection)
@@ -386,18 +451,19 @@ namespace Liberfy.ViewModels
         private Command _pasteImageCommand;
         public Command PasteImageCommand => this._pasteImageCommand ?? (this._pasteImageCommand = this.RegisterCommand(new PasteImageCommand(this)));
 
-        internal override bool CanClose()
+        private ICommand _closeCommand;
+        public ICommand CloseCommand => this._closeCommand ??= this.RegisterCommand(this.OnClose, this.OnCloseRequest);
+
+        internal bool OnCloseRequest()
         {
             return !this.IsUploading;
         }
 
-        internal override void OnClosed()
+        internal void OnClose()
         {
             this.TextBoxController = null;
 
             this.PostParameters.Attachments.DisposeAll();
-
-            base.OnClosed();
         }
 
         public string Filter { get; } = GetFilter();

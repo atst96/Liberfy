@@ -1,4 +1,4 @@
-﻿using Liberfy.Utilities;
+﻿using Liberfy.Utils;
 using Liberfy.ViewModels;
 using Livet.Messaging;
 using NowPlayingLib;
@@ -50,7 +50,7 @@ namespace Liberfy.Commands
                     {
                         foreach (var stream in media.Artworks)
                         {
-                            var image = ImageUtility.CreateImage(stream);
+                            var image = ImageUtil.CreateBitmapImage(stream);
                             var attachment = UploadMedia.FromBitmapSource(image, UploadMedia.DisplayExtensions.Artwork);
 
                             this._viewModel.PostParameters.Attachments.Add(attachment);

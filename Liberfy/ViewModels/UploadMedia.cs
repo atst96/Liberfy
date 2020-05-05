@@ -10,7 +10,7 @@ using static Liberfy.Defaults;
 using System.Drawing;
 using SocialApis.Twitter;
 using SocialApis;
-using Liberfy.Utilities;
+using Liberfy.Utils;
 
 namespace Liberfy.ViewModels
 {
@@ -25,7 +25,7 @@ namespace Liberfy.ViewModels
         private UploadMedia(BitmapSource bitmapSource, MediaType mediaType, string ext)
         {
             this.RawData = bitmapSource.ToByteArray<PngBitmapEncoder>();
-            this.PreviewImage = ImageUtility.CreateImage(this.GetDataStream());
+            this.PreviewImage = ImageUtil.CreateBitmapImage(this.GetDataStream());
             this.MediaType = mediaType;
             this.DisplayExtension = ext;
         }
@@ -38,10 +38,10 @@ namespace Liberfy.ViewModels
             {
                 var uri = new Uri(path, UriKind.Absolute);
 
-                if (ext.Equals(".gif", StringComparison.OrdinalIgnoreCase) && ImageUtility.IsAnimatedGif(uri))
+                if (ext.Equals(".gif", StringComparison.OrdinalIgnoreCase) && ImageUtil.IsAnimatedGif(uri))
                 {
                     this.MediaType = MediaType.AnimatedGifFile;
-                    this.PreviewImage = ImageUtility.FromFile(uri);
+                    this.PreviewImage = ImageUtil.FromFile(uri);
                 }
                 else
                 {
@@ -49,7 +49,7 @@ namespace Liberfy.ViewModels
 
                     if (!ext.Equals(".webp", StringComparison.OrdinalIgnoreCase))
                     {
-                        this.PreviewImage = ImageUtility.FromFile(uri);
+                        this.PreviewImage = ImageUtil.FromFile(uri);
                     }
                 }
             }

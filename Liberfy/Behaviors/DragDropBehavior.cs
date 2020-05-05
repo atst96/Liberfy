@@ -1,115 +1,150 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 
 namespace Liberfy.Behaviors
 {
+    /// <summary>
+    /// ドラッグ＆ドロップ操作ようビヘイビア
+    /// </summary>
     public class DragDropBehavior : Microsoft.Xaml.Behaviors.Behavior<FrameworkElement>, ICommandSource
     {
+        /// <summary>
+        /// DragDropHandler
+        /// </summary>
         private DragDropHelper _dragDropHelper;
+
+        /// <summary>
+        /// ウィンドウハンドル
+        /// </summary>
+        private IntPtr _handle;
 
         object ICommandSource.CommandParameter => throw new NotImplementedException();
 
         IInputElement ICommandSource.CommandTarget => throw new NotImplementedException();
 
+        /// <summary>
+        /// AssociatedObjectアタッチ時
+        /// </summary>
         protected override void OnAttached()
         {
-            this.AssociatedObject.PreviewDragEnter += OnDragEnter;
-            this.AssociatedObject.PreviewDragOver += OnDragOver;
-            this.AssociatedObject.PreviewDragLeave += OnDragLeave;
-            this.AssociatedObject.PreviewDrop += OnDrop;
+            var target = this.AssociatedObject;
+            target.PreviewDragEnter += this.OnDragEnter;
+            target.PreviewDragOver += this.OnDragOver;
+            target.PreviewDragLeave += this.OnDragLeave;
+            target.PreviewDrop += this.OnDrop;
 
             this._dragDropHelper = new DragDropHelper();
 
-            if (this.AssociatedObject.IsInitialized)
+            if (target.IsInitialized)
             {
-                this._dragDropHelper.SetHandle(GetHandle(this.AssociatedObject));
+                this.OnInitialized();
             }
             else
             {
-                this.AssociatedObject.Loaded += this.OnTargetLoaded;
+                target.Loaded += this.OnAssociatedObjectLoaded;
             }
 
             base.OnAttached();
         }
 
+        /// <summary>
+        /// AssociatedObjectデタッチ時
+        /// </summary>
         protected override void OnDetaching()
         {
-            this.AssociatedObject.Loaded -= this.OnTargetLoaded;
-            this.AssociatedObject.PreviewDragEnter -= this.OnDragEnter;
-            this.AssociatedObject.PreviewDragOver -= this.OnDragOver;
-            this.AssociatedObject.PreviewDragLeave -= this.OnDragLeave;
-            this.AssociatedObject.PreviewDrop -= this.OnDrop;
+            base.OnDetaching();
+
+            var target = this.AssociatedObject;
+            target.Loaded -= this.OnAssociatedObjectLoaded;
+            target.PreviewDragEnter -= this.OnDragEnter;
+            target.PreviewDragOver -= this.OnDragOver;
+            target.PreviewDragLeave -= this.OnDragLeave;
+            target.PreviewDrop -= this.OnDrop;
 
             this._dragDropHelper.Dispose();
             this._dragDropHelper = null;
-
-            base.OnDetaching();
         }
 
-        private void OnTargetLoaded(object sender, EventArgs e)
+        /// <summary>
+        /// AssociatedObject初期化時
+        /// </summary>
+        /// <param name="sender">イベント発行元</param>
+        /// <param name="e">イベント引数</param>
+        private void OnAssociatedObjectLoaded(object sender, EventArgs e)
         {
-            this._dragDropHelper.SetHandle(GetHandle(this.AssociatedObject));
+            this.OnInitialized();
         }
 
-        private static IntPtr GetHandle(FrameworkElement element)
+        /// <summary>
+        /// 初期化時
+        /// </summary>
+        private void OnInitialized()
+        {
+            var target = this.AssociatedObject;
+
+            this._handle = GetWindowHandle(target);
+            this._dragDropHelper.SetHandle(this._handle);
+        }
+
+        /// <summary>
+        /// FrameworkElementからウィンドウハンドルを取得する。
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns>ウィンドウハンドル</returns>
+        private static IntPtr GetWindowHandle(FrameworkElement element)
         {
             return ((HwndSource)PresentationSource.FromVisual(element)).Handle;
         }
 
-        #region Drag and drop methods
-
+        /// <summary>
+        /// ドラッグ＆ドロップ操作の開始
+        /// </summary>
+        /// <param name="sender">イベント発行元</param>
+        /// <param name="e">ドラッグイベント情報</param>
         private void OnDragEnter(object sender, DragEventArgs e)
         {
-            if (IsTextBoxTextDrag(e))
+            if (IsDropFromTextBox(e))
+            {
                 return;
-
-            DragDropEffects effect;
-
-            if (this.Command?.CanExecute(e.Data) ?? false)
-            {
-                effect = e.AllowedEffects & AllowEffects;
             }
-            else
-            {
-                effect = DragDropEffects.None;
-            }
+
+            bool canExecute = this.Command?.CanExecute(e.Data) ?? false;
+
+            var effect = canExecute ? (e.AllowedEffects & this.AllowEffects) : DragDropEffects.None;
 
             if (this.SetDescription)
             {
                 if (this.UseDescriptionIcon)
                 {
-                    DragDropHelper.SetDescription(
-                        e.Data,
-                        this.DescriptionIcon,
-                        this.DescriptionMessage,
-                        this.DescriptionInsertion);
+                    DragDropHelper.SetDescription(e.Data, this.DescriptionIcon, this.DescriptionMessage, this.DescriptionInsertion);
                 }
                 else
                 {
-                    DragDropHelper.SetDescription(
-                        e.Data, effect,
-                        this.DescriptionMessage,
-                        this.DescriptionInsertion);
+                    DragDropHelper.SetDescription(e.Data, effect, this.DescriptionMessage, this.DescriptionInsertion);
                 }
             }
 
-            this._dragDropHelper.DragEnter(e.Data, e.GetPosition(this.AssociatedObject), effect);
+            var position = e.GetPosition(this.AssociatedObject);
+            this._dragDropHelper.DragEnter(e.Data, position, effect);
 
-            e.Handled = true;
             e.Effects = effect;
+            e.Handled = true;
         }
 
+        /// <summary>
+        /// ドラッグ＆ドロップ操作のマウス移動時
+        /// </summary>
+        /// <param name="sender">イベント発行元</param>
+        /// <param name="e">ドラッグイベント情報</param>
         private void OnDragOver(object sender, DragEventArgs e)
         {
-            if (IsTextBoxTextDrag(e))
+            if (IsDropFromTextBox(e))
+            {
                 return;
+            }
 
             DragDropEffects effect;
             if (this.Command?.CanExecute(e.Data) ?? false)
@@ -121,53 +156,70 @@ namespace Liberfy.Behaviors
                 effect = DragDropEffects.None;
             }
 
-            e.Effects = effect;
+            var position = e.GetPosition(this.AssociatedObject);
+            this._dragDropHelper.DragOver(position, effect);
 
-            this._dragDropHelper.DragOver(e.GetPosition(this.AssociatedObject), effect);
+            e.Effects = effect;
             e.Handled = true;
         }
 
+        /// <summary>
+        /// ドラッグ＆ドロップ操作の終了
+        /// </summary>
+        /// <param name="sender">イベント発行元</param>
+        /// <param name="e">ドラッグイベント情報</param>
         private void OnDragLeave(object sender, DragEventArgs e)
         {
-            if (IsTextBoxTextDrag(e))
+            if (IsDropFromTextBox(e))
+            {
                 return;
+            }
 
+            // DragDropHandlerにDragLeaveを通知する
             this._dragDropHelper.DragLeave();
+
             e.Handled = true;
         }
 
+        /// <summary>
+        /// ドラッグ＆ドロップ操作のドロップ時
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnDrop(object sender, DragEventArgs e)
         {
-            if (IsTextBoxTextDrag(e))
+            if (IsDropFromTextBox(e))
+            {
                 return;
-
-            DragDropEffects effect;
-            bool canDrop = this.Command?.CanExecute(e.Data) ?? false;
-
-            if (canDrop)
-            {
-                effect = e.AllowedEffects & this.AllowEffects;
             }
-            else
+
+            // 実行判定
+            bool canExecute = this.Command?.CanExecute(e.Data) ?? false;
+
+            var effect = canExecute
+                ? (e.AllowedEffects & this.AllowEffects)
+                : DragDropEffects.None;
+
+            // DragDropHandlerにDropを通知する
+            var position = e.GetPosition(this.AssociatedObject);
+            this._dragDropHelper.Drop(e.Data, position, effect);
+
+            // コマンド実行
+            if (canExecute)
             {
-                effect = DragDropEffects.None;
+                this.Command.Execute(e.Data);
             }
 
             e.Effects = effect;
-
-            this._dragDropHelper.Drop(e.Data, e.GetPosition(this.AssociatedObject), effect);
-
-            if (canDrop)
-            {
-                this.Command?.Execute(e.Data);
-            }
-
             e.Handled = true;
         }
 
-        #endregion
-
-        private static bool IsTextBoxTextDrag(DragEventArgs eventArgs)
+        /// <summary>
+        /// テキストボックスからのドラッグ＆ドロップ操作かどうかを判定する。
+        /// </summary>
+        /// <param name="eventArgs">ドラッグイベント情報</param>
+        /// <returns>テキストボックスからのドラッグ＆ドロップ操作かどうか</returns>
+        private static bool IsDropFromTextBox(DragEventArgs eventArgs)
         {
             var formats = eventArgs.Data.GetFormats();
 
@@ -177,63 +229,89 @@ namespace Liberfy.Behaviors
                 && formats.Contains("System.String");
         }
 
+        /// <summary>
+        /// コマンドのプロパティ
+        /// </summary>
+        public static readonly DependencyProperty CommandProperty =
+            DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(DragDropBehavior), new PropertyMetadata(null));
+
+        /// <summary>
+        /// コマンドを取得または設定する。
+        /// </summary>
         public ICommand Command
         {
-            get => (ICommand)GetValue(CommandProperty);
-            set => SetValue(CommandProperty, value);
+            get => (ICommand)this.GetValue(CommandProperty);
+            set => this.SetValue(CommandProperty, value);
         }
 
+        /// <summary>
+        /// 実行可能なドラッグ＆ドロップ操作のプロパティ
+        /// </summary>
+        public static readonly DependencyProperty AllowEffectsProperty =
+            DependencyProperty.Register(nameof(AllowEffects), typeof(DragDropEffects), typeof(DragDropBehavior));
+
+        /// <summary>
+        /// 実行可能なドラッグ＆ドロップ操作を取得または設定する。
+        /// </summary>
         public DragDropEffects AllowEffects
         {
-            get => (DragDropEffects)GetValue(AllowEffectsProperty);
-            set => SetValue(AllowEffectsProperty, value);
+            get => (DragDropEffects)this.GetValue(AllowEffectsProperty);
+            set => this.SetValue(AllowEffectsProperty, value);
         }
 
+        /// <summary>
+        /// ドラッグ表示時のアイコンを使用するかどうかを取得または設定する。
+        /// </summary>
         public bool UseDescriptionIcon { get; set; }
 
-        public bool SetDescription { get; set; }
+        /// <summary>
+        /// ドラッグ操作時アイコンのプロパティ
+        /// </summary>
+        public static readonly DependencyProperty DescriptionIconProperty =
+            DependencyProperty.Register(nameof(DescriptionIcon), typeof(DropImageType), typeof(DragDropBehavior), new PropertyMetadata(DropImageType.None));
 
+        /// <summary>
+        /// ドラッグ操作時に表示するアイコンを取得または設定する。
+        /// </summary>
         public DropImageType DescriptionIcon
         {
-            get => (DropImageType)GetValue(DescriptionIconProperty);
-            set => SetValue(DescriptionIconProperty, value);
+            get => (DropImageType)this.GetValue(DescriptionIconProperty);
+            set => this.SetValue(DescriptionIconProperty, value);
         }
 
+        /// <summary>
+        /// ドラッグ操作時にラベルを表示するかどうかを取得または設定する。
+        /// </summary>
+        public bool SetDescription { get; set; }
+
+        /// <summary>
+        /// ドラッグ操作時ラベルのプロパティ
+        /// </summary>
+        public static readonly DependencyProperty DescriptionMessageProperty =
+            DependencyProperty.Register(nameof(DescriptionMessage), typeof(string), typeof(DragDropBehavior), new PropertyMetadata(null));
+
+        /// <summary>
+        /// ドラッグ操作時のラベルを取得または設定する。
+        /// </summary>
         public string DescriptionMessage
         {
-            get => (string)GetValue(DescriptionMessageProperty);
-            set => SetValue(DescriptionMessageProperty, value);
+            get => (string)this.GetValue(DescriptionMessageProperty);
+            set => this.SetValue(DescriptionMessageProperty, value);
         }
 
+        /// <summary>
+        /// ドラッグ操作時ラベル補足のプロパティ
+        /// </summary>
+        public static readonly DependencyProperty DescriptionInsertionProperty =
+            DependencyProperty.Register(nameof(DescriptionInsertion), typeof(string), typeof(DragDropBehavior), new PropertyMetadata(null));
+
+        /// <summary>
+        /// ドラッグ操作時のラベルの補足
+        /// </summary>
         public string DescriptionInsertion
         {
-            get => (string)GetValue(DescriptionInsertionProperty);
-            set => SetValue(DescriptionInsertionProperty, value);
+            get => (string)this.GetValue(DescriptionInsertionProperty);
+            set => this.SetValue(DescriptionInsertionProperty, value);
         }
-
-        public static readonly DependencyProperty CommandProperty =
-            DependencyProperty.Register("Command",
-                typeof(ICommand), typeof(DragDropBehavior),
-                new PropertyMetadata(null));
-
-
-        public static readonly DependencyProperty AllowEffectsProperty =
-            DependencyProperty.Register("AllowEffects",
-                typeof(DragDropEffects), typeof(DragDropBehavior));
-
-        public static readonly DependencyProperty DescriptionIconProperty =
-            DependencyProperty.Register("DescriptionIcon",
-                typeof(DropImageType), typeof(DragDropBehavior),
-                new PropertyMetadata(DropImageType.None));
-
-        public static readonly DependencyProperty DescriptionMessageProperty =
-            DependencyProperty.Register("DescriptionMessage",
-                typeof(string), typeof(DragDropBehavior),
-                new PropertyMetadata(null));
-
-        public static readonly DependencyProperty DescriptionInsertionProperty =
-            DependencyProperty.Register("DescriptionInsertion",
-                typeof(string), typeof(DragDropBehavior),
-                new PropertyMetadata(null));
     }
 }

@@ -14,21 +14,21 @@ namespace Liberfy.ViewModels
         public StatusItem Status
         {
             get => this._status;
-            private set => this.SetProperty(ref this._status, value);
+            private set => this.RaisePropertyChangedIfSet(ref this._status, value);
         }
 
         private bool _isShowNavigator;
         public bool IsShowNavigator
         {
             get => this._isShowNavigator;
-            private set => this.SetProperty(ref this._isShowNavigator, value);
+            private set => this.RaisePropertyChangedIfSet(ref this._isShowNavigator, value);
         }
 
         private IReadOnlyList<Attachment> _attachments;
         public IReadOnlyList<Attachment> Attachments
         {
             get => this._attachments;
-            private set => this.SetProperty(ref this._attachments, value);
+            private set => this.RaisePropertyChangedIfSet(ref this._attachments, value);
         }
 
         private int _selectedAttachmentIndex;
@@ -37,7 +37,7 @@ namespace Liberfy.ViewModels
             get => this._selectedAttachmentIndex;
             set
             {
-                this.SetProperty(ref this._selectedAttachmentIndex, value);
+                this.RaisePropertyChangedIfSet(ref this._selectedAttachmentIndex, value);
 
                 this.SelectPreviousAttachmentCommand.RaiseCanExecute();
                 this.SelectNextAttachmentCommand.RaiseCanExecute();

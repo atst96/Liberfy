@@ -11,12 +11,12 @@ namespace WpfMvvmToolkit
         private Func<bool> _canExecute;
 
         public AsyncDelegateCommand(Func<Task> execute)
-            : this(execute, DefaultCanExecute, false)
+            : this(execute, EmptyCanExecute, false)
         {
         }
 
         public AsyncDelegateCommand(Func<Task> execute, bool hookRequerySuggested)
-            : this(execute, DefaultCanExecute, hookRequerySuggested)
+            : this(execute, EmptyCanExecute, hookRequerySuggested)
         {
         }
 
@@ -39,14 +39,14 @@ namespace WpfMvvmToolkit
             await this._execute.Invoke();
         }
 
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            base.Dispose();
+            base.Dispose(disposing);
 
             this._execute = null;
             this._canExecute = null;
         }
 
-        internal static readonly Func<bool> DefaultCanExecute = () => true;
+        internal static bool EmptyCanExecute() => true;
     }
 }

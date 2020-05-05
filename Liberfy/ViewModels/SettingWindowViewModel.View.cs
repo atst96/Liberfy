@@ -32,7 +32,7 @@ namespace Liberfy.ViewModels
             get => this._profileImageForm;
             set
             {
-                if (this.SetProperty(ref this._profileImageForm, value))
+                if (this.RaisePropertyChangedIfSet(ref this._profileImageForm, value))
                 {
                     this.Setting.ProfileImageForm = value;
                     this.RaisePropertyChanged(nameof(this.ProfileImageCornerRadius));
@@ -70,7 +70,7 @@ namespace Liberfy.ViewModels
             set
             {
                 double width = Math.Floor(value);
-                if (this.SetProperty(ref this._previewColumnWidth, width))
+                if (this.RaisePropertyChangedIfSet(ref this._previewColumnWidth, width))
                 {
                     this.Setting.ColumnWidth = width;
                 }
@@ -85,7 +85,7 @@ namespace Liberfy.ViewModels
             set
             {
                 double width = Math.Floor(value);
-                if (this.SetProperty(ref this._previewProfileImageWidth, width))
+                if (this.RaisePropertyChangedIfSet(ref this._previewProfileImageWidth, width))
                 {
                     this.RaisePropertyChanged(nameof(ProfileImageCornerRadius));
                     this.Setting.TweetProfileImageWidth = width;
