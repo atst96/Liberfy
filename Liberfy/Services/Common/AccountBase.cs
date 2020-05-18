@@ -148,7 +148,7 @@ namespace Liberfy
 
         public virtual void StartTimeline()
         {
-            if (Config.Debug.LoadTimeline)
+            if (Config.Functions.IsLoadTimelineEnabled)
             {
 #pragma warning disable CS0162
                 this.Timeline.Load();
