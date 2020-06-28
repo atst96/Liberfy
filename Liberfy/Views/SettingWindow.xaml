@@ -312,26 +312,6 @@
                     </StackPanel>
 
                 </TabItem>
-
-                <TabItem Header="アカウント連携設定">
-                    <StackPanel Style="{StaticResource ElementsContainerStyle}">
-                        <Label
-                            Style="{StaticResource HeaderLabel}"
-                            Content="ミュート" />
-
-                        <CheckBox
-                            Content="ログイン時にミュート中のアカウント一覧を取得する"
-                            IsChecked="{Binding Setting.GetMutedIdsAtLoadingAccount, Mode=TwoWay}" />
-
-                        <Label
-                            Style="{StaticResource HeaderLabel}"
-                            Content="ブロック" />
-
-                        <CheckBox
-                            Content="ログイン時にブロック中のアカウント一覧を取得する"
-                            IsChecked="{Binding Setting.GetBlockedIdsAtLoadingAccount, Mode=TwoWay}" />
-                    </StackPanel>
-                </TabItem>
             </TabControl>
         </TabItem>
 
