@@ -25,7 +25,7 @@ namespace Liberfy
         private const string _defSoundPath = @"%windir%\Media\Windows Notify.wav";
         public static readonly string @DefaultSoundFile = Environment.ExpandEnvironmentVariables(_defSoundPath);
 
-        public static readonly string[] DefaultTimelineFont = { "Meiryo", "Segoe UI Symbol" };
+        public static readonly string DefaultTimelineFont = "Meiryo";
         public const double DefaultTimelineFontSize = 12;
         #endregion
 

@@ -719,46 +719,32 @@
                             Grid.ColumnSpan="2"
                             VerticalAlignment="Bottom" />
 
-                        <HeaderedContentControl
-                            Margin="8"
-                            Header="フォント">
+                        <StackPanel Margin="8">
                             <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto" />
-                                    <RowDefinition />
-                                    <RowDefinition Height="auto" />
-                                </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="120" />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" />
+                                </Grid.RowDefinitions>
 
-                                <Label
-                                    Margin="0 0 8 0"
-                                    Content="書体の追加:" />
+                                <TextBlock 
+                                    Margin="2,0,0,0"
+                                    Grid.Row="0" Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Left"
+                                    Text="フォント" />
 
                                 <ComboBox
-                                    Grid.Column="1"
-                                    ItemsSource="{x:Static Fonts.SystemFontFamilies}"
-                                    DisplayMemberPath="Source"
-                                    SelectedItem="{Binding SelectedFontFamily, Mode=TwoWay}" />
-
-                                <TextBox
-                                    Margin="0 8 0 0"
-                                    AcceptsReturn="True"
-                                    AcceptsTab="False"
-                                    Grid.ColumnSpan="3"
-                                    Grid.Row="1"
-                                    Text="{Binding TimelineFontFamily, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                                <TextBlock
-                                    Grid.Row="2"
-                                    Grid.ColumnSpan="2"
-                                    Margin="0 4 0 0"
-                                    TextWrapping="WrapWithOverflow"
-                                    Text="改行またはカンマで区切ることで複数のフォントを指定することができます。" />
+                                    Margin="0,4"
+                                    Grid.Row="0" Grid.Column="1"
+                                    ItemsSource="{Binding SystemFonts, Mode=OneWay}"
+                                    DisplayMemberPath="DisplayName"
+                                    SelectedValuePath="Source"
+                                    SelectedValue="{Binding TimelineFont, Mode=TwoWay}"/>
                             </Grid>
-                        </HeaderedContentControl>
+                        </StackPanel>
 
                         <HeaderedContentControl
                             Grid.Row="1"
@@ -772,7 +758,7 @@
                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
                                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
                                 FontSize="{Binding TimelineFontSize, Mode=OneWay}"
-                                FontFamily="{Binding TimelineViewFontFamily, Mode=OneWay}"
+                                FontFamily="{Binding TimelineFont, Mode=OneWay}"
                                 TextOptions.TextFormattingMode="{Binding TimelineFontRenderingMode, Mode=OneWay}"
                                 Text="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJLMNOPQSTUVWXYZ&#xA;1234567890.:,; ' &quot; (!?) +-*/=&#xA;C# でプログラミングの世界が広がります。1234567890" />
 

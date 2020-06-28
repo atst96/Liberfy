@@ -15,6 +15,10 @@ using Liberfy.Components;
 using WpfMvvmToolkit;
 using Livet.Messaging;
 using System.Windows.Input;
+using System.Runtime.CompilerServices;
+using System.Globalization;
+using System.Windows.Markup;
+using System.Collections.Immutable;
 
 namespace Liberfy.ViewModels
 {
@@ -130,48 +134,46 @@ namespace Liberfy.ViewModels
             [TextFormattingMode.Display] = "GDI互換",
         };
 
-        private FontFamily _timelineViewFontFamily = new FontFamily(string.Join(",", GlobalSetting.TimelineFont));
-        public FontFamily TimelineViewFontFamily
-        {
-            get => this._timelineViewFontFamily;
-            set => this.RaisePropertyChangedIfSet(ref this._timelineViewFontFamily, value);
-        }
-
+        /// <summary>
+        /// フォントサイズ
+        /// </summary>
         private double? _timelineFontSize = GlobalSetting.TimelineFontSize;
+
+        /// <summary>
+        /// フォントサイズ
+        /// </summary>
         public double? TimelineFontSize
         {
             get => this._timelineFontSize;
             set => this.RaisePropertyChangedIfSet(ref this._timelineFontSize, value);
         }
 
-        private string _timelineFontFamilies = string.Join("\n", GlobalSetting.TimelineFont);
-        public string TimelineFontFamily
-        {
-            get => this._timelineFontFamilies;
-            set
-            {
-                if (this.RaisePropertyChangedIfSet(ref this._timelineFontFamilies, value))
-                {
-                    var fonts = EnumerateFontName(value);
+        /// <summary>
+        /// フォント
+        /// </summary>
+        private string _timelineFont = GlobalSetting.TimelineFont;
 
-                    this.TimelineViewFontFamily = new FontFamily(string.Join(",", fonts));
-                }
-            }
+        /// <summary>
+        /// フォント
+        /// </summary>
+        public string TimelineFont
+        {
+            get => this._timelineFont;
+            set => this.RaisePropertyChangedIfSet(ref this._timelineFont, value);
         }
 
+        /// <summary>
+        /// フォントのレンダリングモード
+        /// </summary>
         private TextFormattingMode _timelineFontRenderingMode = GlobalSetting.TimelineFontRendering;
+
+        /// <summary>
+        /// フォントのレンダリングモード
+        /// </summary>
         public TextFormattingMode TimelineFontRenderingMode
         {
             get => this._timelineFontRenderingMode;
             set => this.RaisePropertyChangedIfSet(ref this._timelineFontRenderingMode, value);
-        }
-
-        private static IEnumerable<string> EnumerateFontName(string text)
-        {
-            return text
-                .Split('\r', '\n', ',')
-                .Select(str => str.Trim())
-                .Where(str => str.Length > 1);
         }
 
         public FontFamily _selectedFontFamily;
@@ -184,13 +186,13 @@ namespace Liberfy.ViewModels
                 {
                     if (value != null)
                     {
-                        if (this.TimelineFontFamily.EndsWith("\n"))
+                        if (this.TimelineFont.EndsWith("\n"))
                         {
-                            this.TimelineFontFamily += value.Source;
+                            this.TimelineFont += value.Source;
                         }
                         else
                         {
-                            this.TimelineFontFamily += "\n" + value.Source;
+                            this.TimelineFont += "\n" + value.Source;
                         }
 
                         this.SelectedFontFamily = null;
@@ -451,6 +453,37 @@ namespace Liberfy.ViewModels
         private const string SampleRelativeTime = "1分前";
         private const string SampleAbsoluteTime = "2018年1月1日 0時0分";
 
+        private IReadOnlyList<FontInfo> _systemFonts;
+
+        /// <summary>
+        /// システムフォントリスト
+        /// </summary>
+        public IReadOnlyList<FontInfo> SystemFonts
+        {
+            get
+            {
+                if (this._systemFonts == null)
+                {
+                    this.UpdateSystemFonts();
+                }
+
+                return this._systemFonts;
+            }
+        }
+
+        /// <summary>
+        /// システムフォントリストを更新する。
+        /// </summary>
+        private void UpdateSystemFonts()
+        {
+            this._systemFonts = Fonts.SystemFontFamilies
+                .Select(ff => new FontInfo(ff))
+                .OrderBy(value => value.Source, StringComparer.CurrentCulture)
+                .ToArray();
+
+            this.RaisePropertyChanged(nameof(this.SystemFonts));
+        }
+
         public string TimelineStatusTimeText
         {
             get
@@ -540,14 +573,6 @@ namespace Liberfy.ViewModels
                 return message.Response ?? false;
             }
 
-            if (!EnumerateFontName(this.TimelineFontFamily).Any())
-            {
-                var message = new ConfirmationMessage("フォントが指定されていません。続行しますか？", App.Name, "MsgKey_GeneralConfirm");
-                this.Messenger.Raise(message);
-
-                return message.Response ?? false;
-            }
-
             return true;
         }
 
@@ -559,7 +584,7 @@ namespace Liberfy.ViewModels
                 this.Setting.DefaultColumns.Add(column.GetOption());
             }
 
-            GlobalSetting.TimelineFont = EnumerateFontName(this.TimelineFontFamily).ToArray();
+            GlobalSetting.TimelineFont = this.TimelineFont;
             GlobalSetting.TimelineFontSize = this.TimelineFontSize.Value;
             GlobalSetting.TimelineFontRendering = this.TimelineFontRenderingMode;
 

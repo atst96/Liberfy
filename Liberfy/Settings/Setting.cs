@@ -172,15 +172,22 @@ namespace Liberfy
 
         #region View
 
-        [DataMember(Name = "timeline_fonts")]
-        private string[] _timelineFont;
+        [DataMember(Name = "timeline_font")]
+        private string _timelineFont;
+
+        /// <summary>
+        /// フォント
+        /// </summary>
         [IgnoreDataMember]
-        public string[] TimelineFont
+        public string TimelineFont
         {
             get => this._timelineFont ??= DefaultTimelineFont;
             set => this.SetProperty(ref this._timelineFont, value);
         }
 
+        /// <summary>
+        /// フォントサイズ
+        /// </summary>
         [DataMember(Name = "timeline_font_size")]
         private double _timelineFontSize;
         [IgnoreDataMember]
