@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SocialApis.Utils;
 
 namespace SocialApis
 {
@@ -30,7 +31,7 @@ namespace SocialApis
         {
             foreach (var (key, value) in query)
             {
-                var parameterName = WebUtility.UrlEncode(key);
+                var parameterName = WebUtil.UrlEncode(key);
 
                 if (baseName != null)
                 {
@@ -52,11 +53,11 @@ namespace SocialApis
                 var values = separateParams.Select(val => Query.ValueToString(val));
                 var valueText = string.Join(separateParams.SeparateText, values);
 
-                this.Add(parameterName, WebUtility.UrlEncode(valueText));
+                this.Add(parameterName, WebUtil.UrlEncode(valueText));
             }
             else if (value is string stringValue)
             {
-                this.Add(parameterName, WebUtility.UrlEncode(stringValue));
+                this.Add(parameterName, WebUtil.UrlEncode(stringValue));
             }
             else if (value is IEnumerable collection)
             {
@@ -66,7 +67,7 @@ namespace SocialApis
             {
                 var valueText = Query.ValueToString(value);
 
-                this.Add(parameterName, WebUtility.UrlEncode(valueText));
+                this.Add(parameterName, WebUtil.UrlEncode(valueText));
             }
         }
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SocialApis.Core;
 using Utf8Json;
 
 namespace SocialApis
@@ -11,11 +12,6 @@ namespace SocialApis
     internal static class Extensions
     {
         public const int DefaultStreamCopyBufferSize = 128 * 1024;
-
-        internal static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> kvp, out TKey key, out TValue value)
-        {
-            (key, value) = (kvp.Key, kvp.Value);
-        }
 
         public static T ReadValue<T>(this IJsonFormatterResolver formatterResolver, ref JsonReader reader)
         {
@@ -31,12 +27,12 @@ namespace SocialApis
                 .Serialize(ref writer, value, formatterResolver);
         }
 
-        public static void UploadCopyTo(this Stream source, Stream destination, IProgress<UploadProgress> progress)
+        public static void UploadCopyTo(this Stream source, Stream destination, IProgress<UploadReport> progress)
         {
             source.UploadCopyTo(destination, progress, DefaultStreamCopyBufferSize);
         }
 
-        public static void UploadCopyTo(this Stream source, Stream destination, IProgress<UploadProgress> progress, int bufferSize)
+        public static void UploadCopyTo(this Stream source, Stream destination, IProgress<UploadReport> progress, int bufferSize)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
@@ -55,16 +51,16 @@ namespace SocialApis
 
                 sentBytes += readByees;
 
-                progress?.Report(new UploadProgress(sentBytes, totalBytes));
+                progress?.Report(UploadReport.CreateProcessing(sentBytes, totalBytes));
             }
         }
 
-        public static Task UploadCopyToAsync(this Stream source, Stream destination, IProgress<UploadProgress> progress)
+        public static Task UploadCopyToAsync(this Stream source, Stream destination, IProgress<UploadReport> progress)
         {
             return source.UploadCopyToAsync(destination, progress, DefaultStreamCopyBufferSize);
         }
 
-        public static async Task UploadCopyToAsync(this Stream source, Stream destination, IProgress<UploadProgress> progress, int bufferSize)
+        public static async Task UploadCopyToAsync(this Stream source, Stream destination, IProgress<UploadReport> progress, int bufferSize)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
@@ -83,7 +79,7 @@ namespace SocialApis
 
                 sentBytes += readByees;
 
-                progress?.Report(new UploadProgress(sentBytes, totalBytes));
+                progress?.Report(UploadReport.CreateProcessing(sentBytes, totalBytes));
             }
         }
     }

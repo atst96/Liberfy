@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Utf8Json;
+using SocialApis.Utils;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace SocialApis
 {
@@ -15,41 +15,67 @@ namespace SocialApis
     internal static class WebUtility
     {
         public static readonly Encoding UTF8Encoding = new UTF8Encoding(false);
-        private static readonly char[] _uriSpritCharacters = new[] { '?', '&', '#' };
-        private static readonly HashSet<byte> _urlSafeCharacters;
+        private static readonly char[] _uriSplitCharacters = new[] { '?', '&', '#' };
 
-        static WebUtility()
+
+        public static HttpRequestMessage CreateWebRequest(HttpMethod method, Uri requestUri, IQuery queryParameters, WebHeaderCollection headers = null)
         {
-            var urlSafeCharacters = new HashSet<byte>
+            if (method == null)
             {
-                // '-', '.', '_', '!', '*', '(', ')',
-                0x2D, 0x2E, 0x5F, 0x21, 0x2A, 0x28, 0x29
-            };
-
-            // '0' ~ '9'
-            for (byte c = 0x30; c <= 0x39; ++c)
-            {
-                urlSafeCharacters.Add(c);
+                throw new ArgumentNullException(nameof(method));
             }
 
-            // 'a' ~ 'z'
-            for (byte c = 0x41; c <= 0x5A; ++c)
+            if (requestUri == null)
             {
-                urlSafeCharacters.Add(c);
+                throw new ArgumentNullException(nameof(requestUri));
             }
 
-            // 'A' ~ 'Z'
-            for (byte c = 0x61; c <= 0x7A; ++c)
+            var endpoint = requestUri.GetLeftPart(UriPartial.Path);
+            var content = default(HttpContent);
+
+            if (queryParameters?.Count > 0)
             {
-                urlSafeCharacters.Add(c);
+                var parameters = new QueryParameterCollection(queryParameters);
+                if (method == HttpMethod.Get)
+                {
+                    using var formUrlContent = new FormUrlEncodedContent(parameters);
+                    var queryParameter = formUrlContent.ReadAsStringAsync().WaitResult();
+                    endpoint = string.Concat(endpoint, "?", queryParameter);
+                }
+                else
+                {
+                    content = new FormUrlEncodedContent(parameters);
+                }
             }
 
-            _urlSafeCharacters = urlSafeCharacters;
+            var request = CreateWebRequestSimple(method, endpoint, headers);
+            request.Content = content;
+
+            return request;
+        }
+
+        public static HttpRequestMessage CreateWebRequest(HttpMethod method, Uri requestUri, HttpContent content, WebHeaderCollection headers = null)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+
+            if (requestUri == null)
+            {
+                throw new ArgumentNullException(nameof(requestUri));
+            }
+
+            var endpoint = requestUri.GetLeftPart(UriPartial.Path);
+            var request = CreateWebRequestSimple(method, endpoint, headers);
+            request.Content = content;
+
+            return request;
         }
 
         public static HttpWebRequest CreateWebRequest(string method, string requestUri, IQuery parameters, WebHeaderCollection headers = null)
         {
-            requestUri = requestUri.Split(_uriSpritCharacters).First();
+            requestUri = requestUri.Split(_uriSplitCharacters).First();
             method = method ?? HttpMethods.GET;
 
             string queryString = default;
@@ -73,9 +99,27 @@ namespace SocialApis
                 if (queryString != null)
                 {
                     using var stream = request.GetRequestStream();
-                    var data = EncodingUtility.UTF8.GetBytes(queryString);
+                    var data = EncodingUtil.UTF8.GetBytes(queryString);
 
                     stream.Write(data, 0, data.Length);
+                }
+            }
+
+            return request;
+        }
+
+        public static HttpRequestMessage CreateWebRequestSimple(HttpMethod method, string requestUri, WebHeaderCollection headers = null)
+        {
+            var request = new HttpRequestMessage(method, requestUri);
+
+            if ((headers?.Count ?? 0) > 0)
+            {
+                for (int index = 0; index < headers.Count; ++index)
+                {
+                    var key = headers.GetKey(index);
+                    var values = headers.GetValues(index);
+
+                    request.Headers.Add(key, values);
                 }
             }
 
@@ -96,63 +140,47 @@ namespace SocialApis
             return request;
         }
 
-        public static HttpWebRequest CreateOAuthRequest(string method, string endpoint, IApi tokens, IQuery parameters)
+        public static HttpRequestMessage CreateOAuthRequest(HttpMethod method, Uri endpoint, IApi tokens, IQuery queryParameters = null)
         {
-            var headers = new WebHeaderCollection
-            {
-                [HttpRequestHeader.Authorization] = OAuthHelper.GenerateAuthenticationHeader(method, endpoint, tokens, parameters),
-            };
+            var request = CreateWebRequest(method, endpoint, queryParameters);
+            var headers = request.Headers;
 
-            return CreateWebRequest(method, endpoint, parameters, headers);
+            var authenticationString = OAuthHelper.GenerateAuthenticationString(method, endpoint, tokens, queryParameters);
+            headers.Authorization = new AuthenticationHeaderValue("OAuth", authenticationString);
+
+            return request;
         }
 
-        public static HttpWebRequest CreateOAuthRequestSimple(string method, string endpoint, IApi tokens, IQuery parameters)
+        public static HttpRequestMessage CreateOAuthRequest(HttpMethod method, Uri endpoint, IApi tokens, HttpContent content)
         {
-            var headers = new WebHeaderCollection
-            {
-                [HttpRequestHeader.Authorization] = OAuthHelper.GenerateAuthenticationHeader(method, endpoint, tokens, parameters),
-            };
+            var request = CreateWebRequest(method, endpoint, content);
+            var headers = request.Headers;
 
-            return CreateWebRequestSimple(method, endpoint, headers);
+            var authenticationString = OAuthHelper.GenerateAuthenticationString(method, endpoint, tokens);
+            headers.Authorization = new AuthenticationHeaderValue("OAuth", authenticationString);
+
+            return request;
         }
 
-        public static async Task<string> SendRequestText(HttpWebRequest request)
+        public static Task SendRequest(HttpWebRequest request)
         {
-            using var response = await request.GetResponseAsync().ConfigureAwait(false);
-
-            return await response.GetResponseStream().ReadToEndAsync().ConfigureAwait(false);
-        }
-
-        public static async Task SendRequest(HttpWebRequest request)
-        {
-            await request.GetRequestStreamAsync().ConfigureAwait(false);
+            return request.GetRequestStreamAsync();
         }
 
         public static async Task<T> SendRequest<T>(HttpWebRequest request) where T : class
         {
             using var response = await request.GetResponseAsync().ConfigureAwait(false);
 
-            return await JsonUtility.DeserializeAsync<T>(response.GetResponseStream()).ConfigureAwait(false);
+            return await JsonUtil.DeserializeAsync<T>(response.GetResponseStream()).ConfigureAwait(false);
         }
 
-        public static string UrlEncode(string value)
+        public static IDictionary<string, string> ParseQueryString(string content)
         {
-            var data = UTF8Encoding.GetBytes(value);
-            var sb = new StringBuilder(data.Length * 3);
-
-            foreach (byte c in data)
-            {
-                if (_urlSafeCharacters.Contains(c))
-                {
-                    sb.Append((char)c);
-                }
-                else
-                {
-                    sb.Append('%').Append(c.ToString("X2"));
-                }
-            }
-
-            return sb.ToString();
+            return content.Split('&')
+                .Select(str => str.Split('=', 2))
+                .ToDictionary(
+                    str => str[0],
+                    str => str.Length == 1 ? string.Empty : str[1]);
         }
     }
 }

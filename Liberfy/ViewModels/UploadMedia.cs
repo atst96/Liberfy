@@ -11,10 +11,11 @@ using System.Drawing;
 using SocialApis.Twitter;
 using SocialApis;
 using Liberfy.Utils;
+using SocialApis.Core;
 
 namespace Liberfy.ViewModels
 {
-    internal sealed class UploadMedia : NotificationObject, IProgress<UploadProgress>, IDisposable
+    internal sealed class UploadMedia : NotificationObject, IProgress<UploadReport>, IDisposable
     {
         public string Path { get; private set; }
         public MediaType MediaType { get; }
@@ -126,7 +127,7 @@ namespace Liberfy.ViewModels
             this.UploadProgress = 0.0d;
         }
 
-        public void Report(UploadProgress value)
+        public void Report(UploadReport value)
         {
             this.UploadProgress = value.UploadPercentage;
         }

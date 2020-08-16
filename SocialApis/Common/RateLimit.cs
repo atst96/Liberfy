@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 
 namespace SocialApis
 {
@@ -29,6 +31,33 @@ namespace SocialApis
             }
 
             return rateLimit;
+        }
+
+        internal static RateLimit FromHeaders(HttpResponseHeaders headers)
+        {
+            int limit = GetValueOrDefault(headers, XRateLimitLimit);
+            int remaining = GetValueOrDefault(headers, XRateLimitRemaining);
+            int resetDate = GetValueOrDefault(headers, XRateLimitReset);
+
+            return new RateLimit
+            {
+                Limit = limit,
+                Remaining = remaining,
+                ResetDate = DateTimeOffset.FromUnixTimeSeconds(resetDate),
+            };
+        }
+
+        private static int GetValueOrDefault(HttpResponseHeaders headers, string key)
+        {
+            if (headers.TryGetValues(key, out var values))
+            {
+                if (int.TryParse(values.First(), out int value))
+                {
+                    return value;
+                }
+            }
+
+            return default;
         }
 
         public int Limit { get; private set; }
