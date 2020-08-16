@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SocialApis.Utils;
 
 namespace SocialApis.Mastodon.Apis
 {
@@ -19,13 +20,13 @@ namespace SocialApis.Mastodon.Apis
 
         public Task BlockDomain(string domain)
         {
-            var query = new Query { ["domain"] = WebUtility.UrlEncode(domain) };
+            var query = new Query { ["domain"] = WebUtil.UrlEncode(domain) };
             return this.Api.RestApiPostRequestAsync("domain_blocks", query);
         }
 
         public Task UnblockDomain(string domain)
         {
-            var query = new Query { ["domain"] = WebUtility.UrlEncode(domain) };
+            var query = new Query { ["domain"] = WebUtil.UrlEncode(domain) };
             return this.Api.RestApiDeleteRequestAsync("domain_blocks", query);
         }
     }

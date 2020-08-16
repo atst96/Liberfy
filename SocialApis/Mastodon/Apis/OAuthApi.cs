@@ -1,20 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
 {
     public class OAuthApi : ApiBase
     {
-        private readonly string _oauthBaseUrl;
+        private readonly Uri _oauthBaseUrl;
 
         internal OAuthApi(MastodonApi tokens) : base(tokens)
         {
-            this._oauthBaseUrl = tokens.HostUrl.AbsoluteUri + "oauth/";
+            this._oauthBaseUrl = new Uri(tokens.HostUrl, "oauth/");
         }
 
         public Task<AccessTokenResponse> GetAccessToken(string code, string redirectUrl = "urn:ietf:wg:oauth:2.0:oob")
         {
-            var url = _oauthBaseUrl + "token";
+            var url = new Uri(this._oauthBaseUrl, "token");
 
             var parameters = new Query
             {
@@ -25,7 +27,7 @@ namespace SocialApis.Mastodon.Apis
                 ["code"] = code,
             };
 
-            return this.Api.SendRequest<AccessTokenResponse>(WebUtility.CreateWebRequest(HttpMethods.POST, url, parameters));
+            return this.Api.SendRequest<AccessTokenResponse>(WebUtility.CreateWebRequest(HttpMethod.Post, url, parameters));
         }
 
         public string GetAuthorizeUrl(string[] scopes, string redirectUri = "urn:ietf:wg:oauth:2.0:oob")

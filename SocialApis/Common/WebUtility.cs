@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using SocialApis.Utils;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using SocialApis.Core;
 
 namespace SocialApis
 {
@@ -35,7 +36,7 @@ namespace SocialApis
 
             if (queryParameters?.Count > 0)
             {
-                var parameters = new QueryParameterCollection(queryParameters);
+                var parameters = queryParameters.ToStringNameValuePairs();
                 if (method == HttpMethod.Get)
                 {
                     using var formUrlContent = new FormUrlEncodedContent(parameters);
@@ -73,6 +74,7 @@ namespace SocialApis
             return request;
         }
 
+        [Obsolete]
         public static HttpWebRequest CreateWebRequest(string method, string requestUri, IQuery parameters, WebHeaderCollection headers = null)
         {
             requestUri = requestUri.Split(_uriSplitCharacters).First();
@@ -162,11 +164,7 @@ namespace SocialApis
             return request;
         }
 
-        public static Task SendRequest(HttpWebRequest request)
-        {
-            return request.GetRequestStreamAsync();
-        }
-
+        [Obsolete]
         public static async Task<T> SendRequest<T>(HttpWebRequest request) where T : class
         {
             using var response = await request.GetResponseAsync().ConfigureAwait(false);

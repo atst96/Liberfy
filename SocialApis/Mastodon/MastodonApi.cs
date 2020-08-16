@@ -1,8 +1,11 @@
-﻿using SocialApis.Mastodon.Apis;
+﻿using SocialApis.Core;
+using SocialApis.Mastodon.Apis;
+using SocialApis.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +13,7 @@ namespace SocialApis.Mastodon
 {
     using IQuery = ICollection<KeyValuePair<string, object>>;
 
-    public class MastodonApi : IApi
+    public class MastodonApi : ApiAccessor, IApi
     {
         private readonly string _hostApiBaseUrl = "";
         public Uri HostUrl { get; }
@@ -54,9 +57,9 @@ namespace SocialApis.Mastodon
             this._authorizeHeader.Add(HttpRequestHeader.Authorization, "Bearer " + accessToken);
         }
 
-        internal string GetApiUrl(string path)
+        internal Uri GetApiUrl(string path)
         {
-            return this._hostApiBaseUrl + path;
+            return new Uri(this._hostApiBaseUrl + path);
         }
 
         public OAuthApi _oauth;
@@ -123,159 +126,135 @@ namespace SocialApis.Mastodon
 
                 string url = hostUrl.AbsoluteUri + "api/v1/apps";
 
-                return WebUtility.SendRequest<ClientKeyInfo>(WebUtility.CreateWebRequest(HttpMethods.POST, url, query));
+                return WebUtility.SendRequest<ClientKeyInfo>(WebUtility.CreateWebRequest("POST", url, query));
             }
         }
 
         #region CreateRequestFunctions
 
-        internal HttpWebRequest CreateCustomApiRequest(string method, string endpoint)
+        internal HttpRequestMessage CreateCustomApiRequest(HttpMethod method, string endpoint)
         {
             return WebUtility.CreateWebRequestSimple(method, endpoint, this._authorizeHeader);
         }
 
-        internal HttpWebRequest CreateApiRequest(string method, string endpoint, IQuery query = null)
+        internal HttpRequestMessage CreateApiRequest(HttpMethod method, Uri endpoint, IQuery query = null)
         {
             return WebUtility.CreateWebRequest(method, endpoint, query, this._authorizeHeader);
         }
 
-        internal HttpWebRequest CreateApiGetRequest(string endpoint, IQuery query = null)
+        internal HttpRequestMessage CreateApiGetRequest(Uri endpoint, IQuery query = null)
         {
-            return this.CreateApiRequest(HttpMethods.GET, endpoint, query);
+            return this.CreateApiRequest(HttpMethod.Get, endpoint, query);
         }
 
-        internal HttpWebRequest CreateApiPostRequest(string endpoint, IQuery query = null)
+        internal HttpRequestMessage CreateApiPostRequest(Uri endpoint, IQuery query = null)
         {
-            return this.CreateApiRequest(HttpMethods.POST, endpoint, query);
+            return this.CreateApiRequest(HttpMethod.Post, endpoint, query);
         }
 
-        internal HttpWebRequest CreateApiPutRequest(string endpoint, IQuery query = null)
+        internal HttpRequestMessage CreateApiPutRequest(Uri endpoint, IQuery query = null)
         {
-            return this.CreateApiRequest(HttpMethods.PUT, endpoint, query);
+            return this.CreateApiRequest(HttpMethod.Put, endpoint, query);
         }
 
-        internal HttpWebRequest CreateApiDeleteRequest(string endpoint, IQuery query = null)
+        internal HttpRequestMessage CreateApiDeleteRequest(Uri endpoint, IQuery query = null)
         {
-            return this.CreateApiRequest(HttpMethods.DELETE, endpoint, query);
+            return this.CreateApiRequest(HttpMethod.Delete, endpoint, query);
         }
 
         #endregion
 
         #region CreateRestApiRquest Functions
 
-        internal HttpWebRequest CreateCustomRestApiRequest(string method, string path)
+        internal HttpRequestMessage CreateCustomRestApiRequest(HttpMethod method, string path)
         {
-            return this.CreateCustomApiRequest(method, this.GetApiUrl(path));
+            return this.CreateCustomApiRequest(method, this.GetApiUrl(path).AbsoluteUri);
         }
 
-        internal HttpWebRequest CreateRestApiRequest(string method, string path, IQuery query = null)
+        internal HttpRequestMessage CreateRestApiRequest(HttpMethod method, string path, IQuery query = null)
         {
             return this.CreateApiRequest(method, this.GetApiUrl(path), query);
         }
 
-        internal HttpWebRequest CreateRestApiGetRequest(string path, IQuery query = null)
+        internal HttpRequestMessage CreateRestApiGetRequest(string path, IQuery query = null)
         {
-            return this.CreateRestApiRequest(HttpMethods.GET, path, query);
+            return this.CreateRestApiRequest(HttpMethod.Get, path, query);
         }
 
-        internal HttpWebRequest CreateRestApiPostRequest(string path, IQuery query = null)
+        internal HttpRequestMessage CreateRestApiPostRequest(string path, IQuery query = null)
         {
-            return this.CreateRestApiRequest(HttpMethods.POST, path, query);
+            return this.CreateRestApiRequest(HttpMethod.Post, path, query);
         }
 
-        internal HttpWebRequest CreateRestApiPutRequest(string path, IQuery query = null)
+        internal HttpRequestMessage CreateRestApiPutRequest(string path, IQuery query = null)
         {
-            return this.CreateRestApiRequest(HttpMethods.PUT, path, query);
+            return this.CreateRestApiRequest(HttpMethod.Put, path, query);
         }
 
-        internal HttpWebRequest CreateRestApiDeleteRequest(string path, IQuery query = null)
+        internal HttpRequestMessage CreateRestApiDeleteRequest(string path, IQuery query = null)
         {
-            return this.CreateRestApiRequest(HttpMethods.DELETE, path, query);
+            return this.CreateRestApiRequest(HttpMethod.Delete, path, query);
         }
 
         #endregion
 
+        protected override T OnWebRequestSucceed<T>(HttpResponseMessage response)
+        {
+            var obj = base.OnWebRequestSucceed<T>(response);
+
+            if (obj is IRateLimit rateLimitObject)
+            {
+                rateLimitObject.RateLimit = RateLimit.FromHeaders(response.Headers);
+            }
+
+            return obj;
+        }
+
+        protected override void OnWebRequestFailed(HttpResponseMessage response)
+        {
+            throw MastodonException.FromWebException(response);
+        }
+
         #region SendRequest Functions
 
-        internal async Task<string> SendRequestText(HttpWebRequest request)
+        private Task<T> SendApiRequest<T>(HttpMethod method, Uri endpoint, IQuery query = null) where T : class
         {
-            try
-            {
-                using var response = await request.GetResponseAsync().ConfigureAwait(false);
-
-                return await response.GetResponseStream().ReadToEndAsync().ConfigureAwait(false);
-            }
-            catch (WebException wex) when (wex.Response != null)
-            {
-                throw MastodonException.FromWebException(wex);
-            }
+            var request = this.CreateApiRequest(method, endpoint, query);
+            return this.SendRequest<T>(request);
         }
 
-        internal async Task SendRequest(HttpWebRequest request)
+        private async Task SendApiRequest(HttpMethod method, Uri endpoint, IQuery query = null)
         {
-            try
-            {
-                await request.GetResponseAsync().ConfigureAwait(false);
-            }
-            catch (WebException wex) when (wex.Response != null)
-            {
-                throw MastodonException.FromWebException(wex);
-            }
-        }
-
-        internal async Task<T> SendRequest<T>(HttpWebRequest request) where T : class
-        {
-            try
-            {
-                using var response = await request.GetResponseAsync().ConfigureAwait(false);
-                using var stream = response.GetResponseStream();
-                var obj = await JsonUtility.DeserializeAsync<T>(stream).ConfigureAwait(false);
-
-                if (obj is IRateLimit rlObj)
-                {
-                    rlObj.RateLimit = RateLimit.FromHeaders(response.Headers);
-                }
-
-                return obj;
-            }
-            catch (WebException wex) when (wex.Response != null)
-            {
-                throw MastodonException.FromWebException(wex);
-            }
-        }
-
-        private Task<T> SendApiRequest<T>(string method, string endpoint, IQuery query = null) where T : class
-        {
-            return this.SendRequest<T>(this.CreateApiRequest(method, endpoint, query));
-        }
-
-        private Task SendApiRequest(string method, string endpoint, IQuery query = null)
-        {
-            return this.SendRequest(this.CreateApiRequest(method, endpoint, query));
+            using var request = this.CreateApiRequest(method, endpoint, query);
+            await this.SendRequest<string>(request).ConfigureAwait(false);
         }
 
         #endregion
 
         #region API Methods<T>
 
-        internal Task<T> ApiGetRequestAsync<T>(string endpoint, IQuery query = null) where T : class
+        internal Task<T> ApiGetRequestAsync<T>(string path, IQuery query = null)
+            where T : class
         {
-            return this.SendApiRequest<T>(HttpMethods.GET, endpoint, query);
+            return this.SendApiRequest<T>(HttpMethod.Get, this.GetApiUrl(path), query);
         }
 
-        internal Task<T> ApiPostRquestAsync<T>(string endpoint, IQuery query = null) where T : class
+        internal Task<T> ApiPostRquestAsync<T>(string path, IQuery query = null)
+            where T : class
         {
-            return this.SendApiRequest<T>(HttpMethods.POST, endpoint, query);
+            return this.SendApiRequest<T>(HttpMethod.Post, this.GetApiUrl(path), query);
         }
 
-        internal Task<T> ApiPutRqeustAsync<T>(string endpoint, IQuery query = null) where T : class
+        internal Task<T> ApiPutRqeustAsync<T>(string path, IQuery query = null)
+            where T : class
         {
-            return this.SendApiRequest<T>(HttpMethods.PUT, endpoint, query);
+            return this.SendApiRequest<T>(HttpMethod.Put, this.GetApiUrl(path), query);
         }
 
-        internal Task<T> ApiDeleteRequestAsync<T>(string endpoint, IQuery query = null) where T : class
+        internal Task<T> ApiDeleteRequestAsync<T>(string path, IQuery query = null)
+            where T : class
         {
-            return this.SendApiRequest<T>(HttpMethods.DELETE, endpoint, query);
+            return this.SendApiRequest<T>(HttpMethod.Delete, this.GetApiUrl(path), query);
         }
 
         #endregion
@@ -284,22 +263,22 @@ namespace SocialApis.Mastodon
 
         internal Task<T> RestApiGetRequestAsync<T>(string path, IQuery query = null) where T : class
         {
-            return this.SendApiRequest<T>(HttpMethods.GET, this.GetApiUrl(path), query);
+            return this.SendApiRequest<T>(HttpMethod.Get, this.GetApiUrl(path), query);
         }
 
         internal Task<T> RestApiPostRequestAsync<T>(string path, IQuery query = null) where T : class
         {
-            return this.SendApiRequest<T>(HttpMethods.POST, this.GetApiUrl(path), query);
+            return this.SendApiRequest<T>(HttpMethod.Post, this.GetApiUrl(path), query);
         }
 
         internal Task<T> RestApiPutRequestAsync<T>(string path, IQuery query = null) where T : class
         {
-            return this.SendApiRequest<T>(HttpMethods.PUT, this.GetApiUrl(path), query);
+            return this.SendApiRequest<T>(HttpMethod.Put, this.GetApiUrl(path), query);
         }
 
         internal Task<T> RestApiDeleteRequestAsync<T>(string path, IQuery query = null) where T : class
         {
-            return this.SendApiRequest<T>(HttpMethods.DELETE, this.GetApiUrl(path), query);
+            return this.SendApiRequest<T>(HttpMethod.Delete, this.GetApiUrl(path), query);
         }
 
         #endregion
@@ -308,22 +287,22 @@ namespace SocialApis.Mastodon
 
         internal Task RestApiGetRequestAsync(string path, IQuery query = null)
         {
-            return this.SendApiRequest(HttpMethods.GET, this.GetApiUrl(path), query);
+            return this.SendApiRequest(HttpMethod.Get, this.GetApiUrl(path), query);
         }
 
         internal Task RestApiPostRequestAsync(string path, IQuery query = null)
         {
-            return this.SendApiRequest(HttpMethods.POST, this.GetApiUrl(path), query);
+            return this.SendApiRequest(HttpMethod.Post, this.GetApiUrl(path), query);
         }
 
         internal Task RestApiPutRequestAsync(string path, IQuery query = null)
         {
-            return this.SendApiRequest(HttpMethods.PUT, this.GetApiUrl(path), query);
+            return this.SendApiRequest(HttpMethod.Put, this.GetApiUrl(path), query);
         }
 
         internal Task RestApiDeleteRequestAsync(string path, IQuery query = null)
         {
-            return this.SendApiRequest(HttpMethods.DELETE, this.GetApiUrl(path), query);
+            return this.SendApiRequest(HttpMethod.Delete, this.GetApiUrl(path), query);
         }
 
         #endregion

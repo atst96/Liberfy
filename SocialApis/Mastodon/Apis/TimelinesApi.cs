@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SocialApis.Utils;
 
 namespace SocialApis.Mastodon.Apis
 {
@@ -24,7 +25,7 @@ namespace SocialApis.Mastodon.Apis
 
         public Task<Status[]> Tag(string hashtag, IQuery query = null)
         {
-            return this.Api.RestApiGetRequestAsync<Status[]>($"timelines/tag/{ WebUtility.UrlEncode(hashtag) }", query);
+            return this.Api.RestApiGetRequestAsync<Status[]>($"timelines/tag/{ WebUtil.UrlEncode(hashtag) }", query);
         }
 
         public Task<Status[]> Tag(long listId, IQuery query = null)

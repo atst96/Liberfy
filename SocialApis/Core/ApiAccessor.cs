@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Net.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using SocialApis.Utils;
@@ -19,6 +20,8 @@ namespace SocialApis.Core
         {
             this._httpClient = new HttpClient();
         }
+
+        internal HttpClient InternalHttpClient => this._httpClient;
 
         /// <summary>
         /// JSON APIにリクエストを送信する。
@@ -62,6 +65,57 @@ namespace SocialApis.Core
                 this.OnWebRequestFailed(resposne);
                 return;
             }
+        }
+
+        internal async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+        {
+            var response = await this._httpClient.SendAsync(request).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                this.OnWebRequestFailed(response);
+            }
+
+            return response;
+        }
+
+
+        internal async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption)
+        {
+            var response = await this._httpClient.SendAsync(request, completionOption).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                this.OnWebRequestFailed(response);
+            }
+
+            return response;
+        }
+
+
+        internal async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken)
+        {
+            var response = await this._httpClient.SendAsync(request, completionOption, cancellationToken).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                this.OnWebRequestFailed(response);
+            }
+
+            return response;
+        }
+
+
+        internal async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var response = await this._httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                this.OnWebRequestFailed(response);
+            }
+
+            return response;
         }
 
         /// <summary>

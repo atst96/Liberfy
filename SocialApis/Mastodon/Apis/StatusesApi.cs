@@ -44,8 +44,7 @@ namespace SocialApis.Mastodon.Apis
 
         public Task Delete(long statusId)
         {
-            var req = this.Api.CreateRestApiDeleteRequest($"statuses/{ statusId }");
-            return this.Api.SendRequest(req);
+            return this.Api.RestApiPostRequestAsync($"statuses/{ statusId }");
         }
 
         public Task<Status> Reblog(long statusId)

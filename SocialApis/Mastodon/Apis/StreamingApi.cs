@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.WebSockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SocialApis.Mastodon.Apis
@@ -16,21 +19,15 @@ namespace SocialApis.Mastodon.Apis
 
         private async Task<IDisposable> StartStreaming(string path, Query query, IMastodonStreamResolver streamingResolver)
         {
-            var request = this.Api.CreateRestApiGetRequest(path, query);
+            using var request = this.Api.CreateRestApiGetRequest(path, query);
+            using var httpClient = new HttpClient();
 
-            try
-            {
-                var response = await request.GetResponseAsync();
-                var receiver = new MastodonHttpStreamingReceiver(response, streamingResolver);
+            using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, CancellationToken.None);
 
-                receiver.Start();
+            var receiver = new MastodonHttpStreamingReceiver(response, streamingResolver);
+            receiver.Start();
 
-                return receiver;
-            }
-            catch (WebException wex)
-            {
-                throw MastodonException.FromWebException(wex);
-            }
+            return receiver;
         }
 
         public Task<IDisposable> User(IMastodonStreamResolver streamingResolver)

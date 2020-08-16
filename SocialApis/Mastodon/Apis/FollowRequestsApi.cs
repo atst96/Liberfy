@@ -19,14 +19,12 @@ namespace SocialApis.Mastodon.Apis
 
         public Task Authorize(long accountId)
         {
-            var req = this.Api.CreateRestApiPostRequest($"follow_requests/{ accountId }/authorize");
-            return WebUtility.SendRequest(req);
+            return this.Api.RestApiPostRequestAsync($"follow_requests/{ accountId }/authorize");
         }
 
         public Task Reject(long accountId)
         {
-            var req = this.Api.CreateRestApiPostRequest($"follow_requests/{ accountId }/reject");
-            return WebUtility.SendRequest(req);
+            return this.Api.RestApiPostRequestAsync($"follow_requests/{ accountId }/reject");
         }
     }
 }

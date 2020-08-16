@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
+using SocialApis.Core;
+using SocialApis.Utils;
 
 namespace SocialApis.Mastodon.Apis
 {
@@ -13,7 +17,7 @@ namespace SocialApis.Mastodon.Apis
         {
         }
 
-        public async Task<Attachment> Upload(Stream file, string description = null, float[] focus = null, IProgress<UploadProgress> progress = null)
+        public async Task<Attachment> Upload(Stream file, string description = null, float[] focus = null, IProgress<UploadReport> progress = null)
         {
             if (focus != null && focus.Length != 2)
             {
@@ -21,41 +25,22 @@ namespace SocialApis.Mastodon.Apis
             }
 
             var boundary = OAuthHelper.GenerateNonce();
+            using var formData = new MultipartFormDataContent(boundary);
 
-            var request = this.Api.CreateCustomRestApiRequest(HttpMethods.POST, "media");
-            request.ContentType = "multipart/form-data; boundary=" + boundary;
-
-            using var requestStream = await request.GetRequestStreamAsync().ConfigureAwait(false);
-            using var writer = new StreamWriter(requestStream, EncodingUtility.UTF8);
-
-            writer.WriteLine("--" + boundary);
-            writer.WriteLine(@"Content-Disposition: form-data; name=""file""; filename=""image""");
-            writer.WriteLine();
-            writer.Flush();
-
-            await file.UploadCopyToAsync(requestStream, progress).ConfigureAwait(false);
-
-            writer.WriteLine();
+            using var request = this.Api.CreateCustomRestApiRequest(HttpMethod.Post, "media");
 
             if (description?.Length > 0)
             {
-                writer.WriteLine("--" + boundary);
-                writer.WriteLine(@"Content-Disposition: form-data; name=""description""");
-                writer.WriteLine();
-                writer.WriteLine(description);
+                formData.Add(new StringContent(description, EncodingUtil.UTF8), "description");
             }
 
             if (focus != null)
             {
-                writer.WriteLine("--" + boundary);
-                writer.WriteLine(@"Content-Disposition: form-data; name=""focus""");
-                writer.WriteLine();
-                writer.WriteLine(string.Join(",", focus));
+                var focusContent = string.Join(",", focus);
+                formData.Add(new StringContent(focusContent, EncodingUtil.UTF8), "focus");
             }
 
-            writer.WriteLine("--" + boundary + "--");
-
-            writer.Flush();
+            formData.Add(new ProgressableUploadContent(file, progressReceiver: progress), "file", "image");
 
             return await this.Api.SendRequest<Attachment>(request).ConfigureAwait(false);
         }
