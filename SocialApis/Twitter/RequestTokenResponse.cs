@@ -8,9 +8,10 @@ namespace SocialApis.Twitter
 {
     public class RequestTokenResponse
     {
-
         public string OAuthToken { get; }
+
         public string OAuthTokenSecret { get; }
+
         public bool IsOAuthCallbackConfirmed { get; }
 
         public string GetAuthorizeUrl()
@@ -25,28 +26,23 @@ namespace SocialApis.Twitter
 
         internal RequestTokenResponse(string value)
         {
-            char[] splitCharacters = { '=' };
+            var values = WebUtility.ParseQueryString(value);
 
-            foreach (var pair in value.Split('&'))
+            if (values.TryGetValue("oauth_token", out var oauthToken))
             {
-                var tokens = pair.Split(splitCharacters, 2);
+                this.OAuthToken = oauthToken;
+            }
 
-                switch (tokens[0])
+            if (values.TryGetValue("oauth_token_secret", out var oauthTokenSecret))
+            {
+                this.OAuthTokenSecret = oauthTokenSecret;
+            }
+
+            if (values.TryGetValue("oauth_callback_confirmed", out var oauthCallbackConfirmed))
+            {
+                if (bool.TryParse(oauthCallbackConfirmed, out bool isConfirmed))
                 {
-                    case "oauth_token":
-                        this.OAuthToken = tokens[1];
-                        break;
-
-                    case "oauth_token_secret":
-                        this.OAuthTokenSecret = tokens[1];
-                        break;
-
-                    case "oauth_callback_confirmed":
-                        if (bool.TryParse(tokens[1], out bool isConfirmed))
-                        {
-                            this.IsOAuthCallbackConfirmed = isConfirmed;
-                        }
-                        break;
+                    this.IsOAuthCallbackConfirmed = isConfirmed;
                 }
             }
         }

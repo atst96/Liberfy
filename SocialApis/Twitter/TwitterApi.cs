@@ -5,31 +5,54 @@ using System.Net;
 using System.Threading.Tasks;
 using Utf8Json;
 using System.Collections.Generic;
+using SocialApis.Core;
+using System.Net.Http;
+using System;
+using SocialApis.Utils;
 
 namespace SocialApis.Twitter
 {
     using IQuery = ICollection<KeyValuePair<string, object>>;
 
-    public class TwitterApi : IApi
+    public class TwitterApi : ApiAccessor, IApi
     {
-        private string _consumerKey;
-        private string _consumerSecret;
+        private readonly string _consumerKey;
+        private readonly string _consumerSecret;
         private string _accessToken;
         private string _accessTokenSecret;
 
+        /// <summary>
+        /// アカウントID
+        /// </summary>
         public long UserId { get; internal set; }
 
+        /// <summary>
+        /// スクリーンネーム
+        /// </summary>
         public string ScreenName { get; internal set; }
 
-        public string ConsumerKey => _consumerKey ?? string.Empty;
-        public string ConsumerSecret => _consumerSecret ?? string.Empty;
+        /// <summary>
+        /// ConsumerKey
+        /// </summary>
+        public string ConsumerKey => this._consumerKey ?? string.Empty;
 
+        /// <summary>
+        /// ConsumerSecret
+        /// </summary>
+        public string ConsumerSecret => this._consumerSecret ?? string.Empty;
+
+        /// <summary>
+        /// AccessToken
+        /// </summary>
         public string AccessToken
         {
             get => this._accessToken ?? string.Empty;
             internal set => this._accessToken = value;
         }
 
+        /// <summary>
+        /// AccessTokenSecret
+        /// </summary>
         public string AccessTokenSecret
         {
             get => this._accessTokenSecret ?? string.Empty;
@@ -37,11 +60,16 @@ namespace SocialApis.Twitter
         }
 
         public string ApiToken => this._accessToken ?? string.Empty;
+
         public string ApiTokenSecret => this._accessTokenSecret ?? string.Empty;
 
-        private TwitterApi() { }
+        public TwitterApi(string consumerKey, string consumerSecret)
+            : this(consumerKey, consumerSecret, null, null)
+        {
+        }
 
-        public TwitterApi(string consumerKey, string consumerSecret, string accessToken = null, string accessTokenSecret = null) : this()
+        public TwitterApi(string consumerKey, string consumerSecret, string accessToken = null, string accessTokenSecret = null)
+            : base()
         {
             this._consumerKey = consumerKey;
             this._consumerSecret = consumerSecret;
@@ -88,17 +116,44 @@ namespace SocialApis.Twitter
         private FriendshipsApi _friendships;
         public FriendshipsApi Friendships => this._friendships ??= new FriendshipsApi(this);
 
-        private const string RestApiBaseUrl = "https://api.twitter.com/1.1/";
+        private static readonly Uri RestApiBaseUrl = new Uri("https://api.twitter.com/1.1/");
 
-        private static string GetRestApiUrl(string path)
+        private static Uri GetRestApiUrl(string path)
         {
-            return string.Concat(RestApiBaseUrl, path, ".json");
+            return new Uri(RestApiBaseUrl, string.Concat(path, ".json"));
         }
 
-        private Task<T> SendRequest<T>(string method, string endpoint, IQuery query = null) where T : class
+        private Task<T> SendRequest<T>(HttpMethod method, Uri endpoint, HttpContent content)
+            where T : class
         {
-            return this.SendRequest<T>(WebUtility.CreateOAuthRequest(method, endpoint, this, query));
+            var request = WebUtility.CreateOAuthRequest(method, endpoint, this, content);
+
+            return this.SendRequest<T>(request);
         }
+
+        private Task<T> SendRequest<T>(HttpMethod method, Uri endpoint, IQuery query = null)
+            where T : class
+        {
+            var request = WebUtility.CreateOAuthRequest(method, endpoint, this, query);
+
+            return this.SendRequest<T>(request);
+        }
+
+        protected override T OnWebRequestSucceed<T>(HttpResponseMessage response)
+            where T : class
+        {
+            var responseObj = base.OnWebRequestSucceed<T>(response);
+
+            if (responseObj is IRateLimit rateLimitObject)
+            {
+                rateLimitObject.RateLimit = RateLimit.FromHeaders(response.Headers);
+            }
+
+            return responseObj;
+        }
+
+        protected override void OnWebRequestFailed(HttpResponseMessage response)
+            => throw TwitterException.FromWebException(response);
 
         internal async Task<T> SendRequest<T>(HttpWebRequest request) where T : class
         {
@@ -106,7 +161,7 @@ namespace SocialApis.Twitter
             {
                 using var response = await request.GetResponseAsync().ConfigureAwait(false);
                 var stream = response.GetResponseStream();
-                var obj = await JsonUtility.DeserializeAsync<T>(stream).ConfigureAwait(false);
+                var obj = await JsonUtil.DeserializeAsync<T>(stream).ConfigureAwait(false);
 
                 if (obj is IRateLimit rlObj)
                 {
@@ -121,25 +176,53 @@ namespace SocialApis.Twitter
             }
         }
 
-        internal Task<T> ApiGetRequestAsync<T>(string endpoint, IQuery query) where T : class
+        internal Task<T> ApiGetRequestAsync<T>(Uri endpoint, IQuery query)
+            where T : class
         {
-            return this.SendRequest<T>(HttpMethods.GET, endpoint, query);
+            return this.SendRequest<T>(HttpMethod.Get, endpoint, query);
         }
 
-        internal Task<T> ApiPostRequestAsync<T>(string endpoint, IQuery query = null) where T : class
+        internal Task<T> ApiPostRequestAsync<T>(Uri endpoint, IQuery query = null)
+            where T : class
         {
-            return this.SendRequest<T>(HttpMethods.POST, endpoint, query);
+            return this.SendRequest<T>(HttpMethod.Post, endpoint, query);
         }
 
-
-        internal Task<T> RestApiGetRequestAsync<T>(string path, IQuery query = null) where T : class
+        internal Task<T> ApiGetRequestAsync<T>(Uri endpoint, HttpContent content)
+            where T : class
         {
-            return this.ApiGetRequestAsync<T>(GetRestApiUrl(path), query);
+            return this.SendRequest<T>(HttpMethod.Get, endpoint, content);
         }
 
-        internal Task<T> RestApiPostRequestAsync<T>(string path, IQuery query = null) where T : class
+        internal Task<T> ApiPostRequestAsync<T>(Uri endpoint, HttpContent content = null)
+            where T : class
+        {
+            return this.SendRequest<T>(HttpMethod.Get, endpoint, content);
+        }
+
+        internal Task<T> RestApiGetRequestAsync<T>(string path, IQuery query = null)
+            where T : class
+        {
+            var url = GetRestApiUrl(path);
+            return this.ApiGetRequestAsync<T>(url, query);
+        }
+
+        internal Task<T> RestApiPostRequestAsync<T>(string path, IQuery query = null)
+            where T : class
         {
             return this.ApiPostRequestAsync<T>(GetRestApiUrl(path), query);
         }
+
+        //internal Task<T> RestApiGetRequestAsync<T>(string path, HttpContent content = null)
+        //    where T : class
+        //{
+        //    return this.ApiGetRequestAsync<T>(GetRestApiUrl(path), content);
+        //}
+
+        //internal Task<T> RestApiPostRequestAsync<T>(string path, HttpContent content = null)
+        //    where T : class
+        //{
+        //    return this.ApiPostRequestAsync<T>(GetRestApiUrl(path), content);
+        //}
     }
 }
