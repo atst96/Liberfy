@@ -1,4 +1,5 @@
 ﻿using SocialApis.Mastodon;
+using SocialApis.Mastodon.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Windows.Threading;
 
 namespace Liberfy.Services.Mastodon
 {
-    internal class MastodonTimeline : TimelineBase, IMastodonStreamResolver
+    internal class MastodonTimeline : TimelineBase, IObserver<StreamResponse>
     {
         private readonly static Dispatcher _dispatcher = App.Current.Dispatcher;
 
@@ -16,6 +17,7 @@ namespace Liberfy.Services.Mastodon
         private readonly MastodonAccount _account;
         public MastodonApi _tokens => _account.Api;
 
+        private IMastodonStreamClient _streamClient;
         private IDisposable _streamDisposer;
 
         public MastodonTimeline(MastodonAccount account)
@@ -35,14 +37,15 @@ namespace Liberfy.Services.Mastodon
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 
-            this._streamDisposer = this._tokens.Streaming.User(this);
+            this._streamClient = await this._tokens.Streaming.User();
+            this._streamDisposer = this._streamClient.Subscribe(this);
 
             // this.LoadMessageTimeline(),
         }
 
         public override void Unload()
         {
-            this._streamDisposer?.Dispose();
+            this._streamClient?.Dispose();
             this.AccountColumns.Clear();
         }
 
@@ -101,28 +104,22 @@ namespace Liberfy.Services.Mastodon
 
         public void OnStreamingUpdate(Status status)
         {
-            _dispatcher.InvokeAsync(() =>
-            {
-                var item = new StatusItem(status, this._account);
+            var item = new StatusItem(status, this._account);
 
-                foreach (var column in this.AccountColumns.GetsTypeOf(ColumnType.Home))
-                {
-                    column.Items.Insert(0, item);
-                }
-            });
+            foreach (var column in this.AccountColumns.GetsTypeOf(ColumnType.Home))
+            {
+                column.Items.Insert(0, item);
+            }
         }
 
         public void OnStreamingNotification(Notification notification)
         {
-            //_dispatcher.InvokeAsync(() =>
-            //{
-            //    var item = new StatusItem(status, this._account);
+            //var item = new StatusItem(status, this._account);
 
-            //    foreach (var column in this.AccountColumns.GetsTypeOf(ColumnType.Notification))
-            //    {
-            //        column.Items.Insert(0, item);
-            //    }
-            //});
+            //foreach (var column in this.AccountColumns.GetsTypeOf(ColumnType.Notification))
+            //{
+            //    column.Items.Insert(0, item);
+            //}
         }
 
         public void OnStreamingDelete(long id)
@@ -131,6 +128,48 @@ namespace Liberfy.Services.Mastodon
 
         public void OnStreamingFilterChanged()
         {
+        }
+
+        public void OnCompleted()
+        {
+        }
+
+        public void OnError(Exception error)
+        {
+        }
+
+        public void OnNext(StreamResponse value)
+        {
+            _dispatcher.InvokeAsync(() =>
+            {
+                switch (value)
+                {
+                    case StreamStatusResponse statusResposne:
+                        this.OnStreamingUpdate(statusResposne.Status);
+                        break;
+
+                    case StreamNotificationResponse notificationResponse:
+                        this.OnStreamingNotification(notificationResponse.Notification);
+                        break;
+
+                    case StreamDeleteResponse deleteResposne:
+                        this.OnStreamingDelete(deleteResposne.StatusId);
+                        break;
+
+                    case StreamFiltersChangedResponse filtersChangedResponse:
+                        this.OnStreamingFilterChanged();
+                        break;
+
+                    default:
+                        break;
+                }
+            });
+        }
+
+        ~MastodonTimeline()
+        {
+            this._streamDisposer?.Dispose();
+            this._streamClient?.Dispose();
         }
     }
 }

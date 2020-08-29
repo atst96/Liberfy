@@ -155,27 +155,6 @@ namespace SocialApis.Twitter
         protected override void OnWebRequestFailed(HttpResponseMessage response)
             => throw TwitterException.FromWebException(response);
 
-        internal async Task<T> SendRequest<T>(HttpWebRequest request) where T : class
-        {
-            try
-            {
-                using var response = await request.GetResponseAsync().ConfigureAwait(false);
-                var stream = response.GetResponseStream();
-                var obj = await JsonUtil.DeserializeAsync<T>(stream).ConfigureAwait(false);
-
-                if (obj is IRateLimit rlObj)
-                {
-                    rlObj.RateLimit = RateLimit.FromHeaders(response.Headers);
-                }
-
-                return obj;
-            }
-            catch (WebException wex) when (wex.Response != null)
-            {
-                throw TwitterException.FromWebException(wex);
-            }
-        }
-
         internal Task<T> ApiGetRequestAsync<T>(Uri endpoint, IQuery query)
             where T : class
         {
@@ -212,17 +191,5 @@ namespace SocialApis.Twitter
         {
             return this.ApiPostRequestAsync<T>(GetRestApiUrl(path), query);
         }
-
-        //internal Task<T> RestApiGetRequestAsync<T>(string path, HttpContent content = null)
-        //    where T : class
-        //{
-        //    return this.ApiGetRequestAsync<T>(GetRestApiUrl(path), content);
-        //}
-
-        //internal Task<T> RestApiPostRequestAsync<T>(string path, HttpContent content = null)
-        //    where T : class
-        //{
-        //    return this.ApiPostRequestAsync<T>(GetRestApiUrl(path), content);
-        //}
     }
 }

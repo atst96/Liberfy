@@ -32,7 +32,8 @@ namespace Liberfy.Services.Mastodon
 
                 if (cachecClientKey == null)
                 {
-                    var clientKey = await MastodonApi.Apps.Register(instanceUri, App.Name, ApiScopes).ConfigureAwait(false);
+                    var api = new MastodonApi(instanceUri, null, null);
+                    var clientKey = await api.Apps.Register(instanceUri, App.Name, ApiScopes).ConfigureAwait(false);
 
                     App.Setting.ClientKeys.Add(new ClientKeyCache(instanceUri, clientKey));
 

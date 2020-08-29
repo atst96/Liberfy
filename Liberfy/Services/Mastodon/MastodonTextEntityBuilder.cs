@@ -74,6 +74,7 @@ namespace Liberfy.Services.Mastodon
             if (matches.Count == 0)
             {
                 entities.AddText(text);
+                return;
             }
 
             if (matches[0].Index != 0)
