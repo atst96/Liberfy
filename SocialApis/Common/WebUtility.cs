@@ -16,8 +16,6 @@ namespace SocialApis
     internal static class WebUtility
     {
         public static readonly Encoding UTF8Encoding = new UTF8Encoding(false);
-        private static readonly char[] _uriSplitCharacters = new[] { '?', '&', '#' };
-
 
         public static HttpRequestMessage CreateWebRequest(HttpMethod method, Uri requestUri, IQuery queryParameters, WebHeaderCollection headers = null)
         {
@@ -74,42 +72,6 @@ namespace SocialApis
             return request;
         }
 
-        [Obsolete]
-        public static HttpWebRequest CreateWebRequest(string method, string requestUri, IQuery parameters, WebHeaderCollection headers = null)
-        {
-            requestUri = requestUri.Split(_uriSplitCharacters).First();
-            method = method ?? HttpMethods.GET;
-
-            string queryString = default;
-
-            if (parameters?.Any() ?? false)
-            {
-                queryString = Query.JoinParametersWithAmpersand(parameters);
-
-                if (method == HttpMethods.GET || method == HttpMethods.DELETE)
-                {
-                    requestUri = string.Concat(requestUri, "?", queryString);
-                }
-            }
-
-            var request = CreateWebRequestSimple(method, requestUri, headers);
-
-            if (method == HttpMethods.POST || method == HttpMethods.PUT)
-            {
-                request.ContentType = HttpContentTypes.FormUrlEncoded;
-
-                if (queryString != null)
-                {
-                    using var stream = request.GetRequestStream();
-                    var data = EncodingUtil.UTF8.GetBytes(queryString);
-
-                    stream.Write(data, 0, data.Length);
-                }
-            }
-
-            return request;
-        }
-
         public static HttpRequestMessage CreateWebRequestSimple(HttpMethod method, string requestUri, WebHeaderCollection headers = null)
         {
             var request = new HttpRequestMessage(method, requestUri);
@@ -123,20 +85,6 @@ namespace SocialApis
 
                     request.Headers.Add(key, values);
                 }
-            }
-
-            return request;
-        }
-
-        public static HttpWebRequest CreateWebRequestSimple(string method, string requestUri, WebHeaderCollection headers = null)
-        {
-            var request = WebRequest.CreateHttp(new Uri(requestUri, UriKind.Absolute));
-
-            request.Method = method ?? HttpMethods.GET;
-
-            if (headers != null)
-            {
-                request.Headers = headers;
             }
 
             return request;
@@ -162,14 +110,6 @@ namespace SocialApis
             headers.Authorization = new AuthenticationHeaderValue("OAuth", authenticationString);
 
             return request;
-        }
-
-        [Obsolete]
-        public static async Task<T> SendRequest<T>(HttpWebRequest request) where T : class
-        {
-            using var response = await request.GetResponseAsync().ConfigureAwait(false);
-
-            return await JsonUtil.DeserializeAsync<T>(response.GetResponseStream()).ConfigureAwait(false);
         }
 
         public static IDictionary<string, string> ParseQueryString(string content)
