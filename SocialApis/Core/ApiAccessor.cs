@@ -1,9 +1,6 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using SocialApis.Utils;
@@ -19,15 +16,7 @@ namespace SocialApis.Core
         /// </summary>
         protected ApiAccessor()
         {
-            var httpClientHandler = new HttpClientHandler();
-            httpClientHandler.ServerCertificateCustomValidationCallback = OnServerCertificateCustomValidationCallback;
-
-            this._httpClient = new HttpClient(httpClientHandler);
-        }
-
-        private bool OnServerCertificateCustomValidationCallback(HttpRequestMessage arg1, X509Certificate2 arg2, X509Chain arg3, SslPolicyErrors arg4)
-        {
-            return true;
+            this._httpClient = WebFactory.CreateHttpClient();
         }
 
         internal HttpClient InternalHttpClient => this._httpClient;

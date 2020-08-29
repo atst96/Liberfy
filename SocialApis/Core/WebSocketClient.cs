@@ -35,8 +35,7 @@ namespace SocialApis.Core
         /// </summary>
         protected WebSocketClient()
         {
-            this.Connection = new ClientWebSocket();
-            this.Connection.Options.RemoteCertificateValidationCallback = (arg1, arg2, arg3, arg4) => true;
+            this.Connection = WebFactory.CreateWebSocketClient();
         }
 
         /// <summary>
