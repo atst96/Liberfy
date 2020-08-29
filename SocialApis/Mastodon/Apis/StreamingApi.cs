@@ -17,51 +17,34 @@ namespace SocialApis.Mastodon.Apis
         {
         }
 
-        private async Task<IDisposable> StartStreaming(string path, Query query, IMastodonStreamResolver streamingResolver)
+        private async Task<IMastodonStreamClient> StartStreaming(StreamType streamType, string streamParam)
         {
-            using var request = this.Api.CreateRestApiGetRequest(path, query);
-            using var httpClient = new HttpClient();
+            var client = new MastodonStreamClient(this.Api, streamType, streamParam);
 
-            using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, CancellationToken.None);
+            await client.Connect().ConfigureAwait(false);
 
-            var receiver = new MastodonHttpStreamingReceiver(response, streamingResolver);
-            receiver.Start();
-
-            return receiver;
+            return client;
         }
 
-        public Task<IDisposable> User(IMastodonStreamResolver streamingResolver)
-        {
-            return this.StartStreaming("streaming/user", null, streamingResolver);
-        }
+        public Task<IMastodonStreamClient> User()
+            => this.StartStreaming(StreamType.User, null);
 
-        public Task<IDisposable> Public(IMastodonStreamResolver streamingResolver)
-        {
-            return this.StartStreaming("streaming/public", null, streamingResolver);
-        }
+        public Task<IMastodonStreamClient> Public()
+            => this.StartStreaming(StreamType.Public, null);
 
-        public Task<IDisposable> Local(IMastodonStreamResolver streamingResolver)
-        {
-            return this.StartStreaming("streaming/public/local", null, streamingResolver);
-        }
+        public Task<IMastodonStreamClient> Local()
+            => this.StartStreaming(StreamType.PublicLocal, null);
 
-        public Task<IDisposable> Hashtag(string tag, IMastodonStreamResolver streamingResolver)
-        {
-            var query = new Query { ["tag"] = tag };
+        public Task<IMastodonStreamClient> Hashtag(string tag)
+            => this.StartStreaming(StreamType.Hashtag, tag);
 
-            return this.StartStreaming("streaming/hashtag", query, streamingResolver);
-        }
+        public Task<IMastodonStreamClient> HashtagLocal(string tag)
+            => this.StartStreaming(StreamType.HashtagLocal, tag);
 
-        public Task<IDisposable> List(long listId, IMastodonStreamResolver streamingResolver)
-        {
-            var query = new Query { ["list"] = listId };
+        public Task<IMastodonStreamClient> List(long listId)
+            => this.StartStreaming(StreamType.List, listId.ToString());
 
-            return this.StartStreaming("streaming/list", query, streamingResolver);
-        }
-
-        public Task<IDisposable> Direct(IMastodonStreamResolver streamingResolver)
-        {
-            return this.StartStreaming("streaming/direct", null, streamingResolver);
-        }
+        public Task<IMastodonStreamClient> Direct()
+            => this.StartStreaming(StreamType.Direct, null);
     }
 }

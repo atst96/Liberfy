@@ -19,8 +19,8 @@ namespace SocialApis.Mastodon
         public Uri HostUrl { get; }
 
         public string ClientId { get; }
-        public string ClientSecret { get; }
-        public string AccessToken { get; }
+        public string ClientSecret { get; private set; }
+        public string AccessToken { get; private set; }
 
         string IApi.ConsumerKey => this.ClientId;
         string IApi.ConsumerSecret => this.ClientSecret;
@@ -110,9 +110,17 @@ namespace SocialApis.Mastodon
         private TimelinesApi _timelines;
         public TimelinesApi Timelines => this._timelines ??= new TimelinesApi(this);
 
-        public static class Apps
+        private AppsApi _apps;
+        public AppsApi Apps => this._apps ??= new AppsApi(this);
+
+        public class AppsApi : ApiBase
         {
-            public static Task<ClientKeyInfo> Register(Uri hostUrl, string clientName, string[] scopes, string redirectUris = "urn:ietf:wg:oauth:2.0:oob", Uri website = null)
+            internal AppsApi(MastodonApi api)
+                : base(api)
+            {
+            }
+
+            public Task<ClientKeyInfo> Register(Uri hostUrl, string clientName, string[] scopes, string redirectUris = "urn:ietf:wg:oauth:2.0:oob", Uri website = null)
             {
                 var query = new Query
                 {
@@ -122,11 +130,14 @@ namespace SocialApis.Mastodon
                 };
 
                 if (website != null)
+                {
                     query["website"] = website.AbsoluteUri;
+                }
 
-                string url = hostUrl.AbsoluteUri + "api/v1/apps";
+                var url = new Uri(hostUrl + "/api/v1/apps");
 
-                return WebUtility.SendRequest<ClientKeyInfo>(WebUtility.CreateWebRequest("POST", url, query));
+                var request = WebUtility.CreateWebRequest(HttpMethod.Post, url, query);
+                return this.Api.SendRequest<ClientKeyInfo>(request);
             }
         }
 

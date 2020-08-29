@@ -39,6 +39,15 @@ namespace SocialApis.Utils
             => JsonSerializer.Deserialize<T>(text, _jsonResolver);
 
         /// <summary>
+        /// バイナリデータを<typeparamref name="T"/>に変換する。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static T Deserialize<T>(byte[] data)
+            => JsonSerializer.Deserialize<T>(data, _jsonResolver);
+
+        /// <summary>
         /// ストリームのJSONを<typeparamref name="T"/>に変換する。
         /// </summary>
         /// <typeparam name="T"></typeparam>

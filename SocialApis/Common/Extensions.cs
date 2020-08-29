@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using SocialApis.Core;
 using Utf8Json;
 
-namespace SocialApis
+namespace SocialApis.Extensions
 {
     internal static class Extensions
     {
