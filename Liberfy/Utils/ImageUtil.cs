@@ -31,8 +31,8 @@ namespace Liberfy.Utils
             var image = new BitmapImage();
 
             image.BeginInit();
-            image.CreateOptions = BitmapCreateOptions.None;
-            image.CacheOption = BitmapCacheOption.None;
+            image.CreateOptions = BitmapCreateOptions.None | BitmapCreateOptions.IgnoreColorProfile | BitmapCreateOptions.PreservePixelFormat;
+            image.CacheOption = BitmapCacheOption.OnLoad;
             image.StreamSource = stream;
             image.EndInit();
 

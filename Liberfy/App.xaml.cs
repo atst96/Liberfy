@@ -45,7 +45,6 @@ namespace Liberfy
         /// </summary>
         internal static readonly Assembly AssemblyInfo = Assembly.GetExecutingAssembly();
 
-        private static Database _cacheDatabaseConnection;
         public static ProfileImageCache ProfileImageCache { get; private set; }
 
         public const string Name = "Liberfy";
@@ -117,8 +116,7 @@ namespace Liberfy
 
             this.TaskbarIcon = this.TryFindResource("taskbarIcon") as TaskbarIcon;
 
-            _cacheDatabaseConnection = new Database(Defaults.ImageCacheFile);
-            ProfileImageCache = new ProfileImageCache(_cacheDatabaseConnection); ;
+            ProfileImageCache = new ProfileImageCache();
 
             if (AccountManager.Count == 0 && !this.IsNeedInitialUserSettings())
             {
@@ -203,14 +201,11 @@ namespace Liberfy
         /// </summary>
         private void StartClient()
         {
-            ProfileImageCache.BeginLoadTimelineMode();
-
             var tasks = AccountManager.Accounts.AsParallel().Select(a => a.Load());
 
             Task.WhenAll(tasks).ContinueWith(_ =>
             {
                 Status.IsAccountLoaded = true;
-                ProfileImageCache.EndLoadTimelineMode();
             },
             TaskScheduler.FromCurrentSynchronizationContext());
         }
@@ -291,8 +286,6 @@ namespace Liberfy
         protected override void OnExit(ExitEventArgs e)
         {
             SystemEvents.SessionEnding -= this.OnSystemSessionEnding;
-
-            App._cacheDatabaseConnection?.Dispose();
 
             if (this.IsRequireSaveSetting)
             {
