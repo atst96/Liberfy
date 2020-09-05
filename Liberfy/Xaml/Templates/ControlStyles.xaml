@@ -402,14 +402,7 @@
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
-        <Setter Property="FontSize" Value="7.5pt" />
-        <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
-        <Setter Property="Width" Value="45" />
+        <Setter Property="Width" Value="46" />
         <Setter Property="Height" Value="29" />
    </Style>
 
@@ -422,15 +415,18 @@
                         Background="Transparent"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch">
-                        <ContentPresenter
+                        <Path
                             x:Name="presenter"
-                            TextBlock.Foreground="{TemplateBinding Foreground}"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            Content="{TemplateBinding Content}"
-                            ContentTemplate="{TemplateBinding ContentTemplate}"
-                            ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
-                            ContentStringFormat="{TemplateBinding ContentStringFormat}" />
+                            Stretch="None"
+                            Width="10" Height="10"
+                            UseLayoutRounding="True"
+                            SnapsToDevicePixels="True"
+                            RenderOptions.EdgeMode="Aliased"
+                            Stroke="{TemplateBinding Foreground}"
+                            StrokeThickness="1"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Data="{TemplateBinding Content}" />
                     </Border>
 
                     <ControlTemplate.Triggers>
@@ -443,7 +439,7 @@
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="presenter" Property="TextBlock.Foreground" Value="#66FFFFFF" />
+                            <Setter TargetName="presenter" Property="Stroke" Value="#66FFFFFF" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -458,30 +454,32 @@
                     <Border
                         x:Name="border"
                         Background="Transparent">
-                        <ContentPresenter
+                        <Path
                             x:Name="presenter"
-                            TextBlock.Foreground="{TemplateBinding Foreground}"
+                            Width="10" Height="10"
+                            UseLayoutRounding="True"
+                            SnapsToDevicePixels="True"
+                            RenderOptions.EdgeMode="Unspecified"
+                            Stretch="Uniform"
+                            Stroke="{TemplateBinding Foreground}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            Content="{TemplateBinding Content}"
-                            ContentTemplate="{TemplateBinding ContentTemplate}"
-                            ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
-                            ContentStringFormat="{TemplateBinding ContentStringFormat}" />
+                            Data="{TemplateBinding Content}" />
                     </Border>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="Background" Value="#EFEE001B" />
-                            <Setter TargetName="presenter" Property="TextBlock.Foreground" Value="#FFFFFFFF" />
+                            <Setter TargetName="presenter" Property="Stroke" Value="#FFFFFFFF" />
                         </Trigger>
 
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="border" Property="Background" Value="#B7C0000D" />
-                            <Setter TargetName="presenter" Property="TextBlock.Foreground" Value="#FFFFFFFF" />
+                            <Setter TargetName="presenter" Property="Stroke" Value="#FFFFFFFF" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="presenter" Property="TextBlock.Foreground" Value="#66FFFFFF" />
+                            <Setter TargetName="presenter" Property="Stroke" Value="#66FFFFFF" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -556,28 +554,28 @@
                         app:CustomWindow.IsHitTestVisible="True" >
                         <Button
                             x:Name="PART_MinimizeButton"
-                            Content="&#xE921;"
+                            Content="{StaticResource Icon.Minimize}"
                             ToolTip="最小化"
                             Command="{x:Static SystemCommands.MinimizeWindowCommand}"
                             Style="{StaticResource NormalCaptionButton}" />
 
                         <Button
                             x:Name="PART_MaximizeButton"
-                            Content="&#xE922;"
+                            Content="{StaticResource Icon.Maximize}"
                             ToolTip="最大化"
                             Command="{x:Static SystemCommands.MaximizeWindowCommand}"
                             Style="{StaticResource NormalCaptionButton}" />
 
                         <Button
                             x:Name="PART_RestoreButton"
-                            Content="&#xE923;"
+                            Content="{StaticResource Icon.Restore}"
                             ToolTip="元に戻す"
                             Command="{x:Static SystemCommands.RestoreWindowCommand}"
                             Style="{StaticResource NormalCaptionButton}" />
 
                         <Button
                             x:Name="PART_CloseButton"
-                            Content="&#xE8BB;"
+                            Content="{StaticResource Icon.Close}"
                             ToolTip="閉じる"
                             Command="{x:Static SystemCommands.CloseWindowCommand}"
                             Style="{StaticResource NormalCaptionCloseButton}" />
