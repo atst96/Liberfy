@@ -787,4 +787,23 @@
         <Setter Property="Template" Value="{StaticResource WizardPanelTemplate}" />
     </Style>
 
+    <!-- ImageViewer -->
+    <Style TargetType="{x:Type app:ImageViewer}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type app:ImageViewer}">
+                    <Canvas
+                        Name="PART_Container"
+                        Background="{TemplateBinding Background}">
+                        <Image
+                            Name="PART_Image"
+                            Source="{TemplateBinding Source}"
+                            SnapsToDevicePixels="True"
+                            UseLayoutRounding="False" />
+                    </Canvas>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>
