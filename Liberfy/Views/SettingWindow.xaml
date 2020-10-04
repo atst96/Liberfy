@@ -316,209 +316,81 @@
         </TabItem>
 
         <TabItem Header="アカウント管理">
-            <TabControl>
-                <TabItem Header="アカウント管理">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="260" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="260" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
 
-                        <Border
-                            BorderThickness="0 0 1 0"
-                            BorderBrush="{StaticResource ToolBarBorderBrush}">
-                            <DockPanel>
-                                <ToolBar
-                                    Padding="4 0"
-                                    DockPanel.Dock="Top"
-                                    ToolBarTray.IsLocked="True"
-                                    FontSize="{StaticResource UIFontSize}"
-                                    FontFamily="{StaticResource UIFont}"
-                                    Style="{StaticResource ToolBarStyle}">
-                                    <Button
-                                        FontWeight="Normal"
-                                        Padding="{StaticResource ToolBarIconPadding}">
-                                        <app:GeometryIcon
-                                            Data="{StaticResource FontAwesome.Icon.UserPlus}" />
-                                        <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="Click">
-                                                <l:TransitionInteractionMessageAction>
-                                                    <l:DirectInteractionMessage>
-                                                        <l:TransitionMessage
-                                                            Mode="Modal"
-                                                            WindowType="{x:Type v:AccountAuthenticationWindow}" />
-                                                    </l:DirectInteractionMessage>
-                                                </l:TransitionInteractionMessageAction>
-                                            </i:EventTrigger>
-                                        </i:Interaction.Triggers>
-                                    </Button>
-                                    <Separator />
-                                    <Button
-                                        Foreground="Red"
-                                        CommandParameter="{Binding SelectedAccount}"
-                                        Command="{Binding AccountDeleteCommand, Mode=OneTime}">
-                                        <app:GeometryIcon
-                                            Data="{StaticResource FontAwesome.Icon.Trash}" />
-                                    </Button>
-                                </ToolBar>
-
-                                <ListBox
-                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                    ItemsSource="{Binding Source={StaticResource accountsViewSource}, Mode=OneTime}"
-                                    ItemTemplateSelector="{StaticResource AccountTemplateSelector}"
-                                    SelectedItem="{Binding SelectedAccount, Mode=TwoWay}">
-                                    <ItemsControl.ItemContainerStyle>
-                                        <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                                            <Setter Property="Padding" Value="8" />
-                                        </Style>
-                                    </ItemsControl.ItemContainerStyle>
-                                    <ItemsControl.GroupStyle>
-                                        <GroupStyle
-                                            ContainerStyle="{StaticResource GroupItemStyle}">
-                                            <GroupStyle.HeaderTemplate>
-                                                <DataTemplate DataType="{x:Type app:AccountBase}">
-                                                    <TextBlock
-                                                        Text="{Binding Name, Mode=OneTime, Converter={StaticResource ServiceTypeToNameConverter}}" />
-                                                </DataTemplate>
-                                            </GroupStyle.HeaderTemplate>
-                                        </GroupStyle>
-                                    </ItemsControl.GroupStyle>
-                                </ListBox>
-                            </DockPanel>
-                        </Border>
-
-                        <DockPanel
-                            Grid.Column="1">
-                            <ToolBar
-                                DockPanel.Dock="Top"
-                                ToolBarTray.IsLocked="True"
-                                Style="{StaticResource ToolBarStyle}">
-                            </ToolBar>
-
-                            <ScrollViewer
-                                Grid.Column="1"
-                                ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                app:ElementBehavior.CollapseIsNull="{Binding SelectedAccount, Mode=OneWay}">
-                                <StackPanel 
-                                    Margin="6"/>
-                            </ScrollViewer>
-                        </DockPanel>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="アカウントの初期設定">
+                <Border
+                    BorderThickness="0 0 1 0"
+                    BorderBrush="{StaticResource ToolBarBorderBrush}">
                     <DockPanel>
-                        <!--<UniformGrid
-                            Columns="2" Margin="4"
-                            DockPanel.Dock="Top"
-                            Style="{StaticResource ElementsContainerStyle}">
-
-                            <CheckBox
-                                Content="起動時に自動的にログインする"
-                                IsChecked="{Binding Setting.AccountDefaultAutomaticallyLogin, Mode=TwoWay}" />
-
-                            <CheckBox
-                                Content="タイムラインを自動的に読み込む"
-                                IsChecked="{Binding Setting.AccountDefaultAutomaticallyLoadTimeline, Mode=TwoWay}" />
-                        </UniformGrid>
-
-                        <Separator
-                            DockPanel.Dock="Top"
-                            Background="#ccc"
-                            Margin="0"/>-->
-
                         <ToolBar
+                            Padding="4 0"
                             DockPanel.Dock="Top"
-                            Grid.Row="1"
                             ToolBarTray.IsLocked="True"
+                            FontSize="{StaticResource UIFontSize}"
                             FontFamily="{StaticResource UIFont}"
-                            FontSize="{StaticResource UIFontSize}">
-
-                            <app:DropDownMenuButton
-                                Style="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}"
-                                VerticalAlignment="Stretch">
-                                <app:GeometryIcon Data="{StaticResource FontAwesome.Icon.Pluse}" />
-                                <app:DropDownMenuButton.DropDownMenu>
-                                    <ContextMenu ItemsSource="{x:Static app:ColumnBase.ColumnTypes}">
-                                        <ContextMenu.ItemContainerStyle>
-                                            <Style TargetType="{x:Type MenuItem}">
-                                                <Setter Property="Header" Value="{Binding Value}" />
-                                                <Setter Property="CommandParameter" Value="{Binding Key}" />
-                                                <Setter Property="Command" Value="{Binding DataContext.ColumnAddCommand, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ToolBar}}" />
-                                            </Style>
-                                        </ContextMenu.ItemContainerStyle>
-                                    </ContextMenu>
-                                </app:DropDownMenuButton.DropDownMenu>
-                            </app:DropDownMenuButton>
-
+                            Style="{StaticResource ToolBarStyle}">
                             <Button
                                 FontWeight="Normal"
-                                Padding="{StaticResource ToolBarIconPadding}"
-                                Command="{Binding ColumnRemoveCommand, Mode=OneTime}"
-                                CommandParameter="{Binding SelectedColumnSetting, Mode=OneWay}">
+                                Padding="{StaticResource ToolBarIconPadding}">
+                                <app:GeometryIcon
+                                    Data="{StaticResource FontAwesome.Icon.UserPlus}" />
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <l:TransitionInteractionMessageAction>
+                                            <l:DirectInteractionMessage>
+                                                <l:TransitionMessage
+                                                    Mode="Modal"
+                                                    WindowType="{x:Type v:AccountAuthenticationWindow}" />
+                                            </l:DirectInteractionMessage>
+                                        </l:TransitionInteractionMessageAction>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                            <Separator />
+                            <Button
+                                Foreground="Red"
+                                CommandParameter="{Binding SelectedAccount}"
+                                Command="{Binding AccountDeleteCommand, Mode=OneTime}">
                                 <app:GeometryIcon
                                     Data="{StaticResource FontAwesome.Icon.Trash}" />
-                            </Button>
-
-                            <Separator />
-
-                            <Label
-                                Content="並べ替え："
-                                FontWeight="Bold"
-                                VerticalAlignment="Center"
-                                Padding="{StaticResource ToolBarItemPadding}" />
-
-                            <Button
-                                Padding="{StaticResource ToolBarIconPadding}"
-                                Command="{Binding ColumnMoveUpCommand, Mode=OneTime}"
-                                CommandParameter="{Binding SelectedColumnSetting, Mode=OneWay}">
-                                <app:GeometryIcon
-                                    Data="{StaticResource FontAwesome.Icon.ChevronUp}" />
-                            </Button>
-
-                            <Button
-                                Padding="{StaticResource ToolBarIconPadding}"
-                                Command="{Binding ColumnMoveDownCommand, Mode=OneTime}"
-                                CommandParameter="{Binding SelectedColumnSetting, Mode=OneWay}">
-                                <app:GeometryIcon
-                                    Data="{StaticResource FontAwesome.Icon.ChevronDown}" />
                             </Button>
                         </ToolBar>
 
                         <ListBox
-                            Margin="0"
-                            DockPanel.Dock="Left"
-                            Width="260"
-                            BorderThickness="0 0 1 0"
-                            BorderBrush="#ccc"
-                            ItemsSource="{Binding DefaultColumns, Mode=OneTime}"
-                            SelectedItem="{Binding SelectedColumnSetting, Mode=TwoWay}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate DataType="{x:Type app:ColumnBase}">
-                                    <TextBlock
-                                        Margin="8"
-                                        Text="{Binding Type, Mode=OneTime, Converter={StaticResource ColumnNameConverter}}" />
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
+                            ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            ItemsSource="{Binding Accounts, Mode=OneTime}"
+                            ItemTemplateSelector="{StaticResource AccountTemplateSelector}"
+                            SelectedItem="{Binding SelectedAccount, Mode=TwoWay}">
+                            <ItemsControl.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                    <Setter Property="Padding" Value="8" />
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
                         </ListBox>
-
-                        <TextBlock
-                            Margin="12 8"
-                            DockPanel.Dock="Top">
-                            <Run Text="オプション：" />
-                            <Run Text="{Binding SelectedColumnSetting.Type, Mode=OneWay, Converter={StaticResource ColumnNameConverter}}" />
-                        </TextBlock>
-
-                        <ScrollViewer
-                            VerticalScrollBarVisibility="Auto">
-                            <ContentPresenter
-                                Margin="14 4 14 8"
-                                VerticalAlignment="Top"
-                                Content="{Binding SelectedColumnSetting, Mode=OneWay}"
-                                ContentTemplateSelector="{StaticResource ColumnOptionTemplateSelector}"/>
-                        </ScrollViewer>
                     </DockPanel>
-                </TabItem>
-            </TabControl>
+                </Border>
+
+                <DockPanel
+                    Grid.Column="1">
+                    <ToolBar
+                        DockPanel.Dock="Top"
+                        ToolBarTray.IsLocked="True"
+                        Style="{StaticResource ToolBarStyle}">
+                    </ToolBar>
+
+                    <ScrollViewer
+                        Grid.Column="1"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        app:ElementBehavior.CollapseIsNull="{Binding SelectedAccount, Mode=OneWay}">
+                        <StackPanel 
+                            Margin="6"/>
+                    </ScrollViewer>
+                </DockPanel>
+            </Grid>
         </TabItem>
 
         <TabItem Header="通知" IsEnabled="False">
