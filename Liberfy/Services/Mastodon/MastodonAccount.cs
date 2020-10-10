@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Liberfy.Services;
 using Liberfy.Services.Common;
 using Liberfy.Services.Mastodon;
+using Liberfy.Services.Mastodon.Accessors;
 using Liberfy.Settings;
 using SocialApis.Mastodon;
 
@@ -53,9 +54,23 @@ namespace Liberfy
         public override IServiceConfiguration ServiceConfiguration { get; } = new MastodonServiceConfiguration();
 
         private IApiGateway _apiGateway;
-        public override IApiGateway ApiGateway => this._apiGateway ?? (this._apiGateway = new MastodonApiGateway(this));
+        [Obsolete]
+        public override IApiGateway ApiGateway => this._apiGateway ??= (this._apiGateway = new MastodonApiGateway(this));
 
         protected override MastodonTimeline CreateTimeline() => new MastodonTimeline(this);
+
+        private MastodonStatusAccessor _status;
+        private MastodonMediaAccessor _media;
+
+        /// <summary>
+        /// トゥート関連のアクセサ
+        /// </summary>
+        public MastodonStatusAccessor Statuses => this._status ??= new MastodonStatusAccessor(this);
+
+        /// <summary>
+        /// メディア関連のアクセサ
+        /// </summary>
+        public MastodonMediaAccessor Media => this._media ??= new MastodonMediaAccessor(this);
 
         public override async Task Load()
         {

@@ -1,6 +1,7 @@
 ﻿using Liberfy.Services;
 using Liberfy.Services.Common;
 using Liberfy.Services.Twitter;
+using Liberfy.Services.Twitter.Accessors;
 using Liberfy.Settings;
 using SocialApis;
 using SocialApis.Common;
@@ -45,6 +46,19 @@ namespace Liberfy
 
         private IApiGateway _apiGateway;
         public override IApiGateway ApiGateway => this._apiGateway ?? (this._apiGateway = new TwitterApiGateway(this));
+
+        private TwitterStatusAccessor _statuses;
+        private TwitterMediaAccessor _media;
+
+        /// <summary>
+        /// ツイート関連のアクセサ
+        /// </summary>
+        public TwitterStatusAccessor Statuses => this._statuses ??= new TwitterStatusAccessor(this);
+
+        /// <summary>
+        /// メディア関連のアクセサ
+        /// </summary>
+        public TwitterMediaAccessor Media => this._media ??= new TwitterMediaAccessor(this);
 
         protected override TwitterTimeline CreateTimeline() => new TwitterTimeline(this);
 

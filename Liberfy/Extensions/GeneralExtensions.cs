@@ -7,7 +7,7 @@ using System.Windows.Threading;
 
 namespace Liberfy
 {
-    public static class Extensions
+    public static class GeneralExtensions
     {
         public static T CastOrDefault<T>(this object @object)
         {

@@ -1,4 +1,5 @@
 ﻿using Liberfy.Services.Common;
+using Liberfy.Services.Mastodon.Accessors;
 using Liberfy.ViewModels;
 using SocialApis;
 using SocialApis.Mastodon;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Liberfy.Services.Mastodon
 {
+    // TODO: Gatewayクラス廃止予定
     internal class MastodonApiGateway : IApiGateway
     {
         private readonly MastodonAccount _account;
@@ -21,115 +23,19 @@ namespace Liberfy.Services.Mastodon
             this._api = account.Api;
         }
 
-        private async Task<long> UploadAttachment(UploadMedia attachment)
-        {
-            using var sourceStream = attachment.GetDataStream();
+        [Obsolete]
+        public Task PostStatus(ServicePostParameters parameters) => this._account.Statuses.Toat(parameters);
 
-            var media = await this._api.Media.Upload(sourceStream, attachment.Description, progress: attachment);
+        [Obsolete]
+        public Task Favorite(StatusItem item) => this._account.Statuses.Favorite(item);
 
-            return media.Id;
-        }
+        [Obsolete]
+        public Task Unfavorite(StatusItem item) => this._account.Statuses.Unfavorite(item);
 
-        private async Task<long[]> UploadAttachments(ICollection<UploadMedia> attachments)
-        {
-            var tasks = new List<Task<long>>(attachments.Count);
+        [Obsolete]
+        public Task Retweet(StatusItem item) => this._account.Statuses.Reblog(item);
 
-            foreach (var item in attachments)
-            {
-                tasks.Add(this.UploadAttachment(item));
-            }
-
-            return await Task.WhenAll(tasks).ConfigureAwait(false);
-        }
-
-        public async Task PostStatus(ServicePostParameters parameters)
-        {
-            var query = new Query
-            {
-                ["status"] = parameters.Text,
-            };
-
-            //if (parameters.ReplyToStatus != null)
-            //{
-            //    query["in_reply_to_id"] = parameters.ReplyToStatus.Id;
-            //}
-
-            if (parameters.Attachments.HasItems)
-            {
-                query["media_ids"] = await this.UploadAttachments(parameters.Attachments).ConfigureAwait(false);
-            }
-
-            if (parameters.IsContainsWarningAttachment)
-            {
-                query["sensitive"] = true;
-            }
-
-            if (!string.IsNullOrEmpty(parameters.SpoilerText))
-            {
-                query["spoiler_text"] = parameters.SpoilerText;
-            }
-
-            if (parameters.HasPolls)
-            {
-                var polls = parameters.Polls
-                    .Where(poll => !string.IsNullOrEmpty(poll.Text))
-                    .Select(poll => poll.Text);
-
-                if (polls.Any())
-                {
-                    var pollsQuery = new Query
-                    {
-                        ["options"] = polls,
-                        ["expires_in"] = parameters.PollsExpires,
-                        ["multiple"] = parameters.IsPollsMultiple,
-                        ["hide_totals"] = parameters.IsPollsHideTotals,
-                    };
-
-                    query["poll"] = pollsQuery;
-                }
-            }
-
-            //if (parameters.Visibility != null)
-            //{
-            //    query["visibility"] = GetVisibilityValue(parameters.Visibility);
-            //}
-
-            await this._api.Statuses.Post(query).ConfigureAwait(false);
-        }
-
-        private void UpdateStatusReaction(StatusItem item, Status status)
-        {
-            this._account.DataStore.RegisterStatus(status);
-
-            item.Reaction.Set(isFavorited: status.Favourited, isRetweeted: status.Reblogged);
-        }
-
-        public async Task Favorite(StatusItem item)
-        {
-            var status = await this._api.Statuses.Favourite(item.Id).ConfigureAwait(false);
-
-            this.UpdateStatusReaction(item, status);
-        }
-
-        public async Task Unfavorite(StatusItem item)
-        {
-            var status = await this._api.Statuses.Unfavourite(item.Id).ConfigureAwait(false);
-
-            this.UpdateStatusReaction(item, status);
-        }
-
-        public async Task Retweet(StatusItem item)
-        {
-            var status = await this._api.Statuses.Reblog(item.Id).ConfigureAwait(false);
-
-            this.UpdateStatusReaction(item, status);
-        }
-
-        public async Task Unretweet(StatusItem item)
-        {
-            var status = await this._api.Statuses.Unreblog(item.Id).ConfigureAwait(false);
-
-            this.UpdateStatusReaction(item, status);
-        }
+        [Obsolete]
+        public Task Unretweet(StatusItem item) => this._account.Statuses.Unreblog(item);
     }
 }
