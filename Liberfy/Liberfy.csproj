@@ -35,8 +35,8 @@
     <Content Include="Resources\VideoPlayerTemplate.html" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Emoji.Wpf" Version="0.0.19-experimental" />
-    <PackageReference Include="LivetCask" Version="3.2.3" />
+    <PackageReference Include="Emoji.Wpf" Version="0.1.5" />
+    <PackageReference Include="LivetCask" Version="3.2.3.1" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
     <PackageReference Include="SgmlReader.NetStandard" Version="1.8.14.1" />
