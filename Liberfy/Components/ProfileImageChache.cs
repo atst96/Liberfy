@@ -2,12 +2,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace Liberfy
@@ -42,19 +41,12 @@ namespace Liberfy
         }
 
         /// <summary>画像のリサイズ処理を行う</summary>
-        /// <param name="srcBitmap">ソースとなる画像</param>
-        /// <param name="width">幅</param>
-        /// <param name="height">高さ</param>
+        /// <param name="source">ソースとなる画像</param>
+        /// <param name="scale">スケール</param>
         /// <returns><リサイズ後の画像</returns>
-        private static Bitmap ResizeImage(Bitmap srcBitmap, int width, int height)
+        private static BitmapSource ResizeImage(BitmapSource source, double scale)
         {
-            var destImage = new Bitmap(width, height);
-            using var g = Graphics.FromImage(destImage);
-
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-            g.DrawImage(srcBitmap, 0, 0, width, height);
-
-            return destImage;
+            return new WriteableBitmap(new TransformedBitmap(source, new ScaleTransform(scale, scale)));
         }
 
         /// <summary>画像データを縮小する</summary>
@@ -62,29 +54,35 @@ namespace Liberfy
         /// <param name="imageSize">画像の最大サイズ</param>
         private static void ShrinkImageData(ref MemoryStream refStream, int imageSize = 128)
         {
-            using var srcImage = new Bitmap(refStream);
+            long streamPosition = refStream.Position;
+            var srcImage = BitmapFrame.Create(refStream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
 
-            if (srcImage.Width <= imageSize && srcImage.Height <= imageSize)
+
+            if (srcImage.PixelWidth <= imageSize && srcImage.PixelHeight <= imageSize)
             {
-                refStream.Position = 0;
+                refStream.Position = streamPosition;
                 return;
             }
 
-            double maxScale = Math.Max(
-                (double)srcImage.Width / imageSize,
-                (double)srcImage.Height / imageSize);
+            double maxScale = Math.Min(
+                imageSize / (double)srcImage.PixelWidth,
+                imageSize / (double)srcImage.PixelHeight);
 
-            int resizeWidth = (int)(srcImage.Width / maxScale);
-            int resizeHeight = (int)(srcImage.Height / maxScale);
-
-            using var destImage = ResizeImage(srcImage, resizeWidth, resizeHeight);
+            var destImage = ResizeImage(srcImage, maxScale);
             var imageStream = new MemoryStream();
 
-            System.Diagnostics.Debug.WriteLine($"[{nameof(ProfileImageCache)}] Image resized. width: {resizeWidth}, height: {resizeHeight}");
+            System.Diagnostics.Debug.WriteLine($"[{nameof(ProfileImageCache)}] Image resized. width: {destImage.PixelWidth}, height: {destImage.PixelHeight}");
 
-            destImage.Save(imageStream, ImageFormat.Tiff);
+            var encoder = new TiffBitmapEncoder
+            {
+                Compression = TiffCompressOption.Default,
+                Frames = new BitmapFrame[] { BitmapFrame.Create(destImage) },
+            };
+
+            encoder.Save(imageStream);
             refStream.Dispose();
 
+            imageStream.Position = 0;
             refStream = imageStream;
         }
 
@@ -133,6 +131,7 @@ namespace Liberfy
 
                 var dataStream = new MemoryStream();
                 stream.CopyTo(dataStream);
+                dataStream.Position = 0;
 
                 ProfileImageCache.ShrinkImageData(ref dataStream);
 
