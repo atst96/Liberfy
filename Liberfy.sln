@@ -20,7 +20,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "WpfMvvmToolkit", "WpfMvvmTo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToriatamaText", "ToriatamaText\cs\ToriatamaText\ToriatamaText.csproj", "{FA6D81D3-8B99-4203-AAE1-01E617AE1939}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialApis.Test", "SocialApis.Test\SocialApis.Test.csproj", "{AD8032EA-A9CE-4998-B1EF-98D32AF50DAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialApis.Test", "SocialApis.Test\SocialApis.Test.csproj", "{AD8032EA-A9CE-4998-B1EF-98D32AF50DAE}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

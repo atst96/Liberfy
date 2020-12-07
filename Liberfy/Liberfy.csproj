@@ -8,15 +8,8 @@
     <Company />
     <PackageProjectUrl>https://github.com/atst1996/Liberfy</PackageProjectUrl>
     <RepositoryUrl>https://github.com/atst1996/Liberfy</RepositoryUrl>
-  </PropertyGroup>
-  <PropertyGroup>
     <PublishTrimmed>true</PublishTrimmed>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationIcon>Icons\app.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject></StartupObject>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
@@ -26,10 +19,6 @@
   <ItemGroup>
     <Resource Include="Icons\app.ico" />
     <Resource Include="Icons\app_tasktray.ico" />
-    <EmbeddedResource Include="Xaml\Icons.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\VideoPlayerTemplate.html" />
@@ -53,27 +42,6 @@
     <Reference Include="NowPlayingLib">
       <HintPath>..\NowPlayingLib\NowPlayingLib.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Xaml\Templates\ControlStyles.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Xaml\Templates\DataTemplates.xaml">
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <Import Project="..\WpfMvvmToolkit\WpfMvvmToolkit.projitems" Label="Shared" />
 </Project>
