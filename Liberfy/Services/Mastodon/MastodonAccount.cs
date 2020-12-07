@@ -28,7 +28,7 @@ namespace Liberfy
         }
 
         public MastodonAccount(MastodonApi tokens, Account account)
-            : base(account.Id, tokens.HostUrl, tokens, account)
+            : base(account.Id, tokens.HostUrl, tokens)
         {
             this.DataStore = new MastodonDataFactory(tokens.HostUrl);
             this.Info = this.GetUserInfo(account);

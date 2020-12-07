@@ -28,7 +28,7 @@ namespace Liberfy.Services.Mastodon
         /// <summary>
         /// 絵文字検出用の正規表現
         /// </summary>
-        private readonly static Regex EmojiRegex = new Regex(":(?<code>[a-zA-Z0-9_\\-]+):", RegexOptions.Multiline | RegexOptions.Compiled);
+        private static readonly Regex EmojiRegex = new Regex(":(?<code>[a-zA-Z0-9_\\-]+):", RegexOptions.Multiline | RegexOptions.Compiled);
 
         /// <summary>
         /// メンションのクラス名
@@ -118,7 +118,8 @@ namespace Liberfy.Services.Mastodon
                 }
                 else if (m.Index + m.Value.Length != text.Length)
                 {
-                    var content = text.Substring(m.Index + m.Value.Length);
+                    int offset = m.Index + m.Value.Length;
+                    var content = text[offset..];
 
                     entities.AddText(content);
                 }
@@ -202,7 +203,7 @@ namespace Liberfy.Services.Mastodon
                                 {
                                     // メンション
                                     var anchorText = this.GetString(elementNode);
-                                    entityCollection.Add(new MentionEntity(anchorText, anchorText.Substring(1)));
+                                    entityCollection.Add(new MentionEntity(anchorText, anchorText[1..]));
                                     continue;
                                 }
                             }

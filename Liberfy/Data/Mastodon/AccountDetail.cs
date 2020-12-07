@@ -17,7 +17,7 @@ namespace Liberfy.Data.Mastodon
 
         public Uri Instance { get; }
 
-        private DateTimeOffset _createdAt;
+        private readonly DateTimeOffset _createdAt;
         public DateTimeOffset CreatedAt => this._createdAt;
 
         private string _name;
@@ -41,7 +41,7 @@ namespace Liberfy.Data.Mastodon
         public string _language;
         public string Language => this._language;
 
-        private string _location;
+        private readonly string _location;
         public string Location => this._location;
 
         private string _profileBannerUrl;
@@ -56,7 +56,7 @@ namespace Liberfy.Data.Mastodon
         private int _statusCount;
         public int StatusesCount => this._statusCount;
 
-        private bool _isSuspended;
+        private readonly bool _isSuspended;
         public bool IsSuspended => this._isSuspended;
 
         public string _url;
@@ -151,6 +151,11 @@ namespace Liberfy.Data.Mastodon
         public bool Equals(AccountDetail other)
         {
             return this.Instance == other.Instance && this.Id == other.Id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as AccountDetail);
         }
     }
 }

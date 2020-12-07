@@ -15,7 +15,7 @@ namespace Liberfy
     internal class TwitterAccount : AccountBase<TwitterApi, TwitterTimeline, User, Status>
     {
         public static readonly Uri ServerHostUrl = new Uri("https://twitter.com/", UriKind.Absolute);
-        private static TwitterDataFactory _dataFactory = new TwitterDataFactory();
+        private static readonly TwitterDataFactory _dataFactory = new TwitterDataFactory();
 
         public override long Id { get; protected set; }
 
@@ -32,7 +32,7 @@ namespace Liberfy
         }
 
         public TwitterAccount(TwitterApi api, User account)
-            : base((long)account.Id, ServerHostUrl, api, account)
+            : base((long)account.Id, ServerHostUrl, api)
         {
             this.DataStore = _dataFactory;
             this.Validator = new TwitterValidator(this);
@@ -47,7 +47,7 @@ namespace Liberfy
         public override IServiceConfiguration ServiceConfiguration { get; } = new TwitterServiceConfiguration();
 
         private IApiGateway _apiGateway;
-        public override IApiGateway ApiGateway => this._apiGateway ?? (this._apiGateway = new TwitterApiGateway(this));
+        public override IApiGateway ApiGateway => this._apiGateway ??= new TwitterApiGateway(this);
 
         private TwitterStatusAccessor _statuses;
         private TwitterMediaAccessor _media;
@@ -109,11 +109,12 @@ namespace Liberfy
 
         protected override Task GetDetails()
         {
-            Task[] tasks =
-            {
-            };
+            return Task.CompletedTask;
+            //Task[] tasks =
+            //{
+            //};
 
-            return Task.WhenAll(tasks);
+            //return Task.WhenAll(tasks);
         }
 
         protected override IUserInfo GetUserInfo(User account)

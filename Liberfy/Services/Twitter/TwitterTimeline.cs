@@ -1,10 +1,8 @@
-﻿using Liberfy.ViewModels;
-using SocialApis;
+﻿using SocialApis;
 using SocialApis.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using Liberfy.SocialServices.Twitter;
@@ -13,9 +11,8 @@ namespace Liberfy.Services.Twitter
 {
     internal class TwitterTimeline : TimelineBase, IObserver<IItem>
     {
-        private static Dispatcher _dispatcher = App.Current.Dispatcher;
+        private static readonly Dispatcher _dispatcher = App.Current.Dispatcher;
 
-        private readonly long _userId;
         private readonly TwitterAccount _account;
         private TwitterApi _tokens => this._account.Api;
 
@@ -27,7 +24,6 @@ namespace Liberfy.Services.Twitter
             : base(account)
         {
             this._account = account;
-            this._userId = account.Id;
         }
 
         public override async void Load()
@@ -108,16 +104,17 @@ namespace Liberfy.Services.Twitter
             }
         }
 
-        private async Task GetMessageTimeline()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:メンバーを static に設定します", Justification = "<保留中>")]
+        private Task GetMessageTimeline()
         {
-            try
-            {
-                await Task.CompletedTask;
-            }
-            catch
-            {
-                // TODO: 取得失敗時の処理
-            }
+            //try
+            //{
+            return Task.CompletedTask;
+            //}
+            //catch
+            //{
+            //    // TODO: 取得失敗時の処理
+            //}
         }
 
         public override void Unload()

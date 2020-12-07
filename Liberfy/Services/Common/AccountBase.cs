@@ -16,19 +16,12 @@ namespace Liberfy
     internal static class AccountBase
     {
         public static IAccount FromSetting(AccountSettingBase item)
-        {
-            switch (item)
+            => item switch
             {
-                case TwitterAccountItem twitterItem:
-                    return new TwitterAccount(twitterItem);
-
-                case MastodonAccountItem mastodonItem:
-                    return new MastodonAccount(mastodonItem);
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
+                TwitterAccountItem twitterItem => new TwitterAccount(twitterItem),
+                MastodonAccountItem mastodonItem => new MastodonAccount(mastodonItem),
+                _ => throw new NotImplementedException(),
+            };
     }
 
     internal abstract class AccountBase<TApi, TTimeline, TUser, TStatus>
@@ -82,7 +75,7 @@ namespace Liberfy
             this.Api = api;
         }
 
-        protected AccountBase(long userId, Uri hostUrl, TApi api, TUser account)
+        protected AccountBase(long userId, Uri hostUrl, TApi api)
             : this(userId, hostUrl)
         {
             this.ItemId = AccountManager.GenerateUniqueId();
@@ -146,9 +139,7 @@ namespace Liberfy
         {
             if (Config.Functions.IsLoadTimelineEnabled)
             {
-#pragma warning disable CS0162
                 this.Timeline.Load();
-#pragma warning restore CS0162
             }
         }
 
@@ -170,7 +161,7 @@ namespace Liberfy
             }
         }
 
-        private ConcurrentDictionary<long, StatusActivity> _statusActivities = new ConcurrentDictionary<long, StatusActivity>();
+        private readonly ConcurrentDictionary<long, StatusActivity> _statusActivities = new ConcurrentDictionary<long, StatusActivity>();
 
         public StatusActivity GetStatusActivity(long originalStatusId)
         {
