@@ -50,8 +50,6 @@ namespace Liberfy
 
         public TApi Api { get; protected set; }
 
-        public abstract DataStoreBase<TUser, TStatus> DataStore { get; }
-
         protected static Setting Setting { get; } = App.Setting;
 
         protected object LockSharedObject = new object();
@@ -82,7 +80,6 @@ namespace Liberfy
 
             this.ItemId = item.ItemId;
             this.Api = api;
-            this.Info = this.DataStore.GetAccount(item);
         }
 
         protected AccountBase(long userId, Uri hostUrl, TApi api, TUser account)
@@ -90,7 +87,6 @@ namespace Liberfy
         {
             this.ItemId = AccountManager.GenerateUniqueId();
             this.Api = api;
-            this.Info = this.GetUserInfo(account);
             this.IsLoggedIn = true;
         }
 

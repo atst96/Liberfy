@@ -1,16 +1,13 @@
-﻿using Liberfy.Services;
+﻿using Liberfy.Factories;
+using Liberfy.Services;
 using Liberfy.Services.Common;
 using Liberfy.Services.Twitter;
 using Liberfy.Services.Twitter.Accessors;
 using Liberfy.Settings;
 using SocialApis;
-using SocialApis.Common;
 using SocialApis.Twitter;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Liberfy
@@ -18,27 +15,32 @@ namespace Liberfy
     internal class TwitterAccount : AccountBase<TwitterApi, TwitterTimeline, User, Status>
     {
         public static readonly Uri ServerHostUrl = new Uri("https://twitter.com/", UriKind.Absolute);
+        private static TwitterDataFactory _dataFactory = new TwitterDataFactory();
 
         public override long Id { get; protected set; }
 
         public override ServiceType Service { get; } = ServiceType.Twitter;
 
+        public TwitterDataFactory DataStore { get; }
+
         public TwitterAccount(TwitterAccountItem item)
             : base(item.Id, ServerHostUrl, item.CreateApi(), item)
         {
+            this.DataStore = _dataFactory;
             this.Validator = new TwitterValidator(this);
+            this.Info = this.DataStore.GetAccount(item);
         }
 
         public TwitterAccount(TwitterApi api, User account)
             : base((long)account.Id, ServerHostUrl, api, account)
         {
+            this.DataStore = _dataFactory;
             this.Validator = new TwitterValidator(this);
+            this.Info = this.GetUserInfo(account);
         }
 
         //private IAccountCommandGroup _commands;
         //public override IAccountCommandGroup Commands => _commands ?? (_commands = new Twitter.AccountCommandGroup(this));
-
-        public override DataStoreBase<User, Status> DataStore { get; } = global::Liberfy.DataStore.Twitter;
 
         public override IValidator Validator { get; }
 

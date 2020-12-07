@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Liberfy.Factories;
 using Liberfy.Services;
 using Liberfy.Services.Common;
 using Liberfy.Services.Mastodon;
@@ -17,21 +18,27 @@ namespace Liberfy
 
         public override ServiceType Service { get; } = ServiceType.Mastodon;
 
+        public MastodonDataFactory DataStore { get; }
+
         public MastodonAccount(MastodonAccountItem item)
             : base(item.Id, item.InstanceUrl, item.CreateApi(), item)
         {
+            this.DataStore = new MastodonDataFactory(item.InstanceUrl);
+            this.Info = this.DataStore.GetAccount(item);
         }
 
         public MastodonAccount(MastodonApi tokens, Account account)
             : base(account.Id, tokens.HostUrl, tokens, account)
         {
+            this.DataStore = new MastodonDataFactory(tokens.HostUrl);
+            this.Info = this.GetUserInfo(account);
         }
 
         //public override IAccountCommandGroup Commands { get; } = null;
 
-        private static readonly IDictionary<Uri, MastodonDataStore> _instanceDataStoreMap = new Dictionary<Uri, MastodonDataStore>();
+        private static readonly IDictionary<Uri, MastodonDataFactory> _instanceDataStoreMap = new Dictionary<Uri, MastodonDataFactory>();
 
-        public static MastodonDataStore GetDataSotre(Uri hostUrl)
+        public static MastodonDataFactory GetDataSotre(Uri hostUrl)
         {
             if (_instanceDataStoreMap.TryGetValue(hostUrl, out var dataStore))
             {
@@ -39,15 +46,12 @@ namespace Liberfy
             }
             else
             {
-                dataStore = new MastodonDataStore(hostUrl);
+                dataStore = new MastodonDataFactory(hostUrl);
 
                 _instanceDataStoreMap.Add(hostUrl, dataStore);
                 return dataStore;
             }
         }
-
-        private MastodonDataStore _dataStore;
-        public override DataStoreBase<Account, Status> DataStore => this._dataStore ??= GetDataSotre(this.Api.HostUrl);
 
         public override IValidator Validator { get; } = new MastodonValidator(int.MaxValue);
 

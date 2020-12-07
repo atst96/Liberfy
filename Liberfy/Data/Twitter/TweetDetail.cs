@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Liberfy.Factories;
 using Liberfy.Model;
 using Liberfy.Services.Twitter;
 using SocialApis.Twitter;
 
-namespace Liberfy
+namespace Liberfy.Data.Twitter
 {
-    internal class TwitterStatusInfo : NotificationObject, IStatusInfo<Status>
+    /// <summary>
+    /// ツイート情報
+    /// </summary>
+    internal class TweetDetail : NotificationObject, IStatusInfo<Status>
     {
         public ServiceType Service { get; } = ServiceType.Twitter;
 
@@ -64,7 +63,7 @@ namespace Liberfy
             private set => this.SetProperty(ref this._retweetCount, value);
         }
 
-        public TwitterStatusInfo(Status status, TwitterDataStore dataStore)
+        public TweetDetail(Status status, TwitterDataFactory dataStore)
         {
             if (status.RetweetedStatus != null)
                 throw new ArgumentException();
@@ -106,7 +105,7 @@ namespace Liberfy
             this.Update(status);
         }
 
-        public TwitterStatusInfo Update(Status status)
+        public TweetDetail Update(Status status)
         {
             if (this.Id != (status.RetweetedStatus ?? status).Id)
                 throw new ArgumentException(nameof(status.Id));

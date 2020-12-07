@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Liberfy.Factories;
 using Liberfy.Model;
 using Liberfy.Services.Mastodon;
 using SocialApis.Mastodon;
 
-namespace Liberfy
+namespace Liberfy.Data.Mastodon
 {
-    internal class MastodonStatusInfo : NotificationObject, IStatusInfo<Status>
+    /// <summary>
+    /// Mastodonトゥート情報
+    /// </summary>
+    internal class TootDetail : NotificationObject, IStatusInfo<Status>
     {
         public ServiceType Service { get; } = ServiceType.Mastodon;
 
@@ -62,7 +63,7 @@ namespace Liberfy
             private set => this.SetProperty(ref this._retweetCount, value);
         }
 
-        public MastodonStatusInfo(Status status, MastodonDataStore dataStore)
+        public TootDetail(Status status, MastodonDataFactory dataStore)
         {
             if (status.Reblog != null)
                 throw new ArgumentException(nameof(status));
@@ -89,7 +90,7 @@ namespace Liberfy
             this.Update(status);
         }
 
-        public MastodonStatusInfo Update(Status status)
+        public TootDetail Update(Status status)
         {
             this.FavoriteCount = status.FavouritesCount;
             this.RetweetCount = status.ReblogsCount;

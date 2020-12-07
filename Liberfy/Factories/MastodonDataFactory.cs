@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Data;
-using Liberfy.Model;
+using Liberfy.Data.Mastodon;
 using Liberfy.Settings;
 using SocialApis.Mastodon;
 
-namespace Liberfy.Services.Mastodon
+namespace Liberfy.Factories
 {
-    internal class MastodonDataStore : DataStoreBase<Account, Status>
+    internal class MastodonDataFactory : DataStoreBase<Account, Status>
     {
         private readonly Uri _host;
 
-        public MastodonDataStore(Uri host)
+        public MastodonDataFactory(Uri host)
         {
             this._host = host;
         }
@@ -23,7 +17,7 @@ namespace Liberfy.Services.Mastodon
         public override IUserInfo<Account> GetAccount(AccountSettingBase item)
         {
             var mastodonItem = (MastodonAccountItem)item;
-            return this.Accounts.GetOrAdd(mastodonItem.Id, id => new MastodonUserInfo(this._host, mastodonItem));
+            return this.Accounts.GetOrAdd(mastodonItem.Id, id => new AccountDetail(this._host, mastodonItem));
         }
 
         public override IUserInfo<Account> RegisterAccount(Account account)
@@ -31,7 +25,7 @@ namespace Liberfy.Services.Mastodon
             long id = account?.Id ?? throw new ArgumentException(nameof(account));
 
             return this.Accounts.AddOrUpdate(id,
-                (_) => new MastodonUserInfo(this._host, account),
+                (_) => new AccountDetail(this._host, account),
                 (_, info) => info.Update(account));
         }
 
@@ -40,7 +34,7 @@ namespace Liberfy.Services.Mastodon
             long id = status?.Id ?? throw new ArgumentException(nameof(status));
 
             return this.Statuses.AddOrUpdate(id,
-                (_) => new MastodonStatusInfo(status, this),
+                (_) => new TootDetail(status, this),
                 (_, info) => info.Update(status));
         }
     }

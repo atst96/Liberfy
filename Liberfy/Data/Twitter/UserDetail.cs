@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Liberfy.Model;
 using Liberfy.Services.Twitter;
 using Liberfy.Settings;
 using SocialApis.Twitter;
 
-namespace Liberfy
+namespace Liberfy.Data.Twitter
 {
-    internal class TwitterUserInfo : NotificationObject, IEquatable<TwitterUserInfo>, IUserInfo<User>
+    /// <summary>
+    /// アカウント情報
+    /// </summary>
+    internal class UserDetail : NotificationObject, IEquatable<UserDetail>, IUserInfo<User>
     {
         public ServiceType Service { get; } = ServiceType.Twitter;
 
@@ -100,7 +100,7 @@ namespace Liberfy
             }
         }
 
-        public TwitterUserInfo(TwitterAccountItem item)
+        public UserDetail(TwitterAccountItem item)
         {
             this.Id = item.Id;
             this._userName = item.ScreenName;
@@ -109,14 +109,14 @@ namespace Liberfy
             this._profileImageUrl = item.ProfileImageUrl;
         }
 
-        public TwitterUserInfo(User user)
+        public UserDetail(User user)
         {
             this.Id = user.Id ?? throw new ArgumentNullException(nameof(user));
             this._createdAt = user.CreatedAt;
             this.Update(user);
         }
 
-        public TwitterUserInfo Update(User user)
+        public UserDetail Update(User user)
         {
             if (user.Id != this.Id)
                 throw new ArgumentException(nameof(user.Id));
@@ -171,10 +171,10 @@ namespace Liberfy
         public bool Equals(IUserInfo other)
         {
             return object.ReferenceEquals(this, other)
-                || (other is TwitterUserInfo user && this.Equals(user));
+                || (other is UserDetail user && this.Equals(user));
         }
 
-        public bool Equals(TwitterUserInfo other)
+        public bool Equals(UserDetail other)
         {
             return this.Id == other.Id;
         }

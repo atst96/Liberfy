@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Liberfy.Model;
 using Liberfy.Settings;
 using SocialApis.Mastodon;
 
-namespace Liberfy
+namespace Liberfy.Data.Mastodon
 {
-    internal class MastodonUserInfo : NotificationObject, IEquatable<MastodonUserInfo>, IUserInfo<Account>
+    /// <summary>
+    /// Mastodonアカウント情報
+    /// </summary>
+    internal class AccountDetail : NotificationObject, IEquatable<AccountDetail>, IUserInfo<Account>
     {
         public ServiceType Service { get; } = ServiceType.Mastodon;
 
@@ -73,7 +73,7 @@ namespace Liberfy
         private IEnumerable<IEntity> _urlEntities;
         public IEnumerable<IEntity> UrlEntities => this._urlEntities;
 
-        public MastodonUserInfo(Uri host, MastodonAccountItem item)
+        public AccountDetail(Uri host, MastodonAccountItem item)
         {
             this.Instance = host;
 
@@ -84,7 +84,7 @@ namespace Liberfy
             this._profileImageUrl = item.Avatar;
         }
 
-        public MastodonUserInfo(Uri host, Account account)
+        public AccountDetail(Uri host, Account account)
         {
             this.Instance = host;
 
@@ -94,7 +94,7 @@ namespace Liberfy
             this.Update(account);
         }
 
-        public MastodonUserInfo Update(Account account)
+        public AccountDetail Update(Account account)
         {
             var batch = new BatchPropertyChanges();
 
@@ -148,7 +148,7 @@ namespace Liberfy
                 || (other is MastodonAccount account && this.Equals(account));
         }
 
-        public bool Equals(MastodonUserInfo other)
+        public bool Equals(AccountDetail other)
         {
             return this.Instance == other.Instance && this.Id == other.Id;
         }
