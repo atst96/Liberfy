@@ -1,4 +1,4 @@
-﻿using Liberfy.Factories;
+﻿using Liberfy.Managers;
 using Liberfy.Services;
 using Liberfy.Services.Common;
 using Liberfy.Services.Twitter;
@@ -15,13 +15,13 @@ namespace Liberfy
     internal class TwitterAccount : AccountBase<TwitterApi, TwitterTimeline, User, Status>
     {
         public static readonly Uri ServerHostUrl = new Uri("https://twitter.com/", UriKind.Absolute);
-        private static readonly TwitterDataFactory _dataFactory = new TwitterDataFactory();
+        private static readonly TwitterDataManager _dataFactory = new TwitterDataManager();
 
         public override long Id { get; protected set; }
 
         public override ServiceType Service { get; } = ServiceType.Twitter;
 
-        public TwitterDataFactory DataStore { get; }
+        public TwitterDataManager DataStore { get; }
 
         public TwitterAccount(TwitterAccountItem item)
             : base(item.Id, ServerHostUrl, item.CreateApi(), item)

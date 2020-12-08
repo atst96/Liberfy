@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Liberfy.Factories;
+using Liberfy.Managers;
 using Liberfy.Services;
 using Liberfy.Services.Common;
 using Liberfy.Services.Mastodon;
@@ -18,27 +18,27 @@ namespace Liberfy
 
         public override ServiceType Service { get; } = ServiceType.Mastodon;
 
-        public MastodonDataFactory DataStore { get; }
+        public MastodonDataManager DataStore { get; }
 
         public MastodonAccount(MastodonAccountItem item)
             : base(item.Id, item.InstanceUrl, item.CreateApi(), item)
         {
-            this.DataStore = new MastodonDataFactory(item.InstanceUrl);
+            this.DataStore = new MastodonDataManager(item.InstanceUrl);
             this.Info = this.DataStore.GetAccount(item);
         }
 
         public MastodonAccount(MastodonApi tokens, Account account)
             : base(account.Id, tokens.HostUrl, tokens)
         {
-            this.DataStore = new MastodonDataFactory(tokens.HostUrl);
+            this.DataStore = new MastodonDataManager(tokens.HostUrl);
             this.Info = this.GetUserInfo(account);
         }
 
         //public override IAccountCommandGroup Commands { get; } = null;
 
-        private static readonly IDictionary<Uri, MastodonDataFactory> _instanceDataStoreMap = new Dictionary<Uri, MastodonDataFactory>();
+        private static readonly IDictionary<Uri, MastodonDataManager> _instanceDataStoreMap = new Dictionary<Uri, MastodonDataManager>();
 
-        public static MastodonDataFactory GetDataSotre(Uri hostUrl)
+        public static MastodonDataManager GetDataSotre(Uri hostUrl)
         {
             if (_instanceDataStoreMap.TryGetValue(hostUrl, out var dataStore))
             {
@@ -46,7 +46,7 @@ namespace Liberfy
             }
             else
             {
-                dataStore = new MastodonDataFactory(hostUrl);
+                dataStore = new MastodonDataManager(hostUrl);
 
                 _instanceDataStoreMap.Add(hostUrl, dataStore);
                 return dataStore;

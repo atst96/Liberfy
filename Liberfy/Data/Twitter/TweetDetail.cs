@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Liberfy.Factories;
+using Liberfy.Managers;
 using Liberfy.Model;
 using Liberfy.Services.Twitter;
 using SocialApis.Twitter;
@@ -63,7 +63,7 @@ namespace Liberfy.Data.Twitter
             private set => this.SetProperty(ref this._retweetCount, value);
         }
 
-        public TweetDetail(Status status, TwitterDataFactory dataStore)
+        public TweetDetail(Status status, TwitterDataManager dataStore)
         {
             if (status.RetweetedStatus != null)
                 throw new ArgumentException();

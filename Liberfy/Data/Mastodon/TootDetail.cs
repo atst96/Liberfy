@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Liberfy.Factories;
+using Liberfy.Managers;
 using Liberfy.Model;
 using Liberfy.Services.Mastodon;
 using SocialApis.Mastodon;
@@ -63,7 +63,7 @@ namespace Liberfy.Data.Mastodon
             private set => this.SetProperty(ref this._retweetCount, value);
         }
 
-        public TootDetail(Status status, MastodonDataFactory dataStore)
+        public TootDetail(Status status, MastodonDataManager dataStore)
         {
             if (status.Reblog != null)
                 throw new ArgumentException(nameof(status));
