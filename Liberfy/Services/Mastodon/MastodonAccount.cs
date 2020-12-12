@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net;
 using System.Threading.Tasks;
+using Liberfy.Commands;
+using Liberfy.Data.Mastodon;
 using Liberfy.Managers;
 using Liberfy.Services;
 using Liberfy.Services.Common;
@@ -12,26 +16,59 @@ using SocialApis.Mastodon;
 
 namespace Liberfy
 {
-    internal class MastodonAccount : AccountBase<MastodonApi, MastodonTimeline, Account, Status>
+    internal class MastodonAccount : AccountBase, IAccount
     {
-        public override long Id { get; protected set; }
+        private readonly MastodonAccountSetting _setting;
+
+        public long Id { get; protected set; }
 
         public override ServiceType Service { get; } = ServiceType.Mastodon;
 
         public MastodonDataManager DataStore { get; }
 
-        public MastodonAccount(MastodonAccountItem item)
-            : base(item.Id, item.InstanceUrl, item.CreateApi(), item)
+        public AccountDetail Info { get; }
+
+        public string InstanceHost { get; }
+
+        public MastodonTimeline Timeline { get; }
+
+        public MastodonApi Api { get; protected set; }
+
+        public MastodonAccount(MastodonAccountSetting item)
+            : base(false)
         {
+            this._setting = item.Clone();
+            this.ItemId = item.ItemId;
+            this.Api = item.CreateApi();
+            this.InstanceHost = item.InstanceUrl.Host;
             this.DataStore = new MastodonDataManager(item.InstanceUrl);
             this.Info = this.DataStore.GetAccount(item);
+            this.Timeline = new MastodonTimeline(this);
+            this.Commands = new AccountCommandGroup(this);
+
+            ((INotifyPropertyChanged)this.Info).PropertyChanged += this.OnProfileUpdated;
         }
 
-        public MastodonAccount(MastodonApi tokens, Account account)
-            : base(account.Id, tokens.HostUrl, tokens)
+        public MastodonAccount(string itemId, MastodonApi api, Account account)
+            : base(true)
         {
-            this.DataStore = new MastodonDataManager(tokens.HostUrl);
-            this.Info = this.GetUserInfo(account);
+            this._setting = new()
+            {
+                ItemId = itemId,
+                InstanceUrl = api.HostUrl,
+                Id = account.Id,
+            };
+            this.ItemId = itemId;
+            this.Api = api;
+            this.UpdateApiTokens(api);
+            this.InstanceHost = api.HostUrl.Host;
+            this.DataStore = new MastodonDataManager(api.HostUrl);
+            this.Info = this.DataStore.RegisterAccount(account);
+            this.Timeline = new MastodonTimeline(this);
+            this.Commands = new AccountCommandGroup(this);
+            this.OnProfileUpdated(this.Info, new(null));
+
+            ((INotifyPropertyChanged)this.Info).PropertyChanged += this.OnProfileUpdated;
         }
 
         //public override IAccountCommandGroup Commands { get; } = null;
@@ -61,8 +98,6 @@ namespace Liberfy
         [Obsolete]
         public override IApiGateway ApiGateway => this._apiGateway ??= (this._apiGateway = new MastodonApiGateway(this));
 
-        protected override MastodonTimeline CreateTimeline() => new MastodonTimeline(this);
-
         private MastodonStatusAccessor _status;
         private MastodonMediaAccessor _media;
 
@@ -76,22 +111,11 @@ namespace Liberfy
         /// </summary>
         public MastodonMediaAccessor Media => this._media ??= new MastodonMediaAccessor(this);
 
-        public override async Task Load()
-        {
-            if (await base.Login().ConfigureAwait(false))
-            {
-                await this.GetDetails().ConfigureAwait(false);
-                this.StartTimeline();
-            }
-        }
-
-        protected override async Task<bool> VerifyCredentials()
+        protected override async ValueTask<bool> VerifyCredentials()
         {
             try
             {
                 var user = await this.Api.Accounts.VerifyCredentials().ConfigureAwait(false);
-
-                this.Id = user.Id;
 
                 this.DataStore.RegisterAccount(user);
 
@@ -112,36 +136,64 @@ namespace Liberfy
             return false;
         }
 
-        protected override Task GetDetails()
-        {
-            return Task.CompletedTask;
-        }
-
-        protected override IUserInfo GetUserInfo(Account account)
-        {
-            return this.DataStore.RegisterAccount(account);
-        }
-
-        public override void SetApiTokens(MastodonApi api)
+        public void UpdateApiTokens(MastodonApi api)
         {
             this.Api = api;
+
+            var setting = this._setting;
+            setting.ClientId = api.ApiToken;
+            setting.ClientSecret = api.ApiTokenSecret;
+            setting.AccessToken = api.AccessToken;
         }
 
-        public override AccountSettingBase ToSetting()
+
+        private void OnProfileUpdated(object sender, PropertyChangedEventArgs e)
         {
-            return new MastodonAccountItem
+            switch (e.PropertyName)
             {
-                ItemId = this.ItemId,
-                InstanceUrl = this.Api.HostUrl,
-                Id = this.Info.Id,
-                UserName = this.Info.UserName,
-                DisplayName = this.Info.Name,
-                Avatar = this.Info.ProfileImageUrl,
-                Locked = this.Info.IsProtected,
-                ClientId = this.Api.ClientId,
-                ClientSecret = this.Api.ClientSecret,
-                AccessToken = this.Api.AccessToken,
-            };
+                case null:
+                case "*":
+                case nameof(AccountDetail.Name):
+                case nameof(AccountDetail.UserName):
+                case nameof(AccountDetail.IsProtected):
+                case nameof(AccountDetail.ProfileImageUrl):
+                    var setting = this._setting;
+                    var account = this.Info;
+
+                    setting.DisplayName = account.Name;
+                    setting.UserName = account.UserName;
+                    setting.Avatar = account.ProfileImageUrl;
+                    setting.IsLocked = account.IsProtected;
+                    break;
+            }
+        }
+
+        private void GetDetails()
+        {
+        }
+
+        public override IAccountSetting GetSetting() => this._setting.Clone();
+
+        protected readonly ConcurrentDictionary<long, StatusActivity> _statusActivities = new();
+
+        public StatusActivity GetStatusActivity(long originalStatusId)
+        {
+            return this._statusActivities.GetOrAdd(originalStatusId, _ => new StatusActivity());
+        }
+
+        protected override void OnActivityStarted()
+        {
+            this.GetDetails();
+
+            if (Config.Functions.IsLoadTimelineEnabled)
+            {
+                this.Timeline.Load();
+            }
+        }
+        protected override void OnActivityStopping()
+        {
+            this.Timeline.Unload();
+            this._statusActivities.Clear();
         }
     }
 }

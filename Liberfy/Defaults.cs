@@ -11,7 +11,7 @@ namespace Liberfy
         #region Setting files
         public const string @SettingFile = "settings.json";
         public const string @WindowFile = "winconf.json";
-        public const string @AccountsFile = "accounts4.json";
+        public const string @AccountsFile = "accounts.bin";
         #endregion
 
         #region

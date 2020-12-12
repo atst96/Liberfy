@@ -26,6 +26,8 @@
   <ItemGroup>
     <PackageReference Include="Emoji.Wpf" Version="0.1.5" />
     <PackageReference Include="LivetCask" Version="3.2.3.1" />
+    <PackageReference Include="MessagePack" Version="2.2.85" />
+    <PackageReference Include="MessagePackAnalyzer" Version="2.2.85" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
     <PackageReference Include="SgmlReader.NetStandard" Version="1.8.14.1" />

@@ -1,5 +1,7 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using Liberfy.Components;
+using Liberfy.Data.Settings.Columns;
+using Liberfy.Managers;
 using Liberfy.Settings;
 using Liberfy.Utilieis;
 using Liberfy.ViewModels;
@@ -118,7 +120,7 @@ namespace Liberfy
 
             ProfileImageCache = new ProfileImageCache();
 
-            if (AccountManager.Count == 0 && !this.IsNeedInitialUserSettings())
+            if (!AccountManager.Accounts.Any() && !this.IsNeedInitialUserSettings())
             {
                 this.ForceShutdown();
                 return;
@@ -135,50 +137,49 @@ namespace Liberfy
         /// <returns></returns>
         private async Task LoadSettings()
         {
-            var (generalSettings, accountSettings) = await SettingUtil.LoadSettings().ConfigureAwait(false);
+            var settings = await SettingsManager.Load()
+                .ConfigureAwait(false);
 
             // 一般設定
-            Setting = generalSettings;
+            Setting = settings.Application;
 
             // アカウント設定
-            var (accounts, columns) = (accountSettings.Accounts, accountSettings.Columns);
-
-            if (accounts?.Any() ?? false)
-            {
-                this.InitializeSavedAccounts(accounts);
-            }
-
-            if (columns?.Any() ?? false)
-            {
-                this.InitializeSavedColumns(columns);
-            }
+            this.LoadAccountSettings(settings.Accounts);
         }
 
         /// <summary>
         /// 設定データからアカウント情報を読み込む。
         /// </summary>
         /// <param name="accounts"></param>
-        private void InitializeSavedAccounts(IEnumerable<AccountSettingBase> accounts)
+        private void LoadAccountSettings(AccountSettings settings)
         {
-            foreach (var accountSetting in accounts.Distinct())
+            var accounts = settings.Accounts;
+            if (!accounts?.Any() ?? false)
             {
-                AccountManager.Add(AccountBase.FromSetting(accountSetting));
+                return;
             }
-        }
 
-        /// <summary>
-        /// 設定データからカラム情報を読み込む。
-        /// </summary>
-        /// <param name="columns"></param>
-        private void InitializeSavedColumns(IEnumerable<ColumnSetting> columns)
-        {
-            foreach (var columnSetting in columns)
+            var registeredAccounts = AccountManager.Accounts;
+            var loadedAccounts = accounts.Select(AccountBase.FromSetting);
+
+            registeredAccounts.AddRange(loadedAccounts);
+
+            var accountById = registeredAccounts.ToDictionary(a => a.ItemId);
+
+            var columns = settings.Columns;
+            if (columns?.Any() ?? false)
             {
-                var account = AccountManager.Get(columnSetting.Service, columnSetting.UserId);
-
-                if (account != null && ColumnBase.FromSetting(columnSetting, account, out var column))
+                foreach (var columnSetting in columns)
                 {
-                    TimelineBase.Columns.Add(column);
+                    if (!accountById.TryGetValue(columnSetting.UserId, out var account))
+                    {
+                        return;
+                    }
+
+                    if (account != null && ColumnBase.TryFromSetting(columnSetting, account, out var column))
+                    {
+                        TimelineBase.Columns.Add(column);
+                    }
                 }
             }
         }
@@ -201,12 +202,13 @@ namespace Liberfy
         /// </summary>
         private void StartClient()
         {
-            var tasks = AccountManager.Accounts.AsParallel().Select(a => a.Load());
+            var tasks = AccountManager.Accounts.Select(a => a.StartActivity());
 
             Task.WhenAll(tasks).ContinueWith(_ =>
             {
                 Status.IsAccountLoaded = true;
             },
+
             TaskScheduler.FromCurrentSynchronizationContext());
         }
 
@@ -225,7 +227,7 @@ namespace Liberfy
 
             this.ShutdownMode = tempShutdownMode;
 
-            return AccountManager.Count > 0;
+            return AccountManager.Accounts.Count > 0;
         }
 
         /// <summary>
@@ -255,17 +257,22 @@ namespace Liberfy
                 var setting = App.Setting;
                 var accountsSetting = new AccountSettings
                 {
-                    Accounts = AccountManager.Accounts.Select(a => a.ToSetting()),
-                    Columns = TimelineBase.Columns.Select(c => c.GetOption()),
+                    Accounts = AccountManager.Accounts.Select(a => a.GetSetting()).ToArray(),
+                    Columns = TimelineBase.Columns.Select(c => c.GetSetting()).ToArray(),
                 };
 
+                var task = SettingsManager.Save(new()
+                {
+                    Application = App.Setting,
+                    Accounts = accountsSetting,
+                });
 
-                var task = SettingUtil.SaveSettings(setting, accountsSetting);
                 task.Wait();
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(ex.Message, App.Name, MessageBoxButton.OK, MessageBoxImage.Error);
+                Debug.WriteLine(ex);
+                MessageBox.Show(ex.Message, App.Name, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

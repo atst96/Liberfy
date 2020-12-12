@@ -78,7 +78,7 @@ namespace Liberfy
             this.Status = info;
             this.User = info.User;
             this.CreatedAt = info.CreatedAt;
-            this.IsCurrentAccount = info.User.Id == account.Id;
+            this.IsCurrentAccount = info.User.Id == account.Info.Id;
 
             this.MediaItems = info.Attachments
                 .Select((item, index) => new MediaAttachmentInfo(this, index));
@@ -125,7 +125,7 @@ namespace Liberfy
             this.Status = info;
             this.User = info.User;
             this.CreatedAt = info.CreatedAt;
-            this.IsCurrentAccount = info.User.Id == account.Id;
+            this.IsCurrentAccount = info.User.Id == account.Info.Id;
 
             this.MediaItems = info.Attachments
                 .Select((item, index) => new MediaAttachmentInfo(this, index));

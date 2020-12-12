@@ -10,23 +10,17 @@ using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    internal interface IAccount : IEquatable<IAccount>
+    internal interface IAccount
     {
         string ItemId { get; }
-        long Id { get; }
         ServiceType Service { get; }
         IApiGateway ApiGateway { get; }
         IServiceConfiguration ServiceConfiguration { get; }
-        IUserInfo Info { get; }
-        TimelineBase Timeline { get; }
         bool IsLoading { get; }
-        bool IsLoggedIn { get; }
-        Task Load();
+        bool IsVerified { get; }
+        Task StartActivity();
         IValidator Validator { get; }
-        ValueTask<bool> Login();
-        Task LoadDetails();
-        void Unload();
-        void SetApiTokens(IApi api);
-        AccountSettingBase ToSetting();
+        void StopActivity();
+        IAccountSetting GetSetting();
     }
 }

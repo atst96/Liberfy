@@ -1,4 +1,5 @@
-﻿using Liberfy.ViewModels;
+﻿using Liberfy.Managers;
+using Liberfy.ViewModels;
 using Livet.Messaging;
 using Livet.Messaging.Windows;
 using System;
@@ -142,8 +143,10 @@ namespace Liberfy.Commands.AccountAuthenticationWindowCommands
 
                 try
                 {
-                    await this.AccountAuthenticator.GetAccessToken(this.VerificationCode);
-                    await AccountManager.Register(this.AccountAuthenticator);
+                    var authenticator = this.AccountAuthenticator;
+
+                    await authenticator.GetAccessToken(this.VerificationCode);
+                    await AccountManager.RegisterFromAuthenticator(this.AccountAuthenticator);
                     this._viewModel.Messenger.Raise(new WindowActionMessage(WindowAction.Close, "MsgKey_WindowAction"));
                 }
                 catch (Exception ex)

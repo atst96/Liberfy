@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Liberfy.Data.Settings.Columns;
 
 namespace Liberfy
 {
-    class SearchColumn : SearchColumnBase
+    internal class SearchColumn : SearchColumnBase
     {
         public SearchColumn(IAccount account)
             : base(account, ColumnType.Search)
@@ -28,22 +25,23 @@ namespace Liberfy
             set => this.SetProperty(ref this._resultType, value);
         }
 
-        public override ColumnSetting GetOption()
+        public override IColumnSetting GetSetting()
         {
-            var opt = base.GetOption();
+            throw new NotImplementedException();
 
-            opt.SetValue("use_result_type", this._useResultType);
-            opt.SetValue("result_type", this._resultType);
-
-            return opt;
+            //return new SearchColumnSetting
+            //{
+            //    UserId = this.Account.ItemId,
+            //    UseResultType = this._useResultType,
+            //    ResultType = this._resultType,
+            //};
         }
 
-        protected override void SetOption(ColumnSetting opt)
+        protected override void SetOption(IColumnSetting opt)
         {
-            base.SetOption(opt);
-
-            this._useResultType = opt.GetValue<bool>("use_result_type");
-            this._resultType = opt.GetValue<string>("result_type");
+            throw new NotImplementedException();
+            //this._useResultType = opt.GetValue<bool>("use_result_type");
+            //this._resultType = opt.GetValue<string>("result_type");
         }
 
         public static IReadOnlyDictionary<string, string> SearchTypes { get; } = new Dictionary<string, string>

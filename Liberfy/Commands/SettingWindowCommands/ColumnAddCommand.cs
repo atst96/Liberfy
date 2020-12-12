@@ -21,7 +21,7 @@ namespace Liberfy.Commands.SettingWindowCommands
 
         protected override void Execute(ColumnType parameter)
         {
-            this._viewModel.DefaultColumns.Add(ColumnBase.FromType(parameter));
+            //this._viewModel.DefaultColumns.Add(ColumnBase.FromType(parameter));
         }
     }
 }

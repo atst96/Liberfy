@@ -24,7 +24,7 @@ namespace Liberfy.Services.Mastodon
             : base(account)
         {
             this._account = account;
-            this._userId = account.Id;
+            this._userId = account.Info.Id;
         }
 
         public override async void Load()

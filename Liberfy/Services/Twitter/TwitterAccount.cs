@@ -1,4 +1,6 @@
-﻿using Liberfy.Managers;
+﻿using Liberfy.Commands;
+using Liberfy.Data.Twitter;
+using Liberfy.Managers;
 using Liberfy.Services;
 using Liberfy.Services.Common;
 using Liberfy.Services.Twitter;
@@ -7,36 +9,65 @@ using Liberfy.Settings;
 using SocialApis;
 using SocialApis.Twitter;
 using System;
+using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace Liberfy
 {
-    internal class TwitterAccount : AccountBase<TwitterApi, TwitterTimeline, User, Status>
+    internal class TwitterAccount : AccountBase, IAccount
     {
         public static readonly Uri ServerHostUrl = new Uri("https://twitter.com/", UriKind.Absolute);
         private static readonly TwitterDataManager _dataFactory = new TwitterDataManager();
 
-        public override long Id { get; protected set; }
+        private readonly TwitterAccountSetting _setting;
+
+        public long Id { get; protected set; }
 
         public override ServiceType Service { get; } = ServiceType.Twitter;
 
         public TwitterDataManager DataStore { get; }
 
-        public TwitterAccount(TwitterAccountItem item)
-            : base(item.Id, ServerHostUrl, item.CreateApi(), item)
+        public UserDetail Info { get; }
+
+        public TwitterTimeline Timeline { get; }
+
+        public TwitterApi Api { get; protected set; }
+
+        public TwitterAccount(TwitterAccountSetting setting)
+            : base(false)
         {
+            this._setting = setting.Clone();
+            this.ItemId = setting.ItemId;
+            this.Api = setting.CreateApi();
             this.DataStore = _dataFactory;
+            this.Info = this.DataStore.GetAccount(setting);
             this.Validator = new TwitterValidator(this);
-            this.Info = this.DataStore.GetAccount(item);
+            this.Timeline = new TwitterTimeline(this);
+            this.Commands = new AccountCommandGroup(this);
+
+            ((INotifyPropertyChanged)this.Info).PropertyChanged += this.OnProfileUpdated;
         }
 
-        public TwitterAccount(TwitterApi api, User account)
-            : base((long)account.Id, ServerHostUrl, api)
+        public TwitterAccount(string itemId, TwitterApi api, User account)
+            : base(true)
         {
+            this._setting = new()
+            {
+                ItemId = itemId,
+                UserId = api.UserId,
+            };
+            this.ItemId = itemId;
+            this.SetApiTokens(api);
             this.DataStore = _dataFactory;
+            this.Info = this.DataStore.RegisterAccount(account);
             this.Validator = new TwitterValidator(this);
-            this.Info = this.GetUserInfo(account);
+            this.Timeline = new TwitterTimeline(this);
+            this.Commands = new AccountCommandGroup(this);
+            this.OnProfileUpdated(this.Info, new(null));
+
+            ((INotifyPropertyChanged)this.Info).PropertyChanged += this.OnProfileUpdated;
         }
 
         //private IAccountCommandGroup _commands;
@@ -62,18 +93,7 @@ namespace Liberfy
         /// </summary>
         public TwitterMediaAccessor Media => this._media ??= new TwitterMediaAccessor(this);
 
-        protected override TwitterTimeline CreateTimeline() => new TwitterTimeline(this);
-
-        public override async Task Load()
-        {
-            if (await base.Login().ConfigureAwait(false))
-            {
-                await this.GetDetails().ConfigureAwait(false);
-                this.StartTimeline();
-            }
-        }
-
-        protected override async Task<bool> VerifyCredentials()
+        protected override async ValueTask<bool> VerifyCredentials()
         {
             try
             {
@@ -83,8 +103,6 @@ namespace Liberfy
                     ["skip_status"] = true,
                     ["include_email"] = false
                 });
-
-                this.Id = user.Id.Value;
 
                 this.DataStore.RegisterAccount(user);
 
@@ -107,41 +125,61 @@ namespace Liberfy
             return false;
         }
 
-        protected override Task GetDetails()
-        {
-            return Task.CompletedTask;
-            //Task[] tasks =
-            //{
-            //};
-
-            //return Task.WhenAll(tasks);
-        }
-
-        protected override IUserInfo GetUserInfo(User account)
-        {
-            return this.DataStore.RegisterAccount(account);
-        }
-
-        public override void SetApiTokens(TwitterApi api)
+        public void SetApiTokens(TwitterApi api)
         {
             this.Api = api;
+
+            var setting = this._setting;
+            setting.ConsumerKey = api.ConsumerKey;
+            setting.ConsumerSecret = api.ConsumerSecret;
+            setting.AccessToken = api.AccessToken;
+            setting.AccessTokenSecret = api.AccessTokenSecret;
         }
 
-        public override AccountSettingBase ToSetting()
+        private void OnProfileUpdated(object sender, PropertyChangedEventArgs e)
         {
-            return new TwitterAccountItem
+            switch (e.PropertyName)
             {
-                ItemId = this.ItemId,
-                Id = this.Id,
-                Name = this.Info.Name,
-                ScreenName = this.Info.UserName,
-                ProfileImageUrl = this.Info.ProfileImageUrl,
-                IsProtected = this.Info.IsProtected,
-                ConsumerKey = this.Api.ConsumerKey,
-                ConsumerSecret = this.Api.ConsumerSecret,
-                AccessToken = this.Api.AccessToken,
-                AccessTokenSecret = this.Api.AccessTokenSecret,
-            };
+                case null:
+                case "*":
+                case nameof(UserDetail.Name):
+                case nameof(UserDetail.UserName):
+                case nameof(UserDetail.IsProtected):
+                case nameof(UserDetail.ProfileImageUrl):
+                    var setting = this._setting;
+                    var user = this.Info;
+
+                    setting.Name = user.Name;
+                    setting.ScreenName = user.UserName;
+                    setting.ProfileImageUrl = user.ProfileImageUrl;
+                    setting.IsProtected = user.IsProtected;
+                    break;
+            }
+        }
+
+        public override IAccountSetting GetSetting() => this._setting.Clone();
+
+        protected readonly ConcurrentDictionary<long, StatusActivity> _statusActivities = new();
+
+        public StatusActivity GetStatusActivity(long originalStatusId)
+        {
+            return this._statusActivities.GetOrAdd(originalStatusId, _ => new());
+        }
+
+        protected override void OnActivityStarted()
+        {
+            //this.GetDetails();
+
+            if (Config.Functions.IsLoadTimelineEnabled)
+            {
+                this.Timeline.Load();
+            }
+        }
+
+        protected override void OnActivityStopping()
+        {
+            this.Timeline.Unload();
+            this._statusActivities.Clear();
         }
     }
 }

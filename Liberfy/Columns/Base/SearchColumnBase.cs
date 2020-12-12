@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Liberfy.Data.Settings.Columns;
 
 namespace Liberfy
 {
@@ -16,32 +17,33 @@ namespace Liberfy
 
         private static string BaseTitle = "Search";
 
-        public override ColumnSetting GetOption()
+        public override IColumnSetting GetSetting()
         {
-            var option = base.GetOption();
+            throw new NotImplementedException();
 
-            option.SetValue("search_type", this._searchType);
-
-            option.SetValue("use_language", this._useLanguage);
-            option.SetValue("language", this._language);
-
-            option.SetValue("query", this._query);
-
-            option.SetValue("clear_items", this._clearItemsAfterSearch);
-
-            return option;
+            //return new SearchColumnSetting
+            //{
+            //    UserId = this.Account.ItemId,
+            //    Search_type = this._searchType),
+            //    Use_language = this._useLanguage),
+            //    Language = this._language),
+            //    Query = this._query),
+            //    ClearItems = this._clearItemsAfterSearch),
+            //};
         }
 
-        protected override void SetOption(ColumnSetting option)
+        protected override void SetOption(IColumnSetting option)
         {
-            base.SetOption(option);
+            throw new NotImplementedException();
 
-            this._searchType = option.GetValue<string>("search_type");
+            //base.SetOption(option);
 
-            this._useLanguage = option.GetValue<bool>("use_language");
-            this.Language = option.GetValue<string>("language");
+            //this._searchType = option.GetValue<string>("search_type");
 
-            this._clearItemsAfterSearch = option.GetValue<bool>("clear_items");
+            //this._useLanguage = option.GetValue<bool>("use_language");
+            //this.Language = option.GetValue<string>("language");
+
+            //this._clearItemsAfterSearch = option.GetValue<bool>("clear_items");
         }
 
         private string _searchType = "tweet";

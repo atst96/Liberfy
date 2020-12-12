@@ -36,9 +36,9 @@ namespace Liberfy.Managers
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public UserDetail GetAccount(TwitterAccountItem item)
+        public UserDetail GetAccount(TwitterAccountSetting item)
         {
-            return this.Accounts.GetOrAdd(item.Id, id => new UserDetail(item));
+            return this.Accounts.GetOrAdd(item.UserId, id => new UserDetail(item));
         }
 
         /// <summary>

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
+using Liberfy.Data.Settings.Columns;
 
 namespace Liberfy
 {
@@ -24,18 +19,21 @@ namespace Liberfy
             set => this.SetProperty(ref this._listId, value);
         }
 
-        public override ColumnSetting GetOption()
+        public override IColumnSetting GetSetting()
         {
-            var opt = base.GetOption();
+            throw new NotImplementedException();
 
-            opt.SetValue("list_id", this._listId);
-
-            return opt;
+            //return new ListColumnSetting
+            //{
+            //    ItemId = this.Account.ItemId,
+            //    ListId = this._listId,
+            //};
         }
 
-        protected override void SetOption(ColumnSetting option)
+        protected override void SetOption(IColumnSetting option)
         {
-            this.ListId = option.GetValue<long>("list_id");
+            throw new NotImplementedException();
+            // this.ListId = option.GetValue<long>("list_id");
         }
     }
 }

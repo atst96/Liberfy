@@ -1,12 +1,9 @@
-﻿using Liberfy.Settings;
+﻿using Liberfy.Data.Settings.Columns;
+using Liberfy.Settings;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Windows.Media;
 using static Liberfy.Defaults;
-
-using Mastodon = SocialApis.Mastodon;
 
 namespace Liberfy
 {
@@ -138,34 +135,6 @@ namespace Liberfy
         {
             get => this._backgroundImagePath;
             set => this.SetProperty(ref this._backgroundImagePath, value);
-        }
-
-        #endregion
-
-        #region Account
-
-        [DataMember(Name = "account_column_defaults")]
-        private NotifiableCollection<ColumnSetting> _defaultColumns;
-        [IgnoreDataMember]
-        public NotifiableCollection<ColumnSetting> DefaultColumns
-        {
-            get
-            {
-                if (this._defaultColumns != null)
-                {
-                    return this._defaultColumns;
-                }
-                else
-                {
-                    var defaultOptions = new[]
-                    {
-                        new ColumnSetting{ Type = ColumnType.Home },
-                        new ColumnSetting{ Type = ColumnType.Notification },
-                    };
-
-                    return this._defaultColumns = new NotifiableCollection<ColumnSetting>(defaultOptions);
-                }
-            }
         }
 
         #endregion

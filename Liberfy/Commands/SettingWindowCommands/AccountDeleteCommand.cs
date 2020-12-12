@@ -1,10 +1,5 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
+using Liberfy.Managers;
 using Liberfy.ViewModels;
 using Livet.Messaging;
 using WpfMvvmToolkit;
@@ -22,7 +17,7 @@ namespace Liberfy.Commands.SettingWindowCommands
 
         protected override bool CanExecute(IAccount parameter)
         {
-            return AccountManager.Contains(parameter);
+            return AccountManager.Accounts.Contains(parameter);
         }
 
         protected override void Execute(IAccount parameter)
@@ -30,15 +25,16 @@ namespace Liberfy.Commands.SettingWindowCommands
             var user = parameter;
 
             var message = new ConfirmationMessage(
-                $"このアカウントを一覧から削除しますか？\n{user.Info.Name}@{user.Info.UserName}", App.Name,
+                //$"このアカウントを一覧から削除しますか？\n{user.Info.Name}@{user.Info.UserName}", App.Name,
+                $"このアカウントを一覧から削除しますか？", App.Name,
                 MessageBoxImage.Question, "MsgKey_ConfirmMessage");
 
             this._viewModel.Messenger.Raise(message);
 
             if (message.Response ?? false)
             {
-                AccountManager.Remove(parameter);
-                parameter.Unload();
+                AccountManager.Accounts.Remove(parameter);
+                parameter.StopActivity();
             }
 
             this._viewModel.RaiseCanExecuteAccountCommands();

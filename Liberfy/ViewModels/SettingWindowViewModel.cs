@@ -1,24 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.Win32;
-using System.Collections.ObjectModel;
-using Liberfy.Settings;
-using SocialApis;
 using Liberfy.Commands.SettingWindowCommands;
-using Liberfy.Components;
 using WpfMvvmToolkit;
 using Livet.Messaging;
 using System.Windows.Input;
-using System.Runtime.CompilerServices;
-using System.Globalization;
-using System.Windows.Markup;
-using System.Collections.Immutable;
+using Liberfy.Managers;
 
 namespace Liberfy.ViewModels
 {
@@ -26,8 +17,6 @@ namespace Liberfy.ViewModels
     {
         public SettingWindowViewModel() : base()
         {
-            this.DefaultColumns = new NotifiableCollection<ColumnBase>(Setting.DefaultColumns
-                .Select(opt => ColumnBase.FromSetting(opt, null, out var column) ? column : ColumnBase.FromType(opt.Type)));
         }
 
         public static Setting GlobalSetting { get; } = App.Setting;
@@ -565,7 +554,7 @@ namespace Liberfy.ViewModels
 
         private bool OnCloseRequest()
         {
-            if (AccountManager.Count == 0)
+            if (AccountManager.Accounts.Count == 0)
             {
                 var message = new ConfirmationMessage("アカウントが登録されていません。終了しますか？", App.Name, "MsgKey_GeneralConfirm");
                 this.Messenger.Raise(message);
@@ -578,11 +567,11 @@ namespace Liberfy.ViewModels
 
         private void OnClose()
         {
-            this.Setting.DefaultColumns.Clear();
-            foreach (var column in this.DefaultColumns)
-            {
-                this.Setting.DefaultColumns.Add(column.GetOption());
-            }
+            //this.Setting.DefaultColumns.Clear();
+            //foreach (var column in this.DefaultColumns)
+            //{
+            //    this.Setting.DefaultColumns.Add(column.GetOption());
+            //}
 
             GlobalSetting.TimelineFont = this.TimelineFont;
             GlobalSetting.TimelineFontSize = this.TimelineFontSize.Value;

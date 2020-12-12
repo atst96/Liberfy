@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Liberfy.Data.Settings.Columns;
 
 namespace Liberfy
 {
@@ -31,50 +32,17 @@ namespace Liberfy
 
     internal partial class ColumnBase
     {
-        internal static ColumnBase FromType(ColumnType type) => FromType(null, type);
 
-        private static ColumnBase FromType(IAccount account, ColumnType type)
+        public static bool TryFromSetting(IColumnSetting option, IAccount account, out ColumnBase column)
         {
-            switch (type)
+            column = option switch
             {
-                case ColumnType.Home:
-                    return new HomeColumn(account);
+                HomeColumnSetting homeColumn => new HomeColumn(account, homeColumn),
+                NotificationColumnSetting notificationColumn => new NotificationColumn(account, notificationColumn),
+                _ => default,
+            };
 
-                case ColumnType.Notification:
-                    return new NotificationColumn(account);
-
-                case ColumnType.Search:
-                    return new SearchColumn(account);
-
-                case ColumnType.List:
-                    return new ListColumn(account);
-
-                case ColumnType.Stream:
-                    return new StreamSearchColumn(account);
-
-                case ColumnType.Messages:
-                    return new MessageColumn(account);
-
-                default:
-                    return null;
-            }
-        }
-
-        public static bool FromSetting(ColumnSetting option, IAccount account, out ColumnBase column)
-        {
-            column = option == null ? null : ColumnBase.FromType(account, option.Type);
-
-            if (column == null)
-            {
-                return false;
-            }
-            else
-            {
-                if (option.Options != null)
-                    column.SetOption(option);
-
-                return true;
-            }
+            return column != null;
         }
 
         public static LocalizeDictionary<ColumnType> ColumnTypes { get; }
@@ -113,23 +81,9 @@ namespace Liberfy
 
         public ColumnType Type { get; }
 
-        public virtual ColumnSetting GetOption()
-        {
-            var setting = new ColumnSetting
-            {
-                Type = this.Type,
-            };
+        public abstract IColumnSetting GetSetting();
 
-            if (this.Account != null)
-            {
-                setting.Service = Account.Service;
-                setting.UserId = Account.Id;
-            }
-
-            return setting;
-        }
-
-        protected virtual void SetOption(ColumnSetting option)
+        protected virtual void SetOption(IColumnSetting option)
         {
         }
 

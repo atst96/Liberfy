@@ -8,7 +8,7 @@ using Utf8Json;
 
 namespace Liberfy.Components.JsonFormatters
 {
-    internal class AccountSettingsIEnumerableFormatter : UnionInterfaceEnumerableFormatterBase<AccountSettingBase>
+    internal class AccountSettingsIEnumerableFormatter : UnionInterfaceEnumerableFormatterBase<IAccountSetting>
     {
         private readonly IReadOnlyDictionary<string, ServiceType> _serviceNameMap;
 
@@ -27,7 +27,7 @@ namespace Liberfy.Components.JsonFormatters
             this._serviceNameMap = serviceNameMap;
         }
 
-        protected override AccountSettingBase DeserializeItem(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+        protected override IAccountSetting DeserializeItem(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
             int offset = reader.GetCurrentOffsetUnsafe();
 
@@ -50,11 +50,11 @@ namespace Liberfy.Components.JsonFormatters
                     switch (serviceType)
                     {
                         case ServiceType.Twitter:
-                            var twFormatter = formatterResolver.GetFormatter<TwitterAccountItem>();
+                            var twFormatter = formatterResolver.GetFormatter<TwitterAccountSetting>();
                             return twFormatter.Deserialize(ref reader, formatterResolver);
 
                         case ServiceType.Mastodon:
-                            var mdFormatter = formatterResolver.GetFormatter<MastodonAccountItem>();
+                            var mdFormatter = formatterResolver.GetFormatter<MastodonAccountSetting>();
                             return mdFormatter.Deserialize(ref reader, formatterResolver);
 
                         default:
@@ -69,16 +69,16 @@ namespace Liberfy.Components.JsonFormatters
             throw new NotImplementedException();
         }
 
-        protected override void SerializeItem(ref JsonWriter writer, AccountSettingBase value, IJsonFormatterResolver formatterResolver)
+        protected override void SerializeItem(ref JsonWriter writer, IAccountSetting value, IJsonFormatterResolver formatterResolver)
         {
             switch (value)
             {
-                case TwitterAccountItem twItem:
-                    formatterResolver.GetFormatter<TwitterAccountItem>().Serialize(ref writer, twItem, formatterResolver);
+                case TwitterAccountSetting twItem:
+                    formatterResolver.GetFormatter<TwitterAccountSetting>().Serialize(ref writer, twItem, formatterResolver);
                     break;
 
-                case MastodonAccountItem mdItem:
-                    formatterResolver.GetFormatter<MastodonAccountItem>().Serialize(ref writer, mdItem, formatterResolver);
+                case MastodonAccountSetting mdItem:
+                    formatterResolver.GetFormatter<MastodonAccountSetting>().Serialize(ref writer, mdItem, formatterResolver);
                     break;
 
                 default:

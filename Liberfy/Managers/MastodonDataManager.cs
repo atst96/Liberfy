@@ -43,7 +43,7 @@ namespace Liberfy.Managers
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public AccountDetail GetAccount(MastodonAccountItem item)
+        public AccountDetail GetAccount(MastodonAccountSetting item)
         {
             return this.Accounts.GetOrAdd(item.Id, id => new AccountDetail(this.Host, item));
         }

@@ -24,7 +24,7 @@ namespace Liberfy
 
         public NotificationItem(MastodonNotification item, MastodonAccount account)
         {
-            this.Id = account.Id;
+            this.Id = account.Info.Id;
             this.Own = account;
             this.CreatedAt = item.CreatedAt;
 

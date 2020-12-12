@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Liberfy
+namespace Liberfy.Data.Settings.Columns
 {
     internal abstract class StatusColumnBase : ColumnBase
     {
@@ -12,7 +8,9 @@ namespace Liberfy
             : base(account, type, title)
         {
             if (type == ColumnType.Status || !type.HasFlag(ColumnType.Status))
+            {
                 throw new NotSupportedException();
+            }
         }
 
         public override bool IsStatusColumn { get; } = true;

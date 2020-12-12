@@ -1,5 +1,6 @@
 ﻿using Liberfy.Commands;
 using Liberfy.Commands.TweetWindow;
+using Liberfy.Managers;
 using Liberfy.Services.Common;
 using Liberfy.Utils;
 using Livet.Messaging.IO;

@@ -1,16 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Liberfy.Data.Settings.Columns;
 
 namespace Liberfy
 {
-    class MessageColumn : ColumnBase
+    internal class MessageColumn : ColumnBase
     {
         public MessageColumn(IAccount account)
             : base(account, ColumnType.Messages, "Message")
         {
+        }
+
+        public override IColumnSetting GetSetting()
+        {
+            throw new NotImplementedException();
         }
 
         public override void OnShowDetails(IItem item) { }

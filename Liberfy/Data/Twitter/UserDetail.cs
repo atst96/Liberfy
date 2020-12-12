@@ -100,9 +100,9 @@ namespace Liberfy.Data.Twitter
             }
         }
 
-        public UserDetail(TwitterAccountItem item)
+        public UserDetail(TwitterAccountSetting item)
         {
-            this.Id = item.Id;
+            this.Id = item.UserId;
             this._userName = item.ScreenName;
             this._name = item.Name;
             this._isProtected = item.IsProtected;
