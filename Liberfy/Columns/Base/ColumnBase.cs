@@ -56,16 +56,15 @@ namespace Liberfy
                 [ColumnType.Stream] = "リアルタイム検索",
             });
 
-        public static IReadOnlyDictionary<ColumnType, string> ColumnNames { get; }
-            = new ReadOnlyDictionary<ColumnType, string>(new Dictionary<ColumnType, string>
-            {
-                [ColumnType.Home] = "Home",
-                [ColumnType.Notification] = "Notification",
-                [ColumnType.Messages] = "Message",
-                [ColumnType.Search] = "Search",
-                [ColumnType.List] = "List",
-                [ColumnType.Stream] = "Stream",
-            });
+        public static IReadOnlyDictionary<ColumnType, string> ColumnNames { get; } = new Dictionary<ColumnType, string>
+        {
+            [ColumnType.Home] = "Home",
+            [ColumnType.Notification] = "Notification",
+            [ColumnType.Messages] = "Message",
+            [ColumnType.Search] = "Search",
+            [ColumnType.List] = "List",
+            [ColumnType.Stream] = "Stream",
+        };
     }
 
     internal abstract partial class ColumnBase : NotificationObject
@@ -137,8 +136,6 @@ namespace Liberfy
 
         private bool _hasStatus;
         public bool HasStatus => _hasStatus;
-
-        public virtual bool IsStatusColumn { get; } = false;
 
         public virtual void OnShowDetails(IItem item) { }
     }

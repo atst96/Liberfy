@@ -13,8 +13,6 @@ namespace Liberfy.Data.Settings.Columns
             }
         }
 
-        public override bool IsStatusColumn { get; } = true;
-
         private StatusItem _selectedStatus;
         public StatusItem SelectedStatus
         {

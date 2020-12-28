@@ -64,7 +64,7 @@ namespace Liberfy.Behaviors
                 typeof(IUserInfo), typeof(TimelineBehavior),
                 new PropertyMetadata(null, UserDescriptionChanged));
 
-        private static async void UserDescriptionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void UserDescriptionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is TextBlock textBlock && e.NewValue is IUserInfo user)
             {
