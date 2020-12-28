@@ -130,10 +130,10 @@
                         <Setter Property="IsRetweetedItem" Value="{Binding IsRetweet, Mode=OneTime}" />
                     </Style>
                 </app:SharedResourceDictionary>
-                <app:SharedResourceDictionary Source="Xaml\Icons.xaml" />
-                <app:SharedResourceDictionary Source="Xaml\Themes\Generic.xaml" />
-                <app:SharedResourceDictionary Source="Xaml\Templates\ControlStyles.xaml" />
-                <app:SharedResourceDictionary Source="Xaml\Templates\DataTemplates.xaml" />
+                <app:SharedResourceDictionary Source="/Resources/Icons.xaml" />
+                <app:SharedResourceDictionary Source="/Themes/Generic.xaml" />
+                <app:SharedResourceDictionary Source="/Resources/ControlStyles.xaml" />
+                <app:SharedResourceDictionary Source="/Resources/DataTemplates.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
