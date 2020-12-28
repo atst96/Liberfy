@@ -394,6 +394,74 @@
         </Setter>
     </Style>
 
+    <!--#region IconLabel style -->
+
+    <Style x:Key="{x:Type app:IconLabel}" TargetType="{x:Type app:IconLabel}">
+        <Setter Property="IconWidth" Value="16" />
+        <Setter Property="IconHeight" Value="16" />
+        <Setter Property="IconContentInterval" Value="4" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{Binding (TextElement.Foreground), RelativeSource={RelativeSource AncestorType={x:Type Control}}}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type app:IconLabel}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Path
+                            x:Name="PART_Icon"
+                            Grid.Column="0"
+                            Stretch="Uniform"
+                            Visibility="Visible"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Width="{TemplateBinding IconWidth}"
+                            Height="{TemplateBinding IconHeight}"
+                            Fill="{TemplateBinding Foreground}"
+                            Data="{TemplateBinding Icon}" />
+
+                        <Decorator
+                            x:Name="PART_Splitter"
+                            Grid.Column="1"
+                            Width="{TemplateBinding IconContentInterval}"
+                            Height="{TemplateBinding IconContentInterval}"
+                            Visibility="Visible" />
+
+                        <ContentPresenter
+                            x:Name="PART_Content"
+                            Grid.Column="2"
+                            Visibility="Visible"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                            ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ContentVisibility" Value="IconOnly">
+                            <Setter TargetName="PART_Content" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="PART_Splitter" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
+                        <Trigger Property="ContentVisibility" Value="LabelOnly">
+                            <Setter TargetName="PART_Icon" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="PART_Splitter" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!--#endregion-->
 
     <!--#region Window style -->
@@ -404,7 +472,7 @@
         <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Width" Value="46" />
         <Setter Property="Height" Value="29" />
-   </Style>
+    </Style>
 
     <Style x:Key="NormalCaptionButton" TargetType="Button" BasedOn="{StaticResource CaptionButtonBase}">
         <Setter Property="Template">
@@ -714,7 +782,7 @@
                     <RowDefinition />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                
+
                 <Border
                     Grid.Row="1"
                     DockPanel.Dock="Bottom"
@@ -752,7 +820,7 @@
                             Visibility="{TemplateBinding IsShowCancelButton, Converter={StaticResource BoolToVisibilityConverter}}" />
                     </StackPanel>
                 </Border>
-                
+
                 <ContentPresenter
                     x:Name="PART_SelectedContentHost"
                     Grid.Row="0"
@@ -768,7 +836,7 @@
             <Trigger Property="IsEmphasisPreviousButton" Value="True">
                 <Setter TargetName="PART_PreviousButton" Property="Style" Value="{StaticResource Button.Primary}" />
             </Trigger>
-            
+
             <Trigger Property="IsEmphasisNextButton" Value="True">
                 <Setter TargetName="PART_NextButton" Property="Style" Value="{StaticResource Button.Primary}" />
             </Trigger>
