@@ -4,6 +4,7 @@ using Liberfy.Data.Settings.Columns;
 using Liberfy.Managers;
 using Liberfy.Settings;
 using Liberfy.Utilieis;
+using Liberfy.Utils;
 using Liberfy.ViewModels;
 using Liberfy.Views;
 using Microsoft.Win32;
@@ -221,9 +222,7 @@ namespace Liberfy
             var tempShutdownMode = this.ShutdownMode;
             this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            var settingWindow = new SettingWindow();
-            settingWindow.MoveTabPage(1);
-            settingWindow.ShowDialog();
+            DialogUtils.ShowSettingWindow(1, null, true);
 
             this.ShutdownMode = tempShutdownMode;
 

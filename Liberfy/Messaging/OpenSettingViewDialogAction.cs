@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Windows;
+﻿using System.Windows;
+using Liberfy.Utils;
 using Livet.Behaviors.Messaging;
 using Livet.Messaging;
 
@@ -23,34 +23,9 @@ namespace Liberfy.Messaging
         /// <param name="message"></param>
         protected override void InvokeAction(InteractionMessage message)
         {
-            var view = App.Instance.Windows
-                .OfType<Views.SettingWindow>()
-                .SingleOrDefault();
-
-            if (view != null)
+            if (message is OpenSettingDialogMessage actionMessage)
             {
-                view.Activate();
-            }
-            else
-            {
-                view = new Views.SettingWindow
-                {
-                    Owner = Window.GetWindow(this.AssociatedObject),
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                view.Show();
-            }
-
-            var actionMessage = message as OpenSettingDialogMessage;
-
-            if (actionMessage == null)
-            {
-                return;
-            }
-
-            if (actionMessage.TabPageIndex.HasValue)
-            {
-                (view.DataContext as ViewModels.SettingWindowViewModel).TabPageIndex = actionMessage.TabPageIndex.Value;
+                DialogUtils.ShowSettingWindow(actionMessage.TabPageIndex, this.AssociatedObject, false);
             }
         }
     }

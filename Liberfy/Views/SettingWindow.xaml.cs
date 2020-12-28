@@ -24,15 +24,7 @@ namespace Liberfy.Views
             this.InitializeComponent();
         }
 
-        public SettingWindow(int? page) : base()
-        {
-            if (page.HasValue)
-            {
-                this.MoveTabPage(page.Value);
-            }
-        }
-
-        public void MoveTabPage(int index)
+        public void SelectPage(int index)
         {
             this.tabControl.SelectedIndex = index;
         }
