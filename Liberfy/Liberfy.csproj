@@ -41,7 +41,7 @@
       <HintPath>..\libs\Emoji.Wpf\Emoji.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification">
-      <HintPath>..\WPF NotifyIcon\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
+      <HintPath>..\libs\WPF NotifyIcon\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
     <Reference Include="NowPlayingLib">
       <HintPath>..\NowPlayingLib\NowPlayingLib.dll</HintPath>
