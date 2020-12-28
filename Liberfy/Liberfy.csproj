@@ -24,7 +24,6 @@
     <Content Include="Resources\VideoPlayerTemplate.html" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Emoji.Wpf" Version="0.1.5" />
     <PackageReference Include="LivetCask" Version="3.2.3.1" />
     <PackageReference Include="MessagePack" Version="2.2.85" />
     <PackageReference Include="MessagePackAnalyzer" Version="2.2.85" />
@@ -38,6 +37,9 @@
     <ProjectReference Include="..\ToriatamaText\cs\ToriatamaText\ToriatamaText.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Emoji.Wpf">
+      <HintPath>..\libs\Emoji.Wpf\Emoji.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification">
       <HintPath>..\WPF NotifyIcon\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
