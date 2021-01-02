@@ -11,6 +11,7 @@
     <PublishTrimmed>true</PublishTrimmed>
     <ApplicationIcon>Icons\app.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Icons\app.ico" />
