@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToriatamaText", "ToriatamaT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialApis.Test", "SocialApis.Test\SocialApis.Test.csproj", "{AD8032EA-A9CE-4998-B1EF-98D32AF50DAE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Liberfy.Test", "Liberfy.Test\Liberfy.Test.csproj", "{AC318964-EF44-46E0-94AD-A7EA598FCE14}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		WpfMvvmToolkit\WpfMvvmToolkit.projitems*{2bbc1d87-8b7f-46d3-9648-ac2f2c5a3c88}*SharedItemsImports = 5
@@ -84,6 +86,18 @@ Global
 		{AD8032EA-A9CE-4998-B1EF-98D32AF50DAE}.Release|x64.Build.0 = Release|Any CPU
 		{AD8032EA-A9CE-4998-B1EF-98D32AF50DAE}.Release|x86.ActiveCfg = Release|Any CPU
 		{AD8032EA-A9CE-4998-B1EF-98D32AF50DAE}.Release|x86.Build.0 = Release|Any CPU
+		{AC318964-EF44-46E0-94AD-A7EA598FCE14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC318964-EF44-46E0-94AD-A7EA598FCE14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC318964-EF44-46E0-94AD-A7EA598FCE14}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AC318964-EF44-46E0-94AD-A7EA598FCE14}.Debug|x64.Build.0 = Debug|Any CPU
+		{AC318964-EF44-46E0-94AD-A7EA598FCE14}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AC318964-EF44-46E0-94AD-A7EA598FCE14}.Debug|x86.Build.0 = Debug|Any CPU
+		{AC318964-EF44-46E0-94AD-A7EA598FCE14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC318964-EF44-46E0-94AD-A7EA598FCE14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC318964-EF44-46E0-94AD-A7EA598FCE14}.Release|x64.ActiveCfg = Release|Any CPU
+		{AC318964-EF44-46E0-94AD-A7EA598FCE14}.Release|x64.Build.0 = Release|Any CPU
+		{AC318964-EF44-46E0-94AD-A7EA598FCE14}.Release|x86.ActiveCfg = Release|Any CPU
+		{AC318964-EF44-46E0-94AD-A7EA598FCE14}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

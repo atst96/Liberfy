@@ -3,6 +3,8 @@ using System.Windows;
 
 [assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
 
+[assembly: InternalsVisibleTo("Liberfy.Test")]
+
 [assembly: InternalsVisibleTo("MessagePack")]
 [assembly: InternalsVisibleTo("MessagePack.Resolvers.DynamicObjectResolver")]
 [assembly: InternalsVisibleTo("MessagePack.Resolvers.DynamicUnionResolver")]
