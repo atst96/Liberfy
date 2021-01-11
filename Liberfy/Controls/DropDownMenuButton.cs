@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
@@ -15,9 +10,7 @@ namespace Liberfy
     {
         static DropDownMenuButton()
         {
-            ClickModeProperty.OverrideMetadata(
-                typeof(DropDownMenuButton),
-                new FrameworkPropertyMetadata(ClickMode.Press));
+            ClickModeProperty.OverrideMetadata(typeof(DropDownMenuButton), new FrameworkPropertyMetadata(ClickMode.Press));
         }
 
         public DropDownMenuButton() : base()
@@ -142,7 +135,7 @@ namespace Liberfy
         }
 
         public static readonly DependencyProperty DropDownMenuProperty =
-            DependencyProperty.Register("DropDownMenu", typeof(ContextMenu), typeof(DropDownMenuButton),
+            DependencyProperty.Register(nameof(DropDownMenu), typeof(ContextMenu), typeof(DropDownMenuButton),
                 new PropertyMetadata(null, DropDownMenuButton.OnDropDownMenuChanged));
 
         private static void OnDropDownMenuChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

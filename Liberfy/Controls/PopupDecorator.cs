@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace Liberfy
@@ -17,6 +12,6 @@ namespace Liberfy
         }
 
         public static readonly DependencyProperty IsRightBalloonProperty =
-            DependencyProperty.Register("IsRightBalloon", typeof(bool), typeof(PopupDecorator), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(IsRightBalloon), typeof(bool), typeof(PopupDecorator), new(false));
     }
 }

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace Liberfy
 {
-    public class MediaPanel : Panel
+    internal class MediaPanel : Panel
     {
         public MediaPanel() : base()
         {
@@ -16,17 +11,15 @@ namespace Liberfy
 
         public const int MaxItems = 6;
 
-
-
         public double Spacing
         {
-            get { return (double)GetValue(SpacingProperty); }
-            set { SetValue(SpacingProperty, value); }
+            get => (double)this.GetValue(SpacingProperty);
+            set => this.SetValue(SpacingProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for Spacing.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SpacingProperty =
-            DependencyProperty.Register("Spacing", typeof(double), typeof(MediaPanel),
+            DependencyProperty.Register(nameof(Spacing), typeof(double), typeof(MediaPanel),
                 new FrameworkPropertyMetadata(0d,
                     FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
 
@@ -38,7 +31,7 @@ namespace Liberfy
         }
 
         public static readonly DependencyProperty HeightCoreProperty =
-            DependencyProperty.Register("HeightCore",
+            DependencyProperty.Register(nameof(HeightCore),
                 typeof(double), typeof(MediaPanel),
                 new FrameworkPropertyMetadata(0.75,
                     FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));

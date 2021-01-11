@@ -394,6 +394,138 @@
         </Setter>
     </Style>
 
+    <!--#region GeometryIcon style -->
+
+    <Style x:Key="{x:Type app:BusyIndicator}" TargetType="{x:Type app:BusyIndicator}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type app:BusyIndicator}">
+                    <ControlTemplate.Resources>
+                        
+                    </ControlTemplate.Resources>
+                    <Viewbox Stretch="Uniform">
+                        <Canvas x:Name="PART_Indicator" Width="60" Height="60" RenderTransformOrigin="0.5, 0.5">
+                            <Canvas.RenderTransform>
+                                <RotateTransform Angle="0" />
+                            </Canvas.RenderTransform>
+
+                            <Rectangle Canvas.Left="57" Canvas.Top="30" Width="6" Height="16" RadiusX="5.64" RadiusY="2.4" Fill="#000">
+                                <Rectangle.RenderTransform>
+                                    <RotateTransform Angle="90" CenterX="3" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+
+                            <Rectangle Canvas.Left="52.98076211" Canvas.Top="45" Width="6" Height="16" RadiusX="5.64" RadiusY="2.4" Fill="#222">
+                                <Rectangle.RenderTransform>
+                                    <RotateTransform Angle="120" CenterX="3" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+
+                            <Rectangle Canvas.Left="42" Canvas.Top="55.98076211" Width="6" Height="16" RadiusX="5.64" RadiusY="2.4" Fill="#444">
+                                <Rectangle.RenderTransform>
+                                    <RotateTransform Angle="150" CenterX="3" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+
+                            <Rectangle Canvas.Left="27" Canvas.Top="60" Width="6" Height="16" RadiusX="5.64" RadiusY="2.4" Fill="#666">
+                                <Rectangle.RenderTransform>
+                                    <RotateTransform Angle="180" CenterX="3" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+
+                            <Rectangle Canvas.Left="12" Canvas.Top="55.98076211" Width="6" Height="16" RadiusX="5.64" RadiusY="2.4" Fill="#888">
+                                <Rectangle.RenderTransform>
+                                    <RotateTransform Angle="210" CenterX="3" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+
+                            <Rectangle Canvas.Left="1.01923789" Canvas.Top="45" Width="6" Height="16" RadiusX="5.64" RadiusY="2.4" Fill="#AAA">
+                                <Rectangle.RenderTransform>
+                                    <RotateTransform Angle="240" CenterX="3" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+
+                            <Rectangle Canvas.Left="-3" Canvas.Top="30" Width="6" Height="16" RadiusX="5.64" RadiusY="2.4" Fill="#AAA">
+                                <Rectangle.RenderTransform>
+                                    <RotateTransform Angle="270" CenterX="3" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+
+                            <Rectangle Canvas.Left="1.01923789" Canvas.Top="15" Width="6" Height="16" RadiusX="5.64" RadiusY="2.4" Fill="#AAA">
+                                <Rectangle.RenderTransform>
+                                    <RotateTransform Angle="300" CenterX="3" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+
+                            <Rectangle Canvas.Left="12" Canvas.Top="4.01923789" Width="6" Height="16" RadiusX="5.64" RadiusY="2.4" Fill="#AAA">
+                                <Rectangle.RenderTransform>
+                                    <RotateTransform Angle="330" CenterX="3" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+
+                            <Rectangle Canvas.Left="27" Canvas.Top="0" Width="6" Height="16" RadiusX="5.64" RadiusY="2.4" Fill="#AAA">
+                                <Rectangle.RenderTransform>
+                                    <RotateTransform Angle="0" CenterX="3" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+
+                            <Rectangle Canvas.Left="42" Canvas.Top="4.01923789" Width="6" Height="16" RadiusX="5.64" RadiusY="2.4" Fill="#AAA">
+                                <Rectangle.RenderTransform>
+                                    <RotateTransform Angle="30" CenterX="3" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+
+                            <Rectangle Canvas.Left="52.98076211" Canvas.Top="15" Width="6" Height="16" RadiusX="5.64" RadiusY="2.4" Fill="#AAA">
+                                <Rectangle.RenderTransform>
+                                    <RotateTransform Angle="60" CenterX="3" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+                        </Canvas>
+                    </Viewbox>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsBusy" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Name="IndicatorStoryboard">
+                                    <Storyboard
+                                        Timeline.DesiredFrameRate="12"
+                                        Storyboard.TargetName="PART_Indicator"
+                                        Storyboard.TargetProperty="(Canvas.RenderTransform).(RotateTransform.Angle)">
+                                        <DoubleAnimationUsingKeyFrames Duration="0:0:1" RepeatBehavior="Forever" >
+                                            <DoubleKeyFrameCollection>
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0.000" Value="0" />
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0.083" Value="30" />
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0.166" Value="60" />
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0.250" Value="90" />
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0.333" Value="120" />
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0.416" Value="150" />
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0.500" Value="180" />
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0.583" Value="210" />
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0.666" Value="240" />
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0.750" Value="270" />
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0.833" Value="300" />
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0.916" Value="330" />
+                                            </DoubleKeyFrameCollection>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                        </Trigger>
+
+                        <Trigger Property="IsBusy" Value="False">
+                            <Trigger.EnterActions>
+                                <PauseStoryboard BeginStoryboardName="IndicatorStoryboard" Storyboard.TargetName="PART_Indicator" />
+                            </Trigger.EnterActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--#endregion /GeometryIcon style -->
+
     <!--#region IconLabel style -->
 
     <Style x:Key="{x:Type app:IconLabel}" TargetType="{x:Type app:IconLabel}">

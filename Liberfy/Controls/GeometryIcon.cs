@@ -9,6 +9,11 @@ namespace Liberfy
     /// </summary>
     internal class GeometryIcon : Control
     {
+        static GeometryIcon()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(GeometryIcon), new FrameworkPropertyMetadata(typeof(GeometryIcon)));
+        }
+
         /// <summary>
         /// アイコンの描画色を取得または設定する。
         /// </summary>
@@ -22,7 +27,7 @@ namespace Liberfy
         /// <see cref="Fill"/>のプロパティ
         /// </summary>
         public static readonly DependencyProperty FillProperty =
-            DependencyProperty.Register("Fill", typeof(Brush), typeof(GeometryIcon), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(Fill), typeof(Brush), typeof(GeometryIcon), new(null));
 
         /// <summary>
         /// アイコンデータを取得または設定する。
@@ -37,6 +42,6 @@ namespace Liberfy
         /// <see cref="Data"/>のプロパティ
         /// </summary>
         public static readonly DependencyProperty DataProperty =
-            DependencyProperty.Register("Data", typeof(Geometry), typeof(GeometryIcon), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(Data), typeof(Geometry), typeof(GeometryIcon), new(null));
     }
 }

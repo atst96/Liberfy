@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Shell;
 
@@ -23,7 +18,7 @@ namespace Liberfy
     [TemplatePart(Name = "PART_CloseButton", Type = typeof(Button))]
     [TemplatePart(Name = "PART_TitleBarPanel", Type = typeof(Panel))]
     [Localizability(LocalizationCategory.Ignore)]
-    public class CustomWindow : Window
+    internal class CustomWindow : Window
     {
         private double _borderPadWidth = 4;
         private double _resizeBorderWidth = SystemParameters.ResizeFrameVerticalBorderWidth;
