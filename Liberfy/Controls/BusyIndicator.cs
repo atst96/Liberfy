@@ -10,6 +10,7 @@ namespace Liberfy
     {
         static BusyIndicator()
         {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(BusyIndicator), new FrameworkPropertyMetadata(typeof(BusyIndicator)));
         }
 
         /// <summary>
@@ -17,7 +18,6 @@ namespace Liberfy
         /// </summary>
         public BusyIndicator() : base()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(BusyIndicator), new FrameworkPropertyMetadata(typeof(BusyIndicator)));
         }
 
         /// <summary>
