@@ -8,6 +8,11 @@ namespace Liberfy.Utilieis
     internal static class FileContentUtil
     {
         /// <summary>
+        /// 初期バッファサイズ
+        /// </summary>
+        private const int BufferSize = 4096;
+
+        /// <summary>
         /// ファイルを読み取りモードで開く
         /// </summary>
         /// <param name="path">ファイルパス</param>
@@ -18,7 +23,7 @@ namespace Liberfy.Utilieis
             var fileInfo = new FileInfo(path);
 
             return fileInfo.Exists && fileInfo.Length > 0
-                ? new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, (int)fileInfo.Length, isAsync)
+                ? new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, BufferSize, isAsync)
                 : default;
         }
 
@@ -31,9 +36,7 @@ namespace Liberfy.Utilieis
         /// <returns>ファイルストリーム</returns>
         public static FileStream OpenCreate(string path, bool isAsync = false, int? bufferSize = null)
         {
-            const int DefaultBufferSize = 4096;
-
-            return new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite, bufferSize ?? DefaultBufferSize, isAsync);
+            return new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite, bufferSize ?? BufferSize, isAsync);
         }
     }
 }
