@@ -14,7 +14,7 @@ namespace Liberfy
 
         public ColumnMoveRightCommand() : base(true)
         {
-            this._columns = TimelineBase.Columns;
+            this._columns = App.Columns;
             this._columns.CollectionChanged += this.ColumnsChanged;
         }
 

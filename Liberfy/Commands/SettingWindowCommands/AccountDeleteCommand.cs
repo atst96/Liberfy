@@ -17,7 +17,7 @@ namespace Liberfy.Commands.SettingWindowCommands
 
         protected override bool CanExecute(IAccount parameter)
         {
-            return AccountManager.Accounts.Contains(parameter);
+            return true;
         }
 
         protected override void Execute(IAccount parameter)
@@ -33,7 +33,7 @@ namespace Liberfy.Commands.SettingWindowCommands
 
             if (message.Response ?? false)
             {
-                AccountManager.Accounts.Remove(parameter);
+                App.Accounts.Remove(parameter);
                 parameter.StopActivity();
             }
 

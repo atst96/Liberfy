@@ -14,7 +14,7 @@ namespace Liberfy.ViewModels
 
         public MainWindowViewModel() : base()
         {
-            this.Accounts = AccountManager.Accounts;
+            this.Accounts = App.Accounts;
             this.SelectedAccount = this.Accounts?.FirstOrDefault();
             this.WindowStatus = App.Setting?.Window?.Main;
         }
@@ -34,7 +34,7 @@ namespace Liberfy.ViewModels
 
         private void OpenTweetWindow(IAccount parameter)
         {
-            var account = parameter ?? AccountManager.Accounts.FirstOrDefault();
+            var account = parameter ?? App.Accounts.FirstOrDefault();
             var viewModel = new TweetWindowViewModel();
 
             viewModel.SetPostAccount(account);
@@ -42,7 +42,7 @@ namespace Liberfy.ViewModels
             this.Messenger.Raise(new TransitionMessage(viewModel, "MsgKey_OpenTweetDialog"));
         }
 
-        public IEnumerable<ColumnBase> Columns { get; } = TimelineBase.Columns;
+        public IEnumerable<ColumnBase> Columns { get; } = App.Columns;
 
         private Command<MediaAttachmentInfo> _mediaPreviewCommand;
         public Command<MediaAttachmentInfo> MediaPreviewCommand

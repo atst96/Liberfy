@@ -1,14 +1,10 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using Liberfy.Components;
-using Liberfy.Data.Settings.Columns;
 using Liberfy.Managers;
 using Liberfy.Settings;
-using Liberfy.Utilieis;
 using Liberfy.Utils;
 using Liberfy.ViewModels;
-using Liberfy.Views;
 using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -42,6 +38,22 @@ namespace Liberfy
         /// アプリケーションの実行状態
         /// </summary>
         public static ApplicationStatus Status { get; } = new ApplicationStatus();
+
+        /// <summary>
+        /// アカウント情報管理
+        /// </summary>
+        internal static AccountManager Accounts { get; }
+
+        /// <summary>
+        /// カラム管理
+        /// </summary>
+        internal static ColumnManageer Columns { get; }
+
+        static App()
+        {
+            Accounts = new AccountManager();
+            Columns = new ColumnManageer(Accounts);
+        }
 
         /// <summary>
         /// アセンブリ情報
@@ -121,7 +133,7 @@ namespace Liberfy
 
             ProfileImageCache = new ProfileImageCache();
 
-            if (!AccountManager.Accounts.Any() && !this.IsNeedInitialUserSettings())
+            if (!App.Accounts.Any() && !this.IsNeedInitialUserSettings())
             {
                 this.ForceShutdown();
                 return;
@@ -154,35 +166,15 @@ namespace Liberfy
         /// <param name="accounts"></param>
         private void LoadAccountSettings(AccountSettings settings)
         {
+
             var accounts = settings.Accounts;
             if (!accounts?.Any() ?? false)
             {
                 return;
             }
 
-            var registeredAccounts = AccountManager.Accounts;
-            var loadedAccounts = accounts.Select(AccountBase.FromSetting);
-
-            registeredAccounts.AddRange(loadedAccounts);
-
-            var accountById = registeredAccounts.ToDictionary(a => a.ItemId);
-
-            var columns = settings.Columns;
-            if (columns?.Any() ?? false)
-            {
-                foreach (var columnSetting in columns)
-                {
-                    if (!accountById.TryGetValue(columnSetting.UserId, out var account))
-                    {
-                        return;
-                    }
-
-                    if (account != null && ColumnBase.TryFromSetting(columnSetting, account, out var column))
-                    {
-                        TimelineBase.Columns.Add(column);
-                    }
-                }
-            }
+            Accounts.Restore(settings.Accounts);
+            Columns.Restore(settings.Columns);
         }
 
         /// <summary>
@@ -203,7 +195,7 @@ namespace Liberfy
         /// </summary>
         private void StartClient()
         {
-            var tasks = AccountManager.Accounts.Select(a => a.StartActivity());
+            var tasks = App.Accounts.Select(a => a.StartActivity());
 
             Task.WhenAll(tasks).ContinueWith(_ =>
             {
@@ -226,7 +218,7 @@ namespace Liberfy
 
             this.ShutdownMode = tempShutdownMode;
 
-            return AccountManager.Accounts.Count > 0;
+            return App.Accounts.Count > 0;
         }
 
         /// <summary>
@@ -256,13 +248,13 @@ namespace Liberfy
                 var setting = App.Setting;
                 var accountsSetting = new AccountSettings
                 {
-                    Accounts = AccountManager.Accounts.Select(a => a.GetSetting()).ToArray(),
-                    Columns = TimelineBase.Columns.Select(c => c.GetSetting()).ToArray(),
+                    Accounts = Accounts.Select(a => a.GetSetting()).ToArray(),
+                    Columns = Columns.Select(c => c.GetSetting()).ToArray(),
                 };
 
                 var task = SettingsManager.Save(new()
                 {
-                    Application = App.Setting,
+                    Application = Setting,
                     Accounts = accountsSetting,
                 });
 

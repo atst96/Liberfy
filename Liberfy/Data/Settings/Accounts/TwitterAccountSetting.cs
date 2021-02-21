@@ -1,8 +1,6 @@
 ﻿#nullable enable
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 
-using System;
-using System.Windows.Navigation;
 using MessagePack;
 using SocialApis.Twitter;
 
@@ -11,46 +9,46 @@ namespace Liberfy.Settings
     [MessagePackObject]
     internal class TwitterAccountSetting : IAccountSetting
     {
-        [Key(0)]
+        [Key("item.id")]
         public string ItemId { get; init; }
 
-        [Key(1)]
+        [Key("id")]
         public long UserId { get; init; }
 
-        [Key(2)]
+        [Key("user.screen_name")]
         public string ScreenName { get; set; }
 
-        [Key(3)]
+        [Key("user.name")]
         public string Name { get; set; }
 
-        [Key(4)]
+        [Key("user.is_protected")]
         public bool IsProtected { get; set; }
 
-        [Key(5)]
+        [Key("user.profile_image_url")]
         public string ProfileImageUrl { get; set; }
 
         /// <summary>
         /// ConsumerKey
         /// </summary>
-        [Key(6)]
+        [Key("key.consumer_key")]
         public string ConsumerKey { get; set; }
 
         /// <summary>
         /// ConsumerSecret
         /// </summary>
-        [Key(7)]
+        [Key("key.consumer_secret")]
         public string ConsumerSecret { get; set; }
 
         /// <summary>
         /// AccessToken
         /// </summary>
-        [Key(8)]
+        [Key("key.access_token")]
         public string AccessToken { get; set; }
 
         /// <summary>
         /// AccessTokenSecret
         /// </summary>
-        [Key(9)]
+        [Key("key.access_token_secret")]
         public string AccessTokenSecret { get; set; }
 
         public TwitterAccountSetting Clone() => new()

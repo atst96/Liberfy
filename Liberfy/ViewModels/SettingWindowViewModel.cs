@@ -23,7 +23,7 @@ namespace Liberfy.ViewModels
 
         public Setting Setting { get; } = GlobalSetting;
 
-        public IEnumerable<IAccount> Accounts { get; } = AccountManager.Accounts;
+        public IEnumerable<IAccount> Accounts { get; } = App.Accounts;
 
         /*
          * [表示]タブ関連 → SettingWindowViewModel.View.cs
@@ -554,7 +554,7 @@ namespace Liberfy.ViewModels
 
         private bool OnCloseRequest()
         {
-            if (AccountManager.Accounts.Count == 0)
+            if (App.Accounts.Count == 0)
             {
                 var message = new ConfirmationMessage("アカウントが登録されていません。終了しますか？", App.Name, "MsgKey_GeneralConfirm");
                 this.Messenger.Raise(message);

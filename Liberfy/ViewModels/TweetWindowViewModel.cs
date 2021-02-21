@@ -29,7 +29,7 @@ namespace Liberfy.ViewModels
     {
         protected static Setting Setting { get; } = App.Setting;
 
-        public IEnumerable<IAccount> Accounts { get; } = AccountManager.Accounts;
+        public IEnumerable<IAccount> Accounts { get; } = App.Accounts;
 
         private IAccount _selectedAccount;
         public IAccount SelectedAccount
