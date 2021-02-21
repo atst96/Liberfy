@@ -259,6 +259,11 @@ namespace Liberfy.Managers
         /// <param name="targetAccounts"></param>
         public void Restore(IEnumerable<IAccountSetting> targetAccounts)
         {
+            if (targetAccounts == null || !targetAccounts.Any())
+            {
+                return;
+            }
+
             // リストア処理を見直す
             var accounts = targetAccounts
                 .Select(a => AccountBase.FromSetting(a))

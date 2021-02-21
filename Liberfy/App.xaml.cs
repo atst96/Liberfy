@@ -166,13 +166,6 @@ namespace Liberfy
         /// <param name="accounts"></param>
         private void LoadAccountSettings(AccountSettings settings)
         {
-
-            var accounts = settings.Accounts;
-            if (!accounts?.Any() ?? false)
-            {
-                return;
-            }
-
             Accounts.Restore(settings.Accounts);
             Columns.Restore(settings.Columns);
         }
