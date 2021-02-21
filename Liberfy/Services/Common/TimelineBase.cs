@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Threading;
+﻿using Liberfy.Managers;
 
 namespace Liberfy
 {
     internal abstract class TimelineBase : NotificationObject
     {
-        public static NotifiableCollection<ColumnBase> Columns { get; } = new NotifiableCollection<ColumnBase>();
+        public static ColumnManageer Columns { get; } = App.Columns;
 
         protected ColumnManager AccountColumns { get; }
 
         protected TimelineBase(IAccount account)
         {
-            this.AccountColumns = new ColumnManager(account, Columns);
+            this.AccountColumns = new ColumnManager(account, App.Columns);
         }
 
         public abstract void Load();

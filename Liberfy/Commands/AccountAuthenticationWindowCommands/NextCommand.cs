@@ -146,7 +146,7 @@ namespace Liberfy.Commands.AccountAuthenticationWindowCommands
                     var authenticator = this.AccountAuthenticator;
 
                     await authenticator.GetAccessToken(this.VerificationCode);
-                    await AccountManager.RegisterFromAuthenticator(this.AccountAuthenticator);
+                    await App.Accounts.RegisterFromAuthenticator(this.AccountAuthenticator);
                     this._viewModel.Messenger.Raise(new WindowActionMessage(WindowAction.Close, "MsgKey_WindowAction"));
                 }
                 catch (Exception ex)

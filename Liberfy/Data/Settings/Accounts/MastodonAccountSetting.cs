@@ -10,34 +10,34 @@ namespace Liberfy.Settings
     [MessagePackObject]
     internal class MastodonAccountSetting : IAccountSetting
     {
-        [Key(0)]
+        [Key("item.id")]
         public string ItemId { get; init; }
 
-        [Key(1)]
+        [Key("user.id")]
         public long Id { get; init; }
 
-        [Key(2)]
+        [Key("instance_url")]
         public Uri InstanceUrl { get; init; }
 
-        [Key(3)]
+        [Key("user.name")]
         public string UserName { get; set; }
 
-        [Key(4)]
+        [Key("user.display_name")]
         public string DisplayName { get; set; }
 
-        [Key(5)]
+        [Key("user.avatar_url")]
         public string Avatar { get; set; }
 
-        [Key(6)]
+        [Key("user.is_locked")]
         public bool IsLocked { get; set; }
 
-        [Key(7)]
+        [Key("user.client_id")]
         public string ClientId { get; set; }
 
-        [Key(8)]
+        [Key("key.client_secret")]
         public string ClientSecret { get; set; }
 
-        [Key(9)]
+        [Key("key.access_token")]
         public string AccessToken { get; set; }
 
         public MastodonAccountSetting Clone() => new()

@@ -13,7 +13,7 @@ namespace Liberfy
 
         public ColumnRemoveCommand() : base(true)
         {
-            this._columns = TimelineBase.Columns;
+            this._columns = App.Columns;
         }
 
         protected override bool CanExecute(ColumnBase column)
