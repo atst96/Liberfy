@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+using Liberfy.Data.InstanceKeys;
 
 namespace Liberfy
 {
     [DataContract]
     internal class ClientKeyCache
     {
-        public ClientKeyCache(Uri uri, SocialApis.Mastodon.ClientKeyInfo keyInfo)
+        public ClientKeyCache(Uri uri, MastodonKeyInfo keyInfo)
         {
             this.Service = ServiceType.Mastodon;
-            this.Id = keyInfo.Id;
             this.RegisteredAt = DateTimeOffset.Now;
             this.ClientId = keyInfo.ClientId;
             this.ClientSecret = keyInfo.ClientSecret;
@@ -21,10 +17,7 @@ namespace Liberfy
         }
 
         [DataMember(Name = "service")]
-        public ServiceType Service { get;  set; }
-
-        [DataMember(Name = "id")]
-        public string Id { get; set; }
+        public ServiceType Service { get; set; }
 
         [DataMember(Name = "host")]
         public string Host { get; set; }

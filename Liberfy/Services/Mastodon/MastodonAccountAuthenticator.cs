@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Liberfy.Managers;
 using SocialApis;
 using SocialApis.Mastodon;
 
@@ -26,15 +27,13 @@ namespace Liberfy.Services.Mastodon
 
             if (string.IsNullOrEmpty(consumerKey))
             {
+                var clientKey = await ClientKeyManager.GetMastodonKey(instanceUri.Host);
                 var cachecClientKey = App.Setting.ClientKeys
                     .Where(key => key.Service == ServiceType.Mastodon)
                     .FirstOrDefault(key => string.Equals(key.Host, instanceUri.ToString(), StringComparison.OrdinalIgnoreCase));
 
                 if (cachecClientKey == null)
                 {
-                    var api = new MastodonApi(instanceUri, null, null);
-                    var clientKey = await api.Apps.Register(instanceUri, App.Name, ApiScopes).ConfigureAwait(false);
-
                     App.Setting.ClientKeys.Add(new ClientKeyCache(instanceUri, clientKey));
 
                     consumerKey = clientKey.ClientId;
