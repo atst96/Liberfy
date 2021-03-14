@@ -17,12 +17,30 @@ namespace Liberfy
         }
 
         /// <summary>
+        /// キー管理APIの構成
+        /// </summary>
+        public static partial class KeyManager
+        {
+            /// <summary>
+            /// APIのエンドポイント
+            /// </summary>
+            public static readonly Uri ApiEndpoint = new("YOUR_KEY_MANAGEMENT_API_ENDPOINT");
+        }
+
+        /// <summary>
         /// Twitter関連の設定
         /// </summary>
         public static partial class Twitter
         {
-            //public const string @ConsumerKey = "";
-            //public const string @ConsumerSecret = "";
+            /// <summary>
+            /// ConsumerKey
+            /// </summary>
+            public const string @ConsumerKey = "YOUR_TWITTER_REST_API_CONSUMER_KEY";
+
+            /// <summary>
+            /// ConsumerSecret
+            /// </summary>
+            public const string @ConsumerSecret = "YOUR_TWITTER_REST_API_CONSUMER_SECRET";
         }
 
         /// <summary>
