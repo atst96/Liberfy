@@ -1,0 +1,12 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="clr-namespace:Liberfy"
+    xmlns:vm="clr-namespace:Liberfy.ViewModels.AccountAddWindow">
+
+    <DataTemplate
+        x:Key="MastodonOptionViewTemplate"
+        DataType="{x:Type vm:MastodonAuthenticationOptionViewModel}">
+        
+    </DataTemplate>
+</ResourceDictionary>
