@@ -111,7 +111,7 @@ namespace Liberfy.Data.Twitter
 
         public UserDetail(User user)
         {
-            this.Id = user.Id ?? throw new ArgumentNullException(nameof(user));
+            this.Id = user.Id;
             this._createdAt = user.CreatedAt;
             this.Update(user);
         }
@@ -128,11 +128,9 @@ namespace Liberfy.Data.Twitter
             batch.Set(ref this._createdAt, user.CreatedAt, nameof(this.CreatedAt));
             batch.Set(ref this._followersCount, user.FollowersCount, nameof(this.FollowersCount));
             batch.Set(ref this._followingCount, user.FriendsCount, nameof(this.FollowersCount));
-            batch.Set(ref this._language, user.Language, nameof(this.Language));
             batch.Set(ref this._location, user.Location, nameof(this.Location));
             batch.Set(ref this._name, user.Name, nameof(this.Name));
             batch.Set(ref this._profileBannerUrl, user.ProfileBannerUrl, nameof(this.ProfileBannerUrl));
-            batch.Set(ref this._profileImageUrl, user.ProfileImageUrl, nameof(this.ProfileImageUrl));
             batch.Set(ref this._isProtected, user.IsProtected, nameof(this.IsProtected));
             batch.Set(ref this._statusCount, user.StatusesCount, nameof(this.StatusesCount));
             batch.Set(ref this._remoteUrl, RemoteUrlBase + user.ScreenName, nameof(this.RemoteUrl));

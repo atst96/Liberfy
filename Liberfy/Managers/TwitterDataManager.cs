@@ -48,7 +48,7 @@ namespace Liberfy.Managers
         /// <returns></returns>
         public UserDetail RegisterAccount(User account)
         {
-            long id = account.Id ?? throw new ArgumentException(null, nameof(account));
+            long id = account.Id;
 
             return this.Accounts.AddOrUpdate(id,
                 (_) => new UserDetail(account),
