@@ -279,6 +279,12 @@ namespace Liberfy.Managers
         }
 
         /// <summary>
+        /// デフォルトアカウントを取得する
+        /// </summary>
+        /// <returns></returns>
+        public IAccount GetDefault() => this.FirstOrDefault();
+
+        /// <summary>
         /// コレクションの変更通知
         /// </summary>
         /// <param name="args"></param>

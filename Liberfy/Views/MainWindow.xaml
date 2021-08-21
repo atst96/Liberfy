@@ -9,6 +9,7 @@
     xmlns:b="clr-namespace:Liberfy.Behaviors"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+    xmlns:mk="clr-namespace:Liberfy.Conats.MessageKeys"
     x:Class="Liberfy.Views.MainWindow"
     x:ClassModifier="internal"
     xmlns:msgs="clr-namespace:Liberfy.Messaging"
@@ -323,7 +324,7 @@
                                                             HorizontalAlignment="Right">
                                                             <Button
                                                                 Padding="12 8"
-                                                                Command="{Binding DataContext.OpenTweetWindowCommand, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}, Mode=OneTime}"
+                                                                Command="{Binding DataContext.OpenPostWindowCommand, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}, Mode=OneTime}"
                                                                 CommandParameter="{Binding Mode=OneTime}">
                                                                 <app:GeometryIcon Data="{StaticResource FontAwesome.Icon.Edit}" />
                                                             </Button>
@@ -352,7 +353,7 @@
                 <Button
                     ToolTip="ツイートする" Padding="8 0"
                     VerticalAlignment="Stretch"
-                    Command="{Binding OpenTweetWindowCommand, Mode=OneTime}"
+                    Command="{Binding OpenPostWindowCommand, Mode=OneTime}"
                     Style="{DynamicResource {x:Static ToolBar.ButtonStyleKey}}">
                     <app:GeometryIcon
                         Width="18" Height="18"
@@ -484,12 +485,8 @@
     </Window.Triggers>
 
     <i:Interaction.Triggers>
-        <l:InteractionMessageTrigger
-            MessageKey="MsgKey_OpenTweetDialog"
-            Messenger="{Binding Messenger, Mode=OneTime}">
-            <l:TransitionInteractionMessageAction
-                IsOwned="True" Mode="Modal"
-                WindowType="{x:Type local:TweetWindow}" />
+        <l:InteractionMessageTrigger MessageKey="{x:Static mk:MainWindowMessageKeys.OpenPostWindow}" Messenger="{Binding Messenger, Mode=OneTime}">
+            <l:TransitionInteractionMessageAction WindowType="{x:Type local:TweetWindow}" IsOwned="True" Mode="Modal" />
         </l:InteractionMessageTrigger>
     </i:Interaction.Triggers>
 </app:CustomWindow>
