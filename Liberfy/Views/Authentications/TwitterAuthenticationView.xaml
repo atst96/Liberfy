@@ -1,0 +1,120 @@
+﻿<DockPanel
+    x:ClassModifier="internal"
+    x:Class="Liberfy.Views.Authentications.TwitterAuthenticationView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:app="clr-namespace:Liberfy"
+    xmlns:local="clr-namespace:Liberfy.Views.Authentications"
+    xmlns:vm="clr-namespace:Liberfy.ViewModels.Authentications"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+    xmlns:b="clr-namespace:Liberfy.Behaviors.Messaging"
+    mc:Ignorable="d"
+    d:DesignHeight="320" d:DesignWidth="420"
+    d:DataContext="{d:DesignInstance Type=vm:TwitterAuthenticationViewModel}">
+    <Grid Margin="18,18,18,0" DockPanel.Dock="Top">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <app:GeometryIcon
+            Width="22" Height="26" Margin="0,0,12,0"
+            Fill="#1D9BF0"
+            Data="{StaticResource FontAwesome.Icon.Twitter}"/>
+
+        <Label
+            Grid.Column="1"
+            Padding="0"
+            FontSize="20"
+            Content="Twitterアカウントの追加"
+            VerticalAlignment="Center" />
+    </Grid>
+
+    <app:WizardPanel
+        Padding="18"
+        IsEmphasisNextButton="True"
+        IsShowPreviousButton="False"
+        NextCommand="{Binding NextCommand, Mode=OneTime}"
+        CancelCommand="{Binding CancelCommand, Mode=OneTime}"
+        IsBusy="{Binding IsBusy, Mode=OneWay}"
+        SelectedIndex="{Binding PageIndex, Mode=OneWay, FallbackValue=0}">
+        <!--認証URL取得-->
+        <app:WizardPage>
+            <TextBlock TextWrapping="Wrap">
+                <Run Text="Twitterアカウントの追加を行います。" /><!--
+             --><LineBreak /><LineBreak /><!--
+             --><Run Text="[次へ(N)]ボタンをクリックすると、WebブラウザでTwitterアカウントの認証画面が表示されます。" /><LineBreak /><!--
+             --><Run Text="アカウントの認証を行い、表示されるPINコードを次の画面で入力してください。" />
+            </TextBlock>
+        </app:WizardPage>
+
+        <!--PINコード入力-->
+        <app:WizardPage>
+            <StackPanel>
+                <TextBlock
+                    Margin="0,0,0,6" TextWrapping="Wrap"
+                    Text="Twitterの認証画面が表示されない場合は、お使いのWebブラウザで以下のURLにアクセスしてください。" />
+
+                <Grid Margin="0,0,0,16">
+                    <TextBox
+                        Margin="31,0,0,0"
+                        Text="{Binding AuthorizeUrl, Mode=OneWay}"
+                        IsReadOnly="True" IsReadOnlyCaretVisible="True" />
+
+                    <Button
+                        Width="32" HorizontalAlignment="Left"
+                        Command="{Binding CopyToClipboardCommand, Mode=OneTime}"
+                        CommandParameter="{Binding AuthorizeUrl, Mode=OneWay}">
+                        <app:GeometryIcon
+                            Width="14" Height="14"
+                            Data="{StaticResource FontAwesome.Icon.Cog}"
+                            ToolTip="URLクリップボードにコピーする" />
+                    </Button>
+                </Grid>
+
+                <TextBlock
+                    TextWrapping="Wrap"
+                    Text="アカウントの認証後に表示されるPINコードを以下に入力し、[次へ]をクリックしてください。" />
+
+                <HeaderedContentControl Header="PINコード:">
+                    <TextBox
+                        Text="{Binding PinCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        FontFamily="'Comic Sans MS','Segoe UI'" FontSize="24"
+                        Width="140"
+                        HorizontalAlignment="Left"
+                        Foreground="#333" />
+                </HeaderedContentControl>
+            </StackPanel>
+        </app:WizardPage>
+
+        <!--認証完了-->
+        <app:WizardPage>
+            <StackPanel>
+                <TextBlock Margin="0,0,0,6">
+                    <Run Text="アカウント情報の追加が完了しました。" />
+                </TextBlock>
+
+                <Border
+                    Padding="18"
+                    BorderThickness="1"
+                    BorderBrush="#AAA">
+                    <ContentPresenter
+                        Content="{Binding Account, Mode=OneWay}"
+                        ContentTemplate="{StaticResource AccountTemplate.Twitter}" />
+                </Border>
+            </StackPanel>
+        </app:WizardPage>
+    </app:WizardPanel>
+    <i:Interaction.Triggers>
+        <l:InteractionMessageTrigger Messenger="{Binding Messenger, Mode=OneTime}" MessageKey="WindowAction">
+            <l:WindowInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+
+        <l:InteractionMessageTrigger Messenger="{Binding Messenger, Mode=OneTime}" MessageKey="MessageDialog">
+            <b:DialogInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+    </i:Interaction.Triggers>
+</DockPanel>
