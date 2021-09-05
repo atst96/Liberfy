@@ -125,7 +125,7 @@ namespace Liberfy.Managers
         /// <returns></returns>
         public bool GetTwitter(long id, out TwitterAccount account)
         {
-            account = this.OfType<TwitterAccount>().FirstOrDefault(a => a.Id == id);
+            account = this.OfType<TwitterAccount>().FirstOrDefault(a => a.Info.Id == id);
             return account != null;
         }
 

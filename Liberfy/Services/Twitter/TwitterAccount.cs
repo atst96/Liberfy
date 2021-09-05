@@ -23,8 +23,6 @@ namespace Liberfy
 
         private readonly TwitterAccountSetting _setting;
 
-        public long Id { get; protected set; }
-
         public override ServiceType Service { get; } = ServiceType.Twitter;
 
         public TwitterDataManager DataStore { get; }
