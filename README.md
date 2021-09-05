@@ -41,7 +41,6 @@ static class Config
   - SgmlReader
   - ToriatamaText
   - Utf8Json
-  - Windows-API-Code-Pack-1.1
   - WPF NotifyIcon
   - XamlBehaviors for WPF
 
