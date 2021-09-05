@@ -316,81 +316,76 @@
         </TabItem>
 
         <TabItem Header="アカウント管理">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="260" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+            <DockPanel>
+                <ToolBar
+                    Padding="4 0"
+                    DockPanel.Dock="Top"
+                    ToolBarTray.IsLocked="True"
+                    FontSize="{StaticResource UIFontSize}"
+                    FontFamily="{StaticResource UIFont}"
+                    Style="{StaticResource ToolBarStyle}">
+                    <Button
+                        FontWeight="Normal"
+                        Padding="{StaticResource ToolBarIconPadding}">
+                        <app:GeometryIcon
+                            Data="{StaticResource FontAwesome.Icon.UserPlus}" />
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Click">
+                                <l:TransitionInteractionMessageAction>
+                                    <l:DirectInteractionMessage>
+                                        <l:TransitionMessage
+                                            Mode="Modal"
+                                            WindowType="{x:Type v:AccountAuthenticationWindow}" />
+                                    </l:DirectInteractionMessage>
+                                </l:TransitionInteractionMessageAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Button>
+                    <Separator />
+                    <Button
+                        Foreground="Red"
+                        CommandParameter="{Binding SelectedAccount}"
+                        Command="{Binding AccountDeleteCommand, Mode=OneTime}">
+                        <app:GeometryIcon
+                            Data="{StaticResource FontAwesome.Icon.Trash}" />
+                    </Button>
+                </ToolBar>
 
-                <Border
-                    BorderThickness="0 0 1 0"
-                    BorderBrush="{StaticResource ToolBarBorderBrush}">
-                    <DockPanel>
-                        <ToolBar
-                            Padding="4 0"
-                            DockPanel.Dock="Top"
-                            ToolBarTray.IsLocked="True"
-                            FontSize="{StaticResource UIFontSize}"
-                            FontFamily="{StaticResource UIFont}"
-                            Style="{StaticResource ToolBarStyle}">
-                            <Button
-                                FontWeight="Normal"
-                                Padding="{StaticResource ToolBarIconPadding}">
-                                <app:GeometryIcon
-                                    Data="{StaticResource FontAwesome.Icon.UserPlus}" />
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="Click">
-                                        <l:TransitionInteractionMessageAction>
-                                            <l:DirectInteractionMessage>
-                                                <l:TransitionMessage
-                                                    Mode="Modal"
-                                                    WindowType="{x:Type v:AccountAuthenticationWindow}" />
-                                            </l:DirectInteractionMessage>
-                                        </l:TransitionInteractionMessageAction>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </Button>
-                            <Separator />
-                            <Button
-                                Foreground="Red"
-                                CommandParameter="{Binding SelectedAccount}"
-                                Command="{Binding AccountDeleteCommand, Mode=OneTime}">
-                                <app:GeometryIcon
-                                    Data="{StaticResource FontAwesome.Icon.Trash}" />
-                            </Button>
-                        </ToolBar>
+                <ListBox
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    ItemsSource="{Binding Accounts, Mode=OneTime}"
+                    ItemTemplateSelector="{StaticResource AccountTemplateSelector}"
+                    SelectedItem="{Binding SelectedAccount, Mode=TwoWay}">
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                            <Setter Property="Padding" Value="8" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:IAccount}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
 
-                        <ListBox
-                            ScrollViewer.VerticalScrollBarVisibility="Auto"
-                            ItemsSource="{Binding Accounts, Mode=OneTime}"
-                            ItemTemplateSelector="{StaticResource AccountTemplateSelector}"
-                            SelectedItem="{Binding SelectedAccount, Mode=TwoWay}">
-                            <ItemsControl.ItemContainerStyle>
-                                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                                    <Setter Property="Padding" Value="8" />
-                                </Style>
-                            </ItemsControl.ItemContainerStyle>
-                        </ListBox>
-                    </DockPanel>
-                </Border>
+                                <ContentPresenter
+                                    Grid.Column="0"
+                                    ContentTemplateSelector="{StaticResource AccountTemplateSelector}" />
 
-                <DockPanel
-                    Grid.Column="1">
-                    <ToolBar
-                        DockPanel.Dock="Top"
-                        ToolBarTray.IsLocked="True"
-                        Style="{StaticResource ToolBarStyle}">
-                    </ToolBar>
-
-                    <ScrollViewer
-                        Grid.Column="1"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        app:ElementBehavior.CollapseIsNull="{Binding SelectedAccount, Mode=OneWay}">
-                        <StackPanel 
-                            Margin="6"/>
-                    </ScrollViewer>
-                </DockPanel>
-            </Grid>
+                                <StackPanel
+                                    Grid.Column="1"
+                                    Margin="4">
+                                    <Button Style="{StaticResource Button.Danger}">
+                                        <app:GeometryIcon
+                                            Data="{StaticResource FontAwesome.Icon.Trash}" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ListBox>
+            </DockPanel>
         </TabItem>
 
         <TabItem Header="通知" IsEnabled="False">
