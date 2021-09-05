@@ -5,19 +5,23 @@ using System.Runtime.CompilerServices;
 
 namespace Liberfy
 {
+    /// <summary>
+    /// 通知可能オブジェクト
+    /// </summary>
     [Serializable]
     public class NotificationObject : INotifyPropertyChanged
     {
+        /// <summary>
+        /// プロパティ変更通知
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         private static bool IsEquals<T>(ref T oldValue, ref T newValue)
-        {
-            return EqualityComparer<T>.Default.Equals(oldValue, newValue);
-        }
+            => EqualityComparer<T>.Default.Equals(oldValue, newValue);
 
         protected bool SetProperty<T>(ref T storage, T value, PropertyChangedEventArgs e)
         {
-            if (!NotificationObject.IsEquals(ref storage, ref value))
+            if (!IsEquals(ref storage, ref value))
             {
                 storage = value;
                 this.RaisePropertyChanged(e);
@@ -30,7 +34,7 @@ namespace Liberfy
 
         protected bool SetProperty<T>(ref T storage, ref T value, PropertyChangedEventArgs e)
         {
-            if (!NotificationObject.IsEquals(ref storage, ref value))
+            if (!IsEquals(ref storage, ref value))
             {
                 storage = value;
                 this.RaisePropertyChanged(e);
@@ -43,7 +47,7 @@ namespace Liberfy
 
         protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = "")
         {
-            if (!NotificationObject.IsEquals(ref storage, ref value))
+            if (!IsEquals(ref storage, ref value))
             {
                 storage = value;
                 this.RaisePropertyChanged(propertyName);
@@ -56,7 +60,7 @@ namespace Liberfy
 
         protected bool SetProperty<T>(ref T storage, ref T value, [CallerMemberName] string propertyName = "")
         {
-            if (!NotificationObject.IsEquals(ref storage, ref value))
+            if (!IsEquals(ref storage, ref value))
             {
                 storage = value;
                 this.RaisePropertyChanged(propertyName);
