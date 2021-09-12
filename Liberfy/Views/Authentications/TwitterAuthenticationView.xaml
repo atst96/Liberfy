@@ -69,7 +69,7 @@
                         </Button.Command>
                         <app:GeometryIcon
                             Width="14" Height="14"
-                            Data="{StaticResource FontAwesome.Icon.Cog}"
+                            Data="{StaticResource Icons.Copy}"
                             ToolTip="URLクリップボードにコピーする" />
                     </Button>
                 </Grid>
