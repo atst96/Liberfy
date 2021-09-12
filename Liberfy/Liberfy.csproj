@@ -56,8 +56,5 @@
             <HintPath>..\libs\ToriatamaText\ToriatamaText.dll</HintPath>
         </Reference>
     </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Common\Infractructures\Objects\" />
-    </ItemGroup>
     <Import Project="..\WpfMvvmToolkit\WpfMvvmToolkit.projitems" Label="Shared" />
 </Project>
