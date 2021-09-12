@@ -10,9 +10,11 @@
     xmlns:app="clr-namespace:Liberfy"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+    xmlns:c="clr-namespace:Liberfy.Views.Authentications"
+    xmlns:m="clr-namespace:Liberfy.ViewModels.Authentications"
     mc:Ignorable="d"
     Title="アカウント認証"
-    Height="360" Width="460"
+    Height="410" Width="540"
     FontFamily="Meiryo"
     UseLayoutRounding="True"
     SnapsToDevicePixels="True"
@@ -21,14 +23,21 @@
     <Window.DataContext>
         <vm:AccountAuthenticationWindowViewModel />
     </Window.DataContext>
-    <WindowChrome.WindowChrome>
+    <!--<WindowChrome.WindowChrome>
         <WindowChrome
             GlassFrameThickness="0"
             UseAeroCaptionButtons="False"
             CornerRadius="0"
             CaptionHeight="0" />
-    </WindowChrome.WindowChrome>
-    <Border
+    </WindowChrome.WindowChrome>-->
+
+    <c:MastodonAuthenticationView>
+        <c:MastodonAuthenticationView.DataContext>
+            <m:MastodonAuthenticationViewModel />
+        </c:MastodonAuthenticationView.DataContext>
+    </c:MastodonAuthenticationView>
+
+    <!--<Border
         BorderThickness="2"
         BorderBrush="#CCCCCC">
         <Grid>
@@ -199,5 +208,5 @@
         <l:InteractionMessageTrigger MessageKey="MsgKey_WindowAction" Messenger="{Binding Messenger}">
             <l:WindowInteractionMessageAction />
         </l:InteractionMessageTrigger>
-    </i:Interaction.Triggers>
+    </i:Interaction.Triggers>-->
 </Window>
