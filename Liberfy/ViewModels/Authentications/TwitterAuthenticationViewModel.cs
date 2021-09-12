@@ -1,11 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Liberfy.Managers;
-using Liberfy.Messaging;
-using Livet.Messaging;
-using Livet.Messaging.Windows;
 using SocialApis.Twitter;
 using WpfMvvmToolkit;
 
@@ -14,22 +10,43 @@ namespace Liberfy.ViewModels.Authentications
     /// <summary>
     /// <see cref="Views.Authentications.TwitterAuthenticationView"/>のViewModel
     /// </summary>
-    internal class TwitterAuthenticationViewModel : NotificationObject
+    internal sealed class TwitterAuthenticationViewModel : NotificationObject
     {
+        /// <summary>
+        /// 認証失敗時
+        /// </summary>
+        public EventHandler<AuthenticationFailedMessage> AuthenticationFailed;
+
+        /// <summary>
+        /// 認証キャンセル
+        /// </summary>
+        public EventHandler Cancelled;
+
+        /// <summary>
+        /// 認証完了時
+        /// </summary>
+        public EventHandler Completed;
+
         /// <summary>
         /// ページのインデックス
         /// </summary>
         private static class PageIndices
         {
+            /// <summary>
+            /// トップページ
+            /// </summary>
             public const int Top = 0;
+
+            /// <summary>
+            /// PINコード入力ページ
+            /// </summary>
             public const int PinCode = 1;
+
+            /// <summary>
+            /// 認証完了ページ
+            /// </summary>
             public const int Complete = 2;
         }
-
-        /// <summary>
-        /// Messenger
-        /// </summary>
-        public InteractionMessenger Messenger { get; } = new();
 
         /// <summary>
         /// 設定情報
@@ -93,7 +110,7 @@ namespace Liberfy.ViewModels.Authentications
         public string AuthorizeUrl
         {
             get => this._authorizeUrl;
-            set => this.SetProperty(ref this._authorizeUrl, ref value, _authorizeUrlProperty);
+            set => this.SetProperty(ref this._authorizeUrl, ref value, this._authorizeUrlProperty);
         }
 
         private readonly PropertyChangedEventArgs _isBusyProperty = new(nameof(IsBusy));
@@ -124,7 +141,7 @@ namespace Liberfy.ViewModels.Authentications
             get => this._pageIndex;
             private set
             {
-                if(this.SetProperty(ref this._pageIndex, ref value, this._pageIndexProperty))
+                if (this.SetProperty(ref this._pageIndex, ref value, this._pageIndexProperty))
                 {
                     this.NextCommand.RaiseCanExecute();
                     this.CancelCommand.RaiseCanExecute();
@@ -175,15 +192,12 @@ namespace Liberfy.ViewModels.Authentications
                 // HACK: logging
                 ex.DumpDebug();
 
-                this.Messenger.Raise(new InformationDialogMessage("MessageDialog")
+                this.AuthenticationFailed?.Invoke(this, new()
                 {
-                    Icon = TaskDialogIcon.Error,
-                    Caption = App.Name,
-                    // TODO: いい感じのメッセージを入れる
-                    Text = "認証URLの取得に失敗しました。\nしばらく時間をおいてから再度お試しください。",
-                    Heading = "認証失敗",
+                    Instruction = "認証失敗",
+                    Message = "認証URLの取得に失敗しました。\nしばらく時間をおいてから再度お試しください。",
                 });
-                this.CloseRequest();
+                this.Cancelled?.Invoke(this, new());
                 return;
             }
 
@@ -217,15 +231,12 @@ namespace Liberfy.ViewModels.Authentications
                 // TODO: ログ
                 ex.DumpDebug();
 
-                this.Messenger.Raise(new InformationDialogMessage("MessageDialog")
+                this.AuthenticationFailed?.Invoke(this, new()
                 {
-                    Icon = TaskDialogIcon.Error,
-                    Caption = App.Name,
-                    // TODO: いい感じのメッセージを入れる
-                    Text = "認証処理が失敗しました。\nしばらく時間をおいてから再度お試しください。",
-                    Heading = "認証失敗",
+                    Instruction = "認証失敗",
+                    Message = "認証処理が失敗しました。\nしばらく時間をおいてから再度お試しください。",
                 });
-                this.CloseRequest();
+                this.Cancelled?.Invoke(this, new());
                 return;
             }
 
@@ -261,21 +272,17 @@ namespace Liberfy.ViewModels.Authentications
         /// キャンセルコマンド
         /// </summary>
         public Command CancelCommand => this._cancelCommand ??= new DelegateCommand(
-            () => this.CloseRequest(),
+            () =>
+            {
+                if (this.PageIndex == PageIndices.Complete)
+                {
+                    this.Completed?.Invoke(this, new());
+                }
+                else
+                {
+                    this.Cancelled?.Invoke(this, new());
+                }
+            },
             () => !this.IsBusy);
-
-        private Command<string> _copyAuthorizeCommand;
-        /// <summary>
-        /// 認証URLコピーコマンド
-        /// </summary>
-        public Command<string> CopyToClipboardCommand => this._copyAuthorizeCommand ??= new DelegateCommand<string>(
-            static s => Clipboard.SetText(s),
-            static s => !string.IsNullOrEmpty(s));
-
-        /// <summary>
-        /// 認証ダイアログキャンセル要求
-        /// </summary>
-        private void CloseRequest()
-            => this.Messenger.Raise(new WindowActionMessage(WindowAction.Close, "WindowAction"));
     }
 }
