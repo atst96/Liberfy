@@ -7,6 +7,10 @@ namespace Liberfy.Commands
     /// </summary>
     internal sealed class CopyToClipboardCommand : Command<string>
     {
+        public CopyToClipboardCommand() : base(true)
+        {
+        }
+
         protected override bool CanExecute(string parameter)
         {
             return !string.IsNullOrEmpty(parameter);
