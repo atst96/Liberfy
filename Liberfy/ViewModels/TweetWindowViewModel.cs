@@ -346,10 +346,7 @@ namespace Liberfy.ViewModels
         }
 
         private Command<IDataObject> _dragDropCommand;
-        public Command<IDataObject> DragDropCommand
-        {
-            get => this._dragDropCommand ??= this.RegisterCommand<IDataObject>(this.OnDragDrop, this.ValidateDragDrop);
-        }
+        public Command<IDataObject> DragDropCommand => this._dragDropCommand ??= this.Commands.Create<IDataObject>(this.OnDragDrop, this.ValidateDragDrop);
 
         private bool ValidateDragDrop(IDataObject dataObject)
         {
@@ -450,10 +447,10 @@ namespace Liberfy.ViewModels
 
 
         private Command _pasteImageCommand;
-        public Command PasteImageCommand => this._pasteImageCommand ?? (this._pasteImageCommand = this.RegisterCommand(new PasteImageCommand(this)));
+        public Command PasteImageCommand => this._pasteImageCommand ??= this.RegisterCommand(new PasteImageCommand(this));
 
         private ICommand _closeCommand;
-        public ICommand CloseCommand => this._closeCommand ??= this.RegisterCommand(this.OnClose, this.OnCloseRequest);
+        public ICommand CloseCommand => this._closeCommand ??= this.Commands.Create(this.OnClose, this.OnCloseRequest);
 
         internal bool OnCloseRequest()
         {

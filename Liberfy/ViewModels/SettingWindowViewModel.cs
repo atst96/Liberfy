@@ -251,7 +251,7 @@ namespace Liberfy.ViewModels
         private Command<ColumnBase> _columnRemoveCommand;
         public Command<ColumnBase> ColumnRemoveCommand
         {
-            get => this._columnRemoveCommand ??= this.RegisterCommand<ColumnBase>(this.ColumnRemove, CanColumnRemove);
+            get => this._columnRemoveCommand ??= this.Commands.Create<ColumnBase>(this.ColumnRemove, CanColumnRemove);
         }
 
         private static bool CanColumnRemove(ColumnBase column) => column != null;
@@ -263,10 +263,7 @@ namespace Liberfy.ViewModels
         #region Command: ColumnMoveUpCommand
 
         private Command<ColumnBase> _columnMoveUpCommand;
-        public Command<ColumnBase> ColumnMoveUpCommand
-        {
-            get => this._columnMoveUpCommand ??= this.RegisterCommand<ColumnBase>(this.ColumnMoveUp, this.CanColumnMoveUp);
-        }
+        public Command<ColumnBase> ColumnMoveUpCommand => this._columnMoveUpCommand ??= this.Commands.Create<ColumnBase>(this.ColumnMoveUp, this.CanColumnMoveUp);
 
         private bool CanColumnMoveUp(ColumnBase column)
         {
@@ -285,10 +282,7 @@ namespace Liberfy.ViewModels
         #region Command: ColumnMoveDownCommand
 
         private Command<ColumnBase> _columnMoveDownCommand;
-        public Command<ColumnBase> ColumnMoveDownCommand
-        {
-            get => this._columnMoveDownCommand ??= this.RegisterCommand<ColumnBase>(this.ColumnMoveRight, this.CanColumnMoveRight);
-        }
+        public Command<ColumnBase> ColumnMoveDownCommand => this._columnMoveDownCommand ??= this.Commands.Create<ColumnBase>(this.ColumnMoveRight, this.CanColumnMoveRight);
 
         private bool CanColumnMoveRight(ColumnBase column)
         {
@@ -389,10 +383,7 @@ namespace Liberfy.ViewModels
         #region Command: AddMuteCommand
 
         private Command _muteAddCommand;
-        public Command MuteAddCommand
-        {
-            get => this._muteAddCommand ??= this.RegisterCommand(this.MuteAdd, this.CanAddMute);
-        }
+        public Command MuteAddCommand => this._muteAddCommand ??= this.Commands.Create(this.MuteAdd, this.CanAddMute);
 
         private void MuteAdd()
         {
@@ -410,10 +401,7 @@ namespace Liberfy.ViewModels
         #region Command: RemoveMuteCommand
 
         private Command<Mute> _removeMuteCommand;
-        public Command<Mute> RemoveMuteCommand
-        {
-            get => this._removeMuteCommand ??= (this.RegisterCommand<Mute>(this.RemoveMute, IsAvailableMuteItem));
-        }
+        public Command<Mute> RemoveMuteCommand => this._removeMuteCommand ??= this.Commands.Create<Mute>(this.RemoveMute, IsAvailableMuteItem);
 
         private void RemoveMute(Mute mute) => this.MuteList.Remove(mute);
 
@@ -426,7 +414,7 @@ namespace Liberfy.ViewModels
         private Command<Mute> _muteRemoveCommand;
         public Command<Mute> MuteRemoveCommand
         {
-            get => this._muteRemoveCommand ??= this.RegisterCommand<Mute>(this.MuteRemove, this.CanMuteRemove);
+            get => this._muteRemoveCommand ??= this.Commands.Create<Mute>(this.MuteRemove, this.CanMuteRemove);
         }
 
         private void MuteRemove(Mute item) => this.MuteList.Remove(item);
@@ -550,7 +538,7 @@ namespace Liberfy.ViewModels
         #endregion Timeline settings
 
         private ICommand _closeCommand;
-        public ICommand CloseCommand => this._closeCommand ??= this.RegisterCommand(this.OnClose, this.OnCloseRequest);
+        public ICommand CloseCommand => this._closeCommand ??= this.Commands.Create(this.OnClose, this.OnCloseRequest);
 
         private bool OnCloseRequest()
         {

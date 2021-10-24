@@ -49,7 +49,7 @@ namespace Liberfy.ViewModels
         /// <summary>
         /// 投稿ウィンドウを開くコマンド
         /// </summary>
-        public Command<IAccount> OpenPostWindowCommand => this._openPostWindowCommand ??= this.RegisterCommand<IAccount>(account =>
+        public Command<IAccount> OpenPostWindowCommand => this._openPostWindowCommand ??= this.Commands.Create<IAccount>(account =>
         {
             account ??= App.Accounts.GetDefault();
             var viewModel = new TweetWindowViewModel();
@@ -64,7 +64,7 @@ namespace Liberfy.ViewModels
         /// <summary>
         /// 添付画像を開くコマンド
         /// </summary>
-        public Command<MediaAttachmentInfo> MediaPreviewCommand => this._mediaPreviewCommand ??= this.RegisterCommand<MediaAttachmentInfo>(mediaItemInfo =>
+        public Command<MediaAttachmentInfo> MediaPreviewCommand => this._mediaPreviewCommand ??= this.Commands.Create<MediaAttachmentInfo>(mediaItemInfo =>
         {
             var viewModel = new MediaPreviewWindowViewModel();
             viewModel.SetMediaItemInfo(mediaItemInfo);
