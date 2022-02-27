@@ -38,6 +38,7 @@ static class Config
   - LiteDB
   - Livet
   - MessagePack for C#
+  - Microsoft.Extensions.DependencyInjection
   - NowPlayingLib
   - SgmlReader
   - ToriatamaText
