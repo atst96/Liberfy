@@ -8,7 +8,6 @@
         <Company />
         <PackageProjectUrl>https://github.com/atst1996/Liberfy</PackageProjectUrl>
         <RepositoryUrl>https://github.com/atst1996/Liberfy</RepositoryUrl>
-        <PublishTrimmed>true</PublishTrimmed>
         <ApplicationIcon>Icons\app.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
